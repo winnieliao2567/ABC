@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- CSS only -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU"
+      crossorigin="anonymous"
+    />
+    <link href="css/color.css?1234" rel="stylesheet" />
+    <link href="css/share.css?12455" rel="stylesheet" />
+    <!-- JavaScript Bundle with Popper -->
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ"
+      crossorigin="anonymous"
+    ></script>
+    <script src="js/jquery-2.2.4.min.js"></script>
+    <script src="https://kit.fontawesome.com/4de7eaf6aa.js" crossorigin="anonymous"></script>
+    <script src="js/share.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <title>帳號資料</title>
+    <script>
+      if (localStorage.userInformation == null) {
+        window.location = "login.html";
+      }
+    </script>
+  </head>
+  <body>
+    <nav class="navbar myNavbar p-0">
+      <div class="container-fluid px-0">
+        <img src="img/logo2.svg" alt="" class="d-inline-block align-text-top logoToIndex my-3 mx-3" />
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarSupportedContent"
+          aria-controls="navbarSupportedContent"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <img src="img/menu.svg" id="menuBtn" />
+        </button>
+        <div class="collapse navbar-collapse mx-3" id="navbarSupportedContent">
+          <ul class="navbar-nav me-auto">
+            <li class="my-nav-item ToHistoryList">
+              <span class="my-nav-link" aria-current="page" href="#">歷史訂單</span>
+              <div class="nav-link-icon"></div>
+            </li>
+            <li class="my-nav-item ToUserAccount">
+              <span class="my-nav-link" href="#">帳號資料</span>
+              <div class="nav-link-icon"></div>
+            </li>
+            <li class="my-nav-item ToLogOut">
+              <span class="my-nav-link" href="login.html">登出</span>
+              <div class="nav-link-icon"></div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <div id="storeIMG">
+      <!-- Slider main container -->
+      <div class="swiper">
+        <!-- Additional required wrapper -->
+        <div class="swiper-wrapper">
+          <!-- Slides -->
+          <div class="swiper-slide"><img src="" class="" style="background-color: #f5f5f5" /></div>
+          <div class="swiper-slide"><img src="" class="" style="background-color: #f5f5f5" /></div>
+          <div class="swiper-slide"><img src="" class="" style="background-color: #f5f5f5" /></div>
+        </div>
+        <!-- If we need pagination -->
+        <div class="swiper-pagination"></div>
+
+        <!-- If we need navigation buttons -->
+        <!-- <div class="swiper-button-prev"></div>
+        <div class="swiper-button-next"></div> -->
+
+        <!-- If we need scrollbar -->
+        <div class="swiper-scrollbar"></div>
+      </div>
+    </div>
+
+    <div class="container-fluid d-flex flex-column" style="margin-bottom: 80px">
+      <div class="text-title color1 my-3">店家名稱</div>
+      <div class="px-3 py-2 color2 text-default">
+        <div class="d-inline-block colorSup me-3">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <g clip-path="url(#clip0_150_1873)">
+              <path
+                d="M9 16.5C13.1421 16.5 16.5 13.1421 16.5 9C16.5 4.85786 13.1421 1.5 9 1.5C4.85786 1.5 1.5 4.85786 1.5 9C1.5 13.1421 4.85786 16.5 9 16.5Z"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path d="M9 4.5V9L12 10.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            </g>
+            <defs>
+              <clipPath id="clip0_150_1873">
+                <rect width="18" height="18" fill="none" />
+              </clipPath>
+            </defs>
+          </svg>
+        </div>
+        <span class="colorDanger">週三</span>
+      </div>
+      <div class="px-3 py-2 color2 text-default">
+        <div class="d-inline-block colorSup me-3">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <g clip-path="url(#clip0_288_543)">
+              <path
+                d="M15.75 7.5C15.75 12.75 9 17.25 9 17.25C9 17.25 2.25 12.75 2.25 7.5C2.25 5.70979 2.96116 3.9929 4.22703 2.72703C5.4929 1.46116 7.20979 0.75 9 0.75C10.7902 0.75 12.5071 1.46116 13.773 2.72703C15.0388 3.9929 15.75 5.70979 15.75 7.5Z"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M9 9.75C10.2426 9.75 11.25 8.74264 11.25 7.5C11.25 6.25736 10.2426 5.25 9 5.25C7.75736 5.25 6.75 6.25736 6.75 7.5C6.75 8.74264 7.75736 9.75 9 9.75Z"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </g>
+            <defs>
+              <clipPath id="clip0_288_543">
+                <rect width="18" height="18" fill="white" />
+              </clipPath>
+            </defs>
+          </svg>
+        </div>
+        <span>台北市內湖區行愛路25號</span>
+      </div>
+      <div class="px-3 py-2 color2 text-default">
+        <div class="d-inline-block colorSup me-3">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <g clip-path="url(#clip0_288_188)">
+              <path
+                d="M16.4999 12.69V14.94C16.5008 15.1488 16.458 15.3556 16.3743 15.547C16.2907 15.7383 16.1679 15.9101 16.014 16.0513C15.8601 16.1926 15.6784 16.3001 15.4805 16.367C15.2826 16.4339 15.073 16.4588 14.8649 16.44C12.5571 16.1892 10.3402 15.4006 8.39245 14.1375C6.58032 12.9859 5.04395 11.4496 3.89245 9.63745C2.62493 7.68085 1.83613 5.4532 1.58995 3.13495C1.57121 2.92755 1.59586 2.71852 1.66233 2.52117C1.72879 2.32382 1.83563 2.14247 1.97602 1.98867C2.11642 1.83487 2.2873 1.71198 2.47779 1.62784C2.66828 1.5437 2.87421 1.50015 3.08245 1.49995H5.33245C5.69643 1.49637 6.04929 1.62526 6.32527 1.8626C6.60125 2.09994 6.78151 2.42954 6.83245 2.78995C6.92742 3.51 7.10354 4.217 7.35745 4.89745C7.45836 5.16589 7.4802 5.45764 7.42038 5.73811C7.36056 6.01858 7.2216 6.27603 7.01995 6.47995L6.06745 7.43245C7.13512 9.31011 8.68979 10.8648 10.5675 11.9325L11.5199 10.98C11.7239 10.7783 11.9813 10.6393 12.2618 10.5795C12.5423 10.5197 12.834 10.5415 13.1024 10.6425C13.7829 10.8964 14.4899 11.0725 15.21 11.1675C15.5743 11.2188 15.907 11.4024 16.1448 11.6831C16.3827 11.9638 16.5091 12.3221 16.4999 12.69Z"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </g>
+            <defs>
+              <clipPath id="clip0_288_188">
+                <rect width="18" height="18" fill="white" />
+              </clipPath>
+            </defs>
+          </svg>
+        </div>
+        <span>(02)1234-5678</span>
+      </div>
+      <div id="tabBtn" class="d-flex text-default mt-3">
+        <div class="tabBtn active px-3 py-2" data-Tabs="分類01">分類01</div>
+        <div class="tabBtn px-3 py-2" data-Tabs="分類02">分類02</div>
+      </div>
+      <div class="tabPage active py-3" data-Tabs="分類01">
+        <div class="text-title color1">分類01</div>
+        <div class="mealList mt-3">
+          <div class="mealItem px-3 py-2 d-flex">
+            <div class="pe-3 d-inline-block">
+              <img src="" class="mealImg" />
+            </div>
+            <div class="d-inline-block" style="width: -webkit-fill-available">
+              <div class="d-flex justify-content-between w-100">
+                <div class="text-default color1 fw-bolder">項目</div>
+                <div class="text-default fw-bolder color1">$30</div>
+              </div>
+              <div class="d-flex justify-content-between align-items-center py-2">
+                <div class="text-memo color2 pt-2">備註</div>
+              </div>
+              <div class="addToCart me-3 mb-2 d-flex justify-content-center align-items-center" data-bs-toggle="modal" data-bs-target="#addMeal">
+                <img src="img/plus.svg" />
+              </div>
+            </div>
+          </div>
+          <div class="mealItem px-3 py-2 d-flex">
+            <div class="pe-3 d-inline-block">
+              <img src="" class="mealImg" />
+            </div>
+            <div class="d-inline-block" style="width: -webkit-fill-available">
+              <div class="d-flex justify-content-between w-100">
+                <div class="text-default color1 fw-bolder">項目</div>
+                <div class="text-default fw-bolder color1">$30</div>
+              </div>
+              <div class="d-flex justify-content-between align-items-center py-2">
+                <div class="text-memo color2 pt-2">備註</div>
+              </div>
+              <div class="addToCart me-3 mb-2 d-flex justify-content-center align-items-center" data-bs-toggle="modal" data-bs-target="#addMeal">
+                <img src="img/plus.svg" />
+              </div>
+            </div>
+          </div>
+          <div class="mealItem px-3 py-2 d-flex">
+            <div class="pe-3 d-inline-block">
+              <img src="" class="mealImg" />
+            </div>
+            <div class="d-inline-block" style="width: -webkit-fill-available">
+              <div class="d-flex justify-content-between w-100">
+                <div class="text-default color1 fw-bolder">項目</div>
+                <div class="text-default fw-bolder color1">$30</div>
+              </div>
+              <div class="d-flex justify-content-between align-items-center py-2">
+                <div class="text-memo color2 pt-2">備註</div>
+              </div>
+              <div class="addToCart me-3 mb-2 d-flex justify-content-center align-items-center" data-bs-toggle="modal" data-bs-target="#addMeal">
+                <img src="img/plus.svg" />
+              </div>
+            </div>
+          </div>
+          <div class="mealItem px-3 py-2 d-flex">
+            <div class="pe-3 d-inline-block">
+              <img src="" class="mealImg" />
+            </div>
+            <div class="d-inline-block" style="width: -webkit-fill-available">
+              <div class="d-flex justify-content-between w-100">
+                <div class="text-default color1 fw-bolder">項目</div>
+                <div class="text-default fw-bolder color1">$30</div>
+              </div>
+              <div class="d-flex justify-content-between align-items-center py-2">
+                <div class="text-memo color2 pt-2">備註</div>
+              </div>
+              <div class="addToCart me-3 mb-2 d-flex justify-content-center align-items-center" data-bs-toggle="modal" data-bs-target="#addMeal">
+                <img src="img/plus.svg" />
+              </div>
+            </div>
+          </div>
+          <div class="mealItem px-3 py-2 d-flex">
+            <div class="pe-3 d-inline-block">
+              <img src="" class="mealImg" />
+            </div>
+            <div class="d-inline-block" style="width: -webkit-fill-available">
+              <div class="d-flex justify-content-between w-100">
+                <div class="text-default color1 fw-bolder">項目</div>
+                <div class="text-default fw-bolder color1">$30</div>
+              </div>
+              <div class="d-flex justify-content-between align-items-center py-2">
+                <div class="text-memo color2 pt-2">備註</div>
+              </div>
+              <div class="addToCart me-3 mb-2 d-flex justify-content-center align-items-center" data-bs-toggle="modal" data-bs-target="#addMeal">
+                <img src="img/plus.svg" />
+              </div>
+            </div>
+          </div>
+          <div class="mealItem px-3 py-2 d-flex">
+            <div class="pe-3 d-inline-block">
+              <img src="" class="mealImg" />
+            </div>
+            <div class="d-inline-block" style="width: -webkit-fill-available">
+              <div class="d-flex justify-content-between w-100">
+                <div class="text-default color1 fw-bolder">項目</div>
+                <div class="text-default fw-bolder color1">$30</div>
+              </div>
+              <div class="d-flex justify-content-between align-items-center py-2">
+                <div class="text-memo color2 pt-2">備註</div>
+              </div>
+              <div class="addToCart me-3 mb-2 d-flex justify-content-center align-items-center" data-bs-toggle="modal" data-bs-target="#addMeal">
+                <img src="img/plus.svg" />
+              </div>
+            </div>
+          </div>
+          <div class="mealItem px-3 py-2 d-flex">
+            <div class="pe-3 d-inline-block">
+              <img src="" class="mealImg" />
+            </div>
+            <div class="d-inline-block" style="width: -webkit-fill-available">
+              <div class="d-flex justify-content-between w-100">
+                <div class="text-default color1 fw-bolder">項目</div>
+                <div class="text-default fw-bolder color1">$30</div>
+              </div>
+              <div class="d-flex justify-content-between align-items-center py-2">
+                <div class="text-memo color2 pt-2">備註</div>
+              </div>
+              <div class="addToCart me-3 mb-2 d-flex justify-content-center align-items-center" data-bs-toggle="modal" data-bs-target="#addMeal">
+                <img src="img/plus.svg" />
+              </div>
+            </div>
+          </div>
+          <div class="mealItem px-3 py-2 d-flex">
+            <div class="pe-3 d-inline-block">
+              <img src="" class="mealImg" />
+            </div>
+            <div class="d-inline-block" style="width: -webkit-fill-available">
+              <div class="d-flex justify-content-between w-100">
+                <div class="text-default color1 fw-bolder">項目</div>
+                <div class="text-default fw-bolder color1">$30</div>
+              </div>
+              <div class="d-flex justify-content-between align-items-center py-2">
+                <div class="text-memo color2 pt-2">備註</div>
+              </div>
+              <div class="addToCart me-3 mb-2 d-flex justify-content-center align-items-center" data-bs-toggle="modal" data-bs-target="#addMeal">
+                <img src="img/plus.svg" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="tabPage py-3" data-Tabs="分類02">
+        <div class="text-title color1">分類02</div>
+        <div class="mealList mt-3">
+          <div class="mealItem px-3 py-2 d-flex">
+            <div class="pe-3 d-inline-block">
+              <img src="" class="mealImg" />
+            </div>
+            <div class="d-inline-block" style="width: -webkit-fill-available">
+              <div class="d-flex justify-content-between w-100">
+                <div class="text-default color1 fw-bolder">項目</div>
+                <div class="text-default fw-bolder color1">$30</div>
+              </div>
+              <div class="d-flex justify-content-between align-items-center py-2">
+                <div class="text-memo color2 pt-2">備註</div>
+              </div>
+              <div class="addToCart me-3 mb-2 d-flex justify-content-center align-items-center" data-bs-toggle="modal" data-bs-target="#addMeal">
+                <img src="img/plus.svg" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 d-flex justify-content-center p-3 fixed-bottom boxShadow whiteBG">
+      <div class="MainBtn MyBtn bigBtn fw-bolder w-100" id="goToCart">
+        查看購物車<span id="CartCount" class="pe-3">（10）</span><span id="CartPrice">$300</span>
+      </div>
+    </div>
+    <!-- Modal -->
+    <div class="modal fade" id="addMeal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+          <div class="modal-header">
+            <!-- <h5 class="modal-title" id="exampleModalLabel">Modal title</h5> -->
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <img src="" class="mealImg" />
+            <div class="my-3">
+              <div class="text-title color1">項目</div>
+              <div class="text-default color1">$30</div>
+            </div>
+            <div class="py-3 text-default">
+              <div class="color1 Required">大小</div>
+              <div>
+                <div class="px-2 pt-1">
+                  <input class="" type="radio" name="大小" id="選項1" />
+                  <label class="form-check-label" for="選項1"> 選項1 </label>
+                </div>
+                <div class="px-2 pt-1">
+                  <input class="" type="radio" name="大小" id="選項2" />
+                  <label class="form-check-label" for="選項2"> 選項2 </label>
+                </div>
+              </div>
+            </div>
+            <div class="py-3 text-default">
+              <div class="color1 Required">備註</div>
+              <textarea class="p-2"></textarea>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <div class="d-flex justify-content-center align-items-center w-100">
+              <div id="addCountToCart-educe" class="text-center disabled">—</div>
+              <input type="number" value="1" id="addCountToCart" class="text-center" />
+              <div id="addCountToCart-plus" class="text-center">＋</div>
+            </div>
+            <div class="MainBtn MyBtn bigBtn fw-bolder w-100" id="goToCart">加入購物車<span id="AddPrice">$30</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <button id="adbtn" data-bs-toggle="modal" data-bs-target="#adModal" style="display: none"></button>
+    <div class="modal fade" id="adModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content" style="height: 90%">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">公告</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <p>⏰營業時間⏰</p>
+            <p>星期一固定休</p>
+            <p>星期二18:00〜23:00</p>
+            <p>星期三18:00〜23:00</p>
+            <p>星期四18:0023:00</p>
+            <p>星期五18:00~00:00</p>
+            <p>星期六18:0000:00</p>
+            <p>星期日18:00〜23:00</p>
+            <p>🍎蘋果雞分店規劃中🍎</p>
+            <p>想創業加盟的朋友歡迎詢問🙋🏻‍♀️🙋🏻</p>
+            <p>#小資創業創</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+  <script>
+    var storeId = getParameterByName("id");
+    console.log(storeId);
+    $("#adbtn").click();
+    const swiper = new Swiper(".swiper", {
+      // Optional parameters
+      // direction: "vertical",
+      loop: true,
+
+      // If we need pagination
+      pagination: {
+        // el: ".swiper-pagination",
+      },
+
+      // Navigation arrows
+      navigation: {
+        // nextEl: ".swiper-button-next",
+        // prevEl: ".swiper-button-prev",
+      },
+
+      // And if we need scrollbar
+      scrollbar: {
+        el: ".swiper-scrollbar",
+        hide: true,
+      },
+    });
+  </script>
+</html>

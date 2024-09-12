@@ -12,6 +12,7 @@
   --link: #006be9;
   --bg: #ffffff;
   --danger: #c80000;
+  --succese: #17c800;
   --fontLV1: #3c3c3c;
   --fontLV2: #696969;
   --fontWhite: #ffffff;
@@ -121,6 +122,9 @@ a {
 }
 .colorDanger {
   color: var(--danger);
+}
+.colorSuccese {
+  color: var(--succese);
 }
 .colorSup {
   color: var(--supColor);

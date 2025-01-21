@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>共響 SHARING</title>
+
+  <!-- jquery -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+  <!-- JavaScript Bundle with Popper -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- <link rel="stylesheet" href="css/bootstrap.min.css"> -->
+
+  <!-- fontawesome -->
+  <script src="https://kit.fontawesome.com/4de7eaf6aa.js" crossorigin="anonymous"></script>
+
+  <!-- Theme style -->
+  <link rel="stylesheet" href="AdminLTE3/dist/css/adminlte.min.css">
+  <script src="AdminLTE3/dist/js/adminlte.min.js"></script>
+
+  <!-- Chart.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.bundle.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.css" />
+
+  <!-- toastr -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css" />
+
+  <!-- datepicker -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.30.1/moment.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+
+  <!-- Vue.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.5.13/vue.global.min.js"></script>
+
+  <script src="js/share.js"></script>
+  <link rel="stylesheet" href="css/share.css" />
+</head>
+
+<body class="sidebar-mini layout-navbar-fixed layout-footer-fixed sidebar-mini-md layout-fixed sidebar-collapse">
+  <!-- Preloader -->
+  <div class="preloader flex-column justify-content-center align-items-center">
+    <img class="animation__shake" src="img/logo.svg" style="height: 15vh;">
+  </div>
+  <!-- control-sidebar-slide-open -->
+  <div id="app" class="wrapper">
+    <div class="modal fade" id="reloginModal" tabindex="-1" data-backdrop="static" data-keyboard="false" role="dialog"
+      aria-labelledby="reloginModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="reloginModalLabel">重新登入</h5>
+          </div>
+          <div class="modal-body">
+            請重新登入以繼續使用系統。
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" onclick="window.location.href='login.html'">登入</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Navbar -->
+    <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+      <!-- Left navbar links -->
+      <ul class="navbar-nav d-md-none">
+        <li class="nav-item">
+          <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+        </li>
+      </ul>
+
+      <!-- Right navbar links -->
+      <ul class="navbar-nav ml-auto">
+        <li class="nav-item dropdown">
+          <a class="nav-link" data-toggle="dropdown" href="#">
+            <i class="fas fa-store"></i>
+            {{storeInfo.name}}
+            <i class="fas fa-caret-down"></i>
+          </a>
+          <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+            <a class="dropdown-item" v-for="(store,index) in allStore" :id="store.id" onclick="itemClick(this)">
+              <div class="store">
+                <strong>{{ store.name }}</strong>
+                <p class="text-muted">{{ store.address.fullAddress }}</p>
+              </div>
+            </a>
+          </div>
+        </li>
+      </ul>
+    </nav>
+    <!-- /.navbar -->
+
+    <!-- Main Sidebar Container -->
+    <aside class="main-sidebar elevation-4 sidebar-light-primary">
+      <!-- Brand Logo -->
+      <a href="index.html" class="brand-link logo-switch">
+        <img src="img/logo.svg" alt="AdminLTE Docs Logo Small" class="brand-image-xl logo-xs">
+        <img src="img/logo2.svg" alt="AdminLTE Docs Logo Large" class="brand-image-xs logo-xl" style="width: 200px;">
+      </a>
+
+
+      <!-- Sidebar -->
+      <div class="sidebar os-theme-dark">
+        <!-- Sidebar user (optional) -->
+        <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+          <div class="image">
+            <img src="img/user.png" class="img-circle elevation-2" alt="User Image">
+          </div>
+          <div class="info">
+            <p href="#" class="d-inline-block m-0 mr-5">Hi {{userInfo.name}}</p>
+            <button class="btn btn-sm m-0" onclick="window.location.href='account_edit.html'">
+              <i class="fas fa-user-edit"></i>
+            </button>
+            <button class="btn btn-sm m-0" onclick="window.location.href='login.html'">
+              <i class="fas fa-sign-out-alt"></i>
+            </button>
+          </div>
+        </div>
+        <!-- Sidebar Menu -->
+        <nav class="mt-2">
+          <ul class="nav nav-pills nav-sidebar flex-column nav-child-indent mb-auto" data-widget="treeview" role="menu"
+            data-accordion="false">
+            <!-- Add icons to the links using the .nav-icon class
+                 <br /> with font-awesome or any other icon font library -->
+            <li class="nav-item" v-for="(fuc,index) in userFunction">
+              <a :href="fuc.url" class="nav-link" :class="{'active':fuc.status==true}">
+                <i class="nav-icon" :class="fuc.icon"></i>
+                <p>
+                  {{fuc.name}}
+                  <i class="fas fa-angle-left right" v-if="fuc.item!=null"></i>
+                </p>
+              </a>
+              <ul class="nav nav-treeview" v-if="fuc.item!=null">
+                <li class="nav-item" v-for="(fucItem,index) in fuc.item" :key="index">
+                  <a :href="fucItem.url" class="nav-link" :class="{'active':fuc.status==true}">
+                    <i class="nav-icon" :class="fucItem.icon"></i>
+                    <p>{{fucItem.name}}</p>
+                  </a>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </nav>
+        <!-- /.sidebar-menu -->
+      </div>
+      <!-- /.sidebar -->
+    </aside>
+
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+      <!-- Content Header (Page header) -->
+      <div class="content-header">
+        <div class="container-fluid">
+          <div class="row mb-2">
+            <div class="col-sm-6">
+              <h1 class="m-0">{{PageTitle}}</h1>
+            </div><!-- /.col -->
+            <div class="col-sm-6">
+              <ol class="breadcrumb float-sm-right">
+                <li class="breadcrumb-item"><a href="index.html">SHARING</a></li>
+                <li class="breadcrumb-item active">{{PageTitle}}</li>
+              </ol>
+            </div><!-- /.col -->
+          </div><!-- /.row -->
+        </div><!-- /.container-fluid -->
+      </div>
+      <!-- /.content-header -->
+
+      <!-- Main content -->
+      <div class="content">
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col-12 col-md-8 col-xl-6">
+              <div class="row mb-3" v-for="(data,index) in data">
+                <h3 class="d-flex align-items-center col-12">{{data.title}}
+                  <span v-if="data.dateChange==false" class="text-sm text-muted ml-1">({{data.dateStart}} ～
+                    {{data.dateEnd}})</span>
+                  <button v-if="data.dateChange==true" type="button"
+                    class="w-auto ml-2 form-control form-control-sm text-start d-inline-block"
+                    :id="'daterange-'+data.id">
+                    <i class="far fa-calendar-alt"></i>
+                    <span id="reportrange-span" class="px-2">{{data.dateStart}} ～
+                      {{data.dateEnd}}</span>
+                  </button>
+                </h3>
+                <div class="col-7 col-md-8 col-lg-8 my-2">
+                  <div class="card">
+                    <div class="card-header bg-primary text-white">
+                      <i class="fas fa-file-invoice-dollar mr-2"></i>營業額
+                    </div>
+                    <div class="card-body">
+                      <div class="row align-items-center">
+                        <div class="d-inline-block col-2">$</div>
+                        <h2 class="d-inline-block col-8 text-center">{{data.Revenue}}</h2>
+                        <div class="text-sm pl-1 d-inline-block col-2">元</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-5 col-md-4 col-lg-4 my-2">
+                  <div class="card">
+                    <div class="card-header">
+                      <i class="fas fa-coins mr-2"></i>訂單數
+                    </div>
+                    <div class="card-body">
+                      <h2 class="text-center"><span>{{data.Order}}</span><span class="text-sm pl-1">筆</span>
+                      </h2>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- /.row -->
+        </div><!-- /.container-fluid -->
+      </div>
+      <!-- /.content -->
+    </div>
+    <!-- /.content-wrapper -->
+
+    <!-- Main Footer -->
+    <footer class="main-footer">
+      <!-- To the right -->
+      <div class="float-right d-none d-sm-inline" id="version"></div>
+      <!-- Default to the left -->
+      <strong id="copyRight"></strong>
+    </footer>
+  </div>
+  <!-- ./wrapper -->
+
+  <!-- REQUIRED SCRIPTS -->
+
+
+</body>
+<script>
+  const app = Vue.createApp({
+    data() {
+      return {
+        userFunction: sessionStorage.userFunction ? JSON.parse(sessionStorage.userFunction) : {},
+
+        PageTitle: '首頁',
+
+        userInfo: sessionStorage.userInfo ? JSON.parse(sessionStorage.userInfo) : {},
+        storeInfo: sessionStorage.storeInfo ? JSON.parse(sessionStorage.storeInfo) : {},
+        allStore: sessionStorage.allStore ? JSON.parse(sessionStorage.allStore) : [],
+
+        data: [
+          {
+            id: 'daily',
+            title: '今日',
+            dateStart: '',
+            dateEnd: '',
+            Revenue: '', Order: '',
+            dateChange: false
+          },
+          {
+            id: 'weekly',
+            title: '當週',
+            dateStart: '',
+            dateEnd: '',
+            Revenue: '',
+            Order: '',
+            dateChange: false
+          },
+          {
+            id: 'monthly',
+            title: '當月',
+            dateStart: '',
+            dateEnd: '',
+            Revenue: '',
+            Order: '',
+            dateChange: false
+          },
+          {
+            id: 'cus',
+            title: '自訂範圍',
+            dateStart: '----------',
+            dateEnd: '----------',
+            Revenue: '-',
+            Order: '-',
+            dateChange: true
+          }
+        ],
+      }
+    },
+    computed: {
+    },
+    mounted() {
+      setTimeout(() => {
+        checkUserInfo()
+      }, 500);
+
+      var vue = this
+      $("#daterange-cus").daterangepicker({
+        ranges: false,
+        // ranges: {
+        // 今天: [moment(), moment()],
+        // 昨天: [moment().subtract(1, "days"), moment().subtract(1, "days")],
+        // 近七天: [moment().subtract(6, "days"), moment()],
+        // 近30天: [moment().subtract(29, "days"), moment()],
+        // 當月: [moment().startOf("month"), moment().endOf("month")],
+        // 上個月: [
+        //     moment().subtract(1, "month").startOf("month"),
+        //     moment().subtract(1, "month").endOf("month"),
+        // ],
+        // },
+        locale: {
+          format: 'YYYY-MM-DD',  // 日期顯示格式
+          separator: ' - ',      // 日期範圍分隔符
+          applyLabel: '確認',     // 確認按鈕文本
+          cancelLabel: '取消',    // 取消按鈕文本
+        },
+        opens: 'left',  // 設置日期選擇框的位置
+        // timePicker: true,  // 啟用時間選擇
+        // timePicker24Hour: true,  // 使用 24 小時制
+        timePickerIncrement: 30,  // 時間步長
+        alwaysShowCalendars: true,  // 顯示日曆（即使在沒有選擇日期的情況下）
+        showCustomRangeLabel: false,  // 隱藏 "自訂範圍" 標籤
+        startDate: moment(),  // 預設開始日期
+        endDate: moment(),  // 預設結束日期
+        autoApply: true,  // 選擇日期後自動應用
+        maxDate: moment(),  // 最大日期設為當前日期
+        singleDatePicker: false,  // 設置為範圍選擇器
+
+      }, function (start, end) {
+        vue.data[3].Revenue = '32,234,900'
+        vue.data[3].Order = '3,024'
+        vue.data[3].dateStart = start.format('YYYY-MM-DD')
+        vue.data[3].dateEnd = end.format('YYYY-MM-DD')
+
+      });
+
+
+      //初始資料載入
+      apiWeb('_url', 'GET', '_data', '取得初始資料', function (v) {
+
+        //當日
+        vue.data[0].Revenue = '30,230',
+          vue.data[0].Order = '27',
+          vue.data[0].dateStart = moment().format('YYYY-MM-DD'),
+          vue.data[0].dateEnd = moment().format('YYYY-MM-DD'),
+
+          vue.data[1].Revenue = '104,230',
+          vue.data[1].Order = '70',
+          vue.data[1].dateStart = moment().subtract(6, "days").format('YYYY-MM-DD'),
+          vue.data[1].dateEnd = moment().format('YYYY-MM-DD'),
+
+          vue.data[2].Revenue = '664,330',
+          vue.data[2].Order = '237',
+          vue.data[2].dateStart = moment().subtract(29, "days").format('YYYY-MM-DD'),
+          vue.data[2].dateEnd = moment().format('YYYY-MM-DD'),
+
+
+          new Promise(resolve => setTimeout(resolve, 0))
+      })
+
+      $('#' + this.storeInfo.id).addClass('selected-item')
+
+    },
+    watch: {
+    },
+    methods: {
+      showStoreModel() {
+        $('#storeModal').modal('show')
+      }
+    },
+  });
+  app.mount("#app");
+</script>
+
+</html>

@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>共響 SHARING</title>
+
+    <!-- jquery -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+    <!-- JavaScript Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- <link rel="stylesheet" href="css/bootstrap.min.css"> -->
+
+    <!-- fontawesome -->
+    <script src="https://kit.fontawesome.com/4de7eaf6aa.js" crossorigin="anonymous"></script>
+
+    <!-- Theme style -->
+    <link rel="stylesheet" href="AdminLTE3/dist/css/adminlte.min.css">
+    <script src="AdminLTE3/dist/js/adminlte.min.js"></script>
+
+    <!-- tom-select -->
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/tom-select/2.4.1/css/tom-select.bootstrap4.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>
+
+    <!-- toastr -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css" />
+
+    <!-- moment -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.30.1/moment.min.js"></script>
+
+    <!-- Vue.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.5.13/vue.global.min.js"></script>
+
+    <!-- cropper -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cropper/1.0.1/jquery-cropper.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css" />
+    <!-- <script src="js/jquery-cropper.min.js"></script> -->
+
+    <script src="js/share.js"></script>
+    <link rel="stylesheet" href="css/share.css" />
+</head>
+
+<body class="sidebar-mini layout-navbar-fixed layout-footer-fixed sidebar-mini-md layout-fixed sidebar-collapse">
+    <!-- Preloader -->
+    <div class="preloader flex-column justify-content-center align-items-center">
+        <img class="animation__shake" src="img/logo.svg" style="height: 15vh;">
+    </div>
+    <!-- control-sidebar-slide-open -->
+    <div id="app" class="wrapper">
+        <div class="modal fade" id="reloginModal" tabindex="-1" data-backdrop="static" data-keyboard="false"
+            role="dialog" aria-labelledby="reloginModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="reloginModalLabel">重新登入</h5>
+                    </div>
+                    <div class="modal-body">
+                        請重新登入以繼續使用系統。
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary"
+                            onclick="window.location.href='login.html'">登入</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="TailoringImgWin" tabindex="-1" data-backdrop="static" data-keyboard="false"
+            style="z-index: 100000;" role="dialog" aria-labelledby="reloginModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="reloginModalLabel">
+                            編輯圖片
+                        </h5>
+                    </div>
+                    <div class="modal-body">
+                        <div class="box tailoring-box">
+                            <img id="tailoringImg" src="" style="width: 500px;height: 300px;">
+                        </div>
+                        <div class="box preview">
+                            <div id="previewImg"></div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal"
+                            aria-label="Close">取消上傳</button>
+                        <button type="button" id="sureCut" @click="sureCut" class="btn btn-primary">確認裁切並上傳</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="ProductorEdit" tabindex="-1" role="dialog" aria-labelledby="reloginModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="reloginModalLabel">
+                            <span>{{AddProductor_data.userAction}}</span>
+                            品項
+                        </h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row m-0">
+                            <div class="col-12 bg-light p-3 mb-2">
+                                <h5 class="mb-3">品項內容</h5>
+                                <div class="row flex-row-reverse m-0 align-items-stretch">
+                                    <div class="col-12 col-lg-4 p-1" v-if="AddProductor_data.data.imgurl==''">
+                                        <label class="rounded-lg bg-white border-primary p-3 w-100 h-100"
+                                            style="border-width:3px;border-style:dotted;"
+                                            for="AddProductorImageDefault">
+                                            <p>快速上傳餐點圖片</p>
+                                            <span class="text-muted text-sm fw-1">這裡可以備註圖片尺寸。</span>
+                                            <input type="file" class="d-none" id="AddProductorImageDefault"
+                                                accept=".jpg,.jpeg,.png" @change="uploadImage">
+                                        </label>
+                                    </div>
+                                    <div class="col-12 col-lg-4 p-1" v-if="AddProductor_data.data.imgurl!=''">
+                                        <div class="result" v-if="AddProductor_data.userAction==='新增'">
+                                            <label class="m-0">
+                                                品項圖片
+                                            </label>
+                                            <input type="hidden">
+                                            <img id="newImg" class="border w-100" src="">
+                                            <div class="custom-file">
+                                                <input type="file" class="custom-file-input" id="exampleInputFile"
+                                                    @change="uploadImage" accept=".jpg,.jpeg,.png">
+                                                <label class="custom-file-label" for="exampleInputFile">
+                                                    更換圖片
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div v-if="AddProductor_data.userAction==='編輯'">
+                                            <label class="m-0">
+                                                品項圖片
+                                            </label>
+                                            <img id="ProductorImage" class="border w-100"
+                                                :src="AddProductor_data.data.imgurl">
+                                            <div class="custom-file">
+                                                <input type="file" class="custom-file-input" id="exampleInputFile"
+                                                    @change="uploadImage" accept=".jpg,.jpeg,.png">
+                                                <label class="custom-file-label" for="exampleInputFile">
+                                                    更換圖片
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-lg-8 p-1">
+                                        <div class="form-group mb-3">
+                                            <label class="m-0">
+                                                品項名稱<span class="text-danger">*</span>
+                                            </label>
+                                            <input class="form-control" placeholder="品項名稱"
+                                                v-model="AddProductor_data.data.name">
+                                        </div>
+                                        <div class="form-group mb-3">
+                                            <label class="m-0">
+                                                品項敘述
+                                            </label>
+                                            <textarea class="form-control" placeholder="品項敘述"
+                                                v-model="AddProductor_data.data.introduction"></textarea>
+                                        </div>
+                                        <div class="form-group mb-3">
+                                            <label class="m-0">
+                                                品項分類<span class="text-danger">*</span>
+                                            </label>
+                                            <select v-model="AddProductor_data.data.productorsClass.id"
+                                                class="form-control">
+                                                <option value="" disabled v-if="AddProductor_data.userAction==='新增'">
+                                                    --請選擇 --
+                                                </option>
+                                                <option v-for="(classList,classIndex) in ProductorEditData"
+                                                    :value="classList.id">
+                                                    {{classList.name}}
+                                                </option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group mb-3">
+                                            <label class="m-0">
+                                                定價
+                                                <span class="text-primary" data-toggle="tooltip" data-placement="right"
+                                                    title="品項的基本價格，不含份量及客製化選項的加減差價">
+                                                    <i class="fas fa-question-circle"></i>
+                                                </span>
+                                            </label>
+                                            <div class="input-group">
+                                                <div class="input-group-prepend ">
+                                                    <span class="input-group-text">
+                                                        NT$
+                                                    </span>
+                                                </div>
+                                                <input class="form-control" placeholder="價格" type="number"
+                                                    v-model="AddProductor_data.data.price" step="1">
+                                            </div>
+                                        </div>
+                                        <div class="form-group mb-3">
+                                            <label class="m-0">
+                                                排序類別<span class="text-danger">*</span>
+                                                <span class="text-primary" data-toggle="tooltip" data-placement="right"
+                                                    title="顯示於訂單記錄的順序">
+                                                    <i class="fas fa-question-circle"></i>
+                                                </span>
+                                            </label>
+                                            <select class="form-control" v-model="AddProductor_data.data.sortClass">
+                                                <option value="" disabled v-if="AddProductor_data.userAction==='新增'">--
+                                                    請選擇 --
+                                                </option>
+                                                <option v-for="(sort,classIndex) in SortClassList" :value="sort.id">
+                                                    {{sort.name}}
+                                                </option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 bg-light p-3 mb-2">
+                                <h5>份量</h5>
+                                <p class="text-muted">若您的餐點有不同份量，可以新增份量並設定差價。</p>
+                                <div class="form-group mb-3" v-if="AddProductor_data.data.size.length!==0">
+                                    <div class="input-group mb-1"
+                                        v-for="(size,sizeIndex) in AddProductor_data.data.size">
+                                        <input class="form-control" placeholder="份量名稱，EX：大杯" v-model="size.name">
+                                        <div class="input-group-prepend input-group-append">
+                                            <span class="input-group-text">
+                                                NT $
+                                            </span>
+                                        </div>
+                                        <input class="form-control" placeholder="EX:20或-50" type="number"
+                                            v-model="size.price" step="1">
+                                        <div class="input-group-append">
+                                            <button v-on:click="deletSize(sizeIndex)" class="btn btn-outline-secondary">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group mb-3">
+                                    <a href="#" @click="addProdutorSize">+ 新增一個份量</a>
+                                </div>
+                            </div>
+                            <div class="col-12 bg-light p-3 mb-2">
+                                <h5>客製化選項類別</h5>
+                                <!-- <p class="text-muted">若您的餐點有不同份量，可以新增份量並設定差價。</p> -->
+                                <div class="sortableList mb-3">
+                                    <div class="border-bottom text-bold text-muted p-0">
+                                        <div class="py-1 px-4 d-flex">
+                                            <div class="col-2 col-md-1 m-0"></div>
+                                            <div class="col-10 col-md-4 m-0">名稱</div>
+                                            <div class="d-none d-md-block col-6 m-0">選項</div>
+                                        </div>
+                                    </div>
+                                    <div class="list-group-item p-0" v-for="(cus,CIndex) in CustomizedClassList">
+                                        <div class="py-1 px-4 d-flex">
+                                            <div class="col-2 col-md-1 m-0">
+                                                <input type="checkbox" v-model="AddProductor_data.data.customClassId"
+                                                    :value="cus.id" :id="'checkbox-'+cus.id">
+                                            </div>
+                                            <label class="col-10 col-md-4 m-0" :for="'checkbox-'+cus.id">
+                                                {{cus.name}}
+                                            </label>
+                                            <label class="d-none d-md-block col-6 m-0" :for="'checkbox-'+cus.id">
+                                                <span class="text-sm rounded-lg bg-muted"
+                                                    v-for="(cusOption,cusOPIndex) in cus.options">
+                                                    {{ cusOption }},
+                                                </span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <!-- <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button> -->
+                        <button type="button" class="btn btn-secondary" @click="deletProductor"
+                            v-if="AddProductor_data.action=='編輯'">刪除</button>
+                        <button type="button" class="btn btn-primary" @click="SaveProductor"
+                            v-if="AddProductor_data.userAction==='編輯'" :disabled="!checkProductorForm">確認儲存</button>
+                        <button type="button" class="btn btn-primary" @click="AddProductor"
+                            v-if="AddProductor_data.userAction==='新增'" :disabled="!checkProductorForm">確認新增</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="createProductorClass" tabindex="-1" role="dialog"
+            aria-labelledby="reloginModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-md" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="reloginModalLabel"><span>{{ProductorClass_Data.action}}</span>品項類別
+                        </h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-5">
+                                    <label for="">類別名稱<span class="text-danger">*</span></label>
+                                    <input v-model="ProductorClass_Data.data.name" class="form-control form-control-lg">
+                                </div>
+                                <div class="form-group mb-5">
+                                    <label for="">菜單描述</label>
+                                    <textarea class="form-control form-control-lg"
+                                        v-model="ProductorClass_Data.data.description"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <!-- <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button> -->
+                        <button type="button" class="btn btn-primary" :disabled="!checkProductorClassForm"
+                            v-if="ProductorClass_Data.action=='新增'">確認新增</button>
+                        <button type="button" class="btn btn-primary" v-if="ProductorClass_Data.action=='編輯'"
+                            :disabled="!checkProductorClassForm">儲存</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Navbar -->
+        <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+            <!-- Left navbar links -->
+            <ul class="navbar-nav d-md-none">
+                <li class="nav-item">
+                    <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+                </li>
+            </ul>
+
+            <!-- Right navbar links -->
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item dropdown">
+                    <a class="nav-link" data-toggle="dropdown" href="#">
+                        <i class="fas fa-store"></i>
+                        {{storeInfo.name}}
+                        <i class="fas fa-caret-down"></i>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+                        <a class="dropdown-item" v-for="(store,index) in allStore" :id="store.id"
+                            onclick="itemClick(this)">
+                            <div class="store">
+                                <strong>{{ store.name }}</strong>
+                                <p class="text-muted">{{ store.address.fullAddress }}</p>
+                            </div>
+                        </a>
+                    </div>
+                </li>
+            </ul>
+        </nav>
+        <!-- /.navbar -->
+
+        <!-- Main Sidebar Container -->
+        <aside class="main-sidebar elevation-4 sidebar-light-primary">
+            <!-- Brand Logo -->
+            <a href="#" class="brand-link logo-switch">
+                <img src="img/logo.svg" alt="AdminLTE Docs Logo Small" class="brand-image-xl logo-xs">
+                <img src="img/logo2.svg" alt="AdminLTE Docs Logo Large" class="brand-image-xs logo-xl"
+                    style="width: 200px;">
+            </a>
+
+            <!-- Sidebar -->
+            <div class="sidebar os-theme-dark">
+                <!-- Sidebar user (optional) -->
+                <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+                    <div class="image">
+                        <img src="img/user.png" class="img-circle elevation-2" alt="User Image">
+                    </div>
+                    <div class="info">
+                        <p href="#" class="d-inline-block m-0 mr-5">Hi {{userInfo.name}}</p>
+                        <button class="btn btn-sm m-0" onclick="window.location.href='account_edit.html'">
+                            <i class="fas fa-user-edit"></i>
+                        </button>
+                        <button class="btn btn-sm m-0" onclick="window.location.href='login.html'">
+                            <i class="fas fa-sign-out-alt"></i>
+                        </button>
+                    </div>
+                </div>
+                <!-- Sidebar Menu -->
+                <nav class="mt-2">
+                    <ul class="nav nav-pills nav-sidebar flex-column nav-child-indent" data-widget="treeview"
+                        role="menu" data-accordion="false">
+                        <!-- Add icons to the links using the .nav-icon class
+                         <br /> with font-awesome or any other icon font library -->
+                        <li class="nav-item" v-for="(fuc,index) in userFunction">
+                            <a :href="fuc.url" class="nav-link" :class="{'active':fuc.status==true}">
+                                <i class="nav-icon" :class="fuc.icon"></i>
+                                <p>
+                                    {{fuc.name}}
+                                    <i class="fas fa-angle-left right" v-if="fuc.item!=null"></i>
+                                </p>
+                            </a>
+                            <ul class="nav nav-treeview" v-if="fuc.item!=null">
+                                <li class="nav-item" v-for="(fucItem,index) in fuc.item" :key="index">
+                                    <a :href="fucItem.url" class="nav-link" :class="{'active':fuc.status==true}">
+                                        <i class="nav-icon" :class="fucItem.icon"></i>
+                                        <p>{{fucItem.name}}</p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+
+                    </ul>
+                </nav>
+                <!-- /.sidebar-menu -->
+            </div>
+            <!-- /.sidebar -->
+        </aside>
+
+        <!-- Content Wrapper. Contains page content -->
+        <div class="content-wrapper">
+            <!-- Content Header (Page header) -->
+            <div class="content-header">
+                <div class="container-fluid">
+                    <div class="row mb-2">
+                        <div class="col-sm-6">
+                            <h1 class="m-0">{{PageTitle}}</h1>
+                        </div><!-- /.col -->
+                        <div class="col-sm-6">
+                            <ol class="breadcrumb float-sm-right">
+                                <li class="breadcrumb-item"><a href="index.html">SHARING</a></li>
+                                <li class="breadcrumb-item active">{{PageTitle}}</li>
+                            </ol>
+                        </div><!-- /.col -->
+                    </div><!-- /.row -->
+                </div><!-- /.container-fluid -->
+            </div>
+            <!-- /.content-header -->
+
+            <!-- Main content -->
+            <div class="content">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-8 mb-3">
+                            <div class="input-group">
+                                <input type="search" class="form-control" placeholder="搜尋品項名稱">
+                                <div class="input-group-append">
+                                    <button type="submit" class="btn btn-default">
+                                        <i class="fa fa-search"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-4 text-right mb-3">
+                            <div class="dropdown">
+                                <a class="btn btn-primary dropdown-toggle" href="#" role="button" data-toggle="dropdown"
+                                    aria-expanded="false">
+                                    新增
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-right">
+                                    <a class="dropdown-item" @click="AddProductorGroup">品項類別</a>
+                                    <a href="#" class="dropdown-item" @click="showProductorAddWin(null)">品項</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-8 col-xl-7 p-3" v-for="(Group, index) in ProductorEditData"
+                            :key="Group.id">
+                            <div class="col-12">
+                                <div class="d-inline-block">
+                                    <h5>
+                                        <span class="text-bold">{{ Group.name }}</span>
+                                    </h5>
+                                </div>
+                                <div class="d-inline-block">
+                                    <a href="#" class="ml-3" :data-id="Group.id"
+                                        @click="EditProductorGroup(index)">編輯品項類別</a>
+                                </div>
+                                <!-- <p class="text-muted text-sm"> {{ Group.description }}</p> -->
+                                <div class="list-group" v-if="Group.productors.length>0">
+                                    <div class="d-flex align-items-center py-2 list-group-item" :data-id="item.id"
+                                        v-for="(item,itemindex) in Group.productors"
+                                        @click="showProductorEditWin(index,item.id)">
+                                        <div class="d-flex justify-content-center"
+                                            style="width: 50px;overflow: hidden;">
+                                            <img :src="item.imgurl!=''?item.imgurl:'img/unknowIMG.png'" class="border"
+                                                height="50px">
+                                        </div>
+                                        <div class="pl-3">
+                                            <div class="text-bold">{{item.name}}</div>
+                                            <!-- <div class="text-muted">{{item.introduction}}</div> -->
+                                        </div>
+                                        <div class=" ml-auto">
+                                            <label v-if="item.enabled" class="text-success">
+                                                <i class="fas fa-circle"></i>
+                                                <!-- 上架中 -->
+                                            </label>
+                                            <label v-if="!item.enabled" class="text-danger">
+                                                <i class="fas fa-circle"></i>
+                                                <!-- 停售中 -->
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div v-if="Group.productors.length===0" class="">
+                                    <p class="text-muted" :data-id="Group.id">該分類尚未新增品項，
+                                        <a href="#" @click="showProductorAddWin(index)">前往新增</a>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /.row -->
+                </div><!-- /.container-fluid -->
+            </div>
+            <!-- /.content -->
+        </div>
+        <!-- /.content-wrapper -->
+
+        <!-- Main Footer -->
+        <footer class="main-footer">
+            <!-- To the right -->
+            <div class="float-right d-none d-sm-inline" id="version"></div>
+            <!-- Default to the left -->
+            <strong id="copyRight"></strong>
+        </footer>
+    </div>
+    <!-- ./wrapper -->
+
+    <!-- REQUIRED SCRIPTS -->
+
+
+</body>
+
+<script>
+
+    const app = Vue.createApp({
+        data() {
+            return {
+                userFunction: sessionStorage.userFunction ? JSON.parse(sessionStorage.userFunction) : {},
+
+                PageTitle: '品項管理',
+
+                userInfo: sessionStorage.userInfo ? JSON.parse(sessionStorage.userInfo) : {},
+                storeInfo: sessionStorage.storeInfo ? JSON.parse(sessionStorage.storeInfo) : {},
+                allStore: sessionStorage.allStore ? JSON.parse(sessionStorage.allStore) : [],
+
+                //品項列表
+                ProductorEditData: [
+                    {
+                        id: 'cl2025a01s09s',
+                        name: '分類A',
+                        description: '分類A的描述',
+                        productors: [
+                            {
+                                id: 'pro2024duc12it22em',
+                                name: '雞排',
+                                imgurl: 'img/bg/brooke-lark-IDTEXXXfS44-unsplash.jpg',
+                                sortClassInfo: {
+                                    id: 'c2024la12s24s',
+                                    name: '屬性01',
+                                    sort_number: 0,
+                                },
+                                productorsClass: {
+                                    id: 'cl2025a01s09s',
+                                    name: '分類A',
+                                    description: '分類A的描述',
+                                },
+                                sortClass: 'c2024la12s24s',
+                                customClassId: ['cu2024s01to11mized'],
+                                price: '20',
+                                introduction: '好吃好吃超好吃😋',
+                                size: [
+                                    {
+                                        name: '大份',
+                                        price: '10'
+                                    }
+                                ],
+                                enabled: true
+                            }
+                        ],
+                    },
+                    {
+                        id: 'cl2025a01s10s',
+                        name: '分類B',
+                        description: '分類B的描述',
+                        productors: []
+                    },
+                ],
+
+                //品項分類編輯/新增資料
+                ProductorClass_Data: {
+                    action: '新增',
+                    data: {
+                        name: '',
+                        description: '',
+                    }
+                },
+                ProductorClass_Default: {
+                    name: '',
+                    description: '',
+                },
+
+                //品項編輯/新增資料
+                AddProductor_data: {
+                    userAction: '新增',
+                    data: {
+                        name: '',
+                        imgurl: '',
+                        productorsClass: {
+                            id: '',
+                        },
+                        sortClass: '',
+                        customClassId: [],
+                        price: '0',
+                        introduction: '',
+                        size: [],
+                        enabled: true
+                    },
+                    enabled: true
+                },
+                AddProductorDefault: {
+                    name: '',
+                    imgurl: '',
+                    productorsClass: {
+                        id: '',
+                    },
+                    sortClass: '',
+                    customClassId: [],
+                    price: '0',
+                    introduction: '',
+                    size: [],
+                    enabled: true
+                },
+
+                //排序類別清單
+                SortClassList: [
+                    {
+                        id: 'c2024la12s24s',
+                        name: '屬性01',
+                        sort_number: 0
+                    },
+                    {
+                        id: 'c2024la12s25s',
+                        name: '屬性02',
+                        sort_number: 1
+                    },
+                    {
+                        id: 'c2024la12s26s',
+                        name: '屬性03',
+                        sort_number: 2
+                    },
+                    {
+                        id: 'c2024la12s27s',
+                        name: '屬性04',
+                        sort_number: 3
+                    },
+                ],
+
+                //客製化類別清單
+                CustomizedClassList: [
+                    {
+                        id: 'cu2024s01to10mized',
+                        name: '冰塊調整',
+                        type: 1,
+                        options:
+                            [
+                                '正常', '少冰', '微冰', '去冰'
+                            ]
+                    },
+                    {
+                        id: 'cu2024s01to11mized',
+                        name: '客制加料',
+                        type: 2,
+                        options:
+                            [
+                                '加珍珠', '少冰', '微冰', '去冰', ''
+                            ]
+                    }
+                ]
+            }
+        },
+        computed: {
+            // 新增/儲存 品項按鈕檢查
+            checkProductorForm() {
+                // console.log(this.AddProductor_data.data);
+                if (this.AddProductor_data.data.name !== '' && this.AddProductor_data.data.sortClass !== '' && this.AddProductor_data.data.productorsClass.id !== '') {
+                    return true
+                } else {
+                    return false
+                }
+            },
+            // 新增/儲存 品項分類按鈕檢查
+            checkProductorClassForm() {
+                // console.log(this.AddProductor_data.data);
+                if (this.ProductorClass_Data.data.name !== '') {
+                    return true
+                } else {
+                    return false
+                }
+            },
+
+        },
+        mounted() {
+            setTimeout(() => {
+                checkUserInfo()
+            }, 500);
+
+            $('[data-toggle="tooltip"]').tooltip();
+
+            // cropper圖片裁剪
+            $('#tailoringImg').cropper({
+                aspectRatio: 1,  // 固定比例 1:1
+                preview: '#previewImg',  // 預覽檢視
+                viewMode: 2,
+                guides: true,   // 裁剪框的虛線(九宮格)
+                autoCropArea: 0.8, // 自動剪裁區域的大小，範圍 0-1，1 為全區域
+                dragMode: 'crop', // 拖曳模式 crop(Default,新增裁剪框) / move(移動裁剪框&圖片) / none(無動作)
+                cropBoxResizable: true, // 是否可以調整裁剪框
+                movable: false, // 禁止移動圖片
+                zoomable: false, // 禁止縮放圖片大小
+                rotatable: false,   // 禁止旋轉圖片
+                zoomOnWheel: true, // 是否允許滑鼠滾輪縮放
+                zoomOnTouch: true, // 是否允許觸控縮放
+                ready: function () {
+                    const cropper = $(this).data('cropper');
+                    const containerData = cropper.getContainerData(); // 獲取容器大小
+                    const canvasData = cropper.getCanvasData(); // 獲取圖片的實際大小
+
+                    // 設定裁剪框大小與位置
+                    const cropBoxWidth = 500; // 設定裁剪框寬度
+                    const cropBoxHeight = 300; // 設定裁剪框高度
+                    const cropBoxLeft = (canvasData.width - cropBoxWidth) / 2 + canvasData.left; // 水平居中
+                    const cropBoxTop = (canvasData.height - cropBoxHeight) / 2 + canvasData.top; // 垂直居中
+
+                    cropper.setCropBoxData({
+                        left: cropBoxLeft,
+                        top: cropBoxTop,
+                        width: cropBoxWidth,
+                        height: cropBoxHeight
+
+                    })
+                }
+            });
+        },
+        watch: {
+        },
+        methods: {
+            //顯示新增分類視窗
+            AddProductorGroup() {
+                this.ProductorClass_Data = {
+                    action: '新增',
+                    data: this.ProductorClass_Default
+                }
+                console.log(this.ProductorClass_Data);
+                $('#createProductorClass').modal('show')
+            },
+            //顯示編輯分類視窗
+            EditProductorGroup(index) {
+                this.ProductorClass_Data = {
+                    action: '編輯',
+                    data: this.ProductorEditData[index]
+                }
+                $('#createProductorClass').modal('show')
+            },
+
+            //顯示新增品項視窗
+            showProductorAddWin(index) {
+                this.AddProductor_data = {
+                    enabled: true,
+                    data: this.AddProductorDefault,
+                    userAction: '新增'
+                }
+                if (index) {
+                    this.AddProductor_data.data.productorsClass.id = this.ProductorEditData[index].id
+                }
+                $('#ProductorEdit').modal('show')
+            },
+            //顯示編輯品項視窗
+            showProductorEditWin(index, itemId) {
+                this.AddProductor_data = {
+                    enabled: false,
+                    data: this.ProductorEditData[index].productors.find(item => item.id === itemId),
+                    userAction: '編輯'
+                }
+                $('#ProductorEdit').modal('show')
+            },
+
+            //增加品項份量
+            addProdutorSize() {
+                this.AddProductor_data.data.size.push({ name: '', price: '' })
+            },
+            //刪除品項份量
+            deletSize(sizeIndex) {
+                this.AddProductor_data.data.size.splice(sizeIndex, 1);
+            },
+
+            //確認新增品項
+            AddProductor() {
+                console.log(this.AddProductor_data);
+            },
+            //確認儲存品項
+            SaveProductor() {
+                console.log(this.AddProductor_data);
+            },
+            // 確認刪除品項
+            deletProductor() {
+                console.log(this.AddProductor_data);
+            },
+
+            //上完照片後
+            uploadImage(event) {
+                let file = event.target.files[0]; // 使用 `event.target` 獲取 input 的 file
+                if (file) {
+                    let reader = new FileReader();
+                    reader.onload = (evt) => {
+                        let imgSrc = evt.target.result;
+                        // 初始化 Cropper 或替換圖片
+                        const $image = $("#tailoringImg");
+                        if ($image.data("cropper")) {
+                            // 如果已初始化 Cropper，直接替換圖片
+                            $image.cropper("replace", imgSrc, false);
+                        } else {
+                            // 初始化 Cropper
+                            $image.attr("src", imgSrc);
+                            $image.cropper({
+                                aspectRatio: NaN,
+                                viewMode: 1,
+                                preview: "#previewImg",
+                                movable: true,
+                                zoomable: true,
+                                rotatable: false,
+                                cropBoxResizable: true,
+                            });
+                        }
+                    };
+                    reader.readAsDataURL(file);
+                }
+                // 顯示裁剪 Modal
+                $('#ProductorEdit').modal('hide')
+                $("#TailoringImgWin").modal("show");
+            },
+            sureCut() {
+                var cropImg = $('#tailoringImg').cropper('getData');
+                // console.log('cropImg', cropImg);
+                var imgNewHeight
+                imgNewHeight = Math.round(640 * cropImg.height / cropImg.width);
+                var cvs = $('#tailoringImg').cropper('getCroppedCanvas');// 獲取被裁剪後的canvas
+                // console.log('cvs', cvs);
+                var context = cvs.getContext('2d');
+                // console.log('context', context);
+                var base64 = cvs.toDataURL('image/jpeg'); // 轉換為base64
+                var compressRatio = 102;
+
+                var img = new Image();
+                img.src = base64;
+
+                var result
+                img.onload = function () {
+                    var newImg;
+                    // 使用 canvas 調整圖片寬高
+                    cvs.width = 640;
+                    cvs.height = imgNewHeight;
+                    context.clearRect(0, 0, 640, imgNewHeight);
+                    // 調整圖片尺寸
+                    context.drawImage(img, 0, 0, 640, imgNewHeight);
+                    // 顯示新圖片
+                    $('.result').show();
+                    do {
+                        compressRatio -= 2;
+                        newImg = cvs.toDataURL("image/jpeg", compressRatio / 100);
+                    } while (Math.round(0.75 * newImg.length / 1000) > 150);
+                    result = newImg
+
+                    $('.result img').attr("src", newImg);
+                    $('.result input').val(newImg);
+                    //Modal
+
+                };
+                this.AddProductor_data.data.imgurl = result
+                $('#ProductorEdit').modal('show')
+                $("#TailoringImgWin").modal("hide");
+            }
+        },
+    });
+    app.mount("#app");
+</script>
+
+</html>

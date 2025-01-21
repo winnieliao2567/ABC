@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>共響 SHARING</title>
+
+  <!-- jquery -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+  <!-- JavaScript Bundle with Popper -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- <link rel="stylesheet" href="css/bootstrap.min.css"> -->
+
+  <!-- fontawesome -->
+  <script src="https://kit.fontawesome.com/4de7eaf6aa.js" crossorigin="anonymous"></script>
+
+  <!-- Theme style -->
+  <link rel="stylesheet" href="AdminLTE3/dist/css/adminlte.min.css">
+  <script src="AdminLTE3/dist/js/adminlte.min.js"></script>
+
+  <!-- Chart.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.bundle.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.css" />
+
+  <!-- toastr -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css" />
+
+  <!-- datepicker -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.30.1/moment.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+
+  <!-- Vue.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.5.13/vue.global.min.js"></script>
+
+  <script src="js/share.js"></script>
+  <link rel="stylesheet" href="css/share.css" />
+</head>
+
+<body class="login-page iframe-mode" style="height: 100%;">
+  <div class="login-box" id="app">
+    <div class="login-logo">
+      <img src="img/logo2.svg" style="width: 80%;">
+    </div>
+    <!-- /.login-logo -->
+    <div class="card">
+      <div class="card-body login-card-body">
+        <p class="login-box-msg">登入後開始管理你的店家</p>
+        <div>
+          <div class="mb-3">
+            <div class="input-group">
+              <input type="email" class="form-control" placeholder="請輸入信箱" v-model="loginVal.account" type="email">
+              <div class="input-group-append">
+                <div class="input-group-text">
+                  <span class="fas fa-envelope"></span>
+                </div>
+              </div>
+            </div>
+            <div class="text-memo text-danger formHint" v-if="loginVal.account!=''&&validateEmail(loginVal.account)">
+              *Email格式錯誤
+            </div>
+          </div>
+          <div class="mb-3">
+            <div class="input-group">
+              <input type="password" v-model="loginVal.key" id="confirmPassword" class="form-control"
+                placeholder="請輸入密碼">
+              <div class="input-group-append">
+                <div class="input-group-text password-undisabled" data-for="#confirmPassword">
+                  <i class="fas fa-eye-slash"></i>
+                </div>
+                <div class="input-group-text">
+                  <span class="fas fa-lock"></span>
+                </div>
+              </div>
+            </div>
+            <div class="text-memo text-danger formHint" v-if="check.key==true">* 密碼錯誤
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-8">
+              <div class="form-check">
+                <input class="form-check-input" v-model="loginVal.keepLogIn" type="checkbox" id="flexCheckChecked"
+                  autocomplete="off" checked>
+                <label class="form-check-label" for="flexCheckChecked">
+                  保持登入
+                </label>
+              </div>
+            </div>
+            <!-- /.col -->
+            <div class="col-4">
+              <button type="button" class="btn btn-primary btn-block" v-on:click="login"
+                :disabled="validateEmail(loginVal.account)">登入</button>
+            </div>
+            <!-- /.col -->
+          </div>
+        </div>
+      </div>
+      <!-- /.login-card-body -->
+    </div>
+  </div>
+</body>
+<script>
+
+  const app = Vue.createApp({
+    data() {
+      return {
+        loginVal: { account: '', key: '', keepLogIn: true },
+        check: { account: false, key: false },
+        allStore: [], // 如果没有 allStore, 使用默认空数组
+        storeInfo: {}
+      }
+    },
+    computed: {
+
+    },
+    mounted() {
+      sessionStorage.clear()
+      loadingOff();
+    },
+    watch: {
+    },
+    methods: {
+      login() {
+        console.log(this.loginVal.keepLogIn);
+        if (this.loginVal.account == '') { this.check.account = true }
+        else if (this.loginVal.key == '') { this.check.key = true }
+        else {
+          if (this.loginVal.keepLogIn == true) {
+            // document.cookie = "account=" + this.loginVal.account + ';Key=' + this.loginVal.accountKey + ';'
+          } else {
+            // document.cookie = "account='';Key='';"
+          }
+          sessionStorage.userInfo = JSON.stringify({
+            id: 'dksla991024',
+            name: 'winnie',
+            account: 'winnieliao2567@gmail.com',
+            accountKey: '123456',
+          })
+
+          this.allStore = [
+            {
+              id: '216hewjfbwkef',
+              name: '鹹酥雞 中和店',
+              address: {
+                city: '新北市',
+                districts: '中和區',
+                shortAddress: '某某路二段717巷7號', // 原本的 x
+                fullAddress: '新北市中和區某某路二段717巷7號', // 原本的 y
+              },
+              email: "abc@gmail.com",
+              tel: '02-12345678',
+              businessNum: '12345678',
+              introduction: '<p><strong style="background-color: rgb(230, 0, 0); color: rgb(255, 255, 255);">歡迎光臨！！</strong></p><p><strong class="ql-size-huge">現在正在買五送一！！</strong></p>',
+              tags: ['A商圈', 'B商圈', "鹹酥雞", '炸物', '宵夜'],
+              businessTime: [
+                {
+                  id: 'Mon',
+                  name: '週一',
+                  operation: true,
+                  time: [
+                    { open: '08:00', close: '12:00' },
+                    { open: '15:00', close: '18:00' },
+                  ]
+                },
+                {
+                  id: 'Tue',
+                  name: '週二',
+                  operation: true,
+                  time: [
+                    { open: '08:00', close: '12:00' },
+                    { open: '15:00', close: '18:00' },
+                  ]
+                },
+                {
+                  id: 'Wen',
+                  name: '週三',
+                  operation: false,
+                  time: []
+
+                },
+                {
+                  id: 'Thu',
+                  name: '週四',
+                  operation: false,
+                  time: []
+                },
+                {
+                  id: 'Fri',
+                  name: '週五',
+                  operation: true,
+                  time: [
+                    { open: '08:00', close: '12:00' },
+                    { open: '15:00', close: '18:00' },
+                    { open: '21:00', close: '00:00' }
+                  ]
+                },
+                {
+                  id: 'Sat',
+                  name: '週六',
+                  operation: true,
+                  time: [
+                    { open: '08:00', close: '12:00' },
+                    { open: '15:00', close: '18:00' },
+                    { open: '21:00', close: '00:00' }
+                  ]
+                },
+                {
+                  id: 'Sun',
+                  name: '週日',
+                  operation: true,
+                  time: [
+                    { open: '08:00', close: '12:00' },
+                    { open: '15:00', close: '18:00' }
+                  ]
+                }
+              ],
+              storeClosed: [
+                {
+                  id: 'fes0101',
+                  name: '元旦',
+                  date: '2025-01-01',
+                },
+                {
+                  id: 'fes0102',
+                  name: '春節',
+                  date: '2025-01-28',
+                },
+                {
+                  id: 'fes0103',
+                  name: '春節',
+                  date: '2025-01-29',
+                },
+                {
+                  id: 'fes0104',
+                  name: '春節',
+                  date: '2025-01-30',
+                },
+                {
+                  id: 'fes0105',
+                  name: '元宵',
+                  date: '2025-02-12',
+                },
+              ],
+              advanceReservation: '7',
+              waitingTime: { basic: '5', interval: '5' },
+              minimumOrderReminder: {
+                enabled: true,
+                minimumOrder: 100,
+                text: '未達最低消費金額 $100'
+              },
+            }
+          ]
+          sessionStorage.allStore = JSON.stringify(this.allStore)
+
+          sessionStorage.userFunction = JSON.stringify([
+            {
+              icon: 'fas fa-store',
+              name: '商店管理',
+              status: '',
+              url: "",
+              item: [
+                {
+                  icon: 'fas fa-store',
+                  name: '店家管理',
+                  status: '',
+                  url: "StoreMaintain.html"
+                },
+                {
+                  icon: 'fas fa-border-all',
+                  name: '菜單管理',
+                  status: '',
+                  url: "MenuList.html"
+                },
+                {
+                  icon: 'fas fa-utensils',
+                  name: '品項管理',
+                  status: '',
+                  url: "Productor.html"
+                },
+                {
+                  icon: 'fas fa-sort-amount-up',
+                  name: '排序管理',
+                  status: '',
+                  url: "SortClass.html"
+                },
+                {
+                  icon: 'fas fa-seedling',
+                  name: '客製化屬性',
+                  status: '',
+                  url: "Customized.html"
+                }
+              ]
+            },
+            {
+              icon: 'fas fa-clipboard-list',
+              name: '訂餐紀錄',
+              status: '',
+              url: "OrderList.html"
+            },
+            {
+              icon: 'fas fa-user-slash',
+              name: '黑名單',
+              status: '',
+              url: "BanList.html"
+            },
+            {
+              icon: 'fas fa-user-clock',
+              name: '帳號登入記錄',
+              status: '',
+              url: "LogInlog.html"
+            },
+          ])
+
+          if (this.allStore.length > 1) {
+            $('#storeModal').modal('show')
+          } else if (this.allStore.length = 1) {
+            console.log(this.allStore[0].id);
+
+            this.select(this.allStore[0].id)
+            window.location.href = "index.html"
+          }
+        }
+      },
+      select(id) {
+        const foundStore = this.allStore.find(store => store.id === id);
+        this.storeInfo = foundStore;
+
+        // 将 storeInfo 存储到 sessionStorage 中
+        sessionStorage.storeInfo = JSON.stringify(this.storeInfo);
+
+        // 跳转到 index.html 页面
+        if (sessionStorage.storeInfo == null) {
+          $('#storeModal').modal('hide')
+          toastr.error("登入失敗");
+        } else {
+          window.location.href = 'index.html';
+        }
+      },
+      //驗證信箱格式
+      validateEmail(par) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return !emailRegex.test(par); // 如果格式不正確，顯示錯誤
+      },
+    },
+  });
+  app.mount("#app");
+</script>
+
+</html>

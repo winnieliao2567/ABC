@@ -1,0 +1,96 @@
+@charset "UTF-8";
+:root {
+    --primary: #0f95b0;
+    --primary_bg: #cbe7ee;
+    --primary_deeper: #0c6f83;
+    --primary_dark: #0a5b6b;
+
+    --secondary: #ff8400;
+    --secondary_bg: #fdfaf7;
+    --secondary_deeper: #aa5800;
+    --secondary_darkr: #623200;
+
+    --muted: #8b93a2;
+
+    --success: #00ab80;
+    --warning: #ffb23f;
+    --danger: #9b0e0e;
+    --danger_deeper: rgb(160, 58, 58);
+    --danger_dark: #612c2c;
+    --light: #f8f9fa;
+    --dark: #1d2b3a;
+
+    --disabled_default: #0f95b010;
+
+    --breakpoint-xs: 0;
+    --breakpoint-sm: 576px;
+    --breakpoint-md: 768px;
+    --breakpoint-lg: 992px;
+    --breakpoint-xl: 1200px;
+    --bs-body-bg: #f8f8f8;
+    --font-family-sans-serif: "Source Sans Pro", -apple-system, BlinkMacSystemFont, "Segoe UI",
+        Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+        "Segoe UI Symbol";
+    --font-family-monospace: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+        "Courier New", monospace;
+}
+* {
+    box-sizing: border-box;
+}
+.longText {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+#PageLoading {
+    position: fixed;
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: white;
+    z-index: 10000;
+    flex-direction: column;
+}
+
+/* #app {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    min-height: 100vh;
+} */
+.cus-bg {
+    background-size: cover;
+    position: fixed;
+    background-size: cover;
+    height: -webkit-fill-available;
+}
+nav {
+    z-index: 100;
+}
+.item {
+    cursor: pointer;
+    position: relative;
+}
+.item > * {
+    background-color: #fff;
+}
+.item:hover > * {
+    background-color: var(--secondary_bg);
+}
+.item:hover .text-muted {
+    /* color: #fff !important; */
+}
+.item.selected-item {
+    border: var(--bs-primary) 5px solid;
+}
+.item.selected-item > * {
+    background-color: var(--secondary_bg);
+}
+/* .delete-btn {
+    opacity: 0;
+}
+.time-item:hover .delete-btn {
+    opacity: 1;
+} */

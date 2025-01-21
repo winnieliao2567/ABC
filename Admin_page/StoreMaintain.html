@@ -1,0 +1,1060 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>共響 SHARING</title>
+
+    <!-- jquery -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+    <!-- JavaScript Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- <link rel="stylesheet" href="css/bootstrap.min.css"> -->
+
+    <!-- fontawesome -->
+    <script src="https://kit.fontawesome.com/4de7eaf6aa.js" crossorigin="anonymous"></script>
+
+    <!-- Theme style -->
+    <link rel="stylesheet" href="AdminLTE3/dist/css/adminlte.min.css">
+    <script src="AdminLTE3/dist/js/adminlte.min.js"></script>
+
+    <!-- Chart.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.bundle.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.css" />
+
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/tom-select/2.4.1/css/tom-select.bootstrap4.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet" />
+
+    <!-- toastr -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css" />
+
+    <!-- datepicker -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.30.1/moment.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+
+    <!-- Vue.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.5.13/vue.global.min.js"></script>
+
+    <script src="js/share.js"></script>
+    <link rel="stylesheet" href="css/share.css" />
+</head>
+
+<body class="sidebar-mini layout-navbar-fixed layout-footer-fixed sidebar-mini-md layout-fixed sidebar-collapse">
+    <!-- Preloader -->
+    <div class="preloader flex-column justify-content-center align-items-center">
+        <img class="animation__shake" src="img/logo.svg" style="height: 15vh;">
+    </div>
+    <!-- control-sidebar-slide-open -->
+    <div id="app" class="wrapper">
+        <div class="modal fade" id="reloginModal" tabindex="-1" data-backdrop="static" data-keyboard="false"
+            role="dialog" aria-labelledby="reloginModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="reloginModalLabel">重新登入</h5>
+                    </div>
+                    <div class="modal-body">
+                        請重新登入以繼續使用系統。
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary"
+                            onclick="window.location.href='login.html'">登入</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Navbar -->
+        <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+            <!-- Left navbar links -->
+            <ul class="navbar-nav d-md-none">
+                <li class="nav-item">
+                    <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+                </li>
+            </ul>
+
+            <!-- Right navbar links -->
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item dropdown">
+                    <a class="nav-link" data-toggle="dropdown" href="#">
+                        <i class="fas fa-store"></i>
+                        {{storeInfo.name}}
+                        <i class="fas fa-caret-down"></i>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+                        <a class="dropdown-item" v-for="(store,index) in allStore" :id="store.id"
+                            onclick="itemClick(this)">
+                            <div class="store">
+                                <strong>{{ store.name }}</strong>
+                                <p class="text-muted">{{ store.address.fullAddress }}</p>
+                            </div>
+                        </a>
+                    </div>
+                </li>
+            </ul>
+        </nav>
+        <!-- /.navbar -->
+
+        <!-- Main Sidebar Container -->
+        <aside class="main-sidebar elevation-4 sidebar-light-primary">
+            <!-- Brand Logo -->
+            <a href="index.html" class="brand-link logo-switch">
+                <img src="img/logo.svg" alt="AdminLTE Docs Logo Small" class="brand-image-xl logo-xs">
+                <img src="img/logo2.svg" alt="AdminLTE Docs Logo Large" class="brand-image-xs logo-xl"
+                    style="width: 200px;">
+            </a>
+
+
+            <!-- Sidebar -->
+            <div class="sidebar os-theme-dark">
+                <!-- Sidebar user (optional) -->
+                <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+                    <div class="image">
+                        <img src="img/user.png" class="img-circle elevation-2" alt="User Image">
+                    </div>
+                    <div class="info">
+                        <p href="#" class="d-inline-block m-0 mr-5">Hi {{userInfo.name}}</p>
+                        <button class="btn btn-sm m-0" onclick="window.location.href='account_edit.html'">
+                            <i class="fas fa-user-edit"></i>
+                        </button>
+                        <button class="btn btn-sm m-0" onclick="window.location.href='login.html'">
+                            <i class="fas fa-sign-out-alt"></i>
+                        </button>
+                    </div>
+                </div>
+                <!-- Sidebar Menu -->
+                <nav class="mt-2">
+                    <ul class="nav nav-pills nav-sidebar flex-column nav-child-indent" data-widget="treeview"
+                        role="menu" data-accordion="false">
+                        <!-- Add icons to the links using the .nav-icon class
+                         <br /> with font-awesome or any other icon font library -->
+                        <li class="nav-item" v-for="(fuc,index) in userFunction">
+                            <a :href="fuc.url" class="nav-link" :class="{'active':fuc.status==true}">
+                                <i class="nav-icon" :class="fuc.icon"></i>
+                                <p>
+                                    {{fuc.name}}
+                                    <i class="fas fa-angle-left right" v-if="fuc.item!=null"></i>
+                                </p>
+                            </a>
+                            <ul class="nav nav-treeview" v-if="fuc.item!=null">
+                                <li class="nav-item" v-for="(fucItem,index) in fuc.item" :key="index">
+                                    <a :href="fucItem.url" class="nav-link" :class="{'active':fuc.status==true}">
+                                        <i class="nav-icon" :class="fucItem.icon"></i>
+                                        <p>{{fucItem.name}}</p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+
+                    </ul>
+                </nav>
+                <!-- /.sidebar-menu -->
+            </div>
+            <!-- /.sidebar -->
+        </aside>
+
+        <!-- Content Wrapper. Contains page content -->
+        <div class="content-wrapper">
+            <!-- Content Header (Page header) -->
+            <div class="content-header">
+                <div class="container-fluid">
+                    <div class="row mb-2">
+                        <div class="col-sm-6">
+                            <h1 class="m-0">{{PageTitle}}</h1>
+                        </div><!-- /.col -->
+                        <div class="col-sm-6">
+                            <ol class="breadcrumb float-sm-right">
+                                <li class="breadcrumb-item"><a href="index.html">SHARING</a></li>
+                                <li class="breadcrumb-item active">{{PageTitle}}</li>
+                            </ol>
+                        </div><!-- /.col -->
+                    </div><!-- /.row -->
+                </div><!-- /.container-fluid -->
+            </div>
+            <!-- /.content-header -->
+
+            <!-- Main content -->
+            <div class="content">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="accordion" id="accordion">
+                                <div class="card m-0" v-for="(item, index) in StoreEditItem" :key="item.id">
+                                    <a class="d-block w-100 collapsed" data-toggle="collapse" :href="'#'+item.id"
+                                        aria-expanded="false">
+                                        <div class="card-header">
+                                            <h4 class="card-title w-100">
+                                                <span v-html="item.name"></span>
+                                                <span class="" v-show="item.editDone">*</span>
+                                                <span class="text-danger ml-2" v-show="item.editError">
+                                                    <i class="fas fa-exclamation-circle"></i></span>
+                                            </h4>
+                                        </div>
+                                    </a>
+                                    <div :id="item.id" class="collapse" data-parent="#accordion" style="">
+                                        <div class="card-body py-2 px-3">
+                                            <div class="mb-3" v-for="(settingItem, index) in item.settingItem"
+                                                :key="index">
+                                                <p class="m-0">{{ settingItem.name }}</p>
+                                                <div class="">
+                                                    <!-- 店家地址 -->
+                                                    <div class="col-12 my-1 "
+                                                        v-if="settingItem.groupitem.type === 'address'">
+                                                        <div class="input-group mb-1">
+                                                            <select class="form-control"
+                                                                :disabled="!settingItem.groupitem.enabled"
+                                                                v-model="storeInfoEdit.address.city">
+                                                                <option v-for="(city, index) in allCity" :key="index"
+                                                                    :value="city.name">
+                                                                    {{ city.name }}
+                                                                </option>
+                                                            </select>
+                                                            <select class="form-control"
+                                                                :disabled="!settingItem.groupitem.enabled"
+                                                                v-model="storeInfoEdit.address.districts">
+                                                                <option v-for="(district, index) in allDistricts"
+                                                                    :key="index" :value="district.name">
+                                                                    {{ district.name }}
+                                                                </option>
+                                                            </select>
+                                                        </div>
+                                                        <input class="form-control" autocomplete="off"
+                                                            :disabled="!settingItem.groupitem.enabled"
+                                                            v-model="storeInfoEdit.address.shortAddress"
+                                                            :placeholder="settingItem.groupitem.placeholder">
+                                                    </div>
+
+                                                    <!-- 店家信箱 -->
+                                                    <div class="col-12 my-1 "
+                                                        v-if="settingItem.groupitem.type === 'email'">
+                                                        <input class="form-control" type="email" autocomplete="off"
+                                                            :disabled="!settingItem.groupitem.enabled"
+                                                            v-model="storeInfoEdit.email"
+                                                            :class="{'is-invalid': !validateEmail(storeInfoEdit.email)}"
+                                                            :placeholder="settingItem.groupitem.placeholder">
+                                                        <div class="text-memo text-danger"
+                                                            v-if="!validateEmail(storeInfoEdit.email)">
+                                                            *請輸入正確的Email格式
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- 店家電話 -->
+                                                    <div class="col-12 my-1 "
+                                                        v-if="settingItem.groupitem.type === 'tel'">
+                                                        <input class="form-control" type="tel" autocomplete="off"
+                                                            :disabled="!settingItem.groupitem.enabled"
+                                                            v-model="storeInfoEdit.tel"
+                                                            :class="{'is-invalid': !validateTalAndPhone(this.storeInfoEdit.tel)}"
+                                                            :placeholder="settingItem.groupitem.placeholder">
+                                                        <div class="text-memo text-danger"
+                                                            v-if="!validateTalAndPhone(storeInfoEdit.tel)">
+                                                            *請輸入正確的市話或手機格式
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- 店家簡介 -->
+                                                    <div class="col-12 my-1 "
+                                                        v-if="settingItem.groupitem.type === 'text editor'">
+                                                        <div class="form-control" id="storeIntroduction"
+                                                            :disabled="!settingItem.groupitem.enabled"></div>
+                                                    </div>
+
+                                                    <!-- 店家名稱 -->
+                                                    <div class="col-12 my-1 "
+                                                        v-if="settingItem.groupitem.type === 'storeName'">
+                                                        <input class="form-control" type="tel" autocomplete="off"
+                                                            :disabled="!settingItem.groupitem.enabled"
+                                                            v-model="storeInfoEdit.name"
+                                                            :placeholder="settingItem.groupitem.placeholder">
+                                                    </div>
+
+                                                    <!-- 統一編號 -->
+                                                    <div class="col-12 my-1 "
+                                                        v-if="settingItem.groupitem.type === 'businessNum'">
+                                                        <input class="form-control" type="tel" autocomplete="off"
+                                                            :disabled="!settingItem.groupitem.enabled"
+                                                            v-model="storeInfoEdit.businessNum"
+                                                            :class="{'is-invalid': storeInfoEdit.businessNum.length!=8}"
+                                                            :placeholder="settingItem.groupitem.placeholder">
+                                                        <div class="text-memo text-danger"
+                                                            v-if="storeInfoEdit.businessNum.length!=8">
+                                                            *統一編號格式須為8碼數字
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- 標籤 -->
+                                                    <div class="col-12 my-1 "
+                                                        v-if="settingItem.groupitem.type === 'KeyWord Tag'">
+                                                        <input class="form-control" id="input-tags" autocomplete="off"
+                                                            :placeholder="settingItem.groupitem.placeholder"
+                                                            v-model="storeInfoEdit.tags"
+                                                            :disabled="!settingItem.groupitem.enabled">
+                                                    </div>
+
+                                                    <!-- 營業時間 -->
+                                                    <div class="col-12 my-1"
+                                                        v-if="settingItem.groupitem.type === 'BusinessTime'">
+                                                        <div class="row m-0 py-3 border-bottom"
+                                                            v-for="(day,index) in storeInfoEdit.businessTime">
+                                                            <div class="col m-0">
+                                                                {{day.name}}
+                                                            </div>
+                                                            <div class="custom-control custom-switch">
+                                                                <input type="checkbox" class="custom-control-input"
+                                                                    :id="'operation'+day.id" v-model="day.operation"
+                                                                    @change="toggleOperation(day.id, day.operation)">
+                                                                <label
+                                                                    class="custom-control-label text-success m-0 ml-2"
+                                                                    v-if="day.operation" :for="'operation'+day.id">
+                                                                    營業
+                                                                </label>
+                                                                <label class="custom-control-label text-danger m-0 ml-2"
+                                                                    v-if="!day.operation" :for="'operation'+day.id">
+                                                                    休息
+                                                                </label>
+                                                            </div>
+                                                            <div v-if="day.operation" class="col-12 m-0">
+                                                                <div class="row">
+                                                                    <div class="col-12 mt-3">
+                                                                        <div class="input-group mb-2"
+                                                                            v-for="(time,index) in day.time">
+                                                                            <input class="form-control"
+                                                                                :value="time.open" type="time"
+                                                                                :data-for="'open-'+day.id">
+                                                                            <span class="mx-2">~</span>
+                                                                            <input class="form-control"
+                                                                                :value="time.close" type="time"
+                                                                                :data-for="'close-'+day.id">
+                                                                            <div class="input-group-append">
+                                                                                <button
+                                                                                    v-on:click="deletOperationTime(day.id,index)"
+                                                                                    class="btn btn-outline-secondary">
+                                                                                    <i class="fas fa-trash-alt"></i>
+                                                                                </button>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col-12">
+                                                                        <button class="btn-link btn btn-sm"
+                                                                            v-show="3>day.time.length" :data-for="index"
+                                                                            v-on:click="addOperationTime(index)">
+                                                                            + 新增營業區間
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+
+                                                            </div>
+
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- 間隔等待時間 -->
+                                                    <div class="col-12 my-1 "
+                                                        v-if="settingItem.groupitem.type === 'IntervalTime'">
+                                                        <input class="form-control w-50 d-inline-block"
+                                                            autocomplete="off"
+                                                            :class="{'is-invalid':!validateIntervalTime(storeInfoEdit.waitingTime.interval, 5)}"
+                                                            :disabled="!settingItem.groupitem.enabled" type="number"
+                                                            v-model="storeInfoEdit.waitingTime.interval" min="0"
+                                                            max="60" step="5">
+                                                        <p class="pl-3 w-25 d-inline-block m-0 mr-5">分鐘</p>
+                                                        <div class="text-memo text-danger"
+                                                            v-if="!validateIntervalTime(storeInfoEdit.waitingTime.interval, 5)">
+                                                            *間隔時間須為5的倍數
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- 基礎等待時間 -->
+                                                    <div class="col-12 "
+                                                        v-if="settingItem.groupitem.type === 'BasicTime'">
+                                                        <select class="form-control w-50 d-inline-block"
+                                                            autocomplete="off"
+                                                            :disabled="!settingItem.groupitem.enabled"
+                                                            v-model="storeInfoEdit.waitingTime.basic">
+                                                            <option v-for="num in generateNumbers(0, 60, 5)" :key="num"
+                                                                :value="num">
+                                                                {{ num }}
+                                                            </option>
+                                                        </select>
+                                                        <p class="pl-3 w-25 d-inline-block m-0 mr-5">分鐘</p>
+                                                    </div>
+
+                                                    <!-- 低消提示 -->
+                                                    <div class="col-12"
+                                                        v-if="settingItem.groupitem.type === 'Reminder'">
+                                                        <div class="custom-control custom-switch">
+                                                            <input type="checkbox" class="custom-control-input"
+                                                                id="minimumOrderReminder"
+                                                                v-model="storeInfoEdit.minimumOrderReminder.enabled">
+                                                            <label class="custom-control-label text-success m-0 ml-2"
+                                                                for="minimumOrderReminder"
+                                                                v-if="storeInfoEdit.minimumOrderReminder.enabled">
+                                                                開啟
+                                                            </label>
+                                                            <label class="custom-control-label text-danger m-0 ml-2"
+                                                                for="minimumOrderReminder"
+                                                                v-if="!storeInfoEdit.minimumOrderReminder.enabled">
+                                                                關閉
+                                                            </label>
+                                                        </div>
+                                                        <!-- 低消金額 -->
+                                                        <div class="col-12 py-3"
+                                                            v-if="storeInfoEdit.minimumOrderReminder.enabled==true">
+                                                            <div class="p-3">
+                                                                <h6>低消金額</h6>
+                                                                <p class="pr-3 w-auto d-inline-block m-0 mr-5 text-end">
+                                                                    $
+                                                                </p>
+                                                                <input class="form-control w-auto d-inline-block"
+                                                                    autocomplete="off" min="0" placeholder="低消金額，EX:100"
+                                                                    :disabled="!settingItem.groupitem.enabled"
+                                                                    type="number"
+                                                                    v-model="storeInfoEdit.minimumOrderReminder.minimumOrder">
+                                                            </div>
+
+                                                            <!-- 提示內容 -->
+                                                            <div class="p-3">
+                                                                <h6>提示內容</h6>
+                                                                <textarea class="form-control"
+                                                                    placeholder='提示內容文字，EX:未達最低消費金額'
+                                                                    v-model="storeInfoEdit.minimumOrderReminder.text"></textarea>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- 店休 -->
+                                                    <div class="col-12"
+                                                        v-if="settingItem.groupitem.type === 'StoreClosed'">
+                                                        <div class="row mt-3">
+                                                            <div class="col-12"
+                                                                v-for="(day,index) in storeInfoEdit.storeClosed">
+                                                                <div class="input-group mb-2" v-if="day.date>today">
+                                                                    <input type="text" class="form-control"
+                                                                        v-model="day.name"
+                                                                        :placeholder="settingItem.groupitem.placeholder">
+                                                                    <input type="date" class="form-control"
+                                                                        :class="{'is-invalid': today > day.date}"
+                                                                        v-model="day.date" :min="today">
+                                                                    <div class="input-group-append">
+                                                                        <button class="btn btn-outline-secondary"
+                                                                            @click="delStoreClosed(day.id,index)"
+                                                                            type="button">
+                                                                            <i class="fas fa-trash-alt"
+                                                                                aria-hidden="true"></i>
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <button class="btn-link btn btn-sm" @click="addStoreClosed">
+                                                                + 特殊店休日期
+                                                            </button>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- 最多可預訂天數 -->
+                                                    <div class="col-12 my-1 "
+                                                        v-if="settingItem.groupitem.type === 'AdvanceReservation'">
+                                                        <input class="form-control w-50 d-inline-block" type="number"
+                                                            autocomplete="off"
+                                                            :disabled="!settingItem.groupitem.enabled"
+                                                            v-model="storeInfoEdit.advanceReservation" min="0"
+                                                            :placeholder="settingItem.groupitem.placeholder">
+                                                        <p class="pl-3 w-25 d-inline-block m-0 mr-5">天</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-3 text-end col-12 border-top"
+                            style="background-color: var(--bs-body-bg);position: sticky;bottom: 57px;z-index: 1000;right: 0;">
+                            <button class="btn btn-secondary mr-2" v-on:click="reset" :disabled="CanSave()">
+                                <i class="fas fa-save mr-2"></i>恢復原資料
+                            </button>
+                            <button class="btn btn-primary" v-on:click="save" :disabled="CanSave()">
+                                <i class="fas fa-save mr-2"></i>保存
+                            </button>
+                        </div>
+                    </div>
+                    <!-- /.row -->
+                </div><!-- /.container-fluid -->
+            </div>
+            <!-- /.content -->
+        </div>
+        <!-- /.content-wrapper -->
+
+        <!-- Main Footer -->
+        <footer class="main-footer">
+            <!-- To the right -->
+            <div class="float-right d-none d-sm-inline" id="version"></div>
+            <!-- Default to the left -->
+            <strong id="copyRight"></strong>
+        </footer>
+    </div>
+    <!-- ./wrapper -->
+
+    <!-- REQUIRED SCRIPTS -->
+</body>
+<script src="js/TwCities.js"></script>
+<script>
+    const app = Vue.createApp({
+        data() {
+            return {
+                userFunction: sessionStorage.userFunction ? JSON.parse(sessionStorage.userFunction) : {},
+
+                PageTitle: '店家管理',
+
+
+                //原始資料
+                userInfo: sessionStorage.userInfo ? JSON.parse(sessionStorage.userInfo) : {},
+                storeInfo: sessionStorage.storeInfo ? JSON.parse(sessionStorage.storeInfo) : {},
+                allStore: sessionStorage.allStore ? JSON.parse(sessionStorage.allStore) : [],
+
+                //編輯資料
+                storeInfoEdit: sessionStorage.storeInfo ? JSON.parse(sessionStorage.storeInfo) : {},
+
+                allCity: [],
+                allDistricts: [],
+                StoreEditItem: [
+                    {
+                        id: 'StoreInfo',
+                        name: '<i class="fas fa-store mr-2"></i>店家資訊',
+                        settingItem: [
+                            {
+                                name: '店家名稱',
+                                groupitem:
+                                {
+                                    type: 'storeName',
+                                    enabled: false,
+                                    placeholder: ""
+                                }
+
+                            },
+                            {
+                                name: '店家地址',
+                                groupitem:
+                                {
+                                    type: 'address',
+                                    enabled: true,
+                                    placeholder: ""
+                                },
+                                checkFunc: this.address
+                            },
+                            {
+                                name: 'E-Mail',
+                                groupitem:
+                                {
+                                    type: 'email',
+                                    enabled: true,
+                                    placeholder: ""
+                                }
+
+                            },
+                            {
+                                name: '店家電話',
+                                groupitem:
+                                {
+                                    type: 'tel',
+                                    enabled: true,
+                                    placeholder: ""
+                                }
+
+                            },
+                            {
+                                name: '店家簡介',
+                                groupitem:
+                                {
+                                    type: 'text editor',
+                                    enabled: true,
+                                    placeholder: ""
+                                }
+
+                            },
+                            {
+                                name: '統一編號',
+                                groupitem:
+                                {
+                                    type: 'businessNum',
+                                    enabled: true,
+                                    placeholder: "",
+                                }
+
+                            },
+                            {
+                                name: '標籤',
+                                groupitem:
+                                {
+                                    type: 'KeyWord Tag',
+                                    enabled: false,
+                                    placeholder: ""
+                                }
+
+                            },
+                        ],
+                        editDone: false,
+                        editError: false
+                    },
+                    {
+                        id: 'BusinessTime',
+                        name: '<i class="fas fa-coffee mr-2"></i>營業時間設定',
+                        settingItem: [
+                            {
+                                name: '',
+                                groupitem:
+                                {
+                                    type: 'BusinessTime',
+                                    enabled: true,
+                                    placeholder: ""
+                                }
+
+                            },
+                        ],
+                        editDone: false,
+                        editError: false,
+                        checkUndone: false
+                    },
+                    {
+                        id: 'WaitingTime',
+                        name: '<i class="fas fa-clock mr-2"></i>取餐等待時間',
+                        settingItem: [
+                            {
+                                name: '基礎時間',
+                                groupitem:
+                                {
+                                    type: 'BasicTime',
+                                    enabled: true,
+                                    placeholder: "",
+                                }
+
+                            },
+                            {
+                                name: '間隔時間',
+                                groupitem:
+                                {
+                                    type: 'IntervalTime',
+                                    enabled: true,
+                                    placeholder: "",
+                                }
+
+                            },
+                        ],
+                        editDone: false,
+                        editError: false,
+                        checkUndone: false
+                    },
+                    {
+                        id: 'ReminderToggle', name: '<i class="fas fa-bell mr-2"></i>提醒功能開關',
+                        settingItem: [
+                            {
+                                name: '低消提示',
+                                groupitem:
+                                {
+                                    type: 'Reminder',
+                                    enabled: true,
+                                    placeholder: "",
+                                }
+
+                            }
+                        ],
+                        editDone: false,
+                        editError: false,
+                        checkUndone: false
+                    },
+                    {
+                        id: 'StoreClosed',
+                        name: '<i class="fas fa-bed mr-2"></i>特定店休日',
+                        settingItem: [
+                            {
+                                name: '店休日期',
+                                groupitem:
+                                {
+                                    type: 'StoreClosed',
+                                    enabled: true,
+                                    placeholder: "店休名稱，EX:端午節",
+                                }
+
+                            }
+                        ],
+                        editDone: false,
+                        editError: false,
+                        checkUndone: false
+                    },
+                    {
+                        id: 'AdvanceReservation',
+                        name: '<i class="fas fa-clipboard-list mr-2"></i>最多可預訂天數',
+                        settingItem: [
+                            {
+                                name: '',
+                                groupitem:
+                                {
+                                    type: 'AdvanceReservation',
+                                    enabled: true,
+                                    placeholder: "可預訂天數，EX:0",
+                                }
+
+                            }
+                        ],
+                        editDone: false,
+                        editError: false,
+                        checkUndone: false
+                    }
+                ],
+            }
+        },
+        mounted() {
+            setTimeout(() => {
+                checkUserInfo()
+            }, 500);
+
+            // 初始資料載入
+            this.initCityData();
+            this.setDistricts();
+
+            //tag標籤
+            new TomSelect("#input-tags", {
+                persist: false,
+                createOnBlur: true,
+                create: true,
+                items: this.storeInfo.tags,
+            });
+
+            //文字編輯器
+            var quill = new Quill('#storeIntroduction', {
+                theme: 'snow', // 使用雪花主題
+                placeholder: '請輸入店家簡介...', // 設定 placeholder
+                modules: {
+                    toolbar: [
+                        [{ 'size': ['small', 'medium', 'large', 'huge'] }],
+                        [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                        [{ 'align': [] }],
+                        ['bold', 'italic', 'underline', 'strike'],
+                        [{ 'color': [] }, { 'background': [] }],
+                        ['link', 'image'],
+                    ] // 設定工具列
+                }
+            });
+            // 自動帶入 storeInfo.introduction 的值
+            quill.root.innerHTML = this.storeInfo.introduction;
+            // 監聽內容變更
+            quill.on('text-change', () => {
+                this.storeInfoEdit.introduction = quill.root.innerHTML;  // 存儲HTML內容
+                // 或者如果需要純文字：
+                // this.storeInfoEdit.introduction = quill.getText();  // 存儲純文字
+            });
+
+
+        },
+        watch: {
+            //編輯資料時檢查資料並disabled/enabled SaveBtn
+            storeInfoEdit: {
+                handler(newVal, oldVal) {
+                    //取得各大區塊檢查結果
+                    const isStoreInfoValid = this.StoreInfoCheck();
+                    const isBusinessTimeValid = this.BusinessTime();
+                    const isWaitingTimeValid = this.WaitingTime();
+                    const isMinimumOrderReminderValid = this.minimumOrderReminder();
+                    const isStoreClosedValid = this.storeClosed();
+                    const isAdvanceReservationValid = this.advanceReservation();
+
+                    this.CanSave()
+                },
+                deep: true // 深度監控物件的內部屬性
+            },
+            'storeInfoEdit.address.city'(newVal) {
+                this.setDistricts()
+            }
+        },
+        methods: {
+            //比對信箱格式
+            validateEmail(par) {
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                return emailRegex.test(par); // 如果格式不正確，顯示錯誤
+            },
+            //比對電話格式
+            validateTalAndPhone(par) {
+                const landlineRegex = /^0[2-8]-?\d{6,8}$/;
+                const mobileRegex = /^09\d{8}$/;
+                return landlineRegex.test(par); // 如果格式不正確，顯示錯誤
+            },
+            //比對間隔時間
+            validateIntervalTime(par, intt) {
+                return par != '' && par % intt === 0
+            },
+            // 初始化縣市資料
+            initCityData() {
+                // 這裡把TWCity中的縣市資料填充到allCity
+                this.allCity = TWCity.map(city => ({
+                    name: city.name,
+                    value: city.name
+                }));
+            },
+            //帶入鄉鎮區的資料
+            setDistricts() {
+                const selectedCityData = TWCity.find(city => city.name === this.storeInfoEdit.address.city);
+
+                if (selectedCityData) {
+                    this.allDistricts = selectedCityData.districts.map(district => ({
+                        name: district.name,
+                        value: district.name
+                    }));
+                } else {
+                    this.allDistricts = [];
+                }
+            },
+
+            //使用者操作func
+            //增加營業時間
+            addOperationTime(index) {
+                this.storeInfoEdit.businessTime[index].time.push(
+                    { open: '00:00', close: '00:00' }
+                )
+            },
+            //增加營業時間
+            addStoreClosed() {
+                this.storeInfoEdit.storeClosed.push(
+                    {
+                        name: '',
+                        date: moment().subtract(-1, "days").format('YYYY-MM-DD'),
+                    }
+                )
+            },
+            //刪除營業時間
+            deletOperationTime(id, index) {
+                // 找到 id 為 "Mon" 的項目
+                const targetDay = this.storeInfoEdit.businessTime.find(day => day.id === id);
+                targetDay.time.splice(index, 1);
+
+                if (targetDay.time.length == 0) {
+                    targetDay.operation = false
+                }
+            },
+            delStoreClosed(id, index) {
+                this.storeInfoEdit.storeClosed.splice(index, 1);
+            },
+            //切換營業或休息，清空資料
+            toggleOperation(id, newValue) {
+                // 找到對應的 day
+                const targetDay = this.storeInfoEdit.businessTime.find(day => day.id === id);
+
+                if (newValue) {
+                    // 如果改為 true，並且 time 為空，加入一筆默認時間
+                    if (targetDay.time.length === 0) {
+                        targetDay.time.push({ open: '00:00', close: '00:00' });
+                    }
+                } else {
+                    // 如果改為 false，清空 time
+                    targetDay.time = [];
+                }
+            },
+            //分鐘設定
+            generateNumbers(start, end, step) {
+                const numbers = [];
+                for (let i = start; i <= end; i += step) {
+                    numbers.push(i);
+                }
+                return numbers;
+            },
+
+
+            //儲存
+            save() {
+                console.log(this.storeInfoEdit);
+            },
+            //重置
+            reset() {
+                this.storeInfoEdit = this.storeInfo
+            },
+            //能否重製或儲存
+            CanSave() {
+                const checkList =
+                    [
+                        this.StoreInfoCheck(),
+                        this.BusinessTime(),
+                        this.WaitingTime(),
+                        this.minimumOrderReminder(),
+                        this.storeClosed(),
+                        this.advanceReservation()
+                    ]
+
+                return !(checkList.some(check => check === true))
+            },
+
+            //**判斷資料是否被編輯（有其中一個項目被編輯：true）
+            //=================
+            //-------大區塊：店家資訊-------
+            StoreInfoCheck() {
+                const CheckItem = this.StoreEditItem.find(item => item.id === 'StoreInfo');
+
+                //未錯誤條件
+                const checksError = [this.validateEmail(this.storeInfoEdit.email), this.validateTalAndPhone(this.storeInfoEdit.tel), this.storeInfoEdit.businessNum.length == 8]
+                CheckItem.editError = checksError.some(check => check === false)
+
+                //是否有完成編輯
+                const checksEdit = [this.StoreInfoCheck_address(), this.StoreInfoCheck_email(), this.StoreInfoCheck_tel(), this.StoreInfoCheck_introduction(), this.StoreInfoCheck_businessNum()]
+                CheckItem.editDone = checksEdit.some(check => check === true);
+
+                return CheckItem.editDone
+            },
+            //-------大區塊：營業時間-------
+            BusinessTime() {
+                const CheckItem = this.StoreEditItem.find(item => item.id === 'BusinessTime');
+
+                //是否有完成編輯
+                const checksEdit = [this.BussinessTime_check()]
+                CheckItem.editDone = checksEdit.some(check => check === true);
+                return CheckItem.editDone
+            },
+            //-------大區塊：營業等待時間-------
+            WaitingTime() {
+                const CheckItem = this.StoreEditItem.find(item => item.id === 'WaitingTime');
+
+                //未錯誤條件
+                const checksError = [this.validateIntervalTime(this.storeInfoEdit.waitingTime.interval, 5)]
+                CheckItem.editError = checksError.some(check => check === false)
+
+                //是否有完成編輯
+                const checksEdit = [this.WaitingTime_basic(), this.WaitingTime_interval()]
+                CheckItem.editDone = checksEdit.some(check => check === true);
+
+                return CheckItem.editDone
+            },
+            //-------大區塊：低消提醒-------
+            minimumOrderReminder() {
+                const CheckItem = this.StoreEditItem.find(item => item.id === 'ReminderToggle');
+
+                //是否有完成編輯
+                const checksEdit = [this.minimumOrderReminder_check()]
+                CheckItem.editDone = checksEdit.some(check => check === true);
+                return CheckItem.editDone
+            },
+            //-------大區塊：特定店休-------
+            storeClosed() {
+                const CheckItem = this.StoreEditItem.find(item => item.id === 'StoreClosed');
+
+                //是否有完成編輯
+                const checksEdit = [this.storeClosed_check()]
+                CheckItem.editDone = checksEdit.some(check => check === true);
+
+                return CheckItem.editDone
+            },
+            //-------大區塊：可預訂天數-------
+            advanceReservation() {
+                const CheckItem = this.StoreEditItem.find(item => item.id === 'AdvanceReservation');
+                //是否有完成編輯
+                const checksEdit = [this.advanceReservation_check()]
+                CheckItem.editDone = checksEdit.some(check => check === true);
+                return CheckItem.editDone
+            },
+
+
+            //其他單筆資訊是否完成編輯（可不可為空值 / 是否有被編輯 / 是否符合格式）：完成：true/不算完成：false
+            //店家資訊：店家地址
+            StoreInfoCheck_address() {
+                return JSON.stringify(this.storeInfoEdit.address) !== JSON.stringify(this.storeInfo.address);
+            },
+            //店家資訊：店家信箱
+            StoreInfoCheck_email() {
+                //非空值且有被編輯後才去比對格式
+                if (this.storeInfoEdit.email != '' && this.storeInfoEdit.email !== this.storeInfo.email && this.validateEmail(this.storeInfoEdit.email)) {
+                    return true//符合:false
+                } else {
+                    return false
+                }
+            },
+            //店家資訊：店家電話
+            StoreInfoCheck_tel() {
+                //非空值且有被編輯後才去比對格式
+                if (this.storeInfoEdit.tel != '' && this.storeInfoEdit.tel !== this.storeInfo.tel && this.validateTalAndPhone(this.storeInfoEdit.tel)) {
+                    return true//符合:false
+                } else {
+                    return false
+                }
+            },
+            //店家資訊：店家簡介
+            StoreInfoCheck_introduction() {
+                return this.storeInfoEdit.introduction !== this.storeInfo.introduction;
+            },
+            //店家資訊：店家統編
+            StoreInfoCheck_businessNum() {
+                if (this.storeInfoEdit.businessNum != '' && this.storeInfoEdit.businessNum !== this.storeInfo.businessNum && this.storeInfoEdit.businessNum.length == 8) {
+                    return true//符合:false
+                } else {
+                    return false
+                }
+            },
+
+            //營業時間整體
+            BussinessTime_check() {
+                if (JSON.stringify(this.storeInfoEdit.businessTime) !== JSON.stringify(this.storeInfo.businessTime)) {
+                    return true//符合:false
+                } else {
+                    return false
+                }
+            },
+
+            //營業等待時間：基礎時間
+            WaitingTime_basic() {
+                if (JSON.stringify(this.storeInfoEdit.waitingTime.basic) !== JSON.stringify(this.storeInfo.waitingTime.basic)) {
+                    return true//符合:false
+                } else {
+                    return false
+                }
+            },
+            //營業等待時間：間隔時間
+            WaitingTime_interval() {
+                if (this.storeInfoEdit.waitingTime.interval != '' &&
+                    this.storeInfoEdit.waitingTime.interval != this.storeInfo.waitingTime.interval &&
+                    this.storeInfoEdit.waitingTime.interval % 5 === 0) {
+                    return true//符合:false
+                } else {
+                    return false
+                }
+            },
+
+            // 低消提醒整體
+            minimumOrderReminder_check() {
+                if (JSON.stringify(this.storeInfoEdit.minimumOrderReminder) !== JSON.stringify(this.storeInfo.minimumOrderReminder)) {
+                    return true//符合:false
+                } else {
+                    return false
+                }
+            },
+
+            // 特定店休整體
+            storeClosed_check() {
+                if (JSON.stringify(this.storeInfoEdit.storeClosed) !== JSON.stringify(this.storeInfo.storeClosed)) {
+                    return true//符合:false
+                } else {
+                    return false
+                }
+            },
+
+            // 可預訂天數整體
+            advanceReservation_check() {
+                if (JSON.stringify(this.storeInfoEdit.advanceReservation) !== JSON.stringify(this.storeInfo.advanceReservation)) {
+                    return true//符合:false
+                } else {
+                    return false
+                }
+            }
+
+        },
+        computed: {
+            today() {
+                return moment().format('YYYY-MM-DD');
+            }
+        }
+    });
+    app.mount("#app");
+</script>
+
+</html>

@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>共響 SHARING</title>
+
+    <!-- jquery -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+    <!-- JavaScript Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- <link rel="stylesheet" href="css/bootstrap.min.css"> -->
+
+    <!-- fontawesome -->
+    <script src="https://kit.fontawesome.com/4de7eaf6aa.js" crossorigin="anonymous"></script>
+
+    <!-- Theme style -->
+    <link rel="stylesheet" href="AdminLTE3/dist/css/adminlte.min.css">
+    <script src="AdminLTE3/dist/js/adminlte.min.js"></script>
+
+    <!-- Chart.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.bundle.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.css" />
+
+    <!-- toastr -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css" />
+
+    <!-- datepicker -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.30.1/moment.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+
+    <!-- Vue.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.5.13/vue.global.min.js"></script>
+
+    <script src="js/share.js"></script>
+    <link rel="stylesheet" href="css/share.css" />
+</head>
+
+<body class="sidebar-mini layout-navbar-fixed layout-footer-fixed sidebar-mini-md layout-fixed sidebar-collapse">
+    <!-- Preloader -->
+    <div class="preloader flex-column justify-content-center align-items-center">
+        <img class="animation__shake" src="img/logo.svg" style="height: 15vh;">
+    </div>
+    <!-- control-sidebar-slide-open -->
+    <div id="app" class="wrapper">
+        <div class="modal fade" id="reloginModal" tabindex="-1" data-backdrop="static" data-keyboard="false"
+            role="dialog" aria-labelledby="reloginModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="reloginModalLabel">重新登入</h5>
+                    </div>
+                    <div class="modal-body">
+                        請重新登入以繼續使用系統。
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary"
+                            onclick="window.location.href='login.html'">登入</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="deletMenuModal" tabindex="-1" role="dialog" aria-labelledby="reloginModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="reloginModalLabel">刪除菜單</h5>
+                    </div>
+                    <div class="modal-body">
+                        <p>是否刪除菜單 <b>{{DeletMenuDate.name}}</b></p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                        <button type="button" class="btn btn-danger">確認刪除</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="createMenuModal" tabindex="-1" role="dialog" aria-labelledby="reloginModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-md" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="reloginModalLabel">新增菜單</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group mb-5">
+                                    <label for="menuName">菜單名稱</label>
+                                    <input placeholder="EX：早餐菜單" type="text" class="form-control"
+                                        v-model="createMenuDate.name" id="menuName">
+                                    <div class="text-memo text-danger formHint" style="position: absolute;"
+                                        v-if="createMenuDate.name.length>10">
+                                        *菜單名稱最多10個字
+                                    </div>
+                                </div>
+                                <div class="form-group mb-5">
+                                    <label for="menuDescription">菜單描述</label>
+                                    <textarea placeholder="EX：假日才開放的菜單" type="text" class="form-control"
+                                        v-model="createMenuDate.description" id="menuDescription"></textarea>
+                                    <div class="text-memo text-danger formHint" style="position: absolute;"
+                                        v-if="createMenuDate.description.length>20">
+                                        *菜單名稱最多20個字
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <!-- <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button> -->
+
+                        <button type="button" class="btn btn-primary" :disabled="!creatrBtnCheck">確認新增</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Navbar -->
+        <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+            <!-- Left navbar links -->
+            <ul class="navbar-nav d-md-none">
+                <li class="nav-item">
+                    <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+                </li>
+            </ul>
+
+            <!-- Right navbar links -->
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item dropdown">
+                    <a class="nav-link" data-toggle="dropdown" href="#">
+                        <i class="fas fa-store"></i>
+                        {{storeInfo.name}}
+                        <i class="fas fa-caret-down"></i>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+                        <a class="dropdown-item" v-for="(store,index) in allStore" :id="store.id"
+                            onclick="itemClick(this)">
+                            <div class="store">
+                                <strong>{{ store.name }}</strong>
+                                <p class="text-muted">{{ store.address.fullAddress }}</p>
+                            </div>
+                        </a>
+                    </div>
+                </li>
+            </ul>
+        </nav>
+        <!-- /.navbar -->
+
+        <!-- Main Sidebar Container -->
+        <aside class="main-sidebar elevation-4 sidebar-light-primary">
+            <!-- Brand Logo -->
+            <a href="index.html" class="brand-link logo-switch">
+                <img src="img/logo.svg" alt="AdminLTE Docs Logo Small" class="brand-image-xl logo-xs">
+                <img src="img/logo2.svg" alt="AdminLTE Docs Logo Large" class="brand-image-xs logo-xl"
+                    style="width: 200px;">
+            </a>
+
+            <!-- Sidebar -->
+            <div class="sidebar os-theme-dark">
+                <!-- Sidebar user (optional) -->
+                <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+                    <div class="image">
+                        <img src="img/user.png" class="img-circle elevation-2" alt="User Image">
+                    </div>
+                    <div class="info">
+                        <p href="#" class="d-inline-block m-0 mr-5">Hi {{userInfo.name}}</p>
+                        <button class="btn btn-sm m-0" onclick="window.location.href='account_edit.html'">
+                            <i class="fas fa-user-edit"></i>
+                        </button>
+                        <button class="btn btn-sm m-0" onclick="window.location.href='login.html'">
+                            <i class="fas fa-sign-out-alt"></i>
+                        </button>
+                    </div>
+                </div>
+                <!-- Sidebar Menu -->
+                <nav class="mt-2">
+                    <ul class="nav nav-pills nav-sidebar flex-column nav-child-indent" data-widget="treeview"
+                        role="menu" data-accordion="false">
+                        <!-- Add icons to the links using the .nav-icon class
+                         <br /> with font-awesome or any other icon font library -->
+                        <li class="nav-item" v-for="(fuc,index) in userFunction">
+                            <a :href="fuc.url" class="nav-link" :class="{'active':fuc.status==true}">
+                                <i class="nav-icon" :class="fuc.icon"></i>
+                                <p>
+                                    {{fuc.name}}
+                                    <i class="fas fa-angle-left right" v-if="fuc.item!=null"></i>
+                                </p>
+                            </a>
+                            <ul class="nav nav-treeview" v-if="fuc.item!=null">
+                                <li class="nav-item" v-for="(fucItem,index) in fuc.item" :key="index">
+                                    <a :href="fucItem.url" class="nav-link" :class="{'active':fuc.status==true}">
+                                        <i class="nav-icon" :class="fucItem.icon"></i>
+                                        <p>{{fucItem.name}}</p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+
+                    </ul>
+                </nav>
+                <!-- /.sidebar-menu -->
+            </div>
+            <!-- /.sidebar -->
+        </aside>
+
+        <!-- Content Wrapper. Contains page content -->
+        <div class="content-wrapper">
+            <!-- Content Header (Page header) -->
+            <div class="content-header">
+                <div class="container-fluid">
+                    <div class="row mb-2">
+                        <div class="col-sm-6">
+                            <h1 class="m-0">{{PageTitle}}</h1>
+                        </div><!-- /.col -->
+                        <div class="col-sm-6">
+                            <ol class="breadcrumb float-sm-right">
+                                <li class="breadcrumb-item"><a href="index.html">SHARING</a></li>
+                                <li class="breadcrumb-item active">{{PageTitle}}</li>
+                            </ol>
+                        </div><!-- /.col -->
+                    </div><!-- /.row -->
+                </div><!-- /.container-fluid -->
+            </div>
+            <!-- /.content-header -->
+
+            <!-- Main content -->
+            <div class="content">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-12 mb-3">
+                            <button class="btn btn-primary float-right" type="button" v-on:click="showCreateMenuModal">
+                                新增
+                            </button>
+                        </div>
+                        <div class="col-12">
+                            <div class="row m-0">
+                                <div class="col-12 col-md-6 col-lg-4 mb-2 item" v-for="(item,index) in menuList"
+                                    key="item.id">
+                                    <div class="card">
+                                        <div class="badge rounded-pill text-muted position-absolute"
+                                            v-if="item.enabled==true" style="top: 10px;right: 20px;">
+                                            <i class="fas fa-lock mr-2"></i>已下架
+                                        </div>
+                                        <div class="badge rounded-pill text-success position-absolute"
+                                            v-if="item.enabled==false" style="top: 10px;right: 20px;">
+                                            <i class="far fa-check-circle mr-2"></i>上架中
+                                        </div>
+
+                                        <div class="card-body">
+                                            <h5 class="card-title"><i class="fas fa-apple-alt mr-2"></i>{{item.name}}
+                                            </h5>
+                                            <p class="card-text text-muted pl-2">{{item.description}}</p>
+                                            <div class="text-end">
+                                                <button :id="'del-'+item.id" data-id="item.id"
+                                                    class="btn btn-secondary mr-2" v-on:click="delettMenu(item.id)">
+                                                    <i class="fas fa-trash-alt"></i>
+                                                </button>
+                                                <button :id="'edit-'+item.id" data-id="item.id" class="btn btn-primary"
+                                                    v-on:click="selectMenu(item.id)">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /.row -->
+                </div><!-- /.container-fluid -->
+            </div>
+            <!-- /.content -->
+        </div>
+        <!-- /.content-wrapper -->
+
+        <!-- Main Footer -->
+        <footer class="main-footer">
+            <!-- To the right -->
+            <div class="float-right d-none d-sm-inline" id="version"></div>
+            <!-- Default to the left -->
+            <strong id="copyRight"></strong>
+        </footer>
+    </div>
+    <!-- ./wrapper -->
+    <!-- REQUIRED SCRIPTS -->
+</body>
+
+
+
+
+
+<script>
+
+    const app = Vue.createApp({
+        data() {
+            return {
+                userFunction: sessionStorage.userFunction ? JSON.parse(sessionStorage.userFunction) : {},
+
+                PageTitle: '菜單',
+
+                userInfo: sessionStorage.userInfo ? JSON.parse(sessionStorage.userInfo) : {},
+                storeInfo: sessionStorage.storeInfo ? JSON.parse(sessionStorage.storeInfo) : {},
+                allStore: sessionStorage.allStore ? JSON.parse(sessionStorage.allStore) : [],
+
+                menuList: [
+                    {
+                        id: 'm2024e12n31u130030',
+                        name: '預設菜單',
+                        description: '預設菜單',
+                        create: {
+                            date: '2024-12-31',
+                            time: '13:00:30',
+                            creator: {
+                                id: 'dksla991024',
+                                name: 'winnie',
+                                account: 'winnieliao2567@gmail.com',
+                                accountKey: '123456',
+                            },
+                        },
+                        enabled: true
+                    },
+                    {
+                        id: 'm2024e12n31u130033',
+                        name: '菜單2',
+                        description: '預設菜單2',
+                        create: {
+                            date: '2024-12-31',
+                            time: '13:00:33',
+                            creator: {
+                                id: 'dksla991024',
+                                name: 'winnie',
+                                account: 'winnieliao2567@gmail.com',
+                                accountKey: '123456',
+                            },
+                        },
+                        enabled: false
+                    }
+                ],
+                createMenuDate: {
+                    name: '',
+                    description: '',
+                    creator: ''
+                },
+                DeletMenuDate: { id: '', name: '' }
+
+            }
+        },
+        computed: {
+            creatrBtnCheck() {
+                if (this.createMenuDate.description != '' && this.createMenuDate.name != '') {
+                    if (this.createMenuDate.description.length <= 20 && this.createMenuDate.name.length <= 10) {
+                        return true
+                    }
+                    else {
+                        return false
+                    }
+                } else {
+                    return false
+                }
+            }
+        },
+        mounted() {
+            setTimeout(() => {
+                checkUserInfo()
+            }, 500);
+        },
+        watch: {
+        },
+        methods: {
+
+            //建立Modal
+            showCreateMenuModal() {
+                $('#createMenuModal').modal('show')
+            },
+            //選擇菜單
+            selectMenu(id) {
+                const menu = this.menuList.find(menu => menu.id === id);
+                sessionStorage.menuInfo = JSON.stringify(menu)
+
+                if (sessionStorage.menuInfo == null) {
+                    toastr.error("遺失菜單，請重新選擇");
+                } else {
+                    window.location.href = 'MenuPage.html';
+                }
+            },
+            delettMenu(id) {
+                const menu = this.menuList.find(menu => menu.id === id);
+                sessionStorage.menuInfo = JSON.stringify(menu)
+
+                if (sessionStorage.menuInfo == null) {
+                    toastr.error("遺失菜單，請重新選擇");
+                } else {
+                    this.DeletMenuDate.id = menu.id
+                    this.DeletMenuDate.name = menu.name
+                    $('#deletMenuModal').modal('show')
+                }
+            }
+        },
+    });
+    app.mount("#app");
+</script>
+
+</html>

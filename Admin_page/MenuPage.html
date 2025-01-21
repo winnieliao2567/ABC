@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>共響 SHARING</title>
+
+    <!-- jquery -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+    <!-- JavaScript Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- <link rel="stylesheet" href="css/bootstrap.min.css"> -->
+
+    <!-- fontawesome -->
+    <script src="https://kit.fontawesome.com/4de7eaf6aa.js" crossorigin="anonymous"></script>
+
+    <!-- Theme style -->
+    <link rel="stylesheet" href="AdminLTE3/dist/css/adminlte.min.css">
+    <script src="AdminLTE3/dist/js/adminlte.min.js"></script>
+
+    <!-- Moment -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.30.1/moment.min.js"></script>
+
+    <!-- Sortable -->
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.6/Sortable.min.js"></script>
+
+    <!-- Vue.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.5.13/vue.global.min.js"></script>
+
+    <script src="js/share.js"></script>
+    <link rel="stylesheet" href="css/share.css" />
+    <link rel="stylesheet" href="css/share.css" />
+</head>
+
+<body class="sidebar-mini layout-navbar-fixed layout-footer-fixed sidebar-mini-md layout-fixed sidebar-collapse">
+    <!-- Preloader -->
+    <div class="preloader flex-column justify-content-center align-items-center">
+        <img class="animation__shake" src="img/logo.svg" style="height: 15vh;">
+    </div>
+    <!-- control-sidebar-slide-open -->
+    <div id="app" class="wrapper">
+        <div class="modal fade" id="reloginModal" tabindex="-1" data-backdrop="static" data-keyboard="false"
+            role="dialog" aria-labelledby="reloginModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="reloginModalLabel">重新登入</h5>
+                    </div>
+                    <div class="modal-body">
+                        請重新登入以繼續使用系統。
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary"
+                            onclick="window.location.href='login.html'">登入</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="SortClassEdit" tabindex="-1" role="dialog" aria-labelledby="reloginModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="reloginModalLabel">排序類別</h5>
+                    </div>
+                    <div class="modal-body">
+                        <div class="col-12 list-group sortableList" ref="sortableList">
+                            <div class="list-group-item" v-for="(sort,index) in menuInfo_Data.SortClassData"
+                                :key="sort.id">
+                                <div class="row m-0">
+                                    <div class="handle col-2 col-md-1">
+                                        <i class="fas fa-ellipsis-v"></i>
+                                        <i class="fas fa-ellipsis-v"></i>
+                                    </div>
+                                    <!-- <div class="mr-2">{{sort.sort_number}}.</div> -->
+                                    <div class="col-10 col-md-11">
+                                        {{sort.name}}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" @click="saveSortClass">儲存</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="ProductorEdit" tabindex="-1" role="dialog" aria-labelledby="reloginModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="reloginModalLabel">類別及品項管理</h5>
+                    </div>
+                    <div class="modal-body">
+                        <nav id="navbar-example2" class="navbar overflow-auto h-25">
+                            <ul class="nav nav-pills">
+                                <li class="nav-item" v-for="(productorClass,proIndex) in Edit_Data.ProductorEditData">
+                                    <a class="nav-link"
+                                        :href="'#productorClass'+productorClass.id">{{productorClass.name}}</a>
+                                </li>
+                            </ul>
+                        </nav>
+                        <div class="py-3 h-75 overflow-auto" data-spy="scroll" data-target="#navbar-example2"
+                            data-offset="0">
+                            <div class="mb-3" v-for="(productorClass,proIndex) in Edit_Data.ProductorEditData"
+                                :id="'productorClass'+productorClass.id">
+                                <h4>{{productorClass.name}}</h4>
+                                <div class="list-group">
+                                    <div class="d-flex align-items-center py-2 list-group-item" :data-id="productor.id"
+                                        v-for="(productor,itemindex) in productorClass.productors">
+                                        <div class="d-flex justify-content-center"
+                                            style="width: 50px;overflow: hidden;">
+                                            <img :src="productor.imgurl!=''?productor.imgurl:'img/unknowIMG.png'"
+                                                class="border" height="50px">
+                                        </div>
+                                        <div class="pl-3">
+                                            <div class="text-bold">{{productor.name}}</div>
+                                            <!-- <div class="text-muted">{{item.introduction}}</div> -->
+                                        </div>
+                                        <div class=" ml-auto">
+                                            <div class="custom-control custom-switch">
+                                                <input type="checkbox" class="custom-control-input"
+                                                    v-model="productor.enabled" :id="productor.id">
+                                                <label class="custom-control-label text-danger m-0 ml-2"
+                                                    :for="productor.id">
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" @click="saveProductor">儲存</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navbar -->
+        <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+            <!-- Left navbar links -->
+            <ul class="navbar-nav d-md-none">
+                <li class="nav-item">
+                    <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+                </li>
+            </ul>
+
+            <!-- Right navbar links -->
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item dropdown">
+                    <a class="nav-link" data-toggle="dropdown" href="#">
+                        <i class="fas fa-store"></i>
+                        {{storeInfo.name}}
+                        <i class="fas fa-caret-down"></i>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+                        <a class="dropdown-item" v-for="(store,index) in allStore" :id="store.id"
+                            onclick="itemClick(this)">
+                            <div class="store">
+                                <strong>{{ store.name }}</strong>
+                                <p class="text-muted">{{ store.address.fullAddress }}</p>
+                            </div>
+                        </a>
+                    </div>
+                </li>
+            </ul>
+        </nav>
+        <!-- /.navbar -->
+
+        <!-- Main Sidebar Container -->
+        <aside class="main-sidebar elevation-4 sidebar-light-primary">
+            <!-- Brand Logo -->
+            <a href="index.html" class="brand-link logo-switch">
+                <img src="img/logo.svg" alt="AdminLTE Docs Logo Small" class="brand-image-xl logo-xs">
+                <img src="img/logo2.svg" alt="AdminLTE Docs Logo Large" class="brand-image-xs logo-xl"
+                    style="width: 200px;">
+            </a>
+
+
+            <!-- Sidebar -->
+            <div class="sidebar os-theme-dark">
+                <!-- Sidebar user (optional) -->
+                <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+                    <div class="image">
+                        <img src="img/user.png" class="img-circle elevation-2" alt="User Image">
+                    </div>
+                    <div class="info">
+                        <p href="#" class="d-inline-block m-0 mr-5">Hi {{userInfo.name}}</p>
+                        <button class="btn btn-sm m-0" onclick="window.location.href='account_edit.html'">
+                            <i class="fas fa-user-edit"></i>
+                        </button>
+                        <button class="btn btn-sm m-0" onclick="window.location.href='login.html'">
+                            <i class="fas fa-sign-out-alt"></i>
+                        </button>
+                    </div>
+                </div>
+                <!-- Sidebar Menu -->
+                <nav class="mt-2">
+                    <ul class="nav nav-pills nav-sidebar flex-column nav-child-indent" data-widget="treeview"
+                        role="menu" data-accordion="false">
+                        <!-- Add icons to the links using the .nav-icon class
+                         <br /> with font-awesome or any other icon font library -->
+                        <li class="nav-item" v-for="(fuc,index) in userFunction">
+                            <a :href="fuc.url" class="nav-link" :class="{'active':fuc.status==true}">
+                                <i class="nav-icon" :class="fuc.icon"></i>
+                                <p>
+                                    {{fuc.name}}
+                                    <i class="fas fa-angle-left right" v-if="fuc.item!=null"></i>
+                                </p>
+                            </a>
+                            <ul class="nav nav-treeview" v-if="fuc.item!=null">
+                                <li class="nav-item" v-for="(fucItem,index) in fuc.item" :key="index">
+                                    <a :href="fucItem.url" class="nav-link" :class="{'active':fuc.status==true}">
+                                        <i class="nav-icon" :class="fucItem.icon"></i>
+                                        <p>{{fucItem.name}}</p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+
+                    </ul>
+                </nav>
+                <!-- /.sidebar-menu -->
+            </div>
+            <!-- /.sidebar -->
+        </aside>
+
+        <!-- Content Wrapper. Contains page content -->
+        <div class="content-wrapper">
+            <!-- Content Header (Page header) -->
+            <div class="content-header">
+                <div class="container-fluid">
+                    <div class="row mb-2">
+                        <div class="col-sm-6">
+                            <h1 class="m-0">{{PageTitle}}</h1>
+                        </div><!-- /.col -->
+                        <div class="col-sm-6">
+                            <ol class="breadcrumb float-sm-right">
+                                <li class="breadcrumb-item"><a href="index.html">SHARING</a></li>
+                                <li class="breadcrumb-item active">{{PageTitle}}</li>
+                            </ol>
+                        </div><!-- /.col -->
+                    </div><!-- /.row -->
+                </div><!-- /.container-fluid -->
+            </div>
+            <!-- /.content-header -->
+
+            <!-- Main content -->
+            <div class="content">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-12 col-md-8 col-xl-6 py-3">
+                            <div class="mb-4">
+                                <h6 class="d-inline-block">菜單名稱</h6>
+                                <button type="button" class="btn btn-sm" v-if="!editStatus.name"
+                                    v-on:click="editStatus.name=true">
+                                    <i class="fas fa-pen"></i>
+                                </button>
+                                <button type="button" class="btn btn-sm" v-if="editStatus.name"
+                                    v-on:click="editStatus.name=false">
+                                    <i class="fas fa-save"></i>
+                                </button>
+                                <input class="form-control" v-model="Edit_Data.name" :disabled="!editStatus.name">
+                                <div class="text-memo text-danger formHint" style="position: absolute;"
+                                    v-if="Edit_Data.name.length>10">
+                                    *菜單名稱最多10個字
+                                </div>
+                            </div>
+                            <div>
+                                <h6 class="d-inline-block">菜單描述</h6>
+                                <button type="button" class="btn btn-sm" v-if="!editStatus.description"
+                                    v-on:click="editStatus.description=true">
+                                    <i class="fas fa-pen"></i>
+                                </button>
+                                <button type="button" class="btn btn-sm" v-if="editStatus.description"
+                                    v-on:click="editStatus.description=false">
+                                    <i class="fas fa-save"></i>
+                                </button>
+                                <textarea class="form-control" v-model="Edit_Data.description"
+                                    :disabled="!editStatus.description"></textarea>
+                                <div class="text-memo text-danger formHint" style="position: absolute;"
+                                    v-if="Edit_Data.description.length>20">
+                                    *菜單名稱最多20個字
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 py-3">
+                            <h6>編輯項目</h6>
+                            <div class="row m-0">
+                                <div class=" col-12 col-md-4 col-xl-3 item mb-1" @click="showSortClassWin()"
+                                    data-widget="control-sidebar">
+                                    <div class="border rounded-lg p-3">
+                                        <h5>
+                                            <i class="fas fa-sort-amount-up-alt mr-2"></i>
+                                            排序類別
+                                        </h5>
+                                        <p class="text-muted m-0 ml-4 pl-2">訂單排序設定</p>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-4 col-xl-3 item mb-1" @click="showProductorWin()"
+                                    data-widget="control-sidebar">
+                                    <div class="border rounded-lg p-3">
+                                        <h5>
+                                            <i class="fas fa-utensils mr-2"></i>
+                                            類別及品項管理
+                                        </h5>
+                                        <p class="text-muted m-0 ml-4 pl-2">編輯菜單內容</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /.row -->
+                </div><!-- /.container-fluid -->
+            </div>
+            <!-- /.content -->
+        </div>
+        <!-- /.content-wrapper -->
+
+        <!-- Main Footer -->
+        <footer class="main-footer">
+            <!-- To the right -->
+            <div class="float-right d-none d-sm-inline" id="version"></div>
+            <!-- Default to the left -->
+            <strong id="copyRight"></strong>
+        </footer>
+    </div>
+    <!-- ./wrapper -->
+
+    <!-- REQUIRED SCRIPTS -->
+
+
+</body>
+
+
+<script>
+
+    const app = Vue.createApp({
+        data() {
+            return {
+                userFunction: sessionStorage.userFunction ? JSON.parse(sessionStorage.userFunction) : {},
+
+                PageTitle: '菜單',
+
+                userInfo: sessionStorage.userInfo ? JSON.parse(sessionStorage.userInfo) : {},
+                storeInfo: sessionStorage.storeInfo ? JSON.parse(sessionStorage.storeInfo) : {},
+                allStore: sessionStorage.allStore ? JSON.parse(sessionStorage.allStore) : [],
+
+                editStatus: { name: false, description: false },
+
+                menuInfo_Data: {
+                    id: 'm2024e12n31u130030',
+                    name: '預設菜單',
+                    description: '預設菜單',
+                    create: {
+                        date: '2024-12-31',
+                        time: '13:00:30',
+                        creator: {
+                            id: 'dksla991024',
+                            name: 'winnie',
+                            account: 'winnieliao2567@gmail.com',
+                            accountKey: '123456',
+                        },
+                    },
+                    SortClassData: [
+                        {
+                            id: 'c2024la12s24s',
+                            name: '排序屬性01',
+                            sort_number: 0
+                        },
+                        {
+                            id: 'c2024la12s27s',
+                            name: '排序屬性02',
+                            sort_number: 1
+                        },
+                        {
+                            id: 'c2024la12s25s',
+                            name: '排序屬性03',
+                            sort_number: 2
+                        },
+                        {
+                            id: 'c2024la12s26s',
+                            name: '排序屬性04',
+                            sort_number: 3
+                        }
+                    ],
+                    ProductorEditData: [
+                        {
+                            id: 'cl2025a01s09s',
+                            name: '分類A',
+                            description: '分類A的描述',
+                            productors: [
+                                {
+                                    id: 'pro2024duc12it22em',
+                                    name: '雞排',
+                                    imgurl: 'img/bg/brooke-lark-IDTEXXXfS44-unsplash.jpg',
+                                    sortClassInfo: {
+                                        id: 'c2024la12s24s',
+                                        name: '屬性01',
+                                        sort_number: 0,
+                                    },
+                                    productorsClass: {
+                                        id: 'cl2025a01s09s',
+                                        name: '分類A',
+                                        description: '分類A的描述',
+                                    },
+                                    sortClass: 'c2024la12s24s',
+                                    customClassId: ['cu2024s01to11mized'],
+                                    price: '20',
+                                    introduction: '好吃好吃超好吃😋',
+                                    size: [
+                                        {
+                                            name: '大份',
+                                            price: '10'
+                                        }
+                                    ],
+                                    enabled: true
+                                },
+                            ],
+                        },
+                        {
+                            id: 'cl2025a01s10s',
+                            name: '分類B',
+                            description: '分類B的描述',
+                            productors: []
+                        },
+                    ],
+
+                    enabled: true
+                },
+                Edit_Data: {
+                    id: 'm2024e12n31u130030',
+                    name: '預設菜單',
+                    description: '預設菜單',
+                    create: {
+                        date: '2024-12-31',
+                        time: '13:00:30',
+                        creator: {
+                            id: 'dksla991024',
+                            name: 'winnie',
+                            account: 'winnieliao2567@gmail.com',
+                            accountKey: '123456',
+                        },
+                    },
+                    SortClassData: [
+                        {
+                            id: 'c2024la12s24s',
+                            name: '排序屬性01',
+                            sort_number: 0
+                        },
+                        {
+                            id: 'c2024la12s27s',
+                            name: '排序屬性02',
+                            sort_number: 1
+                        },
+                        {
+                            id: 'c2024la12s25s',
+                            name: '排序屬性03',
+                            sort_number: 2
+                        },
+                        {
+                            id: 'c2024la12s26s',
+                            name: '排序屬性04',
+                            sort_number: 3
+                        }
+                    ],
+                    ProductorEditData: [
+                        {
+                            id: 'cl2025a01s09s',
+                            name: '分類A',
+                            description: '分類A的描述',
+                            productors: [
+                                {
+                                    id: 'pro2024duc12it22em',
+                                    name: '雞排',
+                                    imgurl: 'img/bg/brooke-lark-IDTEXXXfS44-unsplash.jpg',
+                                    sortClassInfo: {
+                                        id: 'c2024la12s24s',
+                                        name: '屬性01',
+                                        sort_number: 0,
+                                    },
+                                    productorsClass: {
+                                        id: 'cl2025a01s09s',
+                                        name: '分類A',
+                                        description: '分類A的描述',
+                                    },
+                                    sortClass: 'c2024la12s24s',
+                                    customClassId: ['cu2024s01to11mized'],
+                                    price: '20',
+                                    introduction: '好吃好吃超好吃😋',
+                                    size: [
+                                        {
+                                            name: '大份',
+                                            price: '10'
+                                        }
+                                    ],
+                                    enabled: true
+                                },
+                            ],
+                        },
+                        {
+                            id: 'cl2025a01s10s',
+                            name: '分類B',
+                            description: '分類B的描述',
+                            productors: []
+                        },
+                    ],
+                    enabled: true
+                },
+
+            }
+        },
+        computed: {
+        },
+        mounted() {
+            setTimeout(() => {
+                checkUserInfo()
+            }, 500);
+
+            // 使用 ref 获取 DOM 元素
+            const el = this.$refs.sortableList;
+
+            Sortable.create(el, {
+                handle: ".handle", // 指定拖曳的手柄
+                animation: 150,
+                onEnd: (event) => {
+                    // 获取拖曳后的新顺序
+                    const movedItem = this.Edit_Data.SortClassData.splice(event.oldIndex, 1)[0];
+                    this.Edit_Data.SortClassData.splice(event.newIndex, 0, movedItem);
+                    // 更新 sort_number
+                    this.Edit_Data.SortClassData.forEach((item, index) => {
+                        item.sort_number = index;
+                    });
+                    console.log(this.Edit_Data.SortClassData);
+                },
+            });
+        },
+        watch: {
+        },
+        methods: {
+            showSortClassWin() {
+                // window.location.href = "ClassSort.html"
+                $('#SortClassEdit').modal('show')
+                console.log(this.Edit_Data);
+            },
+            showProductorWin() {
+                // window.location.href = "MenuProduct.html"
+                $('#ProductorEdit').modal('show')
+                console.log(this.Edit_Data);
+            },
+            saveSortClass() {
+                console.log(this.Edit_Data);
+            },
+            saveProductor() {
+                console.log(this.Edit_Data);
+            }
+        },
+    });
+    app.mount("#app");
+</script>
+
+</html>

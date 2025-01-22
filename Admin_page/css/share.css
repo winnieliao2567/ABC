@@ -1,14 +1,14 @@
 @charset "UTF-8";
 :root {
-    --primary: #0f95b0;
-    --primary_bg: #f5fcfe;
-    --primary_deeper: #0c6f83;
-    --primary_dark: #0a5b6b;
+    --primary: #d59c42;
+    --primary_bg: #fff9ee;
+    --primary_deeper: #a87e39;
+    --primary_dark: #6a4f23;
 
-    --secondary: #ff8400;
-    --secondary_bg: #fff5eb;
-    --secondary_deeper: #aa5800;
-    --secondary_darkr: #623200;
+    --secondary: #1e483a;
+    --secondary_bg: #f8fffd;
+    --secondary_deeper: #134736;
+    --secondary_darkr: #063727;
 
     --muted: #8b93a2;
 

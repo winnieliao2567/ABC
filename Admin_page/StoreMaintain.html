@@ -205,7 +205,7 @@
                                                 <p class="m-0">{{ settingItem.name }}</p>
                                                 <div class="">
                                                     <!-- 店家地址 -->
-                                                    <div class="col-12 my-1 "
+                                                    <div class="col-12 col-md-8 col-xl-6 my-1"
                                                         v-if="settingItem.groupitem.type === 'address'">
                                                         <div class="input-group mb-1">
                                                             <select class="form-control"
@@ -232,7 +232,7 @@
                                                     </div>
 
                                                     <!-- 店家信箱 -->
-                                                    <div class="col-12 my-1 "
+                                                    <div class="col-12 col-md-8 col-xl-6 my-1"
                                                         v-if="settingItem.groupitem.type === 'email'">
                                                         <input class="form-control" type="email" autocomplete="off"
                                                             :disabled="!settingItem.groupitem.enabled"
@@ -246,7 +246,7 @@
                                                     </div>
 
                                                     <!-- 店家電話 -->
-                                                    <div class="col-12 my-1 "
+                                                    <div class="col-12 col-md-8 col-xl-6 my-1"
                                                         v-if="settingItem.groupitem.type === 'tel'">
                                                         <input class="form-control" type="tel" autocomplete="off"
                                                             :disabled="!settingItem.groupitem.enabled"
@@ -260,14 +260,14 @@
                                                     </div>
 
                                                     <!-- 店家簡介 -->
-                                                    <div class="col-12 my-1 "
+                                                    <div class="col-12 col-md-8 col-xl-6 my-1"
                                                         v-if="settingItem.groupitem.type === 'text editor'">
                                                         <div class="form-control" id="storeIntroduction"
                                                             :disabled="!settingItem.groupitem.enabled"></div>
                                                     </div>
 
                                                     <!-- 店家名稱 -->
-                                                    <div class="col-12 my-1 "
+                                                    <div class="col-12 col-md-8 col-xl-6 my-1"
                                                         v-if="settingItem.groupitem.type === 'storeName'">
                                                         <input class="form-control" type="tel" autocomplete="off"
                                                             :disabled="!settingItem.groupitem.enabled"
@@ -276,7 +276,7 @@
                                                     </div>
 
                                                     <!-- 統一編號 -->
-                                                    <div class="col-12 my-1 "
+                                                    <div class="col-12 col-md-8 col-xl-6 my-1"
                                                         v-if="settingItem.groupitem.type === 'businessNum'">
                                                         <input class="form-control" type="tel" autocomplete="off"
                                                             :disabled="!settingItem.groupitem.enabled"
@@ -290,7 +290,7 @@
                                                     </div>
 
                                                     <!-- 標籤 -->
-                                                    <div class="col-12 my-1 "
+                                                    <div class="col-12 col-md-8 col-xl-6 my-1"
                                                         v-if="settingItem.groupitem.type === 'KeyWord Tag'">
                                                         <input class="form-control" id="input-tags" autocomplete="off"
                                                             :placeholder="settingItem.groupitem.placeholder"
@@ -299,7 +299,7 @@
                                                     </div>
 
                                                     <!-- 營業時間 -->
-                                                    <div class="col-12 my-1"
+                                                    <div class="col-12 col-md-8 col-xl-6 my-1"
                                                         v-if="settingItem.groupitem.type === 'BusinessTime'">
                                                         <div class="row m-0 py-3 border-bottom"
                                                             v-for="(day,index) in storeInfoEdit.businessTime">
@@ -356,7 +356,7 @@
                                                     </div>
 
                                                     <!-- 間隔等待時間 -->
-                                                    <div class="col-12 my-1 "
+                                                    <div class="col-12 col-md-8 col-xl-6 my-1"
                                                         v-if="settingItem.groupitem.type === 'IntervalTime'">
                                                         <input class="form-control w-50 d-inline-block"
                                                             autocomplete="off"
@@ -372,7 +372,7 @@
                                                     </div>
 
                                                     <!-- 基礎等待時間 -->
-                                                    <div class="col-12 "
+                                                    <div class="col-12 col-md-8 col-xl-6 my-1"
                                                         v-if="settingItem.groupitem.type === 'BasicTime'">
                                                         <select class="form-control w-50 d-inline-block"
                                                             autocomplete="off"
@@ -387,7 +387,7 @@
                                                     </div>
 
                                                     <!-- 低消提示 -->
-                                                    <div class="col-12"
+                                                    <div class="col-12 col-md-8 col-xl-6 my-1"
                                                         v-if="settingItem.groupitem.type === 'Reminder'">
                                                         <div class="custom-control custom-switch">
                                                             <input type="checkbox" class="custom-control-input"
@@ -409,7 +409,7 @@
                                                             v-if="storeInfoEdit.minimumOrderReminder.enabled==true">
                                                             <div class="p-3">
                                                                 <h6>低消金額</h6>
-                                                                <p class="pr-3 w-auto d-inline-block m-0 mr-5 text-end">
+                                                                <p class="pr-3 w-auto d-inline-block m-0 text-end">
                                                                     $
                                                                 </p>
                                                                 <input class="form-control w-auto d-inline-block"
@@ -430,7 +430,7 @@
                                                     </div>
 
                                                     <!-- 店休 -->
-                                                    <div class="col-12"
+                                                    <div class="col-12 col-md-8 col-xl-6 my-1"
                                                         v-if="settingItem.groupitem.type === 'StoreClosed'">
                                                         <div class="row mt-3">
                                                             <div class="col-12"
@@ -459,7 +459,7 @@
                                                     </div>
 
                                                     <!-- 最多可預訂天數 -->
-                                                    <div class="col-12 my-1 "
+                                                    <div class="col-12 col-md-8 col-xl-6 my-1"
                                                         v-if="settingItem.groupitem.type === 'AdvanceReservation'">
                                                         <input class="form-control w-50 d-inline-block" type="number"
                                                             autocomplete="off"

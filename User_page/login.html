@@ -1,73 +1,84 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- CSS only -->
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-      integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU"
-      crossorigin="anonymous"
-    />
-    <link href="css/color.css?1234" rel="stylesheet" />
-    <link href="css/share.css?12455" rel="stylesheet" />
-    <!-- JavaScript Bundle with Popper -->
-    <script
-      src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js"
-      integrity="sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ"
-      crossorigin="anonymous"
-    ></script>
-    <script src="js/jquery-2.2.4.min.js"></script>
-    <script src="https://kit.fontawesome.com/4de7eaf6aa.js" crossorigin="anonymous"></script>
-    <script src="js/share.js"></script>
-    <title>登入</title>
-    <script>
-      if (localStorage.keepLogin == 1 && localStorage.userInformation != null) {
-        window.location = "index.html";
-      }
-    </script>
-  </head>
-  <body>
-    <nav class="navbar myNavbar p-0">
-      <div class="container-fluid d-flex justify-content-evenly px-0">
-        <!-- <a class="" href="index.html"> -->
-        <img src="img/logo2.svg" alt="" class="d-inline-block align-text-top logoToIndex my-3 mx-3" />
-        <!-- IMG -->
-        <!-- </a> -->
-      </div>
-    </nav>
-    <div class="container-fluid d-flex flex-column py-5 px-4">
-      <div class="mb-4 color2 text-default fw-bolder">請登入你的帳號</div>
 
-      <div id="login_form" class="w-100">
-        <div class="mb-4">
-          <input class="myBigInput" type="number" id="login_phoneNum" placeholder="手機號碼" inputmdode="tel" />
-          <div class="text-memo colorDanger formHint" id="empty-feedbback">* 手機號碼格式錯誤</div>
-        </div>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- CSS only -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous" />
+  <link href="css/color.css?1234" rel="stylesheet" />
+  <link href="css/share.css?12455" rel="stylesheet" />
+  <!-- JavaScript Bundle with Popper -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ"
+    crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+  <script src="js/jquery-2.2.4.min.js"></script>
+  <script src="https://kit.fontawesome.com/4de7eaf6aa.js" crossorigin="anonymous"></script>
+  <script src="js/share.js"></script>
+  <title>登入</title>
+  <script>
+    if (localStorage.keepLogin == 1 && localStorage.userInformation != null) {
+      window.location = "index.html";
+    }
+  </script>
+</head>
 
-        <div class="mb-4">
-          <input class="myBigInput" type="password" id="login_password" placeholder="密碼" inputmdode="tel" />
-          <div class="text-memo colorDanger formHint" id="storenum-feedbback">* 密碼錯誤</div>
-        </div>
+<body>
+  <script>
+    $(document).ready(function () {
+      $("#login_login").on("click", function () {
+        const phoneNum = $("#login_phoneNum").val();
+        const password = $("#login_password").val();
+        if (phoneNum === "" || password === "") {
+          alert("電話號碼或密碼不可為空白！");
+          return;
+        }
+      });
+    });
 
-        <div class="d-flex justify-content-between align-items-center">
-          <div class="d-flex align-items-center">
-            <input class="myCheckBox" type="checkbox" name="keepLogin" id="keepLogin" />
-            <label class="color2 text-default ms-2" for="keepLogin"> 保持登入 </label>
-          </div>
-          <div>
-            <a class="linkText text-default">忘記密碼</a>
-          </div>
-        </div>
-        <div class="col-12 d-flex justify-content-center pt-5">
-          <div class="MainBtn MyBtn w-100 bigBtn fw-bolder" id="login_login" type="submit">登入</div>
-        </div>
+  </script>
+  <nav class="navbar myNavbar p-0">
+    <div class="container-fluid d-flex justify-content-evenly px-0">
+      <!-- <a class="" href="index.html"> -->
+      <img src="img/logo2.svg" alt="" class="d-inline-block align-text-top logoToIndex my-3 mx-3" />
+      <!-- IMG -->
+      <!-- </a> -->
+    </div>
+  </nav>
+  <div class="container-fluid d-flex flex-column py-5 px-4">
+    <div class="mb-4 color2 text-default fw-bolder">請登入你的帳號</div>
+
+    <div id="login_form" class="w-100">
+      <div class="mb-4">
+        <input class="myBigInput" type="number" id="login_phoneNum" placeholder="手機號碼" inputmdode="tel" />
+        <div class="text-memo colorDanger formHint" id="empty-feedbback">* 手機號碼格式錯誤</div>
       </div>
 
-      <div class="d-flex justify-content-center color2 text-default fixed-bottom mb-5">
-        如果還沒有帳號，請選擇<a class="linkText text-default ms-2" href="register.html">註冊</a>
+      <div class="mb-4">
+        <input class="myBigInput" type="password" id="login_password" placeholder="密碼" inputmdode="tel" />
+        <div class="text-memo colorDanger formHint" id="storenum-feedbback">* 密碼錯誤</div>
+      </div>
+
+      <div class="d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center">
+          <input class="myCheckBox" type="checkbox" name="keepLogin" id="keepLogin" />
+          <label class="color2 text-default ms-2" for="keepLogin"> 保持登入 </label>
+        </div>
+        <div>
+          <a class="linkText text-default">忘記密碼</a>
+        </div>
+      </div>
+      <div class="col-12 d-flex justify-content-center pt-5">
+        <div class="MainBtn MyBtn w-100 bigBtn fw-bolder" id="login_login" type="submit">登入</div>
       </div>
     </div>
-  </body>
+
+    <div class="d-flex justify-content-center color2 text-default fixed-bottom mb-5">
+      如果還沒有帳號，請選擇<a class="linkText text-default ms-2" href="register.html">註冊</a>
+    </div>
+  </div>
+</body>
+
 </html>

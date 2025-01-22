@@ -1,105 +1,128 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- CSS only -->
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-      integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU"
-      crossorigin="anonymous"
-    />
-    <link href="css/color.css?1234" rel="stylesheet" />
-    <link href="css/share.css?12455" rel="stylesheet" />
-    <!-- JavaScript Bundle with Popper -->
-    <script
-      src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js"
-      integrity="sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ"
-      crossorigin="anonymous"
-    ></script>
-    <script src="js/jquery-2.2.4.min.js"></script>
-    <script src="https://kit.fontawesome.com/4de7eaf6aa.js" crossorigin="anonymous"></script>
-    <script src="js/share.js"></script>
-    <title>帳號資料</title>
-    <script>
-      if (localStorage.userInformation == null) {
-        window.location = "login.html";
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- CSS only -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous" />
+  <link href="css/color.css?1234" rel="stylesheet" />
+  <link href="css/share.css?12455" rel="stylesheet" />
+  <!-- JavaScript Bundle with Popper -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ"
+    crossorigin="anonymous"></script>
+  <script src="js/jquery-2.2.4.min.js"></script>
+  <script src="https://kit.fontawesome.com/4de7eaf6aa.js" crossorigin="anonymous"></script>
+  <script src="js/share.js"></script>
+  <title>帳號資料</title>
+  <script>
+    if (localStorage.userInformation == null) {
+      window.location = "login.html";
+    }
+    $(function () {
+      //const baseURI = `${window.location.protocol}//${window.location.host}`;
+      const baseURI = `https://localhost:7063`;
+      const postData = {
+        Token: localStorage.userInformation,
+      };
+      // 發送 AJAX POST 請求
+      $.ajax({
+        url: baseURI + "/api/login/user/data",
+        type: "POST",
+        contentType: "application/json",
+        data: JSON.stringify(postData),
+        success: function (response) {
+          // 儲存登入資訊到 LocalStorage
+          localStorage.username = response.username;
+          localStorage.mobilenumber = response.mobilenumber;
+        },
+        error: function (xhr, status, error) {
+          console.error("認證失敗:", error);
+        }
+      });
+    });
+    document.addEventListener("DOMContentLoaded", function () {
+      if (localStorage.username && localStorage.mobilenumber) {
+        const username = document.getElementById("Subscriber");
+        const mobilenumber = document.getElementById("phoneNum");
+        if (username) {
+          username.value = localStorage.username || "Guest";
+        }
+        if (mobilenumber) {
+          mobilenumber.value = localStorage.mobilenumber || "";
+        }
       }
-    </script>
-  </head>
-  <body>
-    <nav class="navbar myNavbar p-0">
-      <div class="container-fluid px-0">
-        <img src="img/logo2.svg" alt="" class="d-inline-block align-text-top logoToIndex my-3 mx-3" />
-        <button
-          class="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarSupportedContent"
-          aria-controls="navbarSupportedContent"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
-        >
-          <img src="img/menu.svg" id="menuBtn" />
-        </button>
-        <div class="collapse navbar-collapse mx-3" id="navbarSupportedContent">
-          <ul class="navbar-nav me-auto">
-            <li class="my-nav-item ToHistoryList">
-              <span class="my-nav-link">歷史訂單</span>
-              <div class="nav-link-icon"></div>
-            </li>
-            <li class="my-nav-item ToUserAccount">
-              <span class="my-nav-link">帳號資料</span>
-              <div class="nav-link-icon"></div>
-            </li>
-            <li class="my-nav-item ToLogOut">
-              <span class="my-nav-link" href="login.html">登出</span>
-              <div class="nav-link-icon"></div>
-            </li>
-          </ul>
-        </div>
+    });
+  </script>
+</head>
+
+<body>
+  <nav class="navbar myNavbar p-0">
+    <div class="container-fluid px-0">
+      <img src="img/logo2.svg" alt="" class="d-inline-block align-text-top logoToIndex my-3 mx-3" />
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <img src="img/menu.svg" id="menuBtn" />
+      </button>
+      <div class="collapse navbar-collapse mx-3" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto">
+          <li class="my-nav-item ToHistoryList">
+            <span class="my-nav-link">歷史訂單</span>
+            <div class="nav-link-icon"></div>
+          </li>
+          <li class="my-nav-item ToUserAccount">
+            <span class="my-nav-link">帳號資料</span>
+            <div class="nav-link-icon"></div>
+          </li>
+          <li class="my-nav-item ToLogOut">
+            <span class="my-nav-link" href="login.html">登出</span>
+            <div class="nav-link-icon"></div>
+          </li>
+        </ul>
       </div>
-    </nav>
-    <div class="container-fluid d-flex flex-column py-3">
-      <div class="text-title color1">帳號資料</div>
-      <div class="color1 text-default fw-bolder pt-3 d-flex align-items-center">
-        <!-- <img src="img/user-circle-solid 1.svg" class="pe-2" /> -->
-        <div class="pe-2 d-inline-block colorImport">
-          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <g clip-path="url(#clip0_166_1538)">
-              <path
-                d="M9 0.28125C4.02823 0.28125 0 4.18359 0 9C0 13.8164 4.02823 17.7188 9 17.7188C13.9718 17.7188 18 13.8164 18 9C18 4.18359 13.9718 0.28125 9 0.28125ZM9 3.65625C10.7637 3.65625 12.1935 5.04141 12.1935 6.75C12.1935 8.45859 10.7637 9.84375 9 9.84375C7.23629 9.84375 5.80645 8.45859 5.80645 6.75C5.80645 5.04141 7.23629 3.65625 9 3.65625ZM9 15.75C6.86976 15.75 4.96089 14.8148 3.68347 13.3523C4.36573 12.1078 5.70121 11.25 7.25806 11.25C7.34516 11.25 7.43226 11.2641 7.51573 11.2887C7.9875 11.4363 8.48105 11.5312 9 11.5312C9.51895 11.5312 10.0161 11.4363 10.4843 11.2887C10.5677 11.2641 10.6548 11.25 10.7419 11.25C12.2988 11.25 13.6343 12.1078 14.3165 13.3523C13.0391 14.8148 11.1302 15.75 9 15.75Z"
-                fill="currentColor"
-              />
-            </g>
-            <defs>
-              <clipPath id="clip0_166_1538">
-                <rect width="18" height="18" fill="white" />
-              </clipPath>
-            </defs>
-          </svg>
-        </div>
-        <span>訂購人資訊</span>
+    </div>
+  </nav>
+  <div class="container-fluid d-flex flex-column py-3">
+    <div class="text-title color1">帳號資料</div>
+    <div class="color1 text-default fw-bolder pt-3 d-flex align-items-center">
+      <!-- <img src="img/user-circle-solid 1.svg" class="pe-2" /> -->
+      <div class="pe-2 d-inline-block colorImport">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <g clip-path="url(#clip0_166_1538)">
+            <path
+              d="M9 0.28125C4.02823 0.28125 0 4.18359 0 9C0 13.8164 4.02823 17.7188 9 17.7188C13.9718 17.7188 18 13.8164 18 9C18 4.18359 13.9718 0.28125 9 0.28125ZM9 3.65625C10.7637 3.65625 12.1935 5.04141 12.1935 6.75C12.1935 8.45859 10.7637 9.84375 9 9.84375C7.23629 9.84375 5.80645 8.45859 5.80645 6.75C5.80645 5.04141 7.23629 3.65625 9 3.65625ZM9 15.75C6.86976 15.75 4.96089 14.8148 3.68347 13.3523C4.36573 12.1078 5.70121 11.25 7.25806 11.25C7.34516 11.25 7.43226 11.2641 7.51573 11.2887C7.9875 11.4363 8.48105 11.5312 9 11.5312C9.51895 11.5312 10.0161 11.4363 10.4843 11.2887C10.5677 11.2641 10.6548 11.25 10.7419 11.25C12.2988 11.25 13.6343 12.1078 14.3165 13.3523C13.0391 14.8148 11.1302 15.75 9 15.75Z"
+              fill="currentColor" />
+          </g>
+          <defs>
+            <clipPath id="clip0_166_1538">
+              <rect width="18" height="18" fill="white" />
+            </clipPath>
+          </defs>
+        </svg>
       </div>
-      <div class="pt-3">
-        <div class="text-default color2">訂購人</div>
-        <div class="d-flex">
-          <input class="defaultInput disabled" id="Subscriber" type="text" value="Winnie" />
-          <div class="ps-2 editBtn dis" data-edit="Subscriber">
-            <img src="img/edit-3.svg" data-edit="Subscriber" />
-          </div>
-        </div>
-      </div>
-      <div class="pt-3">
-        <div class="text-default color2">手機號碼</div>
-        <div class="d-flex">
-          <input class="defaultInput disabled" id="phoneNum" type="text" value="0912345678" />
-          <div class="ps-2 editBtn dis" data-edit="phoneNum">
-            <img src="img/edit-3.svg" data-edit="phoneNum" />
-          </div>
+      <span>訂購人資訊</span>
+    </div>
+    <div class="pt-3">
+      <div class="text-default color2">訂購人</div>
+      <div class="d-flex">
+        <input class="defaultInput disabled" id="Subscriber" type="text" value="" />
+        <div class="ps-2 editBtn dis" data-edit="Subscriber">
+          <img src="img/edit-3.svg" data-edit="Subscriber" />
         </div>
       </div>
     </div>
-  </body>
+    <div class="pt-3">
+      <div class="text-default color2">手機號碼</div>
+      <div class="d-flex">
+        <input class="defaultInput disabled" id="phoneNum" type="text" value="0912345678" />
+        <div class="ps-2 editBtn dis" data-edit="phoneNum">
+          <img src="img/edit-3.svg" data-edit="phoneNum" />
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+
 </html>

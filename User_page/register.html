@@ -72,21 +72,31 @@
           Password: password,
         };
 
-        // 發送 AJAX POST 請求
-        $.ajax({
-          url: "https://localhost:7063/api/login/register",
-          type: "POST",
-          contentType: "application/json",
-          data: JSON.stringify(postData),
-          success: function (response) {
-            console.log("註冊成功:", response);
-            alert("註冊成功！");
-          },
-          error: function (xhr, status, error) {
-            console.error("註冊失敗:", error);
+        apiWeb("login/register", "POST", JSON.stringify(postData), "註冊", function (v) {
+          if (v.status == 1) {
+            // localStorage.userInformation = v.encryptedId;
+            // localStorage.username = v.username;
+            // window.location = "index.html";
+          } else {
             alert("註冊失敗，請稍後再試！");
           }
         });
+
+        // 發送 AJAX POST 請求
+        // $.ajax({
+        //   url: "https://localhost:7063/api/login/register",
+        //   type: "POST",
+        //   contentType: "application/json",
+        //   data: JSON.stringify(postData),
+        //   success: function (response) {
+        //     console.log("註冊成功:", response);
+        //     alert("註冊成功！");
+        //   },
+        //   error: function (xhr, status, error) {
+        //     console.error("註冊失敗:", error);
+        //     alert("註冊失敗，請稍後再試！");
+        //   }
+        // });
       });
     });
 
@@ -100,7 +110,7 @@
       <!-- </a> -->
     </div>
   </nav>
-  <div class="container-fluid d-flex flex-column py-5 px-4">
+  <div class="container-sm d-flex flex-column py-5 px-4">
     <div class="mb-4 color2 text-default fw-bolder">請輸入資料註冊</div>
 
     <div id="login_form" class="w-100">
@@ -109,27 +119,28 @@
         </div> -->
 
       <div class="mb-4">
-        <input type="text" id="register_phoneNum" placeholder="手機號碼" inputmdode="tel" />
+        <input type="text" class="form-control form-control-lg" id="register_phoneNum" placeholder="手機號碼"
+          inputmdode="tel" />
         <div class="text-memo colorDanger formHint" id="storenum-feedbback">* 手機號碼格式錯誤</div>
       </div>
 
       <div class="mb-4">
-        <input type="email" id="register_email" placeholder="電子郵件" />
+        <input type="email" class="form-control form-control-lg" id="register_email" placeholder="電子郵件" />
         <div class="text-memo colorDanger formHint" id="email-feedback">* 電子郵件格式錯誤</div>
       </div>
 
       <div class="mb-4">
-        <input type="text" id="register_password" placeholder="密碼" inputmdode="tel" />
+        <input class="form-control form-control-lg" id="register_password" placeholder="密碼" type="password" />
         <div class="text-memo colorDanger formHint" id="password-feedback">* 必須包含字母和數字，且長度不小於6位</div>
       </div>
 
       <div class="mb-4">
-        <input type="text" id="register_confirm" placeholder="確認密碼" inputmdode="tel" />
+        <input class="form-control form-control-lg" id="register_confirm" placeholder="確認密碼" type="password" />
         <div class="text-memo colorDanger formHint" id="storepwd-feedbback">* 確認密碼有誤，請重新輸入</div>
       </div>
 
       <div class="col-12 d-flex justify-content-center pt-5">
-        <div class="MainBtn MyBtn w-100 bigBtn fw-bolder" id="register_register" type="submit">確認註冊</div>
+        <div class="MainBtn btn w-100 btn-lg fw-bolder" id="register_register" type="submit">確認註冊</div>
       </div>
     </div>
 

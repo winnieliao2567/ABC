@@ -7,8 +7,8 @@
   <!-- CSS only -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous" />
-  <link href="css/color.css?1234" rel="stylesheet" />
-  <link href="css/share.css?12455" rel="stylesheet" />
+  <link href="css/color.css" rel="stylesheet" />
+  <link href="css/share.css" rel="stylesheet" />
   <!-- JavaScript Bundle with Popper -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ"
@@ -17,10 +17,9 @@
   <script src="https://kit.fontawesome.com/4de7eaf6aa.js" crossorigin="anonymous"></script>
   <script src="js/share.js"></script>
   <title>帳號資料</title>
+  <script src="js/checkUserLogin.js"></script>
+
   <script>
-    if (localStorage.userInformation == null) {
-      window.location = "login.html";
-    }
     $(function () {
       //const baseURI = `${window.location.protocol}//${window.location.host}`;
       const baseURI = `https://localhost:7063`;
@@ -60,7 +59,7 @@
 
 <body>
   <nav class="navbar myNavbar p-0">
-    <div class="container-fluid px-0">
+    <div class="container-sm px-0">
       <img src="img/logo2.svg" alt="" class="d-inline-block align-text-top logoToIndex my-3 mx-3" />
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
         aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -84,7 +83,7 @@
       </div>
     </div>
   </nav>
-  <div class="container-fluid d-flex flex-column py-3">
+  <div class="container-sm d-flex flex-column py-3">
     <div class="text-title color1">帳號資料</div>
     <div class="color1 text-default fw-bolder pt-3 d-flex align-items-center">
       <!-- <img src="img/user-circle-solid 1.svg" class="pe-2" /> -->
@@ -107,7 +106,7 @@
     <div class="pt-3">
       <div class="text-default color2">訂購人</div>
       <div class="d-flex">
-        <input class="defaultInput disabled" id="Subscriber" type="text" value="" />
+        <input class="form-control disabled" id="Subscriber" type="text" value="" />
         <div class="ps-2 editBtn dis" data-edit="Subscriber">
           <img src="img/edit-3.svg" data-edit="Subscriber" />
         </div>
@@ -116,7 +115,7 @@
     <div class="pt-3">
       <div class="text-default color2">手機號碼</div>
       <div class="d-flex">
-        <input class="defaultInput disabled" id="phoneNum" type="text" value="0912345678" />
+        <input class="form-control disabled" id="phoneNum" type="text" value="0912345678" />
         <div class="ps-2 editBtn dis" data-edit="phoneNum">
           <img src="img/edit-3.svg" data-edit="phoneNum" />
         </div>

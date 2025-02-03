@@ -7,8 +7,8 @@
   <!-- CSS only -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous" />
-  <link href="css/color.css?1234" rel="stylesheet" />
-  <link href="css/share.css?12455" rel="stylesheet" />
+  <link href="css/color.css" rel="stylesheet" />
+  <link href="css/share.css" rel="stylesheet" />
   <!-- JavaScript Bundle with Popper -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ"
@@ -19,16 +19,14 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
   <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
   <title>帳號資料</title>
-  <script>
-    if (localStorage.userInformation == null) {
-      window.location = "login.html";
-    }
-  </script>
+  <script src="js/checkUserLogin.js"></script>
+
+
 </head>
 
 <body>
   <nav class="navbar myNavbar p-0">
-    <div class="container-fluid px-0">
+    <div class="container-sm px-0">
       <img src="img/logo2.svg" alt="" class="d-inline-block align-text-top logoToIndex my-3 mx-3" />
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
         aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -74,7 +72,7 @@
     </div>
   </div>
 
-  <div class="container-fluid d-flex flex-column" style="margin-bottom: 80px">
+  <div class="container-sm d-flex flex-column" style="margin-bottom: 80px">
     <div class="text-title color1 my-3">店家名稱</div>
     <div class="px-3 py-2 color2 text-default">
       <div class="d-inline-block colorSup me-3">
@@ -310,7 +308,7 @@
     </div>
   </div>
   <div class="col-12 d-flex justify-content-center p-3 fixed-bottom boxShadow whiteBG">
-    <div class="MainBtn MyBtn bigBtn fw-bolder w-100" id="goToCart">
+    <div class="MainBtn btn  w-100" id="goToCart">
       查看購物車<span id="CartCount" class="pe-3">（10）</span><span id="CartPrice">$300</span>
     </div>
   </div>
@@ -343,7 +341,7 @@
           </div>
           <div class="py-3 text-default">
             <div class="color1 Required">備註</div>
-            <textarea class="p-2"></textarea>
+            <textarea class="p-2 form-control"></textarea>
           </div>
         </div>
         <div class="modal-footer">
@@ -352,7 +350,7 @@
             <input type="number" value="1" id="addCountToCart" class="text-center" />
             <div id="addCountToCart-plus" class="text-center">＋</div>
           </div>
-          <div class="MainBtn MyBtn bigBtn fw-bolder w-100" id="goToCart">加入購物車<span id="AddPrice">$30</span></div>
+          <div class="MainBtn btn  w-100" id="goToCart">加入購物車<span id="AddPrice">$30</span></div>
         </div>
       </div>
     </div>

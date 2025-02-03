@@ -49,6 +49,48 @@ function sameUser() {
         $("#SubscriberNum").removeClass("disabled").val("");
     }
 }
+const baseURL = "https://202.182.109.207/api/";
+function apiWeb(_url, _type, _data, TimelogTag, _fun) {
+    console.time("● API-" + TimelogTag + "(" + baseURL + _url + ")");
+    console.log("● data-" + TimelogTag + ":", _data);
+    if (_url == "_url") {
+        if (_fun) _fun(v);
+    } else {
+        $.ajax({
+            type: _type == "" ? "POST" : _type,
+            // headers: {
+            //     "Content-Type": "application/json; charset=utf-8",
+            //     // Authorization: localStorage.token, // 需要的話可以加上授權標頭
+            // },
+            contentType: "application/json",
+            url: baseURL + _url,
+            data: _data,
+            statusCode: {
+                403: function (xhr) {
+                    console.timeEnd("● API-" + TimelogTag + "(" + baseURL + _url + ")");
+                    console.log("Forbidden (403):", xhr);
+                },
+                404: function (xhr) {
+                    console.timeEnd("● API-" + TimelogTag + "(" + baseURL + _url + ")");
+                    console.log("Not Found (404):", xhr);
+                },
+                500: function (xhr) {
+                    console.timeEnd("● API-" + TimelogTag + "(" + baseURL + _url + ")");
+                    console.log("Server Error (500):", xhr);
+                },
+            },
+            success: function (v) {
+                console.timeEnd("● API-" + TimelogTag + "(" + baseURL + _url + ")");
+                if (_fun) _fun(v);
+            },
+            error: function (v) {
+                console.timeEnd("● API-" + TimelogTag + "(" + baseURL + _url + ")");
+                console.log("Error:", JSON.stringify(v));
+            },
+        });
+    }
+}
+
 $(function () {
     //const baseURI = `${window.location.protocol}//${window.location.host}`;
     const baseURI = `https://localhost:7063`;
@@ -59,59 +101,6 @@ $(function () {
     $("#register_register").click(function () {
         localStorage.clear("userInformation");
         //window.location = "login.html";
-    });
-
-    $("#login_login").click(function () {
-        var userphone = $("#login_phoneNum").val();
-        var userpwd = $("#login_password").val();
-        var usertoken;
-        // 準備資料
-        const postData = {
-            MobileNumber: userphone,
-            Password: userpwd,
-        };
-        // 發送 AJAX POST 請求
-        $.ajax({
-            url: baseURI + "/api/login/login",
-            type: "POST",
-            contentType: "application/json",
-            data: JSON.stringify(postData),
-            success: function (response) {
-                localStorage.userInformation = response.encryptedId;
-                localStorage.username = response.username;
-                console.log("登入成功:", response);
-                window.location = "index.html";
-            },
-            error: function (xhr, status, error) {
-                console.error("登入失敗:", error);
-                alert("帳號或密碼錯誤！！！");
-            },
-        });
-        if (userphone != "") {
-            $("#empty-feedbback").hide();
-            var MobileReg = /^(09)[0-9]{8}$/;
-            console.log(userphone.match(MobileReg) ? true : false);
-            if (userphone.match(MobileReg) ? true : false == true) {
-                if (userpwd != "") {
-                    if ($("#keepLogin").prop("checked")) {
-                        localStorage.keepLogin = 1;
-                    } else {
-                        localStorage.keepLogin = 0;
-                    }
-                    var userInformation = "";
-                    localStorage.userInformation = JSON.stringify(userInformation);
-                    BtnLoading($(this));
-                } else {
-                    $("#storenum-feedbback").show();
-                }
-            } else {
-                console.log("格式錯誤");
-                $("#empty-feedbback").show();
-            }
-        } else {
-            console.log("帳號為空");
-            $("#empty-feedbback").show();
-        }
     });
 
     // $("#menuBtn").click(function () {

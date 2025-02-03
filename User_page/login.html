@@ -7,8 +7,8 @@
   <!-- CSS only -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous" />
-  <link href="css/color.css?1234" rel="stylesheet" />
-  <link href="css/share.css?12455" rel="stylesheet" />
+  <link href="css/color.css" rel="stylesheet" />
+  <link href="css/share.css" rel="stylesheet" />
   <!-- JavaScript Bundle with Popper -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ"
@@ -18,46 +18,85 @@
   <script src="https://kit.fontawesome.com/4de7eaf6aa.js" crossorigin="anonymous"></script>
   <script src="js/share.js"></script>
   <title>登入</title>
-  <script>
-    if (localStorage.keepLogin == 1 && localStorage.userInformation != null) {
-      window.location = "index.html";
-    }
-  </script>
+  <script src="js/checkUserLogin.js"></script>
 </head>
 
 <body>
   <script>
-    $(document).ready(function () {
-      $("#login_login").on("click", function () {
-        const phoneNum = $("#login_phoneNum").val();
-        const password = $("#login_password").val();
-        if (phoneNum === "" || password === "") {
-          alert("電話號碼或密碼不可為空白！");
-          return;
-        }
-      });
-    });
+    function login() {
+      var userphone = $("#login_phoneNum").val();
+      var userpwd = $("#login_password").val();
+      var usertoken;
 
+      //檢查手機
+      if (userphone != "") {
+        $("#empty-feedbback").hide();
+        var MobileReg = /^(09)[0-9]{8}$/;
+        // console.log(userphone.match(MobileReg) ? true : false);
+
+        //檢查格式
+        if (userphone.match(MobileReg) ? true : false == true) {
+
+          //檢查密碼
+          if (userpwd != "") {
+            BtnLoading($(this));
+
+            //是否保持登入
+            if ($("#keepLogin").prop("checked")) {
+              localStorage.keepLogin = 1;
+            } else {
+              localStorage.keepLogin = 0;
+            }
+
+            const postData = {
+              MobileNumber: userphone,
+              Password: userpwd,
+            };
+
+            apiWeb("login/login", "POST", JSON.stringify(postData), "登入", function (v) {
+              if (v.status == 1) {
+                localStorage.userInformation = v.encryptedId;
+                localStorage.username = v.username;
+                window.location = "index.html";
+              } else {
+                $('#logIn_fail').show()
+              }
+            });
+
+          } else {
+            $("#storenum-feedbback").show();
+          }
+        } else {
+          console.log("手機格式錯誤");
+          $("#empty-feedbback").show();
+        }
+      } else {
+        console.log("帳號為空");
+        $("#empty-feedbback").show();
+      }
+    }
   </script>
   <nav class="navbar myNavbar p-0">
-    <div class="container-fluid d-flex justify-content-evenly px-0">
+    <div class="container-sm d-flex justify-content-evenly px-0">
       <!-- <a class="" href="index.html"> -->
       <img src="img/logo2.svg" alt="" class="d-inline-block align-text-top logoToIndex my-3 mx-3" />
       <!-- IMG -->
       <!-- </a> -->
     </div>
   </nav>
-  <div class="container-fluid d-flex flex-column py-5 px-4">
+  <div class="container-sm d-flex flex-column py-5 px-4">
     <div class="mb-4 color2 text-default fw-bolder">請登入你的帳號</div>
-
+    <div class="text-memo colorDanger formHint" id="logIn_fail">登入失敗，帳號或密碼錯誤</div>
     <div id="login_form" class="w-100">
       <div class="mb-4">
-        <input class="myBigInput" type="number" id="login_phoneNum" placeholder="手機號碼" inputmdode="tel" />
+        <input class="form-control form-control-lg" type="number" id="login_phoneNum" placeholder="手機號碼"
+          inputmdode="tel" />
         <div class="text-memo colorDanger formHint" id="empty-feedbback">* 手機號碼格式錯誤</div>
       </div>
 
       <div class="mb-4">
-        <input class="myBigInput" type="password" id="login_password" placeholder="密碼" inputmdode="tel" />
+        <input class="form-control form-control-lg" type="password" id="login_password" placeholder="密碼"
+          inputmdode="tel" />
         <div class="text-memo colorDanger formHint" id="storenum-feedbback">* 密碼錯誤</div>
       </div>
 
@@ -71,7 +110,7 @@
         </div>
       </div>
       <div class="col-12 d-flex justify-content-center pt-5">
-        <div class="MainBtn MyBtn w-100 bigBtn fw-bolder" id="login_login" type="submit">登入</div>
+        <button type="button" class="MainBtn btn w-100 btn-lg fw-bolder" id="login_login" onclick="login()">登入</button>
       </div>
     </div>
 

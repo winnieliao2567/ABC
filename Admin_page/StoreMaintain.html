@@ -386,6 +386,28 @@
                                                         <p class="pl-3 w-25 d-inline-block m-0 mr-5">分鐘</p>
                                                     </div>
 
+                                                    <!-- 最低金額 -->
+                                                    <div class="col-12 col-md-8 col-xl-6 my-1"
+                                                        v-if="settingItem.groupitem.type === 'minPrice'">
+                                                        <input class="form-control w-50" type="number" min="0"
+                                                            v-model="storeInfoEdit.waitingTime.minPrice" ref="inputs">
+                                                    </div>
+
+                                                    <!-- 單數 -->
+                                                    <div class="col-12 col-md-8 col-xl-6 my-1"
+                                                        v-if="settingItem.groupitem.type === 'MinOrderCount'">
+                                                        <input class="form-control w-50" type="number" min="0"
+                                                            v-model="storeInfoEdit.waitingTime.minOrderCount"
+                                                            ref="inputs">
+                                                    </div>
+
+                                                    <!-- 最高金額 -->
+                                                    <div class="col-12 col-md-8 col-xl-6 my-1"
+                                                        v-if="settingItem.groupitem.type === 'maxPrice'">
+                                                        <input class="form-control w-50" type="number" min="0"
+                                                            v-model="storeInfoEdit.waitingTime.maxPrice" ref="inputs">
+                                                    </div>
+
                                                     <!-- 低消提示 -->
                                                     <div class="col-12 col-md-8 col-xl-6 my-1"
                                                         v-if="settingItem.groupitem.type === 'Reminder'">
@@ -646,6 +668,37 @@
                                 }
 
                             },
+                            {
+                                name: '最低金額',
+                                groupitem:
+                                {
+                                    type: 'minPrice',
+                                    enabled: true,
+                                    placeholder: "",
+                                }
+
+                            }
+                            ,
+                            {
+                                name: '單數',
+                                groupitem:
+                                {
+                                    type: 'MinOrderCount',
+                                    enabled: true,
+                                    placeholder: "",
+                                }
+
+                            },
+                            {
+                                name: '最高金額',
+                                groupitem:
+                                {
+                                    type: 'maxPrice',
+                                    enabled: true,
+                                    placeholder: "",
+                                }
+
+                            },
                         ],
                         editDone: false,
                         editError: false,
@@ -719,6 +772,28 @@
             this.initCityData();
             this.setDistricts();
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
             //tag標籤
             new TomSelect("#input-tags", {
                 persist: false,
@@ -751,7 +826,15 @@
                 // this.storeInfoEdit.introduction = quill.getText();  // 存儲純文字
             });
 
-
+            this.$nextTick(() => {
+                this.$refs.inputs.forEach(input => {
+                    input.addEventListener("input", function () {
+                        if (this.value < 0) {
+                            this.value = 0;
+                        }
+                    })
+                })
+            })
         },
         watch: {
             //編輯資料時檢查資料並disabled/enabled SaveBtn

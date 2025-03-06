@@ -246,7 +246,13 @@
                 },
               ],
               advanceReservation: '7',
-              waitingTime: { basic: '5', interval: '5' },
+              waitingTime: {
+                basic: '5',
+                interval: '5',
+                minPrice: '500',
+                maxPrice: '1000',
+                minOrderCount: '5'
+              },
               minimumOrderReminder: {
                 enabled: true,
                 minimumOrder: 100,

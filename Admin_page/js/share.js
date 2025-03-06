@@ -1,5 +1,6 @@
 const copyRight = " 共響有限公司. All Rights Reserved.";
 const version = "1.0.1";
+const host = "https://202.182.109.207/";
 
 function loadingOff() {
     console.log("移除遮罩");

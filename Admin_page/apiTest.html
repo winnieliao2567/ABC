@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>共響 SHARING</title>
+
+    <!-- jquery -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+    <!-- JavaScript Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- <link rel="stylesheet" href="css/bootstrap.min.css"> -->
+
+    <!-- fontawesome -->
+    <script src="https://kit.fontawesome.com/4de7eaf6aa.js" crossorigin="anonymous"></script>
+
+    <!-- Theme style -->
+    <link rel="stylesheet" href="AdminLTE3/dist/css/adminlte.min.css">
+    <script src="AdminLTE3/dist/js/adminlte.min.js"></script>
+
+    <!-- Chart.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.bundle.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.css" />
+
+    <!-- toastr -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css" />
+
+    <!-- datepicker -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.30.1/moment.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+
+    <!-- Vue.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.5.13/vue.global.min.js"></script>
+
+    <script src="js/share.js"></script>
+    <link rel="stylesheet" href="css/share.css" />
+</head>
+
+<body>
+
+</body>
+<script>
+
+    var apidata = {
+        "Email": "test@gmail.com",
+        "Password": "123456"
+    }
+
+    $.ajax({
+        type: 'POST',
+        headers: {
+            "Content-Type": "application/json; charset=utf-8",
+        },
+        url: 'https://202.182.109.207/api/login/login',
+        data: JSON.stringify(apidata),
+        statusCode: {
+        },
+        success: function (v) {
+            console.log(v);
+        },
+        error: function (v) {
+            console.log(v);
+        },
+    });
+</script>
+
+</html>

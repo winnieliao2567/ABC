@@ -59,36 +59,6 @@
             </div>
         </div>
 
-        <div class="modal fade" id="SortClassEdit" tabindex="-1" role="dialog" aria-labelledby="reloginModalLabel"
-            aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="reloginModalLabel">排序類別</h5>
-                    </div>
-                    <div class="modal-body">
-                        <div class="col-12 list-group sortableList" ref="sortableList">
-                            <div class="list-group-item" v-for="(sort,index) in menuInfo_Data.SortClassData"
-                                :key="sort.id">
-                                <div class="row m-0">
-                                    <div class="handle col-2 col-md-1">
-                                        <i class="fas fa-ellipsis-v"></i>
-                                        <i class="fas fa-ellipsis-v"></i>
-                                    </div>
-                                    <!-- <div class="mr-2">{{sort.sort_number}}.</div> -->
-                                    <div class="col-10 col-md-11">
-                                        {{sort.name}}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-primary" @click="saveSortClass">儲存</button>
-                    </div>
-                </div>
-            </div>
-        </div>
 
         <div class="modal fade" id="ProductorEdit" tabindex="-1" role="dialog" aria-labelledby="reloginModalLabel"
             aria-hidden="true">
@@ -98,44 +68,7 @@
                         <h5 class="modal-title" id="reloginModalLabel">類別及品項管理</h5>
                     </div>
                     <div class="modal-body">
-                        <nav id="navbar-example2" class="navbar overflow-auto h-25">
-                            <ul class="nav nav-pills">
-                                <li class="nav-item" v-for="(productorClass,proIndex) in Edit_Data.ProductorEditData">
-                                    <a class="nav-link"
-                                        :href="'#productorClass'+productorClass.id">{{productorClass.name}}</a>
-                                </li>
-                            </ul>
-                        </nav>
-                        <div class="py-3 h-75 overflow-auto" data-spy="scroll" data-target="#navbar-example2"
-                            data-offset="0">
-                            <div class="mb-3" v-for="(productorClass,proIndex) in Edit_Data.ProductorEditData"
-                                :id="'productorClass'+productorClass.id">
-                                <h4>{{productorClass.name}}</h4>
-                                <div class="list-group">
-                                    <div class="d-flex align-items-center py-2 list-group-item" :data-id="productor.id"
-                                        v-for="(productor,itemindex) in productorClass.productors">
-                                        <div class="d-flex justify-content-center"
-                                            style="width: 50px;overflow: hidden;">
-                                            <img :src="productor.imgurl!=''?productor.imgurl:'img/unknowIMG.png'"
-                                                class="border" height="50px">
-                                        </div>
-                                        <div class="pl-3">
-                                            <div class="text-bold">{{productor.name}}</div>
-                                            <!-- <div class="text-muted">{{item.introduction}}</div> -->
-                                        </div>
-                                        <div class=" ml-auto">
-                                            <div class="custom-control custom-switch">
-                                                <input type="checkbox" class="custom-control-input"
-                                                    v-model="productor.enabled" :id="productor.id">
-                                                <label class="custom-control-label text-danger m-0 ml-2"
-                                                    :for="productor.id">
-                                                </label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-primary" @click="saveProductor">儲存</button>
@@ -257,62 +190,45 @@
             <div class="content">
                 <div class="container-fluid">
                     <div class="row">
-                        <div class="col-12 col-md-8 col-xl-6 py-3">
-                            <div class="mb-4">
-                                <h6 class="d-inline-block">菜單名稱</h6>
-                                <button type="button" class="btn btn-sm" v-if="!editStatus.name"
-                                    v-on:click="editStatus.name=true">
-                                    <i class="fas fa-pen"></i>
-                                </button>
-                                <button type="button" class="btn btn-sm" v-if="editStatus.name"
-                                    v-on:click="editStatus.name=false">
-                                    <i class="fas fa-save"></i>
-                                </button>
-                                <input class="form-control" v-model="Edit_Data.name" :disabled="!editStatus.name">
-                                <div class="text-memo text-danger formHint" style="position: absolute;"
-                                    v-if="Edit_Data.name.length>10">
-                                    *菜單名稱最多10個字
-                                </div>
-                            </div>
-                            <div>
-                                <h6 class="d-inline-block">菜單描述</h6>
-                                <button type="button" class="btn btn-sm" v-if="!editStatus.description"
-                                    v-on:click="editStatus.description=true">
-                                    <i class="fas fa-pen"></i>
-                                </button>
-                                <button type="button" class="btn btn-sm" v-if="editStatus.description"
-                                    v-on:click="editStatus.description=false">
-                                    <i class="fas fa-save"></i>
-                                </button>
-                                <textarea class="form-control" v-model="Edit_Data.description"
-                                    :disabled="!editStatus.description"></textarea>
-                                <div class="text-memo text-danger formHint" style="position: absolute;"
-                                    v-if="Edit_Data.description.length>20">
-                                    *菜單名稱最多20個字
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-12 py-3">
-                            <h6>編輯項目</h6>
-                            <div class="row m-0">
-                                <div class=" col-12 col-md-4 col-xl-3 item mb-1" @click="showSortClassWin()"
-                                    data-widget="control-sidebar">
-                                    <div class="border rounded-lg p-3">
-                                        <h5>
-                                            <i class="fas fa-sort-amount-up-alt mr-2"></i>
-                                            排序類別
-                                        </h5>
-                                        <p class="text-muted m-0 ml-4 pl-2">訂單排序設定</p>
-                                    </div>
-                                </div>
-                                <div class="col-12 col-md-4 col-xl-3 item mb-1" @click="showProductorWin()"
-                                    data-widget="control-sidebar">
-                                    <div class="border rounded-lg p-3">
-                                        <h5>
-                                            <i class="fas fa-utensils mr-2"></i>
-                                            類別及品項管理
-                                        </h5>
-                                        <p class="text-muted m-0 ml-4 pl-2">編輯菜單內容</p>
+                        <div class="col-12">
+                            <nav id="navbar-example2" class="navbar bg-light">
+                                <ul class="nav nav-pills flex-nowrap overflow-auto">
+                                    <li class="nav-item"
+                                        v-for="(productorClass, proIndex) in Edit_Data.ProductorEditData"
+                                        :key="proIndex">
+                                        <a class="nav-link" :href="'#productorClass' + productorClass.id">
+                                            {{ productorClass.name }}
+                                        </a>
+                                    </li>
+                                </ul>
+                            </nav>
+                            <div class="overflow-auto" data-spy="scroll" data-target="#navbar-example2" data-offset="0">
+                                <div class="mb-3" v-for="(productorClass,proIndex) in Edit_Data.ProductorEditData"
+                                    :id="'productorClass'+productorClass.id">
+                                    <h4>{{productorClass.name}}</h4>
+                                    <div class="list-group">
+                                        <div class="d-flex align-items-center py-2 list-group-item"
+                                            :data-id="productor.id"
+                                            v-for="(productor,itemindex) in productorClass.productors">
+                                            <div class="d-flex justify-content-center"
+                                                style="width: 50px;overflow: hidden;">
+                                                <img :src="productor.imgurl!=''?productor.imgurl:'img/unknowIMG.png'"
+                                                    class="border" height="50px">
+                                            </div>
+                                            <div class="pl-3">
+                                                <div class="text-bold">{{productor.name}}</div>
+                                                <!-- <div class="text-muted">{{item.introduction}}</div> -->
+                                            </div>
+                                            <div class=" ml-auto">
+                                                <div class="custom-control custom-switch">
+                                                    <input type="checkbox" class="custom-control-input"
+                                                        v-model="productor.enabled" :id="productor.id">
+                                                    <label class="custom-control-label text-danger m-0 ml-2"
+                                                        :for="productor.id">
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -356,86 +272,86 @@
 
                 editStatus: { name: false, description: false },
 
-                menuInfo_Data: {
-                    id: 'm2024e12n31u130030',
-                    name: '預設菜單',
-                    description: '預設菜單',
-                    create: {
-                        date: '2024-12-31',
-                        time: '13:00:30',
-                        creator: {
-                            id: 'dksla991024',
-                            name: 'winnie',
-                            account: 'winnieliao2567@gmail.com',
-                            accountKey: '123456',
-                        },
-                    },
-                    SortClassData: [
-                        {
-                            id: 'c2024la12s24s',
-                            name: '排序屬性01',
-                            sort_number: 0
-                        },
-                        {
-                            id: 'c2024la12s27s',
-                            name: '排序屬性02',
-                            sort_number: 1
-                        },
-                        {
-                            id: 'c2024la12s25s',
-                            name: '排序屬性03',
-                            sort_number: 2
-                        },
-                        {
-                            id: 'c2024la12s26s',
-                            name: '排序屬性04',
-                            sort_number: 3
-                        }
-                    ],
-                    ProductorEditData: [
-                        {
-                            id: 'cl2025a01s09s',
-                            name: '分類A',
-                            description: '分類A的描述',
-                            productors: [
-                                {
-                                    id: 'pro2024duc12it22em',
-                                    name: '雞排',
-                                    imgurl: 'img/bg/brooke-lark-IDTEXXXfS44-unsplash.jpg',
-                                    sortClassInfo: {
-                                        id: 'c2024la12s24s',
-                                        name: '屬性01',
-                                        sort_number: 0,
-                                    },
-                                    productorsClass: {
-                                        id: 'cl2025a01s09s',
-                                        name: '分類A',
-                                        description: '分類A的描述',
-                                    },
-                                    sortClass: 'c2024la12s24s',
-                                    customClassId: ['cu2024s01to11mized'],
-                                    price: '20',
-                                    introduction: '好吃好吃超好吃😋',
-                                    size: [
-                                        {
-                                            name: '大份',
-                                            price: '10'
-                                        }
-                                    ],
-                                    enabled: true
-                                },
-                            ],
-                        },
-                        {
-                            id: 'cl2025a01s10s',
-                            name: '分類B',
-                            description: '分類B的描述',
-                            productors: []
-                        },
-                    ],
+                // menuInfo_Data: {
+                //     id: 'm2024e12n31u130030',
+                //     name: '預設菜單',
+                //     description: '預設菜單',
+                //     create: {
+                //         date: '2024-12-31',
+                //         time: '13:00:30',
+                //         creator: {
+                //             id: 'dksla991024',
+                //             name: 'winnie',
+                //             account: 'winnieliao2567@gmail.com',
+                //             accountKey: '123456',
+                //         },
+                //     },
+                //     SortClassData: [
+                //         {
+                //             id: 'c2024la12s24s',
+                //             name: '排序屬性01',
+                //             sort_number: 0
+                //         },
+                //         {
+                //             id: 'c2024la12s27s',
+                //             name: '排序屬性02',
+                //             sort_number: 1
+                //         },
+                //         {
+                //             id: 'c2024la12s25s',
+                //             name: '排序屬性03',
+                //             sort_number: 2
+                //         },
+                //         {
+                //             id: 'c2024la12s26s',
+                //             name: '排序屬性04',
+                //             sort_number: 3
+                //         }
+                //     ],
+                //     ProductorEditData: [
+                //         {
+                //             id: 'cl2025a01s09s',
+                //             name: '分類A',
+                //             description: '分類A的描述',
+                //             productors: [
+                //                 {
+                //                     id: 'pro2024duc12it22em',
+                //                     name: '雞排',
+                //                     imgurl: 'img/bg/brooke-lark-IDTEXXXfS44-unsplash.jpg',
+                //                     sortClassInfo: {
+                //                         id: 'c2024la12s24s',
+                //                         name: '屬性01',
+                //                         sort_number: 0,
+                //                     },
+                //                     productorsClass: {
+                //                         id: 'cl2025a01s09s',
+                //                         name: '分類A',
+                //                         description: '分類A的描述',
+                //                     },
+                //                     sortClass: 'c2024la12s24s',
+                //                     customClassId: ['cu2024s01to11mized'],
+                //                     price: '20',
+                //                     introduction: '好吃好吃超好吃😋',
+                //                     size: [
+                //                         {
+                //                             name: '大份',
+                //                             price: '10'
+                //                         }
+                //                     ],
+                //                     enabled: true
+                //                 },
+                //             ],
+                //         },
+                //         {
+                //             id: 'cl2025a01s10s',
+                //             name: '分類B',
+                //             description: '分類B的描述',
+                //             productors: []
+                //         },
+                //     ],
 
-                    enabled: true
-                },
+                //     enabled: true
+                // },
                 Edit_Data: {
                     id: 'm2024e12n31u130030',
                     name: '預設菜單',
@@ -507,10 +423,136 @@
                             ],
                         },
                         {
-                            id: 'cl2025a01s10s',
+                            id: 'cl2025a01s09s',
                             name: '分類B',
-                            description: '分類B的描述',
-                            productors: []
+                            description: '分類A的描述',
+                            productors: [
+                                {
+                                    id: 'pro2024duc12it22em',
+                                    name: '雞排',
+                                    imgurl: 'img/bg/brooke-lark-IDTEXXXfS44-unsplash.jpg',
+                                    sortClassInfo: {
+                                        id: 'c2024la12s24s',
+                                        name: '屬性01',
+                                        sort_number: 0,
+                                    },
+                                    productorsClass: {
+                                        id: 'cl2025a01s09s',
+                                        name: '分類A',
+                                        description: '分類A的描述',
+                                    },
+                                    sortClass: 'c2024la12s24s',
+                                    customClassId: ['cu2024s01to11mized'],
+                                    price: '20',
+                                    introduction: '好吃好吃超好吃😋',
+                                    size: [
+                                        {
+                                            name: '大份',
+                                            price: '10'
+                                        }
+                                    ],
+                                    enabled: true
+                                },
+                            ],
+                        },
+                        {
+                            id: 'cl2025a01s09s',
+                            name: '分類C',
+                            description: '分類A的描述',
+                            productors: [
+                                {
+                                    id: 'pro2024duc12it22em',
+                                    name: '雞排',
+                                    imgurl: 'img/bg/brooke-lark-IDTEXXXfS44-unsplash.jpg',
+                                    sortClassInfo: {
+                                        id: 'c2024la12s24s',
+                                        name: '屬性01',
+                                        sort_number: 0,
+                                    },
+                                    productorsClass: {
+                                        id: 'cl2025a01s09s',
+                                        name: '分類A',
+                                        description: '分類A的描述',
+                                    },
+                                    sortClass: 'c2024la12s24s',
+                                    customClassId: ['cu2024s01to11mized'],
+                                    price: '20',
+                                    introduction: '好吃好吃超好吃😋',
+                                    size: [
+                                        {
+                                            name: '大份',
+                                            price: '10'
+                                        }
+                                    ],
+                                    enabled: true
+                                },
+                            ],
+                        },
+                        {
+                            id: 'cl2025a01s09s',
+                            name: '分類D',
+                            description: '分類A的描述',
+                            productors: [
+                                {
+                                    id: 'pro2024duc12it22em',
+                                    name: '雞排',
+                                    imgurl: 'img/bg/brooke-lark-IDTEXXXfS44-unsplash.jpg',
+                                    sortClassInfo: {
+                                        id: 'c2024la12s24s',
+                                        name: '屬性01',
+                                        sort_number: 0,
+                                    },
+                                    productorsClass: {
+                                        id: 'cl2025a01s09s',
+                                        name: '分類A',
+                                        description: '分類A的描述',
+                                    },
+                                    sortClass: 'c2024la12s24s',
+                                    customClassId: ['cu2024s01to11mized'],
+                                    price: '20',
+                                    introduction: '好吃好吃超好吃😋',
+                                    size: [
+                                        {
+                                            name: '大份',
+                                            price: '10'
+                                        }
+                                    ],
+                                    enabled: true
+                                },
+                            ],
+                        },
+                        {
+                            id: 'cl2025a01s09s',
+                            name: '分類E',
+                            description: '分類A的描述',
+                            productors: [
+                                {
+                                    id: 'pro2024duc12it22em',
+                                    name: '雞排',
+                                    imgurl: 'img/bg/brooke-lark-IDTEXXXfS44-unsplash.jpg',
+                                    sortClassInfo: {
+                                        id: 'c2024la12s24s',
+                                        name: '屬性01',
+                                        sort_number: 0,
+                                    },
+                                    productorsClass: {
+                                        id: 'cl2025a01s09s',
+                                        name: '分類A',
+                                        description: '分類A的描述',
+                                    },
+                                    sortClass: 'c2024la12s24s',
+                                    customClassId: ['cu2024s01to11mized'],
+                                    price: '20',
+                                    introduction: '好吃好吃超好吃😋',
+                                    size: [
+                                        {
+                                            name: '大份',
+                                            price: '10'
+                                        }
+                                    ],
+                                    enabled: true
+                                },
+                            ],
                         },
                     ],
                     enabled: true
@@ -524,24 +566,6 @@
             setTimeout(() => {
                 checkUserInfo()
             }, 500);
-
-            // 使用 ref 获取 DOM 元素
-            const el = this.$refs.sortableList;
-
-            Sortable.create(el, {
-                handle: ".handle", // 指定拖曳的手柄
-                animation: 150,
-                onEnd: (event) => {
-                    // 获取拖曳后的新顺序
-                    const movedItem = this.Edit_Data.SortClassData.splice(event.oldIndex, 1)[0];
-                    this.Edit_Data.SortClassData.splice(event.newIndex, 0, movedItem);
-                    // 更新 sort_number
-                    this.Edit_Data.SortClassData.forEach((item, index) => {
-                        item.sort_number = index;
-                    });
-                    console.log(this.Edit_Data.SortClassData);
-                },
-            });
         },
         watch: {
         },
@@ -552,8 +576,8 @@
                 console.log(this.Edit_Data);
             },
             showProductorWin() {
-                window.location.href = "MenuItemEdit.html"
-                // $('#ProductorEdit').modal('show')
+                // window.location.href = "MenuProduct.html"
+                $('#ProductorEdit').modal('show')
                 console.log(this.Edit_Data);
             },
             saveSortClass() {

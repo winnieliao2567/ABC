@@ -38,6 +38,9 @@
 
     <script src="js/share.js"></script>
     <link rel="stylesheet" href="css/share.css" />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+
 </head>
 
 <body class="sidebar-mini layout-navbar-fixed layout-footer-fixed sidebar-mini-md layout-fixed sidebar-collapse">
@@ -79,10 +82,10 @@
                             <div class="col-12">
                                 <div class="form-group mb-2">
                                     <label for="menuName">電話號碼</label>
-                                    <input placeholder="" type="tel" class="form-control" v-model="AddBan_data.phone"
-                                        id="menuName" autocomplete="off">
+                                    <input placeholder="" type="tel" class="form-control"
+                                        v-model="AddBan_data.mobileNumber" id="menuName" autocomplete="off">
                                     <div class="text-memo text-danger"
-                                        v-if="AddBan_data.phone!=''&&AddBan_data.phone.length!=10">
+                                        v-if="AddBan_data.mobileNumber!=''&&AddBan_data.mobileNumber.length!=10">
                                         *電話號碼格式錯誤
                                     </div>
                                 </div>
@@ -93,7 +96,7 @@
                         <!-- <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button> -->
 
                         <button type="button" class="btn btn-primary" @click="AddBan"
-                            :disabled="AddBan_data.phone.length!=10">確認新增</button>
+                            :disabled="AddBan_data.mobileNumber.length!=10">確認新增</button>
                     </div>
                 </div>
             </div>
@@ -112,15 +115,15 @@
                 <li class="nav-item dropdown">
                     <a class="nav-link" data-toggle="dropdown" href="#">
                         <i class="fas fa-store"></i>
-                        {{storeInfo.name}}
+                        {{storeInfo.store.storeName}}
                         <i class="fas fa-caret-down"></i>
                     </a>
                     <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-                        <a class="dropdown-item" v-for="(store,index) in allStore" :id="store.id"
-                            onclick="itemClick(this)">
+                        <a class="dropdown-item" v-for="(store,index) in allStore" :id="store.storeId"
+                            onclick="itemClick($(this))">
                             <div class="store">
-                                <strong>{{ store.name }}</strong>
-                                <p class="text-muted">{{ store.address.fullAddress }}</p>
+                                <strong>{{ store.storeName }}</strong>
+                                <p class="text-muted">{{ store.city }}{{ store.districts }}{{ store.shortAddress }}</p>
                             </div>
                         </a>
                     </div>
@@ -221,6 +224,9 @@
                                 <thead class="table-primary">
                                     <tr>
                                         <th>
+
+                                        </th>
+                                        <th>
                                             帳號
                                         </th>
                                         <th>
@@ -229,9 +235,15 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr v-for="(item,index) in Baned_data">
-                                        <td class="longText">{{item.phone}}</td>
-                                        <td>{{item.date}} {{item.time}}</td>
+                                    <tr v-for="(item,index) in Ban_data">
+                                        <td class="longText">
+                                            <button class="btn btn-outline-secondary"
+                                                v-on:click="deletBan(item.mobileNumber)">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </button>
+                                        </td>
+                                        <td class="longText">{{item.mobileNumber}}</td>
+                                        <td>{{returnTime(item.createDate)}}</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -266,21 +278,28 @@
 
                 PageTitle: '黑名單',
 
-                userInfo: sessionStorage.userInfo ? JSON.parse(sessionStorage.userInfo) : {},
-                storeInfo: sessionStorage.storeInfo ? JSON.parse(sessionStorage.storeInfo) : {},
-                allStore: sessionStorage.allStore ? JSON.parse(sessionStorage.allStore) : [],
+                //原始資料
+                userInfo: decryptObject(sessionStorage.userInfo),
+                storeInfo: decryptObject(sessionStorage.storeInfo),
+                allStore: decryptObject(sessionStorage.allStore),
 
-                Baned_data: [{ phone: '0912345678', date: '2024-12-31', time: '18:30:55', }],
+                Ban_data: [{ mobileNumber: '', createDate: '' }],
 
-                AddBan_data: { phone: '' }
+                AddBan_data: { mobileNumber: '' }
             }
         },
         computed: {
         },
         mounted() {
-            setTimeout(() => {
-                checkUserInfo()
-            }, 500);
+            var vue = this
+            // console.log(this.storeInfo.storeId);
+
+            apiWeb('api/Store/blacklist/' + this.storeInfo.store.storeId
+                , 'GET', '', '取得黑名單列表', function (v) {
+                    vue.Ban_data = v
+                    checkUserInfo()
+                    console.log(vue.Ban_data);
+                })
         },
         watch: {
         },
@@ -289,7 +308,32 @@
                 $('#AddBanWin').modal('show')
             },
             AddBan() {
-                $('#AddBanWin').modal('hide')
+                var vue = this
+                // console.log(vue.storeInfo.store);
+                console.log(vue.storeInfo.store.storeId + '/' + vue.AddBan_data.mobileNumber);
+                apiWeb('api/Store/blacklist/' + vue.storeInfo.store.storeId + '/' + vue.AddBan_data.mobileNumber, 'POST', null, '新增黑名單', function (v) {
+                    if (v.status == 0) {
+                        $('#AddBanWin').modal('hide')
+                        window.location.href = 'BanList.html'
+                    } else {
+                        toastr.error(v.message);
+                    }
+                })
+            },
+            returnTime(dateStr) {
+                return moment(dateStr).format("YYYY-MM-DD HH:mm:ss");
+            },
+            deletBan(num) {
+
+                var vue = this
+                console.log(vue.storeInfo.store.storeId + '/' + num);
+
+                apiWeb('api/Store/blacklist/' + vue.storeInfo.store.storeId + '/' + num, 'DELETE', null, '新增黑名單', function (v) {
+                    if (v.message == "已成功將用戶從黑名單中移除") {
+                        $('#AddBanWin').modal('hide')
+                        window.location.href = 'BanList.html'
+                    }
+                })
             }
         },
     });

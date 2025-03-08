@@ -38,6 +38,9 @@
 
   <script src="js/share.js"></script>
   <link rel="stylesheet" href="css/share.css" />
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+
 </head>
 
 <body class="sidebar-mini layout-navbar-fixed layout-footer-fixed sidebar-mini-md layout-fixed sidebar-collapse">
@@ -77,14 +80,14 @@
         <li class="nav-item dropdown">
           <a class="nav-link" data-toggle="dropdown" href="#">
             <i class="fas fa-store"></i>
-            {{storeInfo.name}}
+            {{storeInfo.store.storeName}}
             <i class="fas fa-caret-down"></i>
           </a>
           <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-            <a class="dropdown-item" v-for="(store,index) in allStore" :id="store.id" onclick="itemClick(this)">
+            <a class="dropdown-item" v-for="(store,index) in allStore" :id="store.storeId" onclick="itemClick($(this))">
               <div class="store">
-                <strong>{{ store.name }}</strong>
-                <p class="text-muted">{{ store.address.fullAddress }}</p>
+                <strong>{{ store.storeName }}</strong>
+                <p class="text-muted">{{ store.city }}{{ store.districts }}{{ store.shortAddress }}</p>
               </div>
             </a>
           </div>
@@ -239,13 +242,13 @@
   const app = Vue.createApp({
     data() {
       return {
-        userFunction: sessionStorage.userFunction ? JSON.parse(sessionStorage.userFunction) : {},
+        userFunction: JSON.parse(sessionStorage.userFunction),
 
         PageTitle: '首頁',
 
-        userInfo: sessionStorage.userInfo ? JSON.parse(sessionStorage.userInfo) : {},
-        storeInfo: sessionStorage.storeInfo ? JSON.parse(sessionStorage.storeInfo) : {},
-        allStore: sessionStorage.allStore ? JSON.parse(sessionStorage.allStore) : [],
+        userInfo: decryptObject(sessionStorage.userInfo),
+        storeInfo: decryptObject(sessionStorage.storeInfo),
+        allStore: decryptObject(sessionStorage.allStore),
 
         data: [
           {
@@ -335,29 +338,29 @@
 
 
       //初始資料載入
-      apiWeb('_url', 'GET', '_data', '取得初始資料', function (v) {
-
-        //當日
-        vue.data[0].Revenue = '30,230',
-          vue.data[0].Order = '27',
-          vue.data[0].dateStart = moment().format('YYYY-MM-DD'),
-          vue.data[0].dateEnd = moment().format('YYYY-MM-DD'),
-
-          vue.data[1].Revenue = '104,230',
-          vue.data[1].Order = '70',
-          vue.data[1].dateStart = moment().subtract(6, "days").format('YYYY-MM-DD'),
-          vue.data[1].dateEnd = moment().format('YYYY-MM-DD'),
-
-          vue.data[2].Revenue = '664,330',
-          vue.data[2].Order = '237',
-          vue.data[2].dateStart = moment().subtract(29, "days").format('YYYY-MM-DD'),
-          vue.data[2].dateEnd = moment().format('YYYY-MM-DD'),
 
 
-          new Promise(resolve => setTimeout(resolve, 0))
-      })
+      //當日
+      vue.data[0].Revenue = '30,230',
+        vue.data[0].Order = '27',
+        vue.data[0].dateStart = moment().format('YYYY-MM-DD'),
+        vue.data[0].dateEnd = moment().format('YYYY-MM-DD'),
 
-      $('#' + this.storeInfo.id).addClass('selected-item')
+        vue.data[1].Revenue = '104,230',
+        vue.data[1].Order = '70',
+        vue.data[1].dateStart = moment().subtract(6, "days").format('YYYY-MM-DD'),
+        vue.data[1].dateEnd = moment().format('YYYY-MM-DD'),
+
+        vue.data[2].Revenue = '664,330',
+        vue.data[2].Order = '237',
+        vue.data[2].dateStart = moment().subtract(29, "days").format('YYYY-MM-DD'),
+        vue.data[2].dateEnd = moment().format('YYYY-MM-DD'),
+
+
+        new Promise(resolve => setTimeout(resolve, 0))
+
+
+      $('#' + this.storeInfo.storeInfo.storeId).addClass('selected-item')
 
     },
     watch: {

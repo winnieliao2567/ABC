@@ -38,9 +38,31 @@
 
   <script src="js/share.js"></script>
   <link rel="stylesheet" href="css/share.css" />
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+
 </head>
 
 <body class="login-page iframe-mode" style="height: 100%;">
+  <!--  <div class="modal fade" id="storeModal" tabindex="-1" data-backdrop="static" data-keyboard="false" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+      <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <h3></h3>
+        </div>
+       <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary">Save changes</button>
+        </div>
+      </div>
+    </div>
+  </div> -->
   <div class="login-box" id="app">
     <div class="login-logo">
       <img src="img/logo2.svg" style="width: 80%;">
@@ -49,10 +71,11 @@
     <div class="card">
       <div class="card-body login-card-body">
         <p class="login-box-msg">登入後開始管理你的店家</p>
-        <div>
+        <form>
           <div class="mb-3">
             <div class="input-group">
-              <input type="email" class="form-control" placeholder="請輸入信箱" v-model="loginVal.account" type="email">
+              <input type="email" class="form-control" placeholder="請輸入信箱" v-model="loginVal.account" type="email"
+                autocomplete="username">
               <div class="input-group-append">
                 <div class="input-group-text">
                   <span class="fas fa-envelope"></span>
@@ -66,7 +89,7 @@
           <div class="mb-3">
             <div class="input-group">
               <input type="password" v-model="loginVal.key" id="confirmPassword" class="form-control"
-                placeholder="請輸入密碼">
+                autocomplete="current-password" placeholder="請輸入密碼">
               <div class="input-group-append">
                 <div class="input-group-text password-undisabled" data-for="#confirmPassword">
                   <i class="fas fa-eye-slash"></i>
@@ -97,14 +120,13 @@
             </div>
             <!-- /.col -->
           </div>
-        </div>
+        </form>
       </div>
       <!-- /.login-card-body -->
     </div>
   </div>
 </body>
 <script>
-
   const app = Vue.createApp({
     data() {
       return {
@@ -125,227 +147,118 @@
     },
     methods: {
       login() {
-        console.log(this.loginVal.keepLogIn);
+        // console.log(this.loginVal.keepLogIn);
         if (this.loginVal.account == '') { this.check.account = true }
         else if (this.loginVal.key == '') { this.check.key = true }
         else {
-          if (this.loginVal.keepLogIn == true) {
-            // document.cookie = "account=" + this.loginVal.account + ';Key=' + this.loginVal.accountKey + ';'
-          } else {
-            // document.cookie = "account='';Key='';"
+          loadingOn();
+
+          var apiData = {
+            "Email": this.loginVal.account,
+            "Password": this.loginVal.key
           }
-          sessionStorage.userInfo = JSON.stringify({
-            id: 'dksla991024',
-            name: 'winnie',
-            account: 'winnieliao2567@gmail.com',
-            accountKey: '123456',
-          })
+          var vue = this;
+          apiWeb('api/login/admin/login', 'POST', JSON.stringify(apiData), '管理員登入', function (v) {
+            if (v.message == 'Admin Login successful') {
+              //是否保持登入
 
-          this.allStore = [
-            {
-              id: '216hewjfbwkef',
-              name: '鹹酥雞 中和店',
-              address: {
-                city: '新北市',
-                districts: '中和區',
-                shortAddress: '某某路二段717巷7號', // 原本的 x
-                fullAddress: '新北市中和區某某路二段717巷7號', // 原本的 y
-              },
-              email: "abc@gmail.com",
-              tel: '02-12345678',
-              businessNum: '12345678',
-              introduction: '<p><strong style="background-color: rgb(230, 0, 0); color: rgb(255, 255, 255);">歡迎光臨！！</strong></p><p><strong class="ql-size-huge">現在正在買五送一！！</strong></p>',
-              tags: ['A商圈', 'B商圈', "鹹酥雞", '炸物', '宵夜'],
-              businessTime: [
-                {
-                  id: 'Mon',
-                  name: '週一',
-                  operation: true,
-                  time: [
-                    { open: '08:00', close: '12:00' },
-                    { open: '15:00', close: '18:00' },
-                  ]
-                },
-                {
-                  id: 'Tue',
-                  name: '週二',
-                  operation: true,
-                  time: [
-                    { open: '08:00', close: '12:00' },
-                    { open: '15:00', close: '18:00' },
-                  ]
-                },
-                {
-                  id: 'Wen',
-                  name: '週三',
-                  operation: false,
-                  time: []
+              var adminInfo = {
+                id: v.encryptedId,
+                name: v.username,
+                account: vue.loginVal.account,
+                // accountKey: vue.loginVal.key,
+              }
+              // console.log('adminInfo----------' + JSON.stringify(adminInfo));
 
-                },
-                {
-                  id: 'Thu',
-                  name: '週四',
-                  operation: false,
-                  time: []
-                },
-                {
-                  id: 'Fri',
-                  name: '週五',
-                  operation: true,
-                  time: [
-                    { open: '08:00', close: '12:00' },
-                    { open: '15:00', close: '18:00' },
-                    { open: '21:00', close: '00:00' }
-                  ]
-                },
-                {
-                  id: 'Sat',
-                  name: '週六',
-                  operation: true,
-                  time: [
-                    { open: '08:00', close: '12:00' },
-                    { open: '15:00', close: '18:00' },
-                    { open: '21:00', close: '00:00' }
-                  ]
-                },
-                {
-                  id: 'Sun',
-                  name: '週日',
-                  operation: true,
-                  time: [
-                    { open: '08:00', close: '12:00' },
-                    { open: '15:00', close: '18:00' }
-                  ]
-                }
-              ],
-              storeClosed: [
-                {
-                  id: 'fes0101',
-                  name: '元旦',
-                  date: '2025-01-01',
-                },
-                {
-                  id: 'fes0102',
-                  name: '春節',
-                  date: '2025-01-28',
-                },
-                {
-                  id: 'fes0103',
-                  name: '春節',
-                  date: '2025-01-29',
-                },
-                {
-                  id: 'fes0104',
-                  name: '春節',
-                  date: '2025-01-30',
-                },
-                {
-                  id: 'fes0105',
-                  name: '元宵',
-                  date: '2025-02-12',
-                },
-              ],
-              advanceReservation: '7',
-              waitingTime: {
-                basic: '5',
-                interval: '5',
-                minPrice: '500',
-                maxPrice: '1000',
-                minOrderCount: '5'
-              },
-              minimumOrderReminder: {
-                enabled: true,
-                minimumOrder: 100,
-                text: '未達最低消費金額 $100'
-              },
-            }
-          ]
-          sessionStorage.allStore = JSON.stringify(this.allStore)
+              sessionStorage.userInfo = encryptObject(adminInfo)
 
-          sessionStorage.userFunction = JSON.stringify([
-            {
-              icon: 'fas fa-store',
-              name: '商店管理',
-              status: '',
-              url: "",
-              item: [
+              //使用者功能清單
+              sessionStorage.userFunction = JSON.stringify([
                 {
                   icon: 'fas fa-store',
-                  name: '店家管理',
+                  name: '商店管理',
                   status: '',
-                  url: "StoreMaintain.html"
+                  url: "",
+                  item: [
+                    {
+                      icon: 'fas fa-store',
+                      name: '店家管理',
+                      status: '',
+                      url: "StoreMaintain.html"
+                    },
+                    {
+                      icon: 'fas fa-border-all',
+                      name: '菜單管理',
+                      status: '',
+                      url: "MenuList.html"
+                    },
+                    {
+                      icon: 'fas fa-utensils',
+                      name: '品項管理',
+                      status: '',
+                      url: "Productor.html"
+                    },
+                    {
+                      icon: 'fas fa-sort-amount-up',
+                      name: '排序管理',
+                      status: '',
+                      url: "SortClass.html"
+                    },
+                    {
+                      icon: 'fas fa-seedling',
+                      name: '客製化屬性',
+                      status: '',
+                      url: "Customized.html"
+                    }
+                  ]
                 },
                 {
-                  icon: 'fas fa-border-all',
-                  name: '菜單管理',
+                  icon: 'fas fa-clipboard-list',
+                  name: '訂餐紀錄',
                   status: '',
-                  url: "MenuList.html"
+                  url: "OrderList.html"
                 },
                 {
-                  icon: 'fas fa-utensils',
-                  name: '品項管理',
+                  icon: 'fas fa-user-slash',
+                  name: '黑名單',
                   status: '',
-                  url: "Productor.html"
+                  url: "BanList.html"
                 },
                 {
-                  icon: 'fas fa-sort-amount-up',
-                  name: '排序管理',
+                  icon: 'fas fa-user-clock',
+                  name: '帳號登入記錄',
                   status: '',
-                  url: "SortClass.html"
+                  url: "LogInlog.html"
                 },
-                {
-                  icon: 'fas fa-seedling',
-                  name: '客製化屬性',
-                  status: '',
-                  url: "Customized.html"
-                }
-              ]
-            },
-            {
-              icon: 'fas fa-clipboard-list',
-              name: '訂餐紀錄',
-              status: '',
-              url: "OrderList.html"
-            },
-            {
-              icon: 'fas fa-user-slash',
-              name: '黑名單',
-              status: '',
-              url: "BanList.html"
-            },
-            {
-              icon: 'fas fa-user-clock',
-              name: '帳號登入記錄',
-              status: '',
-              url: "LogInlog.html"
-            },
-          ])
+              ])
 
-          if (this.allStore.length > 1) {
-            $('#storeModal').modal('show')
-          } else if (this.allStore.length = 1) {
-            console.log(this.allStore[0].id);
+              vue.allStore = v.stores
+              sessionStorage.allStore = encryptObject(vue.allStore)
 
-            this.select(this.allStore[0].id)
-            window.location.href = "index.html"
-          }
+              selectStore(v.stores[0].storeId)
+
+
+            }
+
+          })
+
         }
       },
-      select(id) {
-        const foundStore = this.allStore.find(store => store.id === id);
-        this.storeInfo = foundStore;
+      // select(id) {
+      //   const foundStore = this.allStore.find(store => store.storeName === id);
+      //   this.storeInfo = foundStore;
 
-        // 将 storeInfo 存储到 sessionStorage 中
-        sessionStorage.storeInfo = JSON.stringify(this.storeInfo);
+      //   // 将 storeInfo 存储到 sessionStorage 中
+      //   sessionStorage.storeInfo = JSON.stringify(this.storeInfo);
 
-        // 跳转到 index.html 页面
-        if (sessionStorage.storeInfo == null) {
-          $('#storeModal').modal('hide')
-          toastr.error("登入失敗");
-        } else {
-          window.location.href = 'index.html';
-        }
-      },
+      //   // 跳转到 index.html 页面
+      //   if (sessionStorage.storeInfo == null) {
+      //     $('#storeModal').modal('hide')
+      //     toastr.error("登入失敗");
+      //   } else {
+      //     window.location.href = 'index.html';
+      //   }
+      // },
       //驗證信箱格式
       validateEmail(par) {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

@@ -253,11 +253,11 @@
                                                         v-if="settingItem.groupitem.type === 'tel'">
                                                         <input class="form-control" type="tel" autocomplete="off"
                                                             :disabled="!settingItem.groupitem.enabled"
-                                                            v-model="storeInfoEdit.store.storePhone"
-                                                            :class="{'is-invalid': !validateTalAndPhone(this.storeInfoEdit.store.storePhone)}"
+                                                            v-model="storeInfoEdit.storeInfo.tel"
+                                                            :class="{'is-invalid': !validateTalAndPhone(this.storeInfoEdit.storeInfo.tel)}"
                                                             :placeholder="settingItem.groupitem.placeholder">
                                                         <div class="text-memo text-danger"
-                                                            v-if="!validateTalAndPhone(storeInfoEdit.store.storePhone)">
+                                                            v-if="!validateTalAndPhone(storeInfoEdit.storeInfo.tel)">
                                                             *請輸入正確的市話或手機格式
                                                         </div>
                                                     </div>
@@ -954,13 +954,62 @@
             save() {
                 // console.log(this.storeInfoEdit);
                 var vue = this
-                apiWeb('api/Store/EditStore/' + vue.storeInfo.store.storeId, 'PATCH', JSON.stringify(vue.storeInfoEdit), '保存商店資訊', function (v) {
+
+                var store = this.storeInfoEdit.store
+                var storeInfo = this.storeInfoEdit.storeInfo
+
+                var EditData = {
+                    // store:{
+                    // "StoreName": "測試商店",
+                    // "StorePhone": store.storePhone,
+                    "MinOrderAmount": store.minOrderAmount,
+                    "OrderInterval": store.orderInterval,
+                    // "LineToken": "abcdef123456789",
+                    // "Enable": true,
+                    "SlotLimit": store.slotLimit,
+                    // }
+
+                    //storeInfo:{
+                    "City": storeInfo.city,
+                    "Districts": storeInfo.districts,
+                    "ShortAddress": storeInfo.ShortAddress,
+                    "Email": storeInfo.email,
+                    "Tel": storeInfo.tel,
+                    "BusinessNum": storeInfo.businessNum,
+                    "Introduction": storeInfo.introduction,
+                    // "Tags": "中式料理,家常菜,快速出餐",
+                    "AdvanceReservation": storeInfo.advanceReservation,
+                    "BasicwaitingTime": storeInfo.basicwaitingTime,
+                    "IntervalwaitingTime": storeInfo.intervalwaitingTime,
+                    "MinimumOrderAmount": storeInfo.minimumOrderAmount,
+                    "MinimumOrderText": storeInfo.minimumOrderText,
+                    "MinimumOrderEnabled": storeInfo.minimumOrderEnabled,
+                    "MaxReservationDays": storeInfo.maxReservationDays
+                    // }
+                }
+
+                var opentime = {
+                    "StoreId": this.storeInfo.store.storeId,
+                    "BusinessDays": this.storeInfo.openTime.businessDays,
+                    "SpecialCloseDays": this.storeInfo.openTime.specialCloseDays
+                }
+
+                console.log(opentime);
+
+
+                apiWeb('api/Store/EditStore/' + this.storeInfo.store.storeId, 'PATCH', JSON.stringify(EditData), '保存商店資訊-基本資訊', function (v) {
                     if (v.message == '商店信息更新成功') {
                         // apiWeb("api/Store/detail/" + vue.storeInfo.store.storeId, "GET", null, "取得店家資訊", function (v) {
                         //     sessionStorage.storeInfo = encryptObject(v);
                         // });
-                        sessionStorage.storeInfo = encryptObject(vue.storeInfoEdit);
-                        toastr.success("商店信息更新成功");
+                        apiWeb('api/Store/open/time', 'POST', JSON.stringify(opentime), '保存商店資訊-營業時間', function (v) {
+                            if (v.message == "Store open time updated successfully") {
+                                sessionStorage.storeInfo = encryptObject(vue.storeInfoEdit);
+                                toastr.success("商店信息更新成功");
+                            } else {
+                                toastr.error("商店信息更新失敗");
+                            }
+                        })
                     } else {
                         toastr.error("商店信息更新失敗");
                     }
@@ -1009,7 +1058,7 @@
                 // 檢查錯誤條件
                 const checksError = [
                     this.validateEmail(this.storeInfoEdit.email),
-                    this.validateTalAndPhone(this.storeInfoEdit.storePhone),
+                    this.validateTalAndPhone(this.storeInfoEdit.storeInfo.tel),
                     this.storeInfoEdit.businessNum.length === 8
                 ];
                 CheckItem.editError = checksError.some(check => check === false);
@@ -1102,7 +1151,7 @@
             //店家資訊：店家電話
             StoreInfoCheck_tel() {
                 //非空值且有被編輯後才去比對格式
-                if (this.storeInfoEdit.storePhone != '' && this.storeInfoEdit.storePhone !== this.storeInfo.storePhone && this.validateTalAndPhone(this.storeInfoEdit.storePhone)) {
+                if (this.storeInfoEdit.storeInfo.tel != '' && this.storeInfoEdit.storeInfo.tel !== this.storeInfo.storeInfo.tel && this.validateTalAndPhone(this.storeInfoEdit.storeInfo.tel)) {
                     return true//符合:false
                 } else {
                     return false

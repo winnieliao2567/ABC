@@ -50,22 +50,7 @@
   </div>
   <!-- control-sidebar-slide-open -->
   <div id="app" class="wrapper">
-    <div class="modal fade" id="reloginModal" tabindex="-1" data-backdrop="static" data-keyboard="false" role="dialog"
-      aria-labelledby="reloginModalLabel" aria-hidden="true">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="reloginModalLabel">重新登入</h5>
-          </div>
-          <div class="modal-body">
-            請重新登入以繼續使用系統。
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-primary" onclick="window.location.href='login.html'">登入</button>
-          </div>
-        </div>
-      </div>
-    </div>
+
     <!-- Navbar -->
     <nav class="main-header navbar navbar-expand navbar-white navbar-light">
       <!-- Left navbar links -->
@@ -239,10 +224,12 @@
 
 </body>
 <script>
+  checkUserInfo()
+
   const app = Vue.createApp({
     data() {
       return {
-        userFunction: JSON.parse(sessionStorage.userFunction),
+        userFunction: userFunction,
 
         PageTitle: '首頁',
 
@@ -292,9 +279,7 @@
     computed: {
     },
     mounted() {
-      setTimeout(() => {
-        checkUserInfo()
-      }, 500);
+      console.log(this.userFunction);
 
       var vue = this
       $("#daterange-cus").daterangepicker({
@@ -329,38 +314,51 @@
         singleDatePicker: false,  // 設置為範圍選擇器
 
       }, function (start, end) {
-        vue.data[3].Revenue = '32,234,900'
-        vue.data[3].Order = '3,024'
-        vue.data[3].dateStart = start.format('YYYY-MM-DD')
-        vue.data[3].dateEnd = end.format('YYYY-MM-DD')
+        apiWeb('api/Store/waitinglist/' + storeId + '?fromDate=' + start.format("YYYY-MM-DD") + '&toDate=' + end.format("YYYY-MM-DD"), 'GET', null, '獲得店家報表-自訂範圍', function (v) {
+          if (v.success == true) {
+            //當週
+            vue.data[3].Revenue = v.data.statistics.totalAmount
+            vue.data[3].Order = v.data.statistics.totalOrders
+            vue.data[3].dateStart = moment(v.data.statistics.fromDate).format('YYYY-MM-DD')
+            vue.data[3].dateEnd = moment(v.data.statistics.toDate).format("YYYY-MM-DD");
+          }
+
+        })
+        // vue.data[3].Revenue = '32,234,900'
+        // vue.data[3].Order = '3,024'
+        // vue.data[3].dateStart = start.format('YYYY-MM-DD')
+        // vue.data[3].dateEnd = end.format('YYYY-MM-DD')
 
       });
 
-
       //初始資料載入
+      apiWeb('api/Store/waitinglist/' + storeId + '?period=all', 'GET', null, '獲得店家報表', function (v) {
+        if (v.success == true) {
+
+          //當日
+          vue.data[0].Revenue = v.data.today.statistics.totalAmount
+          vue.data[0].Order = v.data.today.statistics.totalOrders
+          vue.data[0].dateStart = moment(v.data.today.statistics.fromDate).format('YYYY-MM-DD')
+          vue.data[0].dateEnd = moment(v.data.today.statistics.toDate).format("YYYY-MM-DD");
+
+          //當週
+          vue.data[1].Revenue = v.data.week.statistics.totalAmount
+          vue.data[1].Order = v.data.week.statistics.totalOrders
+          vue.data[1].dateStart = moment(v.data.week.statistics.fromDate).format('YYYY-MM-DD')
+          vue.data[1].dateEnd = moment(v.data.week.statistics.toDate).format("YYYY-MM-DD");
+
+          //當週
+          vue.data[2].Revenue = v.data.month.statistics.totalAmount
+          vue.data[2].Order = v.data.month.statistics.totalOrders
+          vue.data[2].dateStart = moment(v.data.month.statistics.fromDate).format('YYYY-MM-DD')
+          vue.data[2].dateEnd = moment(v.data.month.statistics.toDate).format("YYYY-MM-DD");
 
 
-      //當日
-      vue.data[0].Revenue = '30,230',
-        vue.data[0].Order = '27',
-        vue.data[0].dateStart = moment().format('YYYY-MM-DD'),
-        vue.data[0].dateEnd = moment().format('YYYY-MM-DD'),
+          // new Promise(resolve => setTimeout(resolve, 0))
+        }
 
-        vue.data[1].Revenue = '104,230',
-        vue.data[1].Order = '70',
-        vue.data[1].dateStart = moment().subtract(6, "days").format('YYYY-MM-DD'),
-        vue.data[1].dateEnd = moment().format('YYYY-MM-DD'),
+      })
 
-        vue.data[2].Revenue = '664,330',
-        vue.data[2].Order = '237',
-        vue.data[2].dateStart = moment().subtract(29, "days").format('YYYY-MM-DD'),
-        vue.data[2].dateEnd = moment().format('YYYY-MM-DD'),
-
-
-        new Promise(resolve => setTimeout(resolve, 0))
-
-
-      $('#' + this.storeInfo.storeInfo.storeId).addClass('selected-item')
 
     },
     watch: {

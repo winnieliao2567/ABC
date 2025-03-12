@@ -68,7 +68,7 @@
       <img src="img/logo2.svg" style="width: 80%;">
     </div>
     <!-- /.login-logo -->
-    <div class="card">
+    <div class="card mb-5">
       <div class="card-body login-card-body">
         <p class="login-box-msg">登入後開始管理你的店家</p>
         <form>
@@ -172,65 +172,7 @@
 
               sessionStorage.userInfo = encryptObject(adminInfo)
 
-              //使用者功能清單
-              sessionStorage.userFunction = JSON.stringify([
-                {
-                  icon: 'fas fa-store',
-                  name: '商店管理',
-                  status: '',
-                  url: "",
-                  item: [
-                    {
-                      icon: 'fas fa-store',
-                      name: '店家管理',
-                      status: '',
-                      url: "StoreMaintain.html"
-                    },
-                    {
-                      icon: 'fas fa-border-all',
-                      name: '菜單管理',
-                      status: '',
-                      url: "MenuList.html"
-                    },
-                    {
-                      icon: 'fas fa-utensils',
-                      name: '品項管理',
-                      status: '',
-                      url: "Productor.html"
-                    },
-                    {
-                      icon: 'fas fa-sort-amount-up',
-                      name: '排序管理',
-                      status: '',
-                      url: "SortClass.html"
-                    },
-                    {
-                      icon: 'fas fa-seedling',
-                      name: '客製化屬性',
-                      status: '',
-                      url: "Customized.html"
-                    }
-                  ]
-                },
-                {
-                  icon: 'fas fa-clipboard-list',
-                  name: '訂餐紀錄',
-                  status: '',
-                  url: "OrderList.html"
-                },
-                {
-                  icon: 'fas fa-user-slash',
-                  name: '黑名單',
-                  status: '',
-                  url: "BanList.html"
-                },
-                {
-                  icon: 'fas fa-user-clock',
-                  name: '帳號登入記錄',
-                  status: '',
-                  url: "LogInlog.html"
-                },
-              ])
+
 
               vue.allStore = v.stores
               sessionStorage.allStore = encryptObject(vue.allStore)

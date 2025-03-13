@@ -35,6 +35,9 @@
 
     <script src="js/share.js"></script>
     <link rel="stylesheet" href="css/share.css" />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+
 </head>
 
 <body class="sidebar-mini layout-navbar-fixed layout-footer-fixed sidebar-mini-md layout-fixed sidebar-collapse">
@@ -44,23 +47,6 @@
     </div>
     <!-- control-sidebar-slide-open -->
     <div id="app" class="wrapper">
-        <div class="modal fade" id="reloginModal" tabindex="-1" data-backdrop="static" data-keyboard="false"
-            role="dialog" aria-labelledby="reloginModalLabel" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="reloginModalLabel">重新登入</h5>
-                    </div>
-                    <div class="modal-body">
-                        請重新登入以繼續使用系統。
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-primary"
-                            onclick="window.location.href='login.html'">登入</button>
-                    </div>
-                </div>
-            </div>
-        </div>
         <div class="modal fade" id="createProductorClass" tabindex="-1" role="dialog"
             aria-labelledby="reloginModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered modal-md" role="document">
@@ -75,18 +61,18 @@
                     <div class="modal-body">
                         <div class="row">
                             <div class="col-12">
-                                <div class="form-group mb-5">
+                                <div class="form-group">
                                     <label for="">排序名稱<span class="text-danger">*</span></label>
-                                    <input v-model="editSortClass_Data.Data.name" class="form-control">
+                                    <input v-model="editSortClass_Data.Data.title" class="form-control">
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="modal-footer">
                         <!-- <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button> -->
-                        <button type="button" class="btn btn-secondary" @click="delet"
+                        <button type="button" class="btn btn-secondary" @click="deleteSort"
                             v-if="editSortClass_Data.action=='編輯'">刪除</button>
-                        <button type="button" class="btn btn-primary" :disabled="!checkSortClassForm" @click="add"
+                        <button type="button" class="btn btn-primary" :disabled="!checkSortClassForm" @click="addSort"
                             v-if="editSortClass_Data.action=='新增'">確認新增</button>
                         <button type="button" class="btn btn-primary" v-if="editSortClass_Data.action=='編輯'"
                             @click="save" :disabled="!checkSortClassForm">儲存</button>
@@ -108,15 +94,15 @@
                 <li class="nav-item dropdown">
                     <a class="nav-link" data-toggle="dropdown" href="#">
                         <i class="fas fa-store"></i>
-                        {{storeInfo.name}}
+                        {{storeInfo.store.storeName}}
                         <i class="fas fa-caret-down"></i>
                     </a>
                     <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-                        <a class="dropdown-item" v-for="(store,index) in allStore" :id="store.id"
-                            onclick="itemClick(this)">
+                        <a class="dropdown-item" v-for="(store,index) in allStore" :id="store.storeId"
+                            onclick="itemClick($(this))">
                             <div class="store">
-                                <strong>{{ store.name }}</strong>
-                                <p class="text-muted">{{ store.address.fullAddress }}</p>
+                                <strong>{{ store.storeName }}</strong>
+                                <p class="text-muted">{{ store.city }}{{ store.districts }}{{ store.shortAddress }}</p>
                             </div>
                         </a>
                     </div>
@@ -144,10 +130,10 @@
                     </div>
                     <div class="info">
                         <p href="#" class="d-inline-block m-0 mr-5">Hi {{userInfo.name}}</p>
-                        <button class="btn btn-sm m-0" onclick="window.location.href='account_edit.html'">
+                        <button class="btn btn-sm m-0 toEditAccount">
                             <i class="fas fa-user-edit"></i>
                         </button>
-                        <button class="btn btn-sm m-0" onclick="window.location.href='login.html'">
+                        <button class="btn btn-sm m-0 toLogin">
                             <i class="fas fa-sign-out-alt"></i>
                         </button>
                     </div>
@@ -207,7 +193,15 @@
             <div class="content">
                 <div class="container-fluid">
                     <div class="row">
-                        <div class="col-12 text-right mb-3">
+                        <div v-if="SortClass_Data.length==0" class="col-12 col-md-8 col-xl-6">
+                            <div class="emptyImage emptyImage2"></div>
+                            <p class="text-center">尚未新增排序，前往
+                                <button class="btn btn-primary" @click="showAddSortClassWin">
+                                    新增排序分類
+                                </button>
+                            </p>
+                        </div>
+                        <div class="col-12 text-right mb-3" v-if="SortClass_Data.length>0">
                             <div class="dropdown">
                                 <button class="btn btn-primary" @click="showAddSortClassWin">
                                     新增排序分類
@@ -215,16 +209,15 @@
                             </div>
                         </div>
                         <div class="col-12 list-group sortableList" ref="sortableList">
-                            <div class="list-group-item" v-for="(sort,index) in SortClassData" :key="sort.id"
-                                @click="showEditSortClassWin(sort.id)">
+                            <div class="list-group-item" v-for="(sort,index) in SortClass_Data" :key="sort.priorityId"
+                                @click="showEditSortClassWin(sort.priorityId)">
                                 <div class="row m-0">
                                     <div class="handle col-2 col-md-1">
                                         <i class="fas fa-ellipsis-v"></i>
                                         <i class="fas fa-ellipsis-v"></i>
                                     </div>
-                                    <!-- <div class="mr-2">{{sort.sort_number}}.</div> -->
                                     <div class="col-10 col-md-11">
-                                        {{sort.name}}
+                                        {{sort.sort}}. {{sort.title}}
                                     </div>
                                 </div>
                             </div>
@@ -253,54 +246,39 @@
 </body>
 
 <script>
+    checkUserInfo()
+
     // import Sortable from "sortablejs";
     const app = Vue.createApp({
         data() {
             return {
-                userFunction: sessionStorage.userFunction ? JSON.parse(sessionStorage.userFunction) : {},
+                userFunction: userFunction,
 
                 PageTitle: '排序管理',
 
-                userInfo: sessionStorage.userInfo ? JSON.parse(sessionStorage.userInfo) : {},
-                storeInfo: sessionStorage.storeInfo ? JSON.parse(sessionStorage.storeInfo) : {},
-                allStore: sessionStorage.allStore ? JSON.parse(sessionStorage.allStore) : [],
+                //原始資料
+                userInfo: decryptObject(sessionStorage.userInfo),
+                storeInfo: decryptObject(sessionStorage.storeInfo),
+                allStore: decryptObject(sessionStorage.allStore),
 
-                SortClassData: [
+                SortClass_Data: [
                     {
-                        id: 'c2024la12s24s',
-                        name: '排序屬性01',
-                        sort_number: 0
-                    },
-                    {
-                        id: 'c2024la12s27s',
-                        name: '排序屬性02',
-                        sort_number: 1
-                    },
-                    {
-                        id: 'c2024la12s25s',
-                        name: '排序屬性03',
-                        sort_number: 2
-                    },
-                    {
-                        id: 'c2024la12s26s',
-                        name: '排序屬性04',
-                        sort_number: 3
+                        priorityId: '',
+                        title: '',
+                        sort: 0
                     }
                 ],
                 editSortClass_Data: {
-                    action: '新增',
+                    action: '',
                     Data: {
-                        name: '',
+                        title: '',
                     },
                 },
-                editSortClass_Data_Default: {
-                    name: '',
-                }
             }
         },
         computed: {
             checkSortClassForm() {
-                if (this.editSortClass_Data.Data.name !== '') {
+                if (this.editSortClass_Data.Data.title !== '') {
                     return true
                 } else {
                     return false
@@ -308,9 +286,9 @@
             }
         },
         mounted() {
-            setTimeout(() => {
-                checkUserInfo()
-            }, 500);
+            this.getSortList()
+
+            var vue = this
 
             // 使用 ref 获取 DOM 元素
             const el = this.$refs.sortableList;
@@ -320,48 +298,127 @@
                 animation: 150,
                 onEnd: (event) => {
                     // 获取拖曳后的新顺序
-                    const movedItem = this.SortClassData.splice(event.oldIndex, 1)[0];
-                    this.SortClassData.splice(event.newIndex, 0, movedItem);
-                    // 更新 sort_number
-                    this.SortClassData.forEach((item, index) => {
-                        item.sort_number = index;
+                    const movedItem = this.SortClass_Data.splice(event.oldIndex, 1)[0];
+                    this.SortClass_Data.splice(event.newIndex, 0, movedItem);
+                    // 更新 sort
+                    this.SortClass_Data.forEach((item, index) => {
+                        item.sort = index + 1;
                     });
-                    console.log(this.SortClassData);
+                    var kdata = this.SortClass_Data
 
+                    const result = kdata.map(item => ({
+                        oldPriorityId: item.priorityId,
+                        newPriorityId: item.sort
+                    }));
+
+                    // console.log(result);
+
+                    var EditData = {
+                        priorities: result
+                    }
+
+                    console.log(EditData);
+
+
+                    // loadingOn()
+                    apiWeb('/api/MealPriority/titles/' + storeId + '/update-priority-ids', 'PUT', JSON.stringify(EditData), '修改排序', function (v) {
+                        if (v.success == true) {
+                            // location.reload()
+                            toastr.success('排序修改成功');
+                            vue.getSortList()
+                        } else {
+                            toastr.error('排序修改失敗');
+                        }
+
+                    })
                 },
             });
         },
         watch: {
         },
         methods: {
+            getSortList() {
+                var vue = this
+                apiWeb('api/MealPriority/titles/' + storeId, 'GET', null, '取得排序列表', function (v) {
+                    // console.log(v);
+                    vue.SortClass_Data = v.titles
+                    // console.log(vue.SortClass_Data);
+                    loadingOff()
+                })
+            },
+
             //新增視窗
             showAddSortClassWin() {
                 this.editSortClass_Data = {
                     action: '新增',
-                    Data: this.editSortClass_Data_Default
+                    Data: {
+                        title: ''
+                    }
                 }
                 console.log(this.editSortClass_Data.Data);
-                $('#createProductorClass').modal('show')
-            },
-            //編輯視窗
-            showEditSortClassWin(itemId) {
-                var item = this.SortClassData.find(a => a.id === itemId)
-                this.editSortClass_Data = {
-                    action: '編輯',
-                    Data: item,
-                }
-                // console.log(this.editSortClass_Data);
                 $('#createProductorClass').modal('show')
             },
 
-            delet() {
-                console.log(this.editSortClass_Data.Data);
+            //編輯視窗
+            showEditSortClassWin(itemId) {
+                let item = this.SortClass_Data.find(a => a.priorityId == itemId);
+
+                this.editSortClass_Data = {
+                    action: '編輯',
+                    Data: JSON.parse(JSON.stringify(item)), // 深拷貝，完全獨立
+                };
+
+                $('#createProductorClass').modal('show');
+            },
+
+            deleteSort() {
+                // console.log('delete');
+
+                loadingOn()
+                var vue = this
+                apiWeb('/api/MealPriority/titles/' + storeId + '/' + this.editSortClass_Data.Data.priorityId
+                    , 'DELETE', null, '刪除排序', function (v) {
+                        console.log(vue.SortClass_Data[0].title, vue.editSortClass_Data.Data.title);
+                        if (v.success == true) {
+                            location.reload()
+                        } else {
+                            toastr.error('排序名稱刪除失敗');
+                        }
+
+                    })
             },
             save() {
-                console.log(this.editSortClass_Data.Data);
+                loadingOn()
+
+                var editData = {
+                    title: this.editSortClass_Data.Data.title
+                }
+                console.log(editData);
+
+                var vue = this
+                apiWeb('/api/MealPriority/titles/' + storeId + '/' + this.editSortClass_Data.Data.priorityId
+                    , 'PUT', JSON.stringify(editData), '新增排序', function (v) {
+                        console.log(vue.SortClass_Data[0].title, vue.editSortClass_Data.Data.title);
+                        if (v.success == true) {
+                            location.reload()
+                        } else {
+                            toastr.error('排序名稱修改失敗');
+                        }
+
+                    })
             },
-            add() {
-                console.log(this.editSortClass_Data.Data);
+            addSort() {
+                var addData = {
+                    title: this.editSortClass_Data.Data.title
+                }
+                console.log(addData);
+
+                apiWeb('/api/MealPriority/titles/' + storeId, 'POST', JSON.stringify(addData), '新增排序', function (v) {
+                    if (v.success == true) {
+                        location.reload()
+                    }
+                })
+                // console.log(this.editSortClass_Data.Data);
             }
         },
     });

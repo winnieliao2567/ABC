@@ -57,23 +57,7 @@
     </div>
     <!-- control-sidebar-slide-open -->
     <div id="app" class="wrapper">
-        <div class="modal fade" id="reloginModal" tabindex="-1" data-backdrop="static" data-keyboard="false"
-            role="dialog" aria-labelledby="reloginModalLabel" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="reloginModalLabel">重新登入</h5>
-                    </div>
-                    <div class="modal-body">
-                        請重新登入以繼續使用系統。
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-primary"
-                            onclick="window.location.href='login.html'">登入</button>
-                    </div>
-                </div>
-            </div>
-        </div>
+
         <!-- Navbar -->
         <nav class="main-header navbar navbar-expand navbar-white navbar-light">
             <!-- Left navbar links -->
@@ -124,10 +108,10 @@
                     </div>
                     <div class="info">
                         <p href="#" class="d-inline-block m-0 mr-5">Hi {{userInfo.name}}</p>
-                        <button class="btn btn-sm m-0" onclick="window.location.href='account_edit.html'">
+                        <button class="btn btn-sm m-0 toEditAccount">
                             <i class="fas fa-user-edit"></i>
                         </button>
-                        <button class="btn btn-sm m-0" onclick="window.location.href='login.html'">
+                        <button class="btn btn-sm m-0 toLogin">
                             <i class="fas fa-sign-out-alt"></i>
                         </button>
                     </div>
@@ -500,9 +484,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="p-3 text-end col-12 border-top"
-                        style="background-color: var(--bs-body-bg);position: sticky;bottom: 57px;z-index: 1000;right: 0;">
-
+                    <div class="p-3 text-end col-12 border-top" id="saveBar">
                         <button class="btn btn-secondary mr-2" v-on:click="reset">
                             <i class="fas fa-save mr-2"></i>恢復原資料
                         </button>
@@ -533,10 +515,12 @@
 </body>
 <script src="js/TwCities.js"></script>
 <script>
+    checkUserInfo()
+
     const app = Vue.createApp({
         data() {
             return {
-                userFunction: sessionStorage.userFunction ? JSON.parse(sessionStorage.userFunction) : {},
+                userFunction: userFunction,
 
                 PageTitle: '店家管理',
 
@@ -547,7 +531,50 @@
                 allStore: decryptObject(sessionStorage.allStore),
 
                 //編輯資料
-                storeInfoEdit: decryptObject(sessionStorage.storeInfo),
+                storeInfoEdit: {
+                    "store": {
+                        "storeId": "",
+                        "storeName": "",
+                        "storePhone": "",
+                        "minOrderAmount": 0,
+                        "orderInterval": 0,
+                        "createdDate": "",
+                        "enable": true,
+                        "deleted": false,
+                        "id": 0,
+                        "slotLimit": 0
+                    },
+                    "storeInfo": {
+                        "storeId": "",
+                        "city": "",
+                        "districts": "",
+                        "shortAddress": "",
+                        "email": "",
+                        "tel": "",
+                        "businessNum": "",
+                        "introduction": "",
+                        "tags": [
+                            "中式料理",
+                            "家常菜",
+                            "快速出餐"
+                        ],
+                        "advanceReservation": "",
+                        "basicwaitingTime": "",
+                        "intervalwaitingTime": "",
+                        "minimumOrderAmount": "",
+                        "minimumOrderText": "",
+                        "minimumOrderEnabled": true,
+                        "maxReservationDays": 0
+                    },
+                    "openTime": {
+                        "businessDays": [
+
+                        ],
+                        "specialCloseDays": [
+
+                        ]
+                    }
+                },
 
                 allCity: [],
                 allDistricts: [],
@@ -770,46 +797,23 @@
             }
         },
         mounted() {
-            setTimeout(() => {
-                checkUserInfo()
-            }, 500);
 
             // 初始資料載入
             this.initCityData();
             this.setDistricts();
 
+            this.GetStoreInfo()
 
             //tag標籤
             new TomSelect("#input-tags", {
                 persist: false,
                 createOnBlur: true,
                 create: true,
-                items: this.storeInfo.storeInfo.tags,
+                items: this.storeInfoEdit.storeInfo.tags,
             });
 
-            //文字編輯器
-            var quill = new Quill('#storeIntroduction', {
-                theme: 'snow', // 使用雪花主題
-                placeholder: '請輸入店家簡介...', // 設定 placeholder
-                modules: {
-                    toolbar: [
-                        [{ 'size': ['small', 'medium', 'large', 'huge'] }],
-                        [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-                        [{ 'align': [] }],
-                        ['bold', 'italic', 'underline', 'strike'],
-                        [{ 'color': [] }, { 'background': [] }],
-                        ['link', 'image'],
-                    ] // 設定工具列
-                }
-            });
-            // 自動帶入 storeInfo.introduction 的值
-            quill.root.innerHTML = this.storeInfo.storeInfo.introduction;
-            // 監聽內容變更
-            quill.on('text-change', () => {
-                this.storeInfoEdit.storeInfo.introduction = quill.root.innerHTML;  // 存儲HTML內容
-                // 或者如果需要純文字：
-                // this.storeInfoEdit.introduction = quill.getText();  // 存儲純文字
-            });
+
+
 
             this.$nextTick(() => {
                 this.$refs.inputs.forEach(input => {
@@ -841,7 +845,8 @@
             // },
             'storeInfoEdit.storeInfo.city'(newVal) {
                 this.setDistricts()
-            }
+            },
+
 
         },
         methods: {
@@ -950,8 +955,43 @@
                 return numbers;
             },
 
+            GetStoreInfo() {
+                var vue = this
+                apiWeb("api/Store/detail/" + storeId, "GET", null, "取得店家資訊", function (v) {
+                    // console.log(v);
+                    vue.storeInfoEdit = v;
+
+                    //文字編輯器
+                    var quill = new Quill('#storeIntroduction', {
+                        theme: 'snow', // 使用雪花主題
+                        placeholder: '請輸入店家簡介...', // 設定 placeholder
+                        modules: {
+                            toolbar: [
+                                [{ 'size': ['small', 'medium', 'large', 'huge'] }],
+                                [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                                [{ 'align': [] }],
+                                ['bold', 'italic', 'underline', 'strike'],
+                                [{ 'color': [] }, { 'background': [] }],
+                                ['link', 'image'],
+                            ] // 設定工具列
+                        }
+                    });
+                    // 自動帶入 storeInfo.introduction 的值
+                    quill.root.innerHTML = vue.storeInfoEdit.storeInfo.introduction;
+
+                    // 監聽內容變更
+                    quill.on('text-change', () => {
+                        vue.storeInfoEdit.storeInfo.introduction = quill.root.innerHTML;  // 存儲HTML內容
+                        // 或者如果需要純文字：
+                        // this.storeInfoEdit.introduction = quill.getText();  // 存儲純文字
+                    });
+                    loadingOff()
+                });
+            },
+
             //儲存
             save() {
+                loadingOn();
                 // console.log(this.storeInfoEdit);
                 var vue = this
 
@@ -988,33 +1028,29 @@
                     // }
                 }
 
-                var opentime = {
-                    "StoreId": this.storeInfo.store.storeId,
-                    "BusinessDays": this.storeInfo.openTime.businessDays,
-                    "SpecialCloseDays": this.storeInfo.openTime.specialCloseDays
+                var aopenTime = {
+                    StoreId: storeId,
+                    BusinessDays: this.storeInfoEdit.openTime.businessDays,
+                    SpecialCloseDays: this.storeInfoEdit.openTime.specialCloseDays
                 }
-
-                console.log(opentime);
-
-
-                apiWeb('api/Store/EditStore/' + this.storeInfo.store.storeId, 'PATCH', JSON.stringify(EditData), '保存商店資訊-基本資訊', function (v) {
+                console.log(aopenTime);
+                apiWeb('api/Store/EditStore/' + storeId, 'PATCH', JSON.stringify(EditData), '保存商店資訊-基本資訊', function (v) {
                     if (v.message == '商店信息更新成功') {
-                        // apiWeb("api/Store/detail/" + vue.storeInfo.store.storeId, "GET", null, "取得店家資訊", function (v) {
-                        //     sessionStorage.storeInfo = encryptObject(v);
-                        // });
-                        apiWeb('api/Store/open/time', 'POST', JSON.stringify(opentime), '保存商店資訊-營業時間', function (v) {
+                        apiWeb('api/Store/open/time', 'POST', JSON.stringify(aopenTime), '保存商店資訊-營業時間', function (v) {
                             if (v.message == "Store open time updated successfully") {
-                                sessionStorage.storeInfo = encryptObject(vue.storeInfoEdit);
-                                toastr.success("商店信息更新成功");
+                                // sessionStorage.storeInfo = encryptObject(vue.storeInfoEdit);
+                                window.location.href = 'StoreMaintain.html?sid=' + storeId
                             } else {
                                 toastr.error("商店信息更新失敗");
+                                loadingOff();
                             }
                         })
                     } else {
                         toastr.error("商店信息更新失敗");
+                        loadingOff();
                     }
-
                 })
+
             },
 
             //重置
@@ -1151,7 +1187,7 @@
             //店家資訊：店家電話
             StoreInfoCheck_tel() {
                 //非空值且有被編輯後才去比對格式
-                if (this.storeInfoEdit.storeInfo.tel != '' && this.storeInfoEdit.storeInfo.tel !== this.storeInfo.storeInfo.tel && this.validateTalAndPhone(this.storeInfoEdit.storeInfo.tel)) {
+                if (this.storeInfoEdit.storeInfo.tel != '' && this.storeInfoEdit.storeInfo.tel !== this.storeInfoEdit.storeInfo.tel && this.validateTalAndPhone(this.storeInfoEdit.storeInfo.tel)) {
                     return true//符合:false
                 } else {
                     return false

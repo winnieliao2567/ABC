@@ -32,6 +32,8 @@
     <link rel="stylesheet" href="css/share.css" />
 
     <title>密碼修改</title>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
 </head>
 
 <body class="sidebar-mini layout-navbar-fixed layout-footer-fixed sidebar-mini-md layout-fixed sidebar-collapse">
@@ -41,23 +43,6 @@
     </div>
     <!-- control-sidebar-slide-open -->
     <div id="app" class="wrapper">
-        <div class="modal fade" id="reloginModal" tabindex="-1" data-backdrop="static" data-keyboard="false"
-            role="dialog" aria-labelledby="reloginModalLabel" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="reloginModalLabel">重新登入</h5>
-                    </div>
-                    <div class="modal-body">
-                        請重新登入以繼續使用系統。
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-primary"
-                            onclick="window.location.href='login.html'">登入</button>
-                    </div>
-                </div>
-            </div>
-        </div>
         <!-- Navbar -->
         <nav class="main-header navbar navbar-expand navbar-white navbar-light">
             <!-- Left navbar links -->
@@ -72,15 +57,15 @@
                 <li class="nav-item dropdown">
                     <a class="nav-link" data-toggle="dropdown" href="#">
                         <i class="fas fa-store"></i>
-                        {{storeInfo.name}}
+                        {{storeInfo.store.storeName}}
                         <i class="fas fa-caret-down"></i>
                     </a>
                     <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-                        <a class="dropdown-item" v-for="(store,index) in allStore" :id="store.id"
-                            onclick="itemClick(this)">
+                        <a class="dropdown-item" v-for="(store,index) in allStore" :id="store.storeId"
+                            onclick="itemClick($(this))">
                             <div class="store">
-                                <strong>{{ store.name }}</strong>
-                                <p class="text-muted">{{ store.address.fullAddress }}</p>
+                                <strong>{{ store.storeName }}</strong>
+                                <p class="text-muted">{{ store.city }}{{ store.districts }}{{ store.shortAddress }}</p>
                             </div>
                         </a>
                     </div>
@@ -108,10 +93,10 @@
                     </div>
                     <div class="info">
                         <p href="#" class="d-inline-block m-0 mr-5">Hi {{userInfo.name}}</p>
-                        <button class="btn btn-sm m-0" onclick="window.location.href='account_edit.html'">
+                        <button class="btn btn-sm m-0 toEditAccount">
                             <i class="fas fa-user-edit"></i>
                         </button>
-                        <button class="btn btn-sm m-0" onclick="window.location.href='login.html'">
+                        <button class="btn btn-sm m-0 toLogin">
                             <i class="fas fa-sign-out-alt"></i>
                         </button>
                     </div>
@@ -179,13 +164,11 @@
                                 <div class="input-group">
                                     <input class="form-control" id="old" v-model="Key.oldPassword"
                                         placeholder="請輸入原本的密碼" type="password" autocomplete="off">
-                                    <div class="input-group-text m-0 password-undisabled" data-for="#old">
-                                        <i class="fas fa-eye-slash"></i>
+                                    <div class="input-group-append">
+                                        <div class="input-group-text m-0 password-undisabled" data-for="#old">
+                                            <i class="fas fa-eye-slash"></i>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="text-memo text-danger formHint" style="position: absolute;"
-                                    v-if="Key.oldPassword!=''&&check.oldPassword==false">
-                                    *原密碼錯誤
                                 </div>
                             </div>
                             <div class="form-group mb-5">
@@ -195,8 +178,10 @@
                                 <div class="input-group">
                                     <input class="form-control" id="new" placeholder="請輸入新的密碼" type="password"
                                         v-model="Key.newPassword" autocomplete="off">
-                                    <div class="input-group-text m-0 password-undisabled" data-for="#new">
-                                        <i class="fas fa-eye-slash"></i>
+                                    <div class="input-group-append">
+                                        <div class="input-group-text m-0 password-undisabled" data-for="#new">
+                                            <i class="fas fa-eye-slash"></i>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="text-memo text-danger formHint" style="position: absolute;"
@@ -211,8 +196,10 @@
                                 <div class="input-group">
                                     <input class="form-control" id="confirm" placeholder="請輸入新的密碼" type="password"
                                         v-model="Key.confirmPassword" autocomplete="off">
-                                    <div class="input-group-text m-0 password-undisabled" data-for="#confirm">
-                                        <i class="fas fa-eye-slash"></i>
+                                    <div class="input-group-append">
+                                        <div class="input-group-text m-0 password-undisabled" data-for="#confirm">
+                                            <i class="fas fa-eye-slash"></i>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="text-memo text-danger formHint" style="position: absolute;"
@@ -246,17 +233,18 @@
 
 </body>
 <script>
-
+    checkUserInfo()
     const app = Vue.createApp({
         data() {
             return {
-                userFunction: sessionStorage.userFunction ? JSON.parse(sessionStorage.userFunction) : {},
+                userFunction: userFunction,
 
                 PageTitle: '密碼修改',
 
-                userInfo: sessionStorage.userInfo ? JSON.parse(sessionStorage.userInfo) : {},
-                storeInfo: sessionStorage.storeInfo ? JSON.parse(sessionStorage.storeInfo) : {},
-                allStore: sessionStorage.allStore ? JSON.parse(sessionStorage.allStore) : [],
+                //原始資料
+                userInfo: decryptObject(sessionStorage.userInfo),
+                storeInfo: decryptObject(sessionStorage.storeInfo),
+                allStore: decryptObject(sessionStorage.allStore),
 
                 Key: { oldPassword: '', newPassword: '', confirmPassword: '' },
                 Reset: { oldPassword: '', newPassword: '', confirmPassword: '' },
@@ -265,23 +253,13 @@
         },
         computed: {
             checkBtn() {
-                return this.check.oldPassword === true && this.check.newPassword === true && this.check.confirmPassword === true
+                return this.check.newPassword === true && this.check.confirmPassword === true
             }
         },
         mounted() {
-            setTimeout(() => {
-                checkUserInfo()
-            }, 500);
+            loadingOff()
         },
         watch: {
-            'Key.oldPassword'(newV, oldV) {
-                // 比较新的值 newV 和旧的值 oldV
-                if (newV != '' && newV === this.userInfo.accountKey) {
-                    this.check.oldPassword = true
-                } else {
-                    this.check.oldPassword = false
-                }
-            },
             'Key.newPassword'(newV, oldV) {
                 // 比较新的值 newV 和旧的值 oldV
                 if (newV != '') {
@@ -294,25 +272,40 @@
                 // 比较新的值 newV 和旧的值 oldV
                 if (newV != '' && newV == this.Key.newPassword) {
                     this.check.confirmPassword = true
-                    console.log('正確');
+                    // console.log('正確');
 
                 } else {
                     this.check.confirmPassword = false
-                    console.log('錯誤');
+                    // console.log('錯誤');
                 }
             }
         },
         methods: {
             changeKey() {
-                console.log(this.Key)
                 loadingOn();
+                var editData = {
+                    "userId": this.userInfo.id,
+                    "currentPassword": this.Key.oldPassword,
+                    "newPassword": this.Key.newPassword
+                }
+                console.log(editData)
 
-                setTimeout(() => {
-                    loadingOff();
-                    toastr.success("修改成功");
-                    toastr.error("修改失敗");
+                apiWeb('api/Login/change-password', 'POST', JSON.stringify(editData), '更換密碼', function (v) {
+                    if (v.success == true) {
+                        toastr.success("密碼修改成功，請等待畫面轉換後重新登入");
+                    } else {
+                        toastr.error("密碼修改失敗");
+                    }
+
                     this.Key = this.Reset
-                }, 1500);
+
+
+                    setTimeout(() => {
+                        window.location.href = 'login.html'
+                    }, 2000);
+                })
+
+
             }
         },
     });

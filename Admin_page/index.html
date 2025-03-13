@@ -99,10 +99,10 @@
           </div>
           <div class="info">
             <p href="#" class="d-inline-block m-0 mr-5">Hi {{userInfo.name}}</p>
-            <button class="btn btn-sm m-0" onclick="window.location.href='account_edit.html'">
+            <button class="btn btn-sm m-0 toEditAccount">
               <i class="fas fa-user-edit"></i>
             </button>
-            <button class="btn btn-sm m-0" onclick="window.location.href='login.html'">
+            <button class="btn btn-sm m-0 toLogin">
               <i class="fas fa-sign-out-alt"></i>
             </button>
           </div>
@@ -284,17 +284,6 @@
       var vue = this
       $("#daterange-cus").daterangepicker({
         ranges: false,
-        // ranges: {
-        // 今天: [moment(), moment()],
-        // 昨天: [moment().subtract(1, "days"), moment().subtract(1, "days")],
-        // 近七天: [moment().subtract(6, "days"), moment()],
-        // 近30天: [moment().subtract(29, "days"), moment()],
-        // 當月: [moment().startOf("month"), moment().endOf("month")],
-        // 上個月: [
-        //     moment().subtract(1, "month").startOf("month"),
-        //     moment().subtract(1, "month").endOf("month"),
-        // ],
-        // },
         locale: {
           format: 'YYYY-MM-DD',  // 日期顯示格式
           separator: ' - ',      // 日期範圍分隔符
@@ -314,6 +303,8 @@
         singleDatePicker: false,  // 設置為範圍選擇器
 
       }, function (start, end) {
+        loadingOn()
+
         apiWeb('api/Store/waitinglist/' + storeId + '?fromDate=' + start.format("YYYY-MM-DD") + '&toDate=' + end.format("YYYY-MM-DD"), 'GET', null, '獲得店家報表-自訂範圍', function (v) {
           if (v.success == true) {
             //當週
@@ -321,6 +312,7 @@
             vue.data[3].Order = v.data.statistics.totalOrders
             vue.data[3].dateStart = moment(v.data.statistics.fromDate).format('YYYY-MM-DD')
             vue.data[3].dateEnd = moment(v.data.statistics.toDate).format("YYYY-MM-DD");
+            loadingOff()
           }
 
         })
@@ -353,6 +345,7 @@
           vue.data[2].dateStart = moment(v.data.month.statistics.fromDate).format('YYYY-MM-DD')
           vue.data[2].dateEnd = moment(v.data.month.statistics.toDate).format("YYYY-MM-DD");
 
+          loadingOff()
 
           // new Promise(resolve => setTimeout(resolve, 0))
         }

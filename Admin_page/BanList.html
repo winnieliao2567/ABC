@@ -50,23 +50,6 @@
     </div>
     <!-- control-sidebar-slide-open -->
     <div id="app" class="wrapper">
-        <div class="modal fade" id="reloginModal" tabindex="-1" data-backdrop="static" data-keyboard="false"
-            role="dialog" aria-labelledby="reloginModalLabel" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="reloginModalLabel">重新登入</h5>
-                    </div>
-                    <div class="modal-body">
-                        請重新登入以繼續使用系統。
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-primary"
-                            onclick="window.location.href='login.html'">登入</button>
-                    </div>
-                </div>
-            </div>
-        </div>
         <div class="modal fade" id="AddBanWin" tabindex="-1" role="dialog" aria-labelledby="reloginModalLabel"
             aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
@@ -151,10 +134,10 @@
                     </div>
                     <div class="info">
                         <p href="#" class="d-inline-block m-0 mr-5">Hi {{userInfo.name}}</p>
-                        <button class="btn btn-sm m-0" onclick="window.location.href='account_edit.html'">
+                        <button class="btn btn-sm m-0 toEditAccount">
                             <i class="fas fa-user-edit"></i>
                         </button>
-                        <button class="btn btn-sm m-0" onclick="window.location.href='login.html'">
+                        <button class="btn btn-sm m-0 toLogin">
                             <i class="fas fa-sign-out-alt"></i>
                         </button>
                     </div>
@@ -223,21 +206,32 @@
                             <table class="table table-bordered table-hover">
                                 <thead class="table-primary">
                                     <tr>
-                                        <th>
+                                        <th class="longText">
+                                            #
+                                        </th>
+                                        <th class="longText">
 
                                         </th>
-                                        <th>
+                                        <th class="longText">
                                             帳號
                                         </th>
-                                        <th>
+                                        <th class="longText">
                                             新增時間
                                         </th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr v-for="(item,index) in Ban_data">
+                                    <tr v-if="Ban_data.length==0">
+                                        <td colspan="4" class="text-center">
+                                            沒有資料
+                                        </td>
+                                    </tr>
+                                    <tr v-for="(item,index) in paginatedOrders">
                                         <td class="longText">
-                                            <button class="btn btn-outline-secondary"
+                                            {{ (currentPage - 1) * pageSize + index + 1 }}
+                                        </td>
+                                        <td class="longText">
+                                            <button class="btn btn-sm btn-outline-secondary"
                                                 v-on:click="deletBan(item.mobileNumber)">
                                                 <i class="fas fa-trash-alt"></i>
                                             </button>
@@ -247,6 +241,22 @@
                                     </tr>
                                 </tbody>
                             </table>
+                        </div>
+                        <div v-if="Ban_data.length>0" class="col-12">
+                            <ul class="pagination pagination-sm justify-content-center mt-3">
+                                <li class="page-item" :class="{ disabled: currentPage === 1 }">
+                                    <a href="#" class="page-link" @click.prevent="prevPage">&laquo;</a>
+                                </li>
+
+                                <li v-for="page in totalPages" :key="page" class="page-item"
+                                    :class="{ active: currentPage === page }">
+                                    <a href="#" class="page-link" @click.prevent="goToPage(page)">{{ page }}</a>
+                                </li>
+
+                                <li class="page-item" :class="{ disabled: currentPage === totalPages }">
+                                    <a href="#" class="page-link" @click.prevent="nextPage">&raquo;</a>
+                                </li>
+                            </ul>
                         </div>
                     </div>
                     <!-- /.row -->
@@ -271,10 +281,11 @@
 
 </body>
 <script>
+    checkUserInfo()
     const app = Vue.createApp({
         data() {
             return {
-                userFunction: sessionStorage.userFunction ? JSON.parse(sessionStorage.userFunction) : {},
+                userFunction: userFunction,
 
                 PageTitle: '黑名單',
 
@@ -285,20 +296,32 @@
 
                 Ban_data: [{ mobileNumber: '', createDate: '' }],
 
-                AddBan_data: { mobileNumber: '' }
+                AddBan_data: { mobileNumber: '' },
+
+
+                currentPage: currentPage, // 當前頁面
+                pageSize: pageSize, // 每頁顯示筆數
             }
         },
         computed: {
+            // 計算總頁數
+            totalPages() {
+                return Math.ceil(this.Ban_data.length / this.pageSize);
+            },
+            // 計算當前頁要顯示的訂單
+            paginatedOrders() {
+                const start = (this.currentPage - 1) * this.pageSize;
+                return this.Ban_data.slice(start, start + this.pageSize);
+            }
         },
         mounted() {
             var vue = this
             // console.log(this.storeInfo.storeId);
 
-            apiWeb('api/Store/blacklist/' + this.storeInfo.store.storeId
+            apiWeb('api/Store/blacklist/' + storeId
                 , 'GET', '', '取得黑名單列表', function (v) {
                     vue.Ban_data = v
-                    checkUserInfo()
-                    console.log(vue.Ban_data);
+                    // console.log(vue.Ban_data);
                 })
         },
         watch: {
@@ -310,8 +333,8 @@
             AddBan() {
                 var vue = this
                 // console.log(vue.storeInfo.store);
-                console.log(vue.storeInfo.store.storeId + '/' + vue.AddBan_data.mobileNumber);
-                apiWeb('api/Store/blacklist/' + vue.storeInfo.store.storeId + '/' + vue.AddBan_data.mobileNumber, 'POST', null, '新增黑名單', function (v) {
+                console.log(storeId + '/' + vue.AddBan_data.mobileNumber);
+                apiWeb('api/Store/blacklist/' + storeId + '/' + vue.AddBan_data.mobileNumber, 'POST', null, '新增黑名單', function (v) {
                     if (v.status == 0) {
                         $('#AddBanWin').modal('hide')
                         window.location.href = 'BanList.html'
@@ -321,20 +344,36 @@
                 })
             },
             returnTime(dateStr) {
-                return moment(dateStr).format("YYYY-MM-DD HH:mm:ss");
+                return moment(dateStr).format("YYYY-MM-DD");
             },
             deletBan(num) {
 
                 var vue = this
-                console.log(vue.storeInfo.store.storeId + '/' + num);
+                console.log(storeId + '/' + num);
 
-                apiWeb('api/Store/blacklist/' + vue.storeInfo.store.storeId + '/' + num, 'DELETE', null, '新增黑名單', function (v) {
+                apiWeb('api/Store/blacklist/' + storeId + '/' + num, 'DELETE', null, '新增黑名單', function (v) {
                     if (v.message == "已成功將用戶從黑名單中移除") {
                         $('#AddBanWin').modal('hide')
                         window.location.href = 'BanList.html'
                     }
                 })
-            }
+            },
+            // 切換到上一頁
+            prevPage() {
+                if (this.currentPage > 1) {
+                    this.currentPage--;
+                }
+            },
+            // 切換到下一頁
+            nextPage() {
+                if (this.currentPage < this.totalPages) {
+                    this.currentPage++;
+                }
+            },
+            // 跳轉到指定頁數
+            goToPage(page) {
+                this.currentPage = page;
+            },
         },
     });
     app.mount("#app");

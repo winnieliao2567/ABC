@@ -54,7 +54,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <!-- Navbar -->
     <nav class="main-header navbar navbar-expand navbar-white navbar-light">
       <!-- Left navbar links -->
-      <ul class="navbar-nav">
+      <ul class="navbar-nav d-md-none">
         <li class="nav-item">
           <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
         </li>
@@ -65,14 +65,14 @@ scratch. This page gets rid of all links and provides the needed markup only.
         <li class="nav-item dropdown">
           <a class="nav-link" data-toggle="dropdown" href="#">
             <i class="fas fa-store"></i>
-            {{storeInfo.name}}
+            {{storeInfo.store.storeName}}
             <i class="fas fa-caret-down"></i>
           </a>
           <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-            <a class="dropdown-item" v-for="(store,index) in allStore">
+            <a class="dropdown-item" v-for="(store,index) in allStore" :id="store.storeId" onclick="itemClick($(this))">
               <div class="store">
-                <strong>{{ store.name }}</strong>
-                <p class="text-muted">{{ store.address.fullAddress }}</p>
+                <strong>{{ store.storeName }}</strong>
+                <p class="text-muted">{{ store.city }}{{ store.districts }}{{ store.shortAddress }}</p>
               </div>
             </a>
           </div>
@@ -99,10 +99,10 @@ scratch. This page gets rid of all links and provides the needed markup only.
           </div>
           <div class="info">
             <p href="#" class="d-inline-block m-0 mr-5">Hi {{userInfo.name}}</p>
-            <button class="btn btn-sm m-0" onclick="window.location.href='account_edit.html'">
+            <button class="btn btn-sm m-0 toEditAccount">
               <i class="fas fa-user-edit"></i>
             </button>
-            <button class="btn btn-sm m-0" onclick="window.location.href='login.html'">
+            <button class="btn btn-sm m-0 toLogin">
               <i class="fas fa-sign-out-alt"></i>
             </button>
           </div>

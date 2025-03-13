@@ -45,6 +45,9 @@
 
     <script src="js/share.js"></script>
     <link rel="stylesheet" href="css/share.css" />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+
 </head>
 
 <body class="sidebar-mini layout-navbar-fixed layout-footer-fixed sidebar-mini-md layout-fixed sidebar-collapse">
@@ -54,24 +57,6 @@
     </div>
     <!-- control-sidebar-slide-open -->
     <div id="app" class="wrapper">
-        <div class="modal fade" id="reloginModal" tabindex="-1" data-backdrop="static" data-keyboard="false"
-            role="dialog" aria-labelledby="reloginModalLabel" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="reloginModalLabel">重新登入</h5>
-                    </div>
-                    <div class="modal-body">
-                        請重新登入以繼續使用系統。
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-primary"
-                            onclick="window.location.href='login.html'">登入</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <!-- 當日提早關店設定 -->
         <div class="modal fade" id="EarlyClosureModal" tabindex="-1" aria-labelledby="exampleModalLabel"
             aria-hidden="true">
@@ -110,6 +95,65 @@
             </div>
         </div>
 
+        <!-- 基礎等待時間 -->
+        <div class="modal fade" id="BasicWaitingTimeModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">基礎等待時間</h5>
+                        <!-- <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button> -->
+                    </div>
+                    <div class="modal-body">
+                        <select class="form-control w-50 d-inline-block" autocomplete="off" v-model="BasicWaitingTime">
+                            <option v-for="num in generateNumbers(0, 60, 5)" :key="num" :value="num">
+                                {{ num }}
+                            </option>
+                        </select>
+                        <p class="pl-3 w-25 d-inline-block m-0 mr-5">分鐘</p>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">取消設定</button>
+                        <button type="button" class="btn btn-primary" v-on:click="BasicWaitingTimeSave()">儲存</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 基礎等待時間 -->
+        <div class="modal fade" id="specialCloseDaysModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">特定店休</h5>
+                        <!-- <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                 <span aria-hidden="true">&times;</span>
+             </button> -->
+                    </div>
+                    <div class="modal-body">
+                        <input type="date" class="form-control" v-model="specialCloseDays" :min="today">
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">取消設定</button>
+                        <button type="button" class="btn btn-primary" v-on:click="specialCloseDaysSave()">儲存</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+
+
+
+
+
+
         <!-- Navbar -->
         <nav class="main-header navbar navbar-expand navbar-white navbar-light">
             <!-- Left navbar links -->
@@ -124,15 +168,15 @@
                 <li class="nav-item dropdown">
                     <a class="nav-link" data-toggle="dropdown" href="#">
                         <i class="fas fa-store"></i>
-                        {{storeInfo.name}}
+                        {{storeInfo.store.storeName}}
                         <i class="fas fa-caret-down"></i>
                     </a>
                     <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-                        <a class="dropdown-item" v-for="(store,index) in allStore" :id="store.id"
-                            onclick="itemClick(this)">
+                        <a class="dropdown-item" v-for="(store,index) in allStore" :id="store.storeId"
+                            onclick="itemClick($(this))">
                             <div class="store">
-                                <strong>{{ store.name }}</strong>
-                                <p class="text-muted">{{ store.address.fullAddress }}</p>
+                                <strong>{{ store.storeName }}</strong>
+                                <p class="text-muted">{{ store.city }}{{ store.districts }}{{ store.shortAddress }}</p>
                             </div>
                         </a>
                     </div>
@@ -160,10 +204,10 @@
                     </div>
                     <div class="info">
                         <p href="#" class="d-inline-block m-0 mr-5">Hi {{userInfo.name}}</p>
-                        <button class="btn btn-sm m-0" onclick="window.location.href='account_edit.html'">
+                        <button class="btn btn-sm m-0 toEditAccount">
                             <i class="fas fa-user-edit"></i>
                         </button>
-                        <button class="btn btn-sm m-0" onclick="window.location.href='login.html'">
+                        <button class="btn btn-sm m-0 toLogin">
                             <i class="fas fa-sign-out-alt"></i>
                         </button>
                     </div>
@@ -262,18 +306,19 @@
 </body>
 <script src="js/TwCities.js"></script>
 <script>
+    checkUserInfo()
+
     const app = Vue.createApp({
         data() {
             return {
-                userFunction: sessionStorage.userFunction ? JSON.parse(sessionStorage.userFunction) : {},
+                userFunction: userFunction,
 
                 PageTitle: '快速設定選單',
 
-
                 //原始資料
-                userInfo: sessionStorage.userInfo ? JSON.parse(sessionStorage.userInfo) : {},
-                storeInfo: sessionStorage.storeInfo ? JSON.parse(sessionStorage.storeInfo) : {},
-                allStore: sessionStorage.allStore ? JSON.parse(sessionStorage.allStore) : [],
+                userInfo: decryptObject(sessionStorage.userInfo),
+                storeInfo: decryptObject(sessionStorage.storeInfo),
+                allStore: decryptObject(sessionStorage.allStore),
 
                 menuList: [
                     {
@@ -303,7 +348,7 @@
                         discrition: '今日系統等待時間調整',
                     },
                     {
-                        name: 'StoreHoliday',
+                        name: 'specialCloseDays',
                         title: '特定店休',
                         src: '<i class="fas fa-bed"></i>',
                         discrition: '特定店休設定',
@@ -311,12 +356,11 @@
                 EarlyClosure: {
                     enabled: false, time: '', data: moment().format("YYYY-MM-DD")
                 },
+                BasicWaitingTime: decryptObject(sessionStorage.storeInfo).storeInfo.basicwaitingTime,
+                specialCloseDays: ''
             }
         },
         mounted() {
-            setTimeout(() => {
-                checkUserInfo()
-            }, 500);
 
             $('#OrderList').click(function () {
                 window.location.href = 'OrderList.html'
@@ -332,9 +376,11 @@
             })
 
             $('#BasicWaitingTime').click(function () {
+                $('#BasicWaitingTimeModal').modal('show')
             })
 
-            $('#StoreHoliday').click(function () {
+            $('#specialCloseDays').click(function () {
+                $('#specialCloseDaysModal').modal('show')
             })
 
             this.EarlyClosure.data = moment().format("YYYY-MM-DD")
@@ -346,10 +392,50 @@
             EarlyClosureSave() {
                 $('#EarlyClosureModal').modal('hide')
                 console.log(this.menuLis[1].data)
+            },
+            //分鐘設定
+            generateNumbers(start, end, step) {
+                const numbers = [];
+                for (let i = start; i <= end; i += step) {
+                    numbers.push(i);
+                }
+                return numbers;
+            },
+            BasicWaitingTimeSave() {
+                // console.log(this.BasicWaitingTime);
+                var waitingTimeData = { 'BasicwaitingTime': this.BasicWaitingTim }
+                apiWeb('api/Store/EditStore/' + storeId, 'PATCH', JSON.stringify(waitingTimeData), '快速設定基礎等待時間', function (v) {
+                    if (v.message == '商店信息更新成功') {
+                        toastr.success("基礎等待時間 - 修改成功");
+                    } else {
+                        toastr.error("基礎等待時間 - 修改失敗");
+                    }
+                })
+            },
+            specialCloseDaysSave() {
+                // console.log(this.specialCloseDays);
+                var EditData = this.storeInfo.openTime.specialCloseDays
+                // console.log(EditData);
+                EditData.push({ title: '快速設定店休', date: this.specialCloseDays })
+                // console.log(EditData);
+
+                var closeDate = { StoreId: storeId, SpecialCloseDays: EditData }
+                console.log(JSON.stringify(closeDate));
+
+                apiWeb('api/Store/open/time', 'POST', JSON.stringify(closeDate), '新增特定店休', function (v) {
+                    if (v.message == 'Store open time updated successfully') {
+                        toastr.success("特定店休 - 新增成功");
+                    } else {
+                        toastr.error("特定店休 - 新增失敗");
+                    }
+                })
             }
+
         },
         computed: {
-
+            today() {
+                return moment().format('YYYY-MM-DD');
+            }
         }
     });
     app.mount("#app");

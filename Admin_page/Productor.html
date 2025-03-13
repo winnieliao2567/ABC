@@ -43,6 +43,9 @@
 
     <script src="js/share.js"></script>
     <link rel="stylesheet" href="css/share.css" />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+
 </head>
 
 <body class="sidebar-mini layout-navbar-fixed layout-footer-fixed sidebar-mini-md layout-fixed sidebar-collapse">
@@ -52,23 +55,6 @@
     </div>
     <!-- control-sidebar-slide-open -->
     <div id="app" class="wrapper">
-        <div class="modal fade" id="reloginModal" tabindex="-1" data-backdrop="static" data-keyboard="false"
-            role="dialog" aria-labelledby="reloginModalLabel" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="reloginModalLabel">重新登入</h5>
-                    </div>
-                    <div class="modal-body">
-                        請重新登入以繼續使用系統。
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-primary"
-                            onclick="window.location.href='login.html'">登入</button>
-                    </div>
-                </div>
-            </div>
-        </div>
         <div class="modal fade" id="TailoringImgWin" tabindex="-1" data-backdrop="static" data-keyboard="false"
             style="z-index: 100000;" role="dialog" aria-labelledby="reloginModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable" role="document">
@@ -339,15 +325,15 @@
                 <li class="nav-item dropdown">
                     <a class="nav-link" data-toggle="dropdown" href="#">
                         <i class="fas fa-store"></i>
-                        {{storeInfo.name}}
+                        {{storeInfo.store.storeName}}
                         <i class="fas fa-caret-down"></i>
                     </a>
                     <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-                        <a class="dropdown-item" v-for="(store,index) in allStore" :id="store.id"
-                            onclick="itemClick(this)">
+                        <a class="dropdown-item" v-for="(store,index) in allStore" :id="store.storeId"
+                            onclick="itemClick($(this))">
                             <div class="store">
-                                <strong>{{ store.name }}</strong>
-                                <p class="text-muted">{{ store.address.fullAddress }}</p>
+                                <strong>{{ store.storeName }}</strong>
+                                <p class="text-muted">{{ store.city }}{{ store.districts }}{{ store.shortAddress }}</p>
                             </div>
                         </a>
                     </div>
@@ -374,10 +360,10 @@
                     </div>
                     <div class="info">
                         <p href="#" class="d-inline-block m-0 mr-5">Hi {{userInfo.name}}</p>
-                        <button class="btn btn-sm m-0" onclick="window.location.href='account_edit.html'">
+                        <button class="btn btn-sm m-0 toEditAccount">
                             <i class="fas fa-user-edit"></i>
                         </button>
-                        <button class="btn btn-sm m-0" onclick="window.location.href='login.html'">
+                        <button class="btn btn-sm m-0 toLogin">
                             <i class="fas fa-sign-out-alt"></i>
                         </button>
                     </div>
@@ -528,17 +514,19 @@
 </body>
 
 <script>
-
+    checkUserInfo()
     const app = Vue.createApp({
         data() {
             return {
-                userFunction: sessionStorage.userFunction ? JSON.parse(sessionStorage.userFunction) : {},
+                userFunction: userFunction,
 
                 PageTitle: '品項管理',
 
-                userInfo: sessionStorage.userInfo ? JSON.parse(sessionStorage.userInfo) : {},
-                storeInfo: sessionStorage.storeInfo ? JSON.parse(sessionStorage.storeInfo) : {},
-                allStore: sessionStorage.allStore ? JSON.parse(sessionStorage.allStore) : [],
+                //原始資料
+                userInfo: sessionStorage.userInfo ? decryptObject(sessionStorage.userInfo) : {},
+                storeInfo: sessionStorage.storeInfo ? decryptObject(sessionStorage.storeInfo) : {},
+
+                allStore: sessionStorage.allStore ? decryptObject(sessionStorage.allStore) : {},
 
                 //品項列表
                 ProductorEditData: [
@@ -697,9 +685,7 @@
 
         },
         mounted() {
-            setTimeout(() => {
-                checkUserInfo()
-            }, 500);
+
 
             $('[data-toggle="tooltip"]').tooltip();
 
@@ -737,10 +723,19 @@
                     })
                 }
             });
+
+            loadingOff()
         },
         watch: {
         },
         methods: {
+            getProductor() {
+                apiWeb('', _type, _data, TimelogTag, function (v) {
+                    if (v.success == true) {
+                        loadingOff()
+                    }
+                })
+            },
             //顯示新增分類視窗
             AddProductorGroup() {
                 this.ProductorClass_Data = {

@@ -38,6 +38,9 @@
 
     <script src="js/share.js"></script>
     <link rel="stylesheet" href="css/share.css" />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+
 </head>
 
 <body class="sidebar-mini layout-navbar-fixed layout-footer-fixed sidebar-mini-md layout-fixed sidebar-collapse">
@@ -47,23 +50,6 @@
     </div>
     <!-- control-sidebar-slide-open -->
     <div id="app" class="wrapper">
-        <div class="modal fade" id="reloginModal" tabindex="-1" data-backdrop="static" data-keyboard="false"
-            role="dialog" aria-labelledby="reloginModalLabel" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="reloginModalLabel">重新登入</h5>
-                    </div>
-                    <div class="modal-body">
-                        請重新登入以繼續使用系統。
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-primary"
-                            onclick="window.location.href='login.html'">登入</button>
-                    </div>
-                </div>
-            </div>
-        </div>
         <div class="modal fade" id="deletMenuModal" tabindex="-1" role="dialog" aria-labelledby="reloginModalLabel"
             aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
@@ -72,11 +58,11 @@
                         <h5 class="modal-title" id="reloginModalLabel">刪除菜單</h5>
                     </div>
                     <div class="modal-body">
-                        <p>是否刪除菜單 <b>{{DeletMenuDate.name}}</b></p>
+                        <p>是否刪除菜單 <b>{{DeletMenuDate.menuName}}?</b></p>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
-                        <button type="button" class="btn btn-danger">確認刪除</button>
+                        <button type="button" class="btn btn-danger" v-on:click="delettMenu()">確認刪除</button>
                     </div>
                 </div>
             </div>
@@ -98,28 +84,39 @@
                                 <div class="form-group mb-5">
                                     <label for="menuName">菜單名稱</label>
                                     <input placeholder="EX：早餐菜單" type="text" class="form-control"
-                                        v-model="createMenuDate.name" id="menuName">
+                                        v-model="createMenuDate.menuName" id="menuName">
                                     <div class="text-memo text-danger formHint" style="position: absolute;"
-                                        v-if="createMenuDate.name.length>10">
+                                        v-if="createMenuDate.menuName.length>10">
                                         *菜單名稱最多10個字
-                                    </div>
-                                </div>
-                                <div class="form-group mb-5">
-                                    <label for="menuDescription">菜單描述</label>
-                                    <textarea placeholder="EX：假日才開放的菜單" type="text" class="form-control"
-                                        v-model="createMenuDate.description" id="menuDescription"></textarea>
-                                    <div class="text-memo text-danger formHint" style="position: absolute;"
-                                        v-if="createMenuDate.description.length>20">
-                                        *菜單名稱最多20個字
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <!-- <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button> -->
-
-                        <button type="button" class="btn btn-primary" :disabled="!creatrBtnCheck">確認新增</button>
+                        <button type="button" class="btn btn-primary" :disabled="!creatrBtnCheck"
+                            v-on:click="addMenu">確認新增</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="ActiveMenuModal" tabindex="-1" role="dialog" aria-labelledby="reloginModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-md" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="reloginModalLabel">啟用菜單
+                        </h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p>是否啟用菜單 <b>{{ActiveMenuDate.menuName}}?</b>，系統將自動將其他菜單停用</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" v-on:click="ActiveMenu()">
+                            確認啟用</button>
                     </div>
                 </div>
             </div>
@@ -138,15 +135,15 @@
                 <li class="nav-item dropdown">
                     <a class="nav-link" data-toggle="dropdown" href="#">
                         <i class="fas fa-store"></i>
-                        {{storeInfo.name}}
+                        {{storeInfo.store.storeName}}
                         <i class="fas fa-caret-down"></i>
                     </a>
                     <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-                        <a class="dropdown-item" v-for="(store,index) in allStore" :id="store.id"
-                            onclick="itemClick(this)">
+                        <a class="dropdown-item" v-for="(store,index) in allStore" :id="store.storeId"
+                            onclick="itemClick($(this))">
                             <div class="store">
-                                <strong>{{ store.name }}</strong>
-                                <p class="text-muted">{{ store.address.fullAddress }}</p>
+                                <strong>{{ store.storeName }}</strong>
+                                <p class="text-muted">{{ store.city }}{{ store.districts }}{{ store.shortAddress }}</p>
                             </div>
                         </a>
                     </div>
@@ -173,10 +170,10 @@
                     </div>
                     <div class="info">
                         <p href="#" class="d-inline-block m-0 mr-5">Hi {{userInfo.name}}</p>
-                        <button class="btn btn-sm m-0" onclick="window.location.href='account_edit.html'">
+                        <button class="btn btn-sm m-0 toEditAccount">
                             <i class="fas fa-user-edit"></i>
                         </button>
-                        <button class="btn btn-sm m-0" onclick="window.location.href='login.html'">
+                        <button class="btn btn-sm m-0 toLogin">
                             <i class="fas fa-sign-out-alt"></i>
                         </button>
                     </div>
@@ -236,37 +233,79 @@
             <div class="content">
                 <div class="container-fluid">
                     <div class="row">
-                        <div class="col-12 mb-3">
+                        <div class="col-12" v-if="!menuList.length>0">
+                            <div class="emptyImage1 emptyImage"></div>
+                            <p class="text-center">尚未新增菜單，前往<button class="ml-2 btn btn-primary" type="button"
+                                    v-on:click="showCreateMenuModal">
+                                    新增菜單
+                                </button></p>
+                        </div>
+                        <div class="col-12 mb-3" v-if="menuList.length>0">
                             <button class="btn btn-primary float-right" type="button" v-on:click="showCreateMenuModal">
-                                新增
+                                新增菜單
                             </button>
                         </div>
                         <div class="col-12">
                             <div class="row m-0">
-                                <div class="col-12 col-md-6 col-lg-4 mb-2 item" v-for="(item,index) in menuList"
-                                    key="item.id">
+                                <div class="col-12 col-md-6 col-lg-4 col-xl-3 mb-2 item"
+                                    v-for="(item,index) in menuList" key="item.menuId">
                                     <div class="card">
-                                        <div class="badge rounded-pill text-muted position-absolute"
-                                            v-if="item.enabled==true" style="top: 10px;right: 20px;">
+
+                                        <!-- <div class="badge rounded-pill text-muted position-absolute"
+                                            v-if="item.isActive==true" style="top: 10px;right: 20px;">
                                             <i class="fas fa-lock mr-2"></i>已下架
                                         </div>
                                         <div class="badge rounded-pill text-success position-absolute"
-                                            v-if="item.enabled==false" style="top: 10px;right: 20px;">
+                                            v-if="item.isActive==false" style="top: 10px;right: 20px;">
                                             <i class="far fa-check-circle mr-2"></i>上架中
-                                        </div>
+                                        </div> -->
 
                                         <div class="card-body">
-                                            <h5 class="card-title"><i class="fas fa-apple-alt mr-2"></i>{{item.name}}
-                                            </h5>
-                                            <p class="card-text text-muted pl-2">{{item.description}}</p>
-                                            <div class="text-end">
-                                                <button :id="'del-'+item.id" data-id="item.id"
-                                                    class="btn btn-secondary mr-2" v-on:click="delettMenu(item.id)">
-                                                    <i class="fas fa-trash-alt"></i>
+                                            <!-- <div class="float-right d-inline-block">
+                                                <div class="custom-control custom-switch" v-if="!item.isActive">
+                                                    <input type="checkbox" class="custom-control-input"
+                                                        @change="changeActive(item.menuId,item.menuName,!item.isActive)"
+                                                        :id="'active'+item.menuId" v-model="item.isActive">
+                                                    <label class="custom-control-label text-success m-0 ml-2"
+                                                        :for="'active'+item.menuId">
+                                                    </label>
+                                                </div>
+                                            </div> -->
+                                            <div class="float-right d-inline-block" :id="'active-'+item.menuId">
+                                                <h5 v-if="item.isActive" class=" text-success">
+                                                    <i class="fas fa-check-circle"></i>
+                                                    <!-- 啟用 -->
+                                                    <!-- <i v-if="!item.isActive"
+                                                        class="fas fa-minus-circle  text-danger"></i> -->
+                                                </h5>
+                                                <h5 v-if="!item.isActive" class=" text-danger">
+                                                    <i class="fas fa-minus-circle"></i>
+                                                    <!-- 停用 -->
+                                                </h5>
+                                            </div>
+                                            <h4>
+                                                <i class="fas fa-apple-alt mr-2"></i>{{item.menuName}}
+                                            </h4>
+                                            <p class="card-text text-muted pl-2">{{item.description||''}}</p>
+                                            <div class="text-right">
+                                                <button :id="'active-'+item.menuId" :data-id="item.menuId"
+                                                    :data-name="item.menuName" :data-active="item.isActive"
+                                                    @click="changeActive(item.menuId,item.menuName)"
+                                                    v-if="!item.isActive"
+                                                    class="btn btn-sm btn-outline-success mr-2 d-inline-block">
+                                                    <i class="fas fa-lock-open mr-2"></i>啟用
                                                 </button>
-                                                <button :id="'edit-'+item.id" data-id="item.id" class="btn btn-primary"
-                                                    v-on:click="selectMenu(item.id)">
-                                                    <i class="fas fa-edit"></i>
+                                                <button :id="'del-'+item.menuId" :data-id="item.menuId"
+                                                    :data-name="item.menuName" v-if="menuList.length>1"
+                                                    class="btn btn-sm btn-outline-danger mr-2 d-inline-block"
+                                                    v-on:click="showDeletModal(item.menuId)">
+                                                    <i class="fas fa-trash-alt mr-2"></i>刪除
+                                                </button>
+                                                <button :id="'edit-'+item.menuId" :data-id="item.menuId"
+                                                    :data-name="item.menuName"
+                                                    class="btn btn-sm btn-secondary d-inline-block"
+                                                    v-on:click="selectMenu(item.menuId)">
+                                                    <i class="fas fa-edit mr-2"></i>編輯
                                                 </button>
                                             </div>
                                         </div>
@@ -293,71 +332,49 @@
     <!-- ./wrapper -->
     <!-- REQUIRED SCRIPTS -->
 </body>
-
-
-
-
-
 <script>
+    checkUserInfo()
 
     const app = Vue.createApp({
         data() {
             return {
-                userFunction: sessionStorage.userFunction ? JSON.parse(sessionStorage.userFunction) : {},
+                userFunction: userFunction,
 
                 PageTitle: '菜單',
 
-                userInfo: sessionStorage.userInfo ? JSON.parse(sessionStorage.userInfo) : {},
-                storeInfo: sessionStorage.storeInfo ? JSON.parse(sessionStorage.storeInfo) : {},
-                allStore: sessionStorage.allStore ? JSON.parse(sessionStorage.allStore) : [],
+                //原始資料
+                userInfo: decryptObject(sessionStorage.userInfo),
+                storeInfo: decryptObject(sessionStorage.storeInfo),
+                allStore: decryptObject(sessionStorage.allStore),
 
-                menuList: [
-                    {
-                        id: 'm2024e12n31u130030',
-                        name: '預設菜單',
-                        description: '預設菜單',
-                        create: {
-                            date: '2024-12-31',
-                            time: '13:00:30',
-                            creator: {
-                                id: 'dksla991024',
-                                name: 'winnie',
-                                account: 'winnieliao2567@gmail.com',
-                                accountKey: '123456',
-                            },
-                        },
-                        enabled: true
-                    },
-                    {
-                        id: 'm2024e12n31u130033',
-                        name: '菜單2',
-                        description: '預設菜單2',
-                        create: {
-                            date: '2024-12-31',
-                            time: '13:00:33',
-                            creator: {
-                                id: 'dksla991024',
-                                name: 'winnie',
-                                account: 'winnieliao2567@gmail.com',
-                                accountKey: '123456',
-                            },
-                        },
-                        enabled: false
-                    }
-                ],
+                menuList: [{
+                    "menuId": '',
+                    "menuName": "''",
+                    "isActive": false,
+                    "createdDate": "",
+                    "itemCount": 0
+                }],
                 createMenuDate: {
-                    name: '',
-                    description: '',
-                    creator: ''
+                    "StoreId": storeId,
+                    "menuName": '',
+                    "isActive": false
                 },
-                DeletMenuDate: { id: '', name: '' }
+                DeletMenuDate: {
+                    "menuId": '',
+                    "menuName": "''",
+                },
+                ActiveMenuDate: {
+                    "menuId": '',
+                    "menuName": "''",
+                    enabled: true
+                }
 
             }
         },
         computed: {
             creatrBtnCheck() {
-                if (this.createMenuDate.description != '' && this.createMenuDate.name != '') {
-                    if (this.createMenuDate.description.length <= 20 && this.createMenuDate.name.length <= 10) {
+                if (this.createMenuDate.menuName != '') {
+                    if (this.createMenuDate.menuName.length <= 10) {
                         return true
                     }
                     else {
@@ -369,41 +386,67 @@
             }
         },
         mounted() {
-            setTimeout(() => {
-                checkUserInfo()
-            }, 500);
+            this.getMenuList()
         },
         watch: {
         },
         methods: {
+            getMenuList() {
+                var vue = this
+                apiWeb('/api/Menu/menu/list/' + storeId, 'GET', null, '取得菜單資訊', function (v) {
+                    if (v.success == true) {
+                        vue.menuList = v.menus
+                        loadingOff()
+                    }
+                })
+            },
+            addMenu() {
+                // console.log(this.createMenuDate);
+                if (this.menuList.length == 0) {
+                    this.createMenuDate.isActive = true
+                }
 
+                apiWeb('/api/Menu/menu/' + storeId + '/add', "POST", JSON.stringify(this.createMenuDate), '新增菜單', function (v) {
+                    if (v.success == true) {
+                        window.location.href = "Menulist.html?sid=" + storeId
+                    } else {
+                        toastr.error(TimelogTag + "新增失敗");
+                    }
+                })
+            },
             //建立Modal
             showCreateMenuModal() {
                 $('#createMenuModal').modal('show')
             },
             //選擇菜單
             selectMenu(id) {
-                const menu = this.menuList.find(menu => menu.id === id);
-                sessionStorage.menuInfo = JSON.stringify(menu)
-
-                if (sessionStorage.menuInfo == null) {
-                    toastr.error("遺失菜單，請重新選擇");
-                } else {
-                    window.location.href = 'MenuPage.html';
-                }
+                window.location.href = 'MenuPage.html?sid=' + storeId + '&mid=' + id;
             },
             delettMenu(id) {
-                const menu = this.menuList.find(menu => menu.id === id);
-                sessionStorage.menuInfo = JSON.stringify(menu)
+                apiWeb('/api/Menu/menu/' + storeId + '/' + this.DeletMenuDate.menuId, 'DELETE', null, '刪除菜單', function (v) {
+                    location.reload();
+                })
+            },
+            showDeletModal(id) {
+                this.DeletMenuDate.menuId = $('#del-' + id).attr('data-id')
+                this.DeletMenuDate.menuName = $('#del-' + id).attr('data-name')
+                console.log(this.DeletMenuDate);
 
-                if (sessionStorage.menuInfo == null) {
-                    toastr.error("遺失菜單，請重新選擇");
-                } else {
-                    this.DeletMenuDate.id = menu.id
-                    this.DeletMenuDate.name = menu.name
-                    $('#deletMenuModal').modal('show')
-                }
+                $('#deletMenuModal').modal('show')
+            },
+            changeActive(id, name) {
+                this.ActiveMenuDate.menuId = id
+                this.ActiveMenuDate.menuName = name
+                // this.ActiveMenuDate.enabled = status
+                console.log(this.ActiveMenuDate);
+                $('#ActiveMenuModal').modal('show')
+            },
+            ActiveMenu() {
+                apiWeb('api/Menu/menu/' + storeId + '/activate/' + this.ActiveMenuDate.menuId, 'POST', null, '啟用菜單', function (v) {
+                    location.reload();
+                })
             }
+
         },
     });
     app.mount("#app");

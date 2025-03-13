@@ -38,6 +38,9 @@
 
     <script src="js/share.js"></script>
     <link rel="stylesheet" href="css/share.css" />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+
 </head>
 
 <body class="sidebar-mini layout-navbar-fixed layout-footer-fixed sidebar-mini-md layout-fixed sidebar-collapse">
@@ -47,19 +50,26 @@
     </div>
     <!-- control-sidebar-slide-open -->
     <div id="app" class="wrapper">
-        <div class="modal fade" id="reloginModal" tabindex="-1" data-backdrop="static" data-keyboard="false"
-            role="dialog" aria-labelledby="reloginModalLabel" aria-hidden="true">
-            <div class="modal-dialog" role="document">
+        <div class="modal fade" id="AddBanWin" tabindex="-1" role="dialog" aria-labelledby="reloginModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="reloginModalLabel">重新登入</h5>
+                        <h5 class="modal-title" id="reloginModalLabel">新增黑名單</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
                     </div>
                     <div class="modal-body">
-                        請重新登入以繼續使用系統。
+                        <h6>是否將 <span
+                                class="text-primary">{{showOrderInfo.takerInfo.name}}({{showOrderInfo.takerInfo.phoneNum}})</span>
+                            加入黑名單，他將無法下單該商店，直到移出黑名單
+                        </h6>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-primary"
-                            onclick="window.location.href='login.html'">登入</button>
+                        <!-- <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button> -->
+
+                        <button type="button" class="btn btn-primary" @click="AddBan">確認加入黑名單</button>
                     </div>
                 </div>
             </div>
@@ -83,8 +93,8 @@
                                 <div class="mb-3">
                                     <h3 class="text-primary">
                                         {{showOrderInfo.takerInfo.name}}
-                                        <button class="btn btn-sm bnt-danger btn-default" data-toggle="tooltip"
-                                            data-placement="top" title="封鎖訂購人">
+                                        <button class="btn btn-sm btn-default" data-toggle="tooltip"
+                                            v-on:click="showBanWIn" data-placement="top" title="封鎖訂購人">
                                             <!-- <i class="fas fa-user-slash"></i> -->
                                             <i class="fas fa-ban"></i>
                                         </button>
@@ -106,7 +116,7 @@
                                                 <i class="fas fa-store"></i>
                                                 店家
                                             </div>
-                                            <h6 class="">{{showOrderInfo.storeInfo.name}}</h6>
+                                            <h6 class="">{{showOrderInfo.storeInfo.storeName}}</h6>
                                         </div>
                                         <!-- <div class="form-group mb-3">
                                             <div class="text-muted text-sm">
@@ -265,15 +275,15 @@
                 <li class="nav-item dropdown">
                     <a class="nav-link" data-toggle="dropdown" href="#">
                         <i class="fas fa-store"></i>
-                        {{storeInfo.name}}
+                        {{storeInfo.store.storeName}}
                         <i class="fas fa-caret-down"></i>
                     </a>
                     <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-                        <a class="dropdown-item" v-for="(store,index) in allStore" :id="store.id"
-                            onclick="itemClick(this)">
+                        <a class="dropdown-item" v-for="(store,index) in allStore" :id="store.storeId"
+                            onclick="itemClick($(this))">
                             <div class="store">
-                                <strong>{{ store.name }}</strong>
-                                <p class="text-muted">{{ store.address.fullAddress }}</p>
+                                <strong>{{ store.storeName }}</strong>
+                                <p class="text-muted">{{ store.city }}{{ store.districts }}{{ store.shortAddress }}</p>
                             </div>
                         </a>
                     </div>
@@ -300,10 +310,10 @@
                     </div>
                     <div class="info">
                         <p href="#" class="d-inline-block m-0 mr-5">Hi {{userInfo.name}}</p>
-                        <button class="btn btn-sm m-0" onclick="window.location.href='account_edit.html'">
+                        <button class="btn btn-sm m-0 toEditAccount">
                             <i class="fas fa-user-edit"></i>
                         </button>
-                        <button class="btn btn-sm m-0" onclick="window.location.href='login.html'">
+                        <button class="btn btn-sm m-0 toLogin">
                             <i class="fas fa-sign-out-alt"></i>
                         </button>
                     </div>
@@ -363,51 +373,74 @@
             <div class="content">
                 <div class="container-fluid">
                     <div class="row">
-                        <div class="col-12 orderList list-group" ref="orderList">
-                            <div class="border-bottom text-bold text-muted p-0">
-                                <div class="py-1 d-flex align-items-end">
-                                    <div class="col-4">
-                                        訂單(取餐碼)
-                                    </div>
-                                    <div class="col-4">
-                                        狀態
-                                    </div>
-                                    <div class="col-4 text-right">
-                                        金額(NTD)
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="list-group-item px-0" v-for="(Orders,OrderIndex) in Order_data" :key="Orders.id"
-                                @click="showOrderInfoWin(OrderIndex)">
-                                <div class="row m-0">
-                                    <div class="col-4">
-                                        <div class="">
-                                            {{Orders.orderNum}}
-                                            <span class="text-muted ml-2">
-                                                #{{Orders.takeNum}}
-                                            </span>
-                                        </div>
+                        <div class="col-12">
+                            <table class="table table-bordered table-hover">
+                                <thead class="table-primary">
+                                    <tr>
+                                        <th class="longText">
+                                            #
+                                        </th>
+                                        <th class="longText">
+                                            訂單號碼
+                                        </th>
+                                        <th class="longText">
+                                            訂餐人
+                                        </th>
+                                        <th class="longText">
+                                            狀態
+                                        </th>
+                                        <th class="longText">
+                                            金額(NTD)
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-if="Order_data.length==0">
+                                        <td colspan="5" class="text-center">
+                                            沒有資料
+                                        </td>
+                                    </tr>
+                                    <tr v-for="(Orders, OrderIndex) in paginatedOrders" :key="Orders.id"
+                                        @click="showOrderInfoWin(Orders.orderId)">
+                                        <td class="longText">
+                                            {{ (currentPage - 1) * pageSize + OrderIndex + 1 }}
+                                        </td>
+                                        <td class="longText">{{Orders.orderDisableId}}</td>
+                                        <td class="longText">{{Orders.userName}}</td>
+                                        <td class="longText">
+                                            <div data-toggle="tooltip" data-placement="top" title="訂單成立"
+                                                v-if="Orders.status==1"
+                                                class=" d-flex justify-content-start align-items-center text-success">
+                                                <i class="fas fa-check-square mr-1"></i>
+                                                <span class="d-none d-md-inline">訂單成立</span>
+                                            </div>
+                                            <div data-toggle="tooltip" data-placement="top" title="訂單取消"
+                                                v-if="Orders.status==2"
+                                                class=" d-flex justify-content-start align-items-center text-danger">
+                                                <i class="fas fa-exclamation-circle mr-1"></i>
+                                                <span class="d-none d-md-inline">訂單取消</span>
+                                            </div>
+                                        </td>
+                                        <td class="longText"> $ {{Orders.price}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div v-if="Order_data.length>0" class="col-12">
+                            <ul class="pagination pagination-sm justify-content-center mt-3">
+                                <li class="page-item" :class="{ disabled: currentPage === 1 }">
+                                    <a href="#" class="page-link" @click.prevent="prevPage">&laquo;</a>
+                                </li>
 
-                                    </div>
-                                    <div class="col-4">
-                                        <div data-toggle="tooltip" data-placement="top" title="訂單成立"
-                                            v-if="Orders.status==1"
-                                            class=" d-flex justify-content-start align-items-center text-success">
-                                            <i class="fas fa-check-square mr-1"></i>
-                                            訂單成立
-                                        </div>
-                                        <div data-toggle="tooltip" data-placement="top" title="訂單取消"
-                                            v-if="Orders.status==2"
-                                            class=" d-flex justify-content-start align-items-center text-danger">
-                                            <i class="fas fa-exclamation-circle mr-1"></i>
-                                            訂單取消
-                                        </div>
-                                    </div>
-                                    <div class="col-4 d-flex justify-content-end align-items-center text-right">
-                                        $ {{Orders.price}}
-                                    </div>
-                                </div>
-                            </div>
+                                <li v-for="page in totalPages" :key="page" class="page-item"
+                                    :class="{ active: currentPage === page }">
+                                    <a href="#" class="page-link" @click.prevent="goToPage(page)">{{ page }}</a>
+                                </li>
+
+                                <li class="page-item" :class="{ disabled: currentPage === totalPages }">
+                                    <a href="#" class="page-link" @click.prevent="nextPage">&raquo;</a>
+                                </li>
+                            </ul>
                         </div>
                     </div>
                     <!-- /.row -->
@@ -432,114 +465,30 @@
 
 </body>
 <script>
+    checkUserInfo()
+
     const app = Vue.createApp({
         data() {
             return {
-                userFunction: sessionStorage.userFunction ? JSON.parse(sessionStorage.userFunction) : {},
+                userFunction: userFunction,
 
                 PageTitle: '訂單記錄',
 
-                userInfo: sessionStorage.userInfo ? JSON.parse(sessionStorage.userInfo) : {},
-                storeInfo: sessionStorage.storeInfo ? JSON.parse(sessionStorage.storeInfo) : {},
-                allStore: sessionStorage.allStore ? JSON.parse(sessionStorage.allStore) : [],
+                //原始資料
+                userInfo: decryptObject(sessionStorage.userInfo),
+                storeInfo: decryptObject(sessionStorage.storeInfo),
+                allStore: decryptObject(sessionStorage.allStore),
 
                 Order_data: [
                     {
-                        storeInfo: {
-                            id: '216hewjfbwkef',
-                            name: '鹹酥雞 中和店',
-                            address: {
-                                city: '新北市',
-                                districts: '中和區',
-                                shortAddress: '某某路二段717巷7號', // 原本的 x
-                                fullAddress: '新北市中和區某某路二段717巷7號', // 原本的 y
-                            },
-                            email: "abc@gmail.com",
-                            tel: '02-12345678',
-                            businessNum: '12345678',
-                        },
-                        takerInfo: {
-                            id: 'ta552234ker34765',
-                            phoneNum: '0912345678',
-                            name: '葉＊＊',
-                        },
-                        orderid: 'or123der456s',
-                        orderTime: '2024-12-31 12:00:32',
-                        orderNum: '123456',
-
-                        status: 2,//1:訂單成立;2:訂單取消
-
-                        takeNum: '12',
-                        takeTime: '2024-12-31 14:49:32',
-                        takeType: 1,//1:自取;
-                        payType: 1,//1:現金;
-                        price: '1100',
-                        memo: '雞排對切',
-                        mealItem: [
-                            {
-                                count: '1',
-                                productors: {
-                                    id: 'pro2024duc12it22em',
-                                    name: '雞排',
-                                    imgurl: 'img/bg/brooke-lark-IDTEXXXfS44-unsplash.jpg',
-                                    sortClassInfo: {
-                                        id: 'c2024la12s24s',
-                                        name: '屬性01',
-                                        sort_number: 0,
-                                    },
-                                    productorsClass: {
-                                        id: 'cl2025a01s09s',
-                                        name: '分類A',
-                                        description: '分類A的描述',
-                                    },
-                                    sortClass: 'c2024la12s24s',
-                                    customClass: [{
-                                        id: 'cu2024s01to11mized',
-                                        name: '客制加料',
-                                        type: 2,
-                                        options:
-                                            [
-                                                {
-                                                    name: '加珍珠',
-                                                    price: '10'
-                                                },
-                                                {
-                                                    name: '加椰果',
-                                                    price: '10'
-                                                },
-                                                {
-                                                    name: '加仙草',
-                                                    price: '20'
-                                                }
-                                            ]
-                                    },
-                                    {
-                                        id: 'cu2024s01to12mized',
-                                        name: '甜度調整',
-                                        type: 1,
-                                        options:
-                                            [
-                                                {
-                                                    name: '正常甜',
-                                                    price: '0'
-                                                },
-                                            ]
-                                    },],
-                                    price: '20',
-                                    introduction: '好吃好吃超好吃😋',
-                                    size:
-                                    {
-                                        name: '大份',
-                                        price: '10'
-                                    }
-                                    ,
-                                    enabled: true
-                                },
-                                price: '60'//小記
-                            }
-                        ]
+                        userName: '',
+                        orderid: '',
+                        status: 0,//1:訂單成立;2:訂單取消
+                        takeNum: '',
+                        price: '',
                     }
                 ],
+
 
                 showOrderInfo: {
                     storeInfo: {
@@ -566,16 +515,51 @@
 
 
 
+                currentPage: currentPage, // 當前頁面
+                pageSize: pageSize, // 每頁顯示筆數
             }
         },
         computed: {
+            // 計算總頁數
+            totalPages() {
+                return Math.ceil(this.Order_data.length / this.pageSize);
+            },
+            // 計算當前頁要顯示的訂單
+            paginatedOrders() {
+                const start = (this.currentPage - 1) * this.pageSize;
+                return this.Order_data.slice(start, start + this.pageSize);
+            }
         },
         mounted() {
-            setTimeout(() => {
-                checkUserInfo()
-            }, 500);
-
             $('[data-toggle="tooltip"]').tooltip();
+
+            var vue = this
+            apiWeb('api/Store/waitinglist/' + storeId, 'GET', null, '取得訂單列表', function (v) {
+                if (v.success == true) {
+
+                    vue.Order_data = []
+
+                    // vue.Order_data = v.data.waitingList
+
+                    for (var i = 0; i < v.data.waitingList.length; i++) {
+                        // console.log(v.data.waitingList[i]);
+
+                        var k = {
+                            orderId: v.data.waitingList[i].orderId,
+                            status: 2,//1:訂單成立;2:訂單取消
+                            // takeNum: '12',
+                            orderDisableId: v.data.waitingList[i].orderId.slice(-4),
+                            userName: add3Dots('某某人', 3),
+                            price: formatCurrency(v.data.waitingList[i].totalAmount),
+                        }
+                        vue.Order_data.push(k)
+
+                    }
+                    // console.log(vue.Order_data);
+                }
+
+
+            })
         },
         watch: {
         },
@@ -584,9 +568,40 @@
                 this.showOrderInfo = this.Order_data[index]
                 console.log(this.showOrderInfo);
                 $('#OrderInfo').modal('show')
-            }
+            },
+            showBanWIn() {
+                $('#OrderInfo').modal('hide')
+                $('#AddBanWin').modal('show')
+            },
+            AddBan() {
+                console.log(this.showOrderInfo.takerInfo.phoneNum);
+
+                apiWeb('api/Store/add/blacklist/' + this.showOrderInfo.takerInfo.phoneNum, 'POST', '', '新增黑名單', function () {
+                    $('#OrderInfo').modal('show')
+                    $('#AddBanWin').modal('hide')
+                })
+
+            },
+            // 切換到上一頁
+            prevPage() {
+                if (this.currentPage > 1) {
+                    this.currentPage--;
+                }
+            },
+            // 切換到下一頁
+            nextPage() {
+                if (this.currentPage < this.totalPages) {
+                    this.currentPage++;
+                }
+            },
+            // 跳轉到指定頁數
+            goToPage(page) {
+                this.currentPage = page;
+            },
         },
     });
+
+
     app.mount("#app");
 </script>
 

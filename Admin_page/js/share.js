@@ -1,21 +1,90 @@
 const copyRight = " 共響有限公司. All Rights Reserved.";
 const version = "1.0.1";
 const host = "https://202.182.109.207/";
+const currentPage = 1; // 當前頁面
+const pageSize = 10; // 每頁顯示筆數
+const queryString = window.location.search;
+const urlParams = new URLSearchParams(queryString);
+console.log(urlParams);
+
+const menuId = urlParams.get("mid");
+const storeId = urlParams.get("sid");
+
+console.log("menuId-------------" + menuId);
+console.log("storeId-------------" + storeId);
+
+const userFunction = [
+    {
+        icon: "fas fa-store",
+        name: "商店管理",
+        status: "",
+        url: "",
+        item: [
+            {
+                icon: "fas fa-store",
+                name: "店家管理",
+                status: "",
+                url: "StoreMaintain.html?sid=" + storeId,
+            },
+            {
+                icon: "fas fa-border-all",
+                name: "菜單管理",
+                status: "",
+                url: "MenuList.html?sid=" + storeId,
+            },
+            {
+                icon: "fas fa-utensils",
+                name: "品項管理",
+                status: "",
+                url: "Productor.html?sid=" + storeId,
+            },
+            {
+                icon: "fas fa-sort-amount-up",
+                name: "排序管理",
+                status: "",
+                url: "SortClass.html?sid=" + storeId,
+            },
+            {
+                icon: "fas fa-seedling",
+                name: "客製化屬性",
+                status: "",
+                url: "Customized.html?sid=" + storeId,
+            },
+        ],
+    },
+    {
+        icon: "fas fa-clipboard-list",
+        name: "訂餐紀錄",
+        status: "",
+        url: "OrderList.html?sid=" + storeId,
+    },
+    {
+        icon: "fas fa-user-slash",
+        name: "黑名單",
+        status: "",
+        url: "BanList.html?sid=" + storeId,
+    },
+    {
+        icon: "fas fa-user-clock",
+        name: "帳號登入記錄",
+        status: "",
+        url: "LogInlog.html?sid=" + storeId,
+    },
+];
 
 function loadingOff() {
     console.log("移除遮罩");
-
     $(".preloader").css("height", 0);
     setTimeout(function () {
         $(".preloader").children().hide();
-    }, 200);
+    }, 0);
 }
 function loadingOn() {
     console.log("顯示遮罩");
-    $(".preloader").css("height", "auto");
+    $(".preloader").css("height", "100%");
     setTimeout(function () {
         $(".preloader").children().show();
-    }, 200);
+    }, 0);
 }
 function apiWeb(_url, _type, _data, TimelogTag, _fun) {
     console.time("● API-" + TimelogTag + "(" + _url + ")");
@@ -29,7 +98,7 @@ function apiWeb(_url, _type, _data, TimelogTag, _fun) {
                 "Content-Type": "application/json; charset=utf-8",
                 // Authorization: localStorage.token, // 需要的話可以加上授權標頭
             },
-            url: _url,
+            url: host + _url,
             data: _data,
             statusCode: {
                 403: function (xhr) {
@@ -44,10 +113,13 @@ function apiWeb(_url, _type, _data, TimelogTag, _fun) {
             },
             success: function (v) {
                 console.timeEnd("● API-" + TimelogTag + "(" + _url + ")");
+                // toastr.success(TimelogTag + "成功");
+                console.log("● Reques-" + TimelogTag + " : " + JSON.stringify(v));
                 if (_fun) _fun(v);
             },
             error: function (v) {
                 console.timeEnd("● API-" + TimelogTag + "(" + _url + ")");
+                toastr.error(TimelogTag + "失敗");
                 console.log("Error:", JSON.stringify(v));
             },
         });
@@ -56,37 +128,100 @@ function apiWeb(_url, _type, _data, TimelogTag, _fun) {
 
 //確認登入資料
 function checkUserInfo() {
+    var errorInfo = "";
+    if (storeId == "") {
+        // window.location.href = "login.html";
+        errorInfo = "找不到店家資訊";
+        console.error(errorInfo);
+        selectStore(storeId);
+        userError();
+        return;
+    }
     if (
         sessionStorage.userInfo == null ||
-        sessionStorage.storeInfo == null ||
         sessionStorage.allStore == null ||
-        sessionStorage.userFunction == null
+        sessionStorage.userInfo == "" ||
+        sessionStorage.allStore == ""
     ) {
+        errorInfo = "找不到管理員資訊";
+        console.error(errorInfo);
+        userError();
+    }
+
+    function userError() {
+        $("body").append(
+            '<div class="modal fade" id="reloginModal" tabindex="-1" data-backdrop="static" data-keyboard="false" ole="dialog" aria-labelledby="reloginModalLabel" aria-hidden="true"><div class="modal-dialog" role="document"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="reloginModalLabel">錯誤</h5></div><div class="modal-body">' +
+                errorInfo +
+                '，請重新登入以繼續使用系統。</div><div class="modal-footer"><button type="button" class="btn btn-primary" onclick="window.location.href=' +
+                "'login.html'" +
+                '">重新登入</button></div></div></div></div>'
+        );
         $("#reloginModal").modal("show");
-        loadingOff();
-    } else {
-        loadingOff();
     }
 }
 function itemClick(obj) {
-    // console.log(obj.id);
-    selectStore(obj.id);
+    // console.log(obj.attr("id"));
+    selectStore(obj.attr("id"));
 }
-function selectStore(storeId) {
-    // console.log(JSON.parse(sessionStorage.allStore));
-    const foundStore = JSON.parse(sessionStorage.allStore).find((store) => store.id === storeId);
-    const storeInfo = foundStore;
-
-    // 将 storeInfo 存储到 sessionStorage 中
-    sessionStorage.storeInfo = JSON.stringify(storeInfo);
-
-    // 跳转到 index.html 页面
-    if (sessionStorage.storeInfo == null) {
-        $("#storeModal").modal("hide");
-        toastr.error("登入失敗");
-    } else {
-        window.location.href = "index.html";
+function selectStore(Id) {
+    console.log("selectid: " + Id);
+    // loadingOn();
+    apiWeb("api/Store/detail/" + Id, "GET", null, "取得店家資訊", function (v) {
+        // 存入 sessionStorage
+        // console.log("選擇的商店:", foundStore);
+        sessionStorage.storeInfo = encryptObject(v);
+        // 跳轉頁面
+        window.location.href = "index.html?sid=" + Id;
+    });
+}
+//加密
+const secretKey = "your-secure-key"; // 建議存入環境變數
+// 加密函數
+function encryptObject(data) {
+    if (!data || typeof data !== "object") {
+        throw new Error("加密失敗：資料必須是物件-" + data);
     }
+    const jsonString = JSON.stringify(data);
+    return CryptoJS.AES.encrypt(jsonString, secretKey).toString();
+}
+// 解密函數
+function decryptObject(encryptedData) {
+    if (!encryptedData || typeof encryptedData !== "string") {
+        throw new Error("解密失敗：加密資料必須是字串-" + encryptedData);
+    }
+    try {
+        const bytes = CryptoJS.AES.decrypt(encryptedData, secretKey);
+        const decryptedString = bytes.toString(CryptoJS.enc.Utf8);
+        return JSON.parse(decryptedString);
+    } catch (error) {
+        throw new Error("解密錯誤，可能是密鑰不匹配或加密數據格式錯誤");
+    }
+}
+
+/*--- 超出字數變成... ---*/
+//後面
+function add3Dots(string, limit) {
+    var dots = "...";
+    if (string.length > limit) {
+        string = string.substring(0, limit) + dots;
+    }
+    return string;
+}
+//中間
+function add3DotsMiddle(string, limit) {
+    var dots = "...";
+    if (string.length > limit) {
+        var partLength = Math.floor((limit - dots.length) / 2); // 計算保留的部分長度
+        return (
+            string.substring(0, partLength) + dots + string.substring(string.length - partLength)
+        );
+    }
+    return string;
+}
+
+// 格式化金額
+function formatCurrency(amount) {
+    return new Intl.NumberFormat("en-US").format(amount);
 }
 $(function () {
     //copyRight
@@ -114,5 +249,16 @@ $(function () {
             .removeClass("password-disabled")
             .html('<i class="fas fa-eye-slash"></i>');
         $(id).attr("type", "password");
+    });
+
+    if (storeId != "" && $("#" + storeId).length > 0) {
+        $("#" + storeId).addClass("selected-item");
+    }
+
+    $(".toEditAccount").click(function () {
+        window.location.href = "account_edit.html";
+    });
+    $(".toLogin").click(function () {
+        window.location.href = "login.html";
     });
 });

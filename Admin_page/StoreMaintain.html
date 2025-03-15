@@ -385,16 +385,16 @@
                                                     <div class="col-12 col-md-8 col-xl-6 my-1"
                                                         v-if="settingItem.groupitem.type === 'MinOrderCount'">
                                                         <input class="form-control w-50" type="number" min="0"
-                                                            v-model="storeInfoEdit.storeInfo.advanceReservation"
+                                                            v-model="storeInfoEdit.storeInfo.minimumOrderAmount"
                                                             ref="inputs">
                                                     </div>
 
                                                     <!-- 最高金額 -->
-                                                    <!-- <div class="col-12 col-md-8 col-xl-6 my-1"
+                                                    <div class="col-12 col-md-8 col-xl-6 my-1"
                                                         v-if="settingItem.groupitem.type === 'maxPrice'">
                                                         <input class="form-control w-50" type="number" min="0"
-                                                            v-model="storeInfoEdit.waitingTime.maxPrice" ref="inputs">
-                                                    </div> -->
+                                                            v-model="storeInfoEdit.store.slotLimit" ref="inputs">
+                                                    </div>
 
                                                     <!-- 低消提示 -->
                                                     <div class="col-12 col-md-8 col-xl-6 my-1"
@@ -703,18 +703,7 @@
 
                             },
                             {
-                                name: '最低金額',
-                                groupitem:
-                                {
-                                    type: 'minPrice',
-                                    enabled: true,
-                                    placeholder: "",
-                                }
-
-                            }
-                            ,
-                            {
-                                name: '單數',
+                                name: '最低單數',
                                 groupitem:
                                 {
                                     type: 'MinOrderCount',
@@ -741,6 +730,17 @@
                     {
                         id: 'ReminderToggle', name: '<i class="fas fa-bell mr-2"></i>提醒功能開關',
                         settingItem: [
+                            {
+                                name: '最低金額',
+                                groupitem:
+                                {
+                                    type: 'minPrice',
+                                    enabled: true,
+                                    placeholder: "",
+                                }
+
+                            }
+                            ,
                             {
                                 name: '低消提示',
                                 groupitem:

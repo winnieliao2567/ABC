@@ -64,11 +64,17 @@ const userFunction = [
         status: "",
         url: "BanList.html?sid=" + storeId,
     },
+    // {
+    //     icon: "fas fa-user-clock",
+    //     name: "帳號登入記錄",
+    //     status: "",
+    //     url: "LogInlog.html?sid=" + storeId,
+    // },
     {
         icon: "fas fa-user-clock",
-        name: "帳號登入記錄",
+        name: "快速設定",
         status: "",
-        url: "LogInlog.html?sid=" + storeId,
+        url: "quicksetup.html?sid=" + storeId,
     },
 ];
 

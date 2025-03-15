@@ -50,7 +50,7 @@
     </div>
     <!-- control-sidebar-slide-open -->
     <div id="app" class="wrapper">
-        <div class="modal fade" id="createProductorClass" tabindex="-1" role="dialog"
+        <div class="modal fade" id="createCustomizeClass" tabindex="-1" role="dialog"
             aria-labelledby="reloginModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered modal-md" role="document">
                 <div class="modal-content">
@@ -64,37 +64,47 @@
                     <div class="modal-body">
                         <div class="row">
                             <div class="col-12">
-                                <div class="form-group mb-5">
-                                    <label for="">客製化名稱<span class="text-danger">*</span></label>
-                                    <input v-model="customizedEdit_Data.Data.name" class="form-control">
+                                <div class="form-group">
+                                    <label for="">客製化名稱</label>
+                                    <input v-model="customizedEdit_Data.Data.templateName" class="form-control">
                                 </div>
-                                <div class="form-group mb-5">
-                                    <label for="">選擇種類<span class="text-danger">*</span></label>
-                                    <div class="pl-4">
-                                        <input class="mr-2" type="radio" name="selectionType" value="1"
+                                <div class="form-group">
+                                    <label for="">選擇種類</label>
+                                    <div class="pl-4 d-inline-block">
+                                        <input class="mr-2" type="radio" name="selectionType" value="0"
                                             v-model="customizedEdit_Data.Data.type" id="SingleSelection">
                                         <label for="SingleSelection" class="mr-3">單選</label>
-                                        <input class="mr-2" type="radio" name="selectionType" value="2"
+                                        <input class="mr-2" type="radio" name="selectionType" value="1"
                                             v-model="customizedEdit_Data.Data.type" id="MultipleSelection">
                                         <label for="MultipleSelection">複選</label>
                                     </div>
                                 </div>
-                                <div class="form-group mb-5">
-                                    <label for="">選擇項目<span class="text-danger">*</span></label>
+                                <div class="form-group">
+                                    <label for="">必填項目</label>
+                                    <div class="pl-4 d-inline-block">
+                                        <input class="" type="checkbox" v-model="customizedEdit_Data.Data.required"
+                                            id="defaultCheck1">
+
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="">選擇項目</label>
                                     <p class="text-muted">可以在此增加客製化選項，EX：加珍珠、去冰...，提供給客人客製化餐點</p>
                                     <div class="input-group mb-1"
                                         v-for="(Options,optIndex) in customizedEdit_Data.Data.options">
-                                        <input class="form-control" placeholder="名稱" v-model="Options.name">
+                                        <input class="form-control" placeholder="名稱" v-model="Options.title">
                                         <div class="input-group-prepend input-group-append">
                                             <span class="input-group-text">
                                                 NT $
                                             </span>
                                         </div>
                                         <input class="form-control" placeholder="價格，EX:20或-50" type="number"
-                                            v-model="Options.price" step="1">
-                                        <div class="input-group-append">
+                                            v-model="Options.extra" step="1">
+
+                                        <div class="input-group-append"
+                                            v-if="customizedEdit_Data.Data.options.length > 1">
                                             <button v-on:click="deleOpeion(optIndex)" class="btn btn-outline-secondary">
-                                                <i class="fas fa-trash-alt"></i>
+                                                <i class="fas fa-minus"></i>
                                             </button>
                                         </div>
                                     </div>
@@ -117,6 +127,24 @@
                 </div>
             </div>
         </div>
+        <div class="modal fade" id="deletCustomizeClass" tabindex="-1" role="dialog" aria-labelledby="reloginModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="reloginModalLabel">刪除客製化選項</h5>
+                    </div>
+                    <div class="modal-body">
+                        <p>是否刪除客製化選項 <b>{{customizedEdit_Data.Data.templateName}} ?</b></p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                        <button type="button" class="btn btn-danger" v-on:click="delet()">確認刪除</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Navbar -->
         <nav class="main-header navbar navbar-expand navbar-white navbar-light">
             <!-- Left navbar links -->
@@ -130,7 +158,7 @@
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item dropdown">
                     <a class="nav-link" data-toggle="dropdown" href="#">
-                        <i class="fas fa-store"></i>
+                        <i class="fas fa-store" id="OpenStatus"></i>
                         {{storeInfo.store.storeName}}
                         <i class="fas fa-caret-down"></i>
                     </a>
@@ -151,7 +179,7 @@
         <!-- Main Sidebar Container -->
         <aside class="main-sidebar elevation-4 sidebar-light-primary">
             <!-- Brand Logo -->
-            <a href="index.html" class="brand-link logo-switch">
+            <a class="toIndex brand-link logo-switch">
                 <img src="img/logo.svg" alt="AdminLTE Docs Logo Small" class="brand-image-xl logo-xs">
                 <img src="img/logo2.svg" alt="AdminLTE Docs Logo Large" class="brand-image-xs logo-xl"
                     style="width: 200px;">
@@ -217,7 +245,7 @@
                         </div><!-- /.col -->
                         <div class="col-sm-6">
                             <ol class="breadcrumb float-sm-right">
-                                <li class="breadcrumb-item"><a href="index.html">SHARING</a></li>
+                                <li class="breadcrumb-item"><a class="toIndex">SHARING</a></li>
                                 <li class="breadcrumb-item active">{{PageTitle}}</li>
                             </ol>
                         </div><!-- /.col -->
@@ -233,50 +261,81 @@
                         <div class="col-12 text-right mb-3">
                             <div class="dropdown">
                                 <button class="btn btn-primary" @click="showAddCustomWin">
-                                    新增客製化選項
+                                    新增
                                 </button>
                             </div>
                         </div>
                         <div class="col-12 customizedList list-group" ref="customizedList">
-                            <div class="border-bottom text-bold text-muted p-0">
-                                <div class="py-1 px-4 d-flex">
-                                    <div class="col-1 col-md-1">
-                                        #
-                                    </div>
-                                    <div class="col-2 col-md-1">
-                                        種類
-                                    </div>
-                                    <div class="col-3 col-md-2 col-xl-2">
-                                        名稱
-                                    </div>
-                                    <div class="col-6 col-md-8 col-xl-8">
-                                        選項
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="list-group-item" v-for="(customzed,index) in customizedData"
-                                @click="showEditCustomWin(index)" :key="customzed.id">
-                                <div class="row m-0">
-                                    <div class="col-1 col-md-1">
-                                        {{index+1}}
-                                    </div>
-                                    <div class="col-2 col-md-1" v-if="customzed.type==1">
-                                        單選
-                                    </div>
-                                    <div class="col-2 col-md-1" v-if="customzed.type==2">
-                                        多選
-                                    </div>
-                                    <div class="col-3 col-md-2 col-xl-2">
-                                        {{customzed.name}}
-                                    </div>
-                                    <div class="col-6 col-md-8 col-xl-8">
-                                        <span v-for="(option, optionIndex) in customzed.options" :key="optionIndex"
-                                            class="me-2">
-                                            {{ option.name }},
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
+                            <table class="table table-bordered table-hover">
+                                <thead class="table-primary">
+                                    <tr>
+                                        <th>
+                                            #
+                                        </th>
+                                        <th>
+                                            種類
+                                        </th>
+                                        <th>
+                                            名稱
+                                        </th>
+                                        <th>
+                                            選項
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="(customzed,index) in paginatedOrders" :key="customzed.templateId">
+                                        <td class="">
+                                            {{ (currentPage - 1) * pageSize + index + 1 }}
+                                        </td>
+                                        <td class="longText">
+                                            <span class="" v-if="customzed.type==0">
+                                                單選
+                                            </span>
+                                            <span class="" v-if="customzed.type==1">
+                                                多選
+                                            </span>
+                                        </td>
+                                        <td class="longText">
+                                            {{customzed.templateName}}
+                                        </td>
+                                        <td>
+                                            <span v-for="(option, optionIndex) in customzed.options" :key="optionIndex"
+                                                class="me-2">
+                                                {{ option.title }}<span
+                                                    class="d-sm-none d-md-inline">(+{{option.extra}})</span>,
+                                            </span>
+                                            <div class="table-btn-div">
+                                                <button class="btn btn-outline-secondary btn-sm mr-2 "
+                                                    @click="showDeletCustomWin(index)">
+                                                    <i class="fas fa-trash-alt"></i>
+                                                </button>
+                                                <button class="btn btn-primary btn-sm"
+                                                    @click="showEditCustomWin(index)">
+                                                    <i class="fas fa-pen"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                        </div>
+                        <div v-if="customizedData.length>0" class="col-12">
+                            <ul class="pagination pagination-sm justify-content-center mt-3">
+                                <li class="page-item" :class="{ disabled: currentPage === 1 }">
+                                    <a href="#" class="page-link" @click.prevent="prevPage">&laquo;</a>
+                                </li>
+
+                                <li v-for="page in totalPages" :key="page" class="page-item"
+                                    :class="{ active: currentPage === page }">
+                                    <a href="#" class="page-link" @click.prevent="goToPage(page)">{{ page }}</a>
+                                </li>
+
+                                <li class="page-item" :class="{ disabled: currentPage === totalPages }">
+                                    <a href="#" class="page-link" @click.prevent="nextPage">&raquo;</a>
+                                </li>
+                            </ul>
                         </div>
                     </div>
                     <!-- /.row -->
@@ -315,153 +374,204 @@
                 storeInfo: decryptObject(sessionStorage.storeInfo),
                 allStore: decryptObject(sessionStorage.allStore),
 
-                customizedData: [
-                    {
-                        id: 'cu2024s01to10mized',
-                        name: '冰塊調整',
-                        type: 1,
-                        options:
-                            [
-                                {
-                                    name: '去冰',
-                                    price: '0'
-                                },
-                                {
-                                    name: '微冰',
-                                    price: '0'
-                                },
-                                {
-                                    name: '少冰',
-                                    price: '0'
-                                },
-                                {
-                                    name: '正常冰',
-                                    price: '0'
-                                },
-                            ]
-                    },
-                    {
-                        id: 'cu2024s01to12mized',
-                        name: '甜度調整',
-                        type: 1,
-                        options:
-                            [
-                                {
-                                    name: '無糖',
-                                    price: '0'
-                                },
-                                {
-                                    name: '三分糖',
-                                    price: '0'
-                                },
-                                {
-                                    name: '半糖',
-                                    price: '0'
-                                },
-                                {
-                                    name: '正常甜',
-                                    price: '0'
-                                },
-                            ]
-                    },
-                    {
-                        id: 'cu2024s01to11mized',
-                        name: '客制加料',
-                        type: 2,
-                        options:
-                            [
-                                {
-                                    name: '加珍珠',
-                                    price: '10'
-                                },
-                                {
-                                    name: '加椰果',
-                                    price: '10'
-                                },
-                                {
-                                    name: '加仙草',
-                                    price: '20'
-                                }
-                            ]
-                    }
-                ],
+                customizedData: [{
+                    "templateId": '',
+                    "templateName": "",
+                    "type": null,
+                    "required": false,
+                    "options": [
+                        {
+                            'title': '',
+                            "extra": 0
+                        }
+                    ]
+                }],
                 customizedEdit_Data:
                 {
                     action: '新增',
                     Data: {
-                        name: '',
+                        templateName: '',
                         type: 1,
+                        required: false,
                         options: [{
-                            name: '',
-                            price: ''
+                            title: '',
+                            extra: ''
                         }]
                     }
-                }
-                ,
-                customizedEditDataDefault: {
-                    name: '',
-                    type: 1,
-                    options: [{
-                        name: '',
-                        price: ''
-                    }]
+                },
 
-                }
+                currentPage: currentPage, // 當前頁面
+                pageSize: pageSize, // 每頁顯示筆數
             }
         },
         computed: {
-
+            // 計算總頁數
+            totalPages() {
+                return Math.ceil(this.customizedData.length / this.pageSize);
+            },
+            // 計算當前頁要顯示的訂單
+            paginatedOrders() {
+                const start = (this.currentPage - 1) * this.pageSize;
+                return this.customizedData.slice(start, start + this.pageSize);
+            }
         },
         mounted() {
+            this.getCustmizedList()
         },
         watch: {
         },
         methods: {
+            getCustmizedList() {
+                var vue = this
+                apiWeb('api/Menu/attributes/list/' + storeId, 'GET', null, '獲得客製化選項', function (v) {
+                    if (v.success == true) {
+                        vue.customizedData = v.templates
+                        // console.log(vue.customizedData);
+
+                        loadingOff()
+                    }
+                })
+            },
+
+            // 轉換欄位大小寫
+            capitalizeKeys(obj) {
+                if (Array.isArray(obj)) {
+                    return obj.map(item => this.capitalizeKeys(item));
+                } else if (typeof obj === 'object' && obj !== null) {
+                    return Object.keys(obj).reduce((acc, key) => {
+                        let capitalizedKey = key.charAt(0).toUpperCase() + key.slice(1).toLowerCase();
+                        acc[capitalizedKey] = this.capitalizeKeys(obj[key]);
+                        return acc;
+                    }, {});
+                }
+                return obj;
+            },
+
             //新增的客製化
             showAddCustomWin() {
                 this.customizedEdit_Data = {
                     action: '新增',
-                    Data: this.customizedEditDataDefault
+                    Data: {
+                        templateName: '',
+                        type: 1,
+                        required: false,
+                        options: [{
+                            title: '',
+                            extra: ''
+                        }]
+                    }
                 }
                 console.log(JSON.stringify(this.customizedEdit_Data));
 
-                $('#createProductorClass').modal('show')
+                $('#createCustomizeClass').modal('show')
             },
+            //確定新增
+            add() {
+                // var EditData = this.capitalizeKeys(this.customizedEdit_Data.Data)
+                var AddData = this.customizedEdit_Data.Data
+                AddData.group = ''
+                var vue = this
+                apiWeb('/api/Menu/attributes/' + storeId + '/add', "POST", JSON.stringify(AddData), '新增客製化', function (v) {
+                    if (v.success == true) {
+                        toastr.success('新增成功');
+                        vue.getCustmizedList()
+                    } else if (v.message == '已存在，請使用不同的名稱') {
+                        toastr.error("已存在客製化名稱");
+                    } else {
+                        toastr.error("新增失敗");
+                    }
+                    $('#createCustomizeClass').modal('hide')
+                })
+            },
+
 
             //編輯客製化
             showEditCustomWin(index) {
+                // console.log(index);
+
                 this.customizedEdit_Data = {
                     action: '編輯',
                     Data: this.customizedData[index],
                 }
-                console.log(JSON.stringify(this.customizedEdit_Data));
+                // console.log(JSON.stringify(this.customizedEdit_Data));
 
-                $('#createProductorClass').modal('show')
-            },
-
-            //確定新增
-            add() {
-                console.log(this.customizedEdit_Data.Data);
+                $('#createCustomizeClass').modal('show')
             },
             save() {
-                console.log(this.customizedEdit_Data.Data);
+                var EditData = this.customizedEdit_Data.Data
+                EditData.group = ''
+                var vue = this
+                apiWeb('api/Menu/attributes/' + storeId + '/' + this.customizedEdit_Data.Data.templateId, 'PUT', JSON.stringify(EditData), '修改客製化選項', function (v) {
+                    if (v.success == true) {
+                        toastr.success('修改完成');
+                        vue.getCustmizedList()
+                    } {
+                        toastr.error("修改失敗");
+                    }
+                    $('#createCustomizeClass').modal('hide')
+                })
+            },
+
+
+
+            //刪除客製化
+            showDeletCustomWin(index) {
+                this.customizedEdit_Data = {
+                    action: '刪除',
+                    Data: this.customizedData[index],
+                }
+                $('#deletCustomizeClass').modal('show')
             },
             delet() {
-                console.log(this.customizedEdit_Data.Data);
+                var vue = this
+                // console.log(this.customizedEdit_Data.Data.templateId);
+                apiWeb('/api/Menu/attributes/' + storeId + '/' + this.customizedEdit_Data.Data.templateId, "DELETE", null, '刪除客製化', function (v) {
+                    if (v.success == true) {
+                        toastr.success('刪除成功');
+                        vue.getCustmizedList()
+                    } else if (v.message == "無法刪除屬性模板，因為它正在被餐點使用") {
+                        toastr.error("該客製化選項正在使用中，無法被刪除");
+                    } else {
+                        toastr.error("刪除失敗");
+                    }
+                    $('#deletCustomizeClass').modal('hide')
+                })
             },
+
+
 
             //新增選項
             addOptions() {
                 this.customizedEdit_Data.Data.options.push(
                     {
-                        name: '',
-                        price: ''
+                        title: '',
+                        extra: ''
                     }
                 )
+
+                console.log(this.customizedEdit_Data.Data.options);
             },
             deleOpeion(index) {
                 this.customizedEdit_Data.Data.options.splice(index, 1);
-            }
+            },
+
+
+            // 切換到上一頁
+            prevPage() {
+                if (this.currentPage > 1) {
+                    this.currentPage--;
+                }
+            },
+            // 切換到下一頁
+            nextPage() {
+                if (this.currentPage < this.totalPages) {
+                    this.currentPage++;
+                }
+            },
+            // 跳轉到指定頁數
+            goToPage(page) {
+                this.currentPage = page;
+            },
         },
     });
     app.mount("#app");

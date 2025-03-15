@@ -71,7 +71,7 @@
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item dropdown">
                     <a class="nav-link" data-toggle="dropdown" href="#">
-                        <i class="fas fa-store"></i>
+                        <i class="fas fa-store" id="OpenStatus"></i>
                         {{storeInfo.store.storeName}}
                         <i class="fas fa-caret-down"></i>
                     </a>
@@ -92,7 +92,7 @@
         <!-- Main Sidebar Container -->
         <aside class="main-sidebar elevation-4 sidebar-light-primary">
             <!-- Brand Logo -->
-            <a href="index.html" class="brand-link logo-switch">
+            <a class="toIndex brand-link logo-switch">
                 <img src="img/logo.svg" alt="AdminLTE Docs Logo Small" class="brand-image-xl logo-xs">
                 <img src="img/logo2.svg" alt="AdminLTE Docs Logo Large" class="brand-image-xs logo-xl"
                     style="width: 200px;">
@@ -158,7 +158,7 @@
                         </div><!-- /.col -->
                         <div class="col-sm-6">
                             <ol class="breadcrumb float-sm-right">
-                                <li class="breadcrumb-item"><a href="index.html">SHARING</a></li>
+                                <li class="breadcrumb-item"><a class="toIndex">SHARING</a></li>
                                 <li class="breadcrumb-item active">{{PageTitle}}</li>
                             </ol>
                         </div><!-- /.col -->
@@ -483,16 +483,17 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="p-3 text-end col-12 border-top" id="saveBar">
-                        <button class="btn btn-secondary mr-2" v-on:click="reset">
-                            <i class="fas fa-save mr-2"></i>恢復原資料
-                        </button>
+                        <div class="p-3 text-end col-12 border-top mt-3" id="saveBar">
+                            <button class="btn btn-secondary mr-2" v-on:click="reset">
+                                <i class="fas fa-save mr-2"></i>恢復原資料
+                            </button>
 
-                        <button class="btn btn-primary" v-on:click="save">
-                            <i class="fas fa-save mr-2"></i>保存
-                        </button>
+                            <button class="btn btn-primary" v-on:click="save">
+                                <i class="fas fa-save mr-2"></i>保存
+                            </button>
+                        </div>
                     </div>
+
                 </div>
                 <!-- /.row -->
             </div><!-- /.container-fluid -->
@@ -957,7 +958,7 @@
 
             GetStoreInfo() {
                 var vue = this
-                apiWeb("api/Store/detail/" + storeId, "GET", null, "取得店家資訊", function (v) {
+                apiWeb("api/Store/detail/" + storeId, "GET", null, "取得店家編輯資料", function (v) {
                     // console.log(v);
                     vue.storeInfoEdit = v;
 

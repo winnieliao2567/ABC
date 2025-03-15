@@ -76,10 +76,8 @@
                                 v-if="EarlyClosure.enabled">
                                 <span class="today">{{EarlyClosure.data}} </span> 提早關店
                             </label>
-
                             <label class="custom-control-label text-muted m-0 ml-2" for="EarlyClosureModalSwitch"
                                 v-if="!EarlyClosure.enabled">
-
                             </label>
                         </div>
                         <div v-if="EarlyClosure.enabled" class="pl-3 mt-2">
@@ -87,9 +85,10 @@
                             <input type="time" class="form-control" v-model="EarlyClosure.time">
                         </div>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">取消設定</button>
-                        <button type="button" class="btn btn-primary" v-on:click="EarlyClosureSave()">儲存</button>
+                    <div class="modal-footer" v-if="EarlyClosure.enabled!=false">
+                        <!-- <button type="button" class="btn btn-secondary" data-dismiss="modal">取消設定</button> -->
+                        <button :disabled="EarlyClosure.time!=''" type="button" class="btn btn-primary"
+                            v-on:click="EarlyClosureSave()">儲存</button>
                     </div>
                 </div>
             </div>
@@ -102,12 +101,13 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="exampleModalLabel">基礎等待時間</h5>
-                        <!-- <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
-                        </button> -->
+                        </button>
                     </div>
                     <div class="modal-body">
-                        <select class="form-control w-50 d-inline-block" autocomplete="off" v-model="BasicWaitingTime">
+                        <select class="form-control w-50 d-inline-block" autocomplete="off"
+                            v-model="storeInfoEdit.storeInfo.basicwaitingTime">
                             <option v-for="num in generateNumbers(0, 60, 5)" :key="num" :value="num">
                                 {{ num }}
                             </option>
@@ -115,44 +115,54 @@
                         <p class="pl-3 w-25 d-inline-block m-0 mr-5">分鐘</p>
                     </div>
 
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">取消設定</button>
+                    <!-- <div class="modal-footer">
+                       <button type="button" class="btn btn-secondary" data-dismiss="modal">取消設定</button>
                         <button type="button" class="btn btn-primary" v-on:click="BasicWaitingTimeSave()">儲存</button>
-                    </div>
+                    </div> -->
                 </div>
             </div>
         </div>
 
-        <!-- 基礎等待時間 -->
+        <!-- 特定店休 -->
         <div class="modal fade" id="specialCloseDaysModal" tabindex="-1" aria-labelledby="exampleModalLabel"
             aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="exampleModalLabel">特定店休</h5>
-                        <!-- <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                 <span aria-hidden="true">&times;</span>
-             </button> -->
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
                     </div>
                     <div class="modal-body">
-                        <input type="date" class="form-control" v-model="specialCloseDays" :min="today">
+                        <div class="row mt-3">
+                            <div class="col-12" v-for="(day,index) in storeInfoEdit.openTime.specialCloseDays">
+                                <div class="input-group mb-2" v-if="day.date>today">
+                                    <!-- <div class="input-group mb-2"> -->
+                                    <input type="text" class="form-control" v-model="day.title">
+                                    <input type="date" class="form-control" :class="{'is-invalid': today > day.date}"
+                                        v-model="day.date" :min="today">
+                                    <div class="input-group-append">
+                                        <button class="btn btn-outline-secondary" @click="delStoreClosed(index)"
+                                            type="button">
+                                            <i class="fas fa-trash-alt" aria-hidden="true"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="btn-link btn btn-sm" @click="addStoreClosed">
+                                + 特殊店休日期
+                            </button>
+                        </div>
                     </div>
 
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">取消設定</button>
+                        <!-- <button type="button" class="btn btn-secondary" data-dismiss="modal">取消設定</button> -->
                         <button type="button" class="btn btn-primary" v-on:click="specialCloseDaysSave()">儲存</button>
                     </div>
                 </div>
             </div>
         </div>
-
-
-
-
-
-
-
-
 
         <!-- Navbar -->
         <nav class="main-header navbar navbar-expand navbar-white navbar-light">
@@ -167,8 +177,8 @@
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item dropdown">
                     <a class="nav-link" data-toggle="dropdown" href="#">
-                        <i class="fas fa-store"></i>
-                        {{storeInfo.store.storeName}}
+                        <i class="fas fa-store" id="OpenStatus"></i>
+                        {{storeInfoEdit.store.storeName}}
                         <i class="fas fa-caret-down"></i>
                     </a>
                     <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
@@ -188,7 +198,7 @@
         <!-- Main Sidebar Container -->
         <aside class="main-sidebar elevation-4 sidebar-light-primary">
             <!-- Brand Logo -->
-            <a href="index.html" class="brand-link logo-switch">
+            <a class="toIndex brand-link logo-switch">
                 <img src="img/logo.svg" alt="AdminLTE Docs Logo Small" class="brand-image-xl logo-xs">
                 <img src="img/logo2.svg" alt="AdminLTE Docs Logo Large" class="brand-image-xs logo-xl"
                     style="width: 200px;">
@@ -254,7 +264,7 @@
                         </div><!-- /.col -->
                         <div class="col-sm-6">
                             <ol class="breadcrumb float-sm-right">
-                                <li class="breadcrumb-item"><a href="index.html">SHARING</a></li>
+                                <li class="breadcrumb-item"><a class="toIndex">SHARING</a></li>
                                 <li class="breadcrumb-item active">{{PageTitle}}</li>
                             </ol>
                         </div><!-- /.col -->
@@ -319,7 +329,51 @@
                 userInfo: decryptObject(sessionStorage.userInfo),
                 storeInfo: decryptObject(sessionStorage.storeInfo),
                 allStore: decryptObject(sessionStorage.allStore),
+                thismenuId: '',
+                storeInfoEdit: {
+                    "store": {
+                        "storeId": "",
+                        "storeName": "",
+                        "storePhone": "",
+                        "minOrderAmount": 0,
+                        "orderInterval": 0,
+                        "createdDate": "",
+                        "enable": true,
+                        "deleted": false,
+                        "id": 0,
+                        "slotLimit": 0
+                    },
+                    "storeInfo": {
+                        "storeId": "",
+                        "city": "",
+                        "districts": "",
+                        "shortAddress": "",
+                        "email": "",
+                        "tel": "",
+                        "businessNum": "",
+                        "introduction": "",
+                        "tags": [
+                            "中式料理",
+                            "家常菜",
+                            "快速出餐"
+                        ],
+                        "advanceReservation": "",
+                        "basicwaitingTime": "",
+                        "intervalwaitingTime": "",
+                        "minimumOrderAmount": "",
+                        "minimumOrderText": "",
+                        "minimumOrderEnabled": true,
+                        "maxReservationDays": 0
+                    },
+                    "openTime": {
+                        "businessDays": [
 
+                        ],
+                        "specialCloseDays": [
+
+                        ]
+                    }
+                },
                 menuList: [
                     {
                         name: 'OrderList',
@@ -354,16 +408,17 @@
                         discrition: '特定店休設定',
                     }],
                 EarlyClosure: {
-                    enabled: false, time: '', data: moment().format("YYYY-MM-DD")
+                    enabled: '', time: '', data: moment().format("YYYY-MM-DD")
                 },
-                BasicWaitingTime: decryptObject(sessionStorage.storeInfo).storeInfo.basicwaitingTime,
-                specialCloseDays: ''
             }
         },
         mounted() {
+            var vue = this
+            this.GetStoreInfo()
+
 
             $('#OrderList').click(function () {
-                window.location.href = 'OrderList.html'
+                window.location.href = 'OrderList.html?sid=' + storeId
             })
 
             $('#EarlyClosure').click(function () {
@@ -372,7 +427,7 @@
 
 
             $('#MenuAdjustment').click(function () {
-                window.location.href = 'MenuItemEdit.html'
+                window.location.href = 'MenuPage.html?sid=' + storeId + '&mid=' + vue.thismenuId
             })
 
             $('#BasicWaitingTime').click(function () {
@@ -387,12 +442,53 @@
 
         },
         watch: {
+            'EarlyClosure.enabled'(newValue, oldValue) {
+                if (newValue !== oldValue && oldValue != '' || newValue == false) {
+                    apiWeb('api/StoreStatus/cancel-early-close/' + storeId, 'POST', null, '關閉提前關店', function (v) {
+                        if (v.message == "已取消店家提前休息設定") {
+                            toastr.success("已取消提前休息設定");
+                        } else {
+                            toastr.error("設定失敗");
+                        }
+                    })
+                }
+            },
+            'storeInfoEdit.storeInfo.basicwaitingTime'(newValue, oldValue) {
+                // 確保有變化才執行
+                if (newValue !== oldValue && oldValue != '') {
+                    this.BasicWaitingTimeSave();
+                }
+            }
         },
         methods: {
-            EarlyClosureSave() {
-                $('#EarlyClosureModal').modal('hide')
-                console.log(this.menuLis[1].data)
+            GetStoreInfo() {
+                var vue = this
+                apiWeb("api/Store/detail/" + storeId, "GET", null, "取得店家編輯資料", function (v) {
+                    // console.log(v);
+                    vue.storeInfoEdit = v;
+                    if (vue.storeInfoEdit.activeMenu != null) {
+                        vue.thismenuId = vue.storeInfoEdit.activeMenu.menuId
+                    } else {
+                        $('#MenuAdjustment').addClass('disabled')
+                    }
+                    loadingOff()
+                });
             },
+
+            //提早關店
+            EarlyClosureSave() {
+                var closeData = {
+                    "closeImmediately": false,
+                    "closeTime": this.EarlyClosure.time
+                }
+                console.log(closeData);
+
+                // apiWeb('api/StoreStatus/early-close/' + storeId, 'POST', null, '設定提前休息', function (v) {
+                //     $('#EarlyClosureModal').modal('hide')
+
+                // })
+            },
+
             //分鐘設定
             generateNumbers(start, end, step) {
                 const numbers = [];
@@ -401,23 +497,25 @@
                 }
                 return numbers;
             },
+            //基礎等待時間
             BasicWaitingTimeSave() {
-                // console.log(this.BasicWaitingTime);
-                var waitingTimeData = { 'BasicwaitingTime': this.BasicWaitingTim }
+                var waitingTimeData = { 'BasicwaitingTime': this.storeInfoEdit.storeInfo.basicwaitingTime }
+                // console.log(waitingTimeData);
+
                 apiWeb('api/Store/EditStore/' + storeId, 'PATCH', JSON.stringify(waitingTimeData), '快速設定基礎等待時間', function (v) {
                     if (v.message == '商店信息更新成功') {
                         toastr.success("基礎等待時間 - 修改成功");
+                        $('#BasicWaitingTimeModal').modal('hide')
                     } else {
                         toastr.error("基礎等待時間 - 修改失敗");
                     }
                 })
             },
+
+            //儲存特殊店休
             specialCloseDaysSave() {
-                // console.log(this.specialCloseDays);
-                var EditData = this.storeInfo.openTime.specialCloseDays
-                // console.log(EditData);
-                EditData.push({ title: '快速設定店休', date: this.specialCloseDays })
-                // console.log(EditData);
+                var EditData = this.storeInfoEdit.openTime.specialCloseDays
+                console.log(EditData);
 
                 var closeDate = { StoreId: storeId, SpecialCloseDays: EditData }
                 console.log(JSON.stringify(closeDate));
@@ -425,11 +523,25 @@
                 apiWeb('api/Store/open/time', 'POST', JSON.stringify(closeDate), '新增特定店休', function (v) {
                     if (v.message == 'Store open time updated successfully') {
                         toastr.success("特定店休 - 新增成功");
+                        $('#specialCloseDaysModal').modal('hide')
                     } else {
                         toastr.error("特定店休 - 新增失敗");
                     }
                 })
-            }
+            },
+            //增加營業時間
+            addStoreClosed() {
+                this.storeInfoEdit.openTime.specialCloseDays.push(
+                    {
+                        title: '',
+                        date: moment().subtract(-1, "days").format('YYYY-MM-DD'),
+                    }
+                )
+            },
+            //刪除營業時間
+            delStoreClosed(index) {
+                this.storeInfoEdit.openTime.specialCloseDays.splice(index, 1);
+            },
 
         },
         computed: {

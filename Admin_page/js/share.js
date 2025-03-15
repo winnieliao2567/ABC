@@ -1,4 +1,4 @@
-const copyRight = " 共響有限公司. All Rights Reserved.";
+const copyRight = " 共饗有限公司. All Rights Reserved.";
 const version = "1.0.1";
 const host = "https://202.182.109.207/";
 const currentPage = 1; // 當前頁面
@@ -10,8 +10,8 @@ console.log(urlParams);
 const menuId = urlParams.get("mid");
 const storeId = urlParams.get("sid");
 
-console.log("menuId-------------" + menuId);
-console.log("storeId-------------" + storeId);
+// console.log("menuId-------------" + menuId);
+// console.log("storeId-------------" + storeId);
 
 const userFunction = [
     {
@@ -133,7 +133,6 @@ function checkUserInfo() {
         // window.location.href = "login.html";
         errorInfo = "找不到店家資訊";
         console.error(errorInfo);
-        selectStore(storeId);
         userError();
         return;
     }
@@ -147,6 +146,14 @@ function checkUserInfo() {
         console.error(errorInfo);
         userError();
     }
+    apiWeb("api/Store/detail/" + storeId, "GET", null, "更新店家資訊", function (v) {
+        sessionStorage.storeInfo = encryptObject(v);
+        if (v.status.isOpen == true) {
+            $("#OpenStatus").addClass("fas fa-store text-success");
+        } else {
+            $("#OpenStatus").addClass("fas fa-store-slash text-danger");
+        }
+    });
 
     function userError() {
         $("body").append(
@@ -166,7 +173,7 @@ function itemClick(obj) {
 function selectStore(Id) {
     console.log("selectid: " + Id);
     // loadingOn();
-    apiWeb("api/Store/detail/" + Id, "GET", null, "取得店家資訊", function (v) {
+    apiWeb("api/Store/detail/" + Id, "GET", null, "更換店家，取得資訊", function (v) {
         // 存入 sessionStorage
         // console.log("選擇的商店:", foundStore);
         sessionStorage.storeInfo = encryptObject(v);
@@ -227,7 +234,7 @@ $(function () {
     //copyRight
     $("#copyRight").text("© " + moment().format("YYYY") + copyRight);
 
-    $("#version").text("version " + version);
+    $("#version").text("v " + version);
 
     //顯示密碼按鈕
     $("body").on("click", ".password-undisabled", function () {
@@ -260,5 +267,8 @@ $(function () {
     });
     $(".toLogin").click(function () {
         window.location.href = "login.html";
+    });
+    $(".toIndex").click(function () {
+        window.location.href = "index.html?sid=" + storeId;
     });
 });

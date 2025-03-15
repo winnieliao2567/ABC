@@ -144,8 +144,8 @@ textarea {
 }
 #saveBar {
     background-color: var(--bs-body-bg);
-    position: absolute;
-    bottom: 57px;
+    position: sticky;
+    bottom: 0px;
     z-index: 1000;
     right: 0;
 }
@@ -155,4 +155,24 @@ textarea {
 .password-undisabled,
 .password-disabled {
     width: 50px;
+}
+.disabled {
+    pointer-events: none;
+    opacity: 0.5;
+}
+tr {
+    position: relative;
+}
+/* td {
+    position: relative;
+} */
+.table-btn-div {
+    /* display: none; */
+    top: 0.75rem;
+    right: 0.75rem;
+    display: none;
+    position: absolute;
+}
+tr:hover .table-btn-div {
+    display: inline-block;
 }

@@ -97,7 +97,7 @@
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item dropdown">
                     <a class="nav-link" data-toggle="dropdown" href="#">
-                        <i class="fas fa-store"></i>
+                        <i class="fas fa-store" id="OpenStatus"></i>
                         {{storeInfo.store.storeName}}
                         <i class="fas fa-caret-down"></i>
                     </a>
@@ -118,7 +118,7 @@
         <!-- Main Sidebar Container -->
         <aside class="main-sidebar elevation-4 sidebar-light-primary">
             <!-- Brand Logo -->
-            <a href="index.html" class="brand-link logo-switch">
+            <a class="toIndex brand-link logo-switch">
                 <img src="img/logo.svg" alt="AdminLTE Docs Logo Small" class="brand-image-xl logo-xs">
                 <img src="img/logo2.svg" alt="AdminLTE Docs Logo Large" class="brand-image-xs logo-xl"
                     style="width: 200px;">
@@ -184,7 +184,7 @@
                         </div><!-- /.col -->
                         <div class="col-sm-6">
                             <ol class="breadcrumb float-sm-right">
-                                <li class="breadcrumb-item"><a href="index.html">SHARING</a></li>
+                                <li class="breadcrumb-item"><a class="toIndex">SHARING</a></li>
                                 <li class="breadcrumb-item active">{{PageTitle}}</li>
                             </ol>
                         </div><!-- /.col -->
@@ -209,7 +209,7 @@
                                         <th class="longText">
                                             #
                                         </th>
-                                        <th class="longText">
+                                        <th class="">
 
                                         </th>
                                         <th class="longText">
@@ -230,7 +230,7 @@
                                         <td class="longText">
                                             {{ (currentPage - 1) * pageSize + index + 1 }}
                                         </td>
-                                        <td class="longText">
+                                        <td class="">
                                             <button class="btn btn-sm btn-outline-secondary"
                                                 v-on:click="deletBan(item.mobileNumber)">
                                                 <i class="fas fa-trash-alt"></i>
@@ -322,6 +322,7 @@
                 , 'GET', '', '取得黑名單列表', function (v) {
                     vue.Ban_data = v
                     // console.log(vue.Ban_data);
+                    loadingOff()
                 })
         },
         watch: {
@@ -337,7 +338,7 @@
                 apiWeb('api/Store/blacklist/' + storeId + '/' + vue.AddBan_data.mobileNumber, 'POST', null, '新增黑名單', function (v) {
                     if (v.status == 0) {
                         $('#AddBanWin').modal('hide')
-                        window.location.href = 'BanList.html'
+                        window.location.href = 'BanList.html?sid=' + storeId
                     } else {
                         toastr.error(v.message);
                     }
@@ -347,14 +348,13 @@
                 return moment(dateStr).format("YYYY-MM-DD");
             },
             deletBan(num) {
-
                 var vue = this
                 console.log(storeId + '/' + num);
 
                 apiWeb('api/Store/blacklist/' + storeId + '/' + num, 'DELETE', null, '新增黑名單', function (v) {
                     if (v.message == "已成功將用戶從黑名單中移除") {
                         $('#AddBanWin').modal('hide')
-                        window.location.href = 'BanList.html'
+                        window.location.href = 'BanList.html?sid=' + storeId
                     }
                 })
             },

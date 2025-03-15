@@ -1,0 +1,141 @@
+A. 客製化屬性
+    1. 客製化清單：
+        [
+            {
+                id: 'cu2024s01to10mized', //客製化選項ID，代表客製化本身
+                name: '冰塊調整', //名稱
+                type: 1, // 1 / 2 : 單選 / 複選
+                options:  
+                    [
+                        {
+                            name: '去冰',
+                            price: '0'
+                        },
+                        {
+                            name: '微冰',
+                            price: '0'
+                        },
+                        {
+                            name: '少冰',
+                            price: '0'
+                        },
+                        {
+                            name: '正常冰',
+                            price: '0'
+                        },
+                    ]
+            },
+            {
+                id: 'cu2024s01to10mized', //客製化選項ID，代表客製化本身
+                name: '冰塊調整', //名稱
+                type: 1, // 1 / 2 : 單選 / 複選
+                options:  
+                    [
+                        {
+                            name: '去冰',
+                            price: '0'
+                        },
+                        {
+                            name: '微冰',
+                            price: '0'
+                        },
+                        {
+                            name: '少冰',
+                            price: '0'
+                        },
+                        {
+                            name: '正常冰',
+                            price: '0'
+                        },
+                    ]
+            },
+        ]
+
+
+B. 品項管理頁面
+    1. 品項清單： // 同時獲得分類及分類下的餐點
+        [
+            {
+                id: 'cl2025a01s09s',//餐點分類ID
+                name: '分類A',
+                //description: '分類A的描述',
+                productors: [ //分類下的餐點
+                    {
+                        id: 'pro2024duc12it22em',//餐點id
+                        name: '雞排',
+                        imgurl: 'img/bg/brooke-lark-IDTEXXXfS44-unsplash.jpg',
+                        sortClassInfo: { //所屬排序
+                            id: 'c2024la12s24s',
+                            name: '屬性01',
+                            sort_number: 0,
+                        },
+                        productorsClass: { //所屬分類
+                            id: 'cl2025a01s09s',
+                            name: '分類A',
+                            //description: '分類A的描述',
+                        },
+                        sortClass: 'c2024la12s24s', //所屬排序id
+                        customClassId: ['cu2024s01to11mized'], //套用的共用客製化屬性
+                        price: '20', //基本價格
+                        introduction: '好吃好吃超好吃😋', //餐點描述
+                        size: [ //餐點份量，可以為空
+                            {
+                                name: '大份',
+                                price: '10'
+                            }
+                        ],
+                        enabled: true
+                    }
+                ],
+            },
+            {   // 分類下沒品項的話
+                id: 'cl2025a01s10s',
+                name: '分類B',
+                description: '分類B的描述',
+                productors: []
+            },
+        ],
+    2. 排序清單： //用於產生列做選擇（單選）
+        [
+            {
+                id: 'c2024la12s24s',
+                name: '屬性01',
+                sort_number: 0
+            },
+            {
+                id: 'c2024la12s25s',
+                name: '屬性02',
+                sort_number: 1
+            },
+            {
+                id: 'c2024la12s26s',
+                name: '屬性03',
+                sort_number: 2
+            },
+            {
+                id: 'c2024la12s27s',
+                name: '屬性04',
+                sort_number: 3
+            },
+        ]
+    3. 客製化屬性清單： //用於產生列做勾選（多選）
+        [
+            {
+                id: 'cu2024s01to10mized',
+                name: '冰塊調整',
+                type: 1,
+                options:
+                    [
+                        '正常', '少冰', '微冰', '去冰'
+                    ]
+            },
+            {
+                id: 'cu2024s01to11mized',
+                name: '客制加料',
+                type: 2,
+                options:
+                    [
+                        '加珍珠', '少冰', '微冰', '去冰', ''
+                    ]
+            }
+        ]

@@ -69,14 +69,17 @@ function apiWeb(_url, _type, _data, TimelogTag, _fun) {
                 403: function (xhr) {
                     console.timeEnd("● API-" + TimelogTag + "(" + baseURL + _url + ")");
                     console.log("Forbidden (403):", xhr);
+                    window.location.href = "403.html";
                 },
                 404: function (xhr) {
                     console.timeEnd("● API-" + TimelogTag + "(" + baseURL + _url + ")");
                     console.log("Not Found (404):", xhr);
+                    window.location.href = "404.html";
                 },
                 500: function (xhr) {
                     console.timeEnd("● API-" + TimelogTag + "(" + baseURL + _url + ")");
                     console.log("Server Error (500):", xhr);
+                    window.location.href = "405.html";
                 },
             },
             success: function (v) {

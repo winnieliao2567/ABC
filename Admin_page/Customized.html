@@ -117,8 +117,8 @@
                     </div>
                     <div class="modal-footer">
                         <!-- <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button> -->
-                        <button type="button" class="btn btn-secondary" @click="delet"
-                            v-if="customizedEdit_Data.action=='編輯'">刪除</button>
+                        <!-- <button type="button" class="btn btn-secondary" @click="delet"
+                            v-if="customizedEdit_Data.action=='編輯'">刪除</button> -->
                         <button type="button" class="btn btn-primary" @click="add"
                             v-if="customizedEdit_Data.action=='新增'">確認新增</button>
                         <button type="button" class="btn btn-primary" v-if="customizedEdit_Data.action=='編輯'"
@@ -133,12 +133,15 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="reloginModalLabel">刪除客製化選項</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
                     </div>
                     <div class="modal-body">
                         <p>是否刪除客製化選項 <b>{{customizedEdit_Data.Data.templateName}} ?</b></p>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                        <!-- <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button> -->
                         <button type="button" class="btn btn-danger" v-on:click="delet()">確認刪除</button>
                     </div>
                 </div>
@@ -284,7 +287,8 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr v-for="(customzed,index) in paginatedOrders" :key="customzed.templateId">
+                                    <tr v-for="(customzed,index) in paginatedOrders" :key="customzed.templateId"
+                                        class="btnHover">
                                         <td class="">
                                             {{ (currentPage - 1) * pageSize + index + 1 }}
                                         </td>
@@ -305,7 +309,7 @@
                                                 {{ option.title }}<span
                                                     class="d-sm-none d-md-inline">(+{{option.extra}})</span>,
                                             </span>
-                                            <div class="table-btn-div">
+                                            <div class="table-btn-div float-right">
                                                 <button class="btn btn-outline-secondary btn-sm mr-2 "
                                                     @click="showDeletCustomWin(index)">
                                                     <i class="fas fa-trash-alt"></i>
@@ -467,6 +471,7 @@
             },
             //確定新增
             add() {
+                loadingOn()
                 // var EditData = this.capitalizeKeys(this.customizedEdit_Data.Data)
                 var AddData = this.customizedEdit_Data.Data
                 AddData.group = ''
@@ -474,7 +479,7 @@
                 apiWeb('/api/Menu/attributes/' + storeId + '/add', "POST", JSON.stringify(AddData), '新增客製化', function (v) {
                     if (v.success == true) {
                         toastr.success('新增成功');
-                        vue.getCustmizedList()
+                        location.reload()
                     } else if (v.message == '已存在，請使用不同的名稱') {
                         toastr.error("已存在客製化名稱");
                     } else {
@@ -498,13 +503,14 @@
                 $('#createCustomizeClass').modal('show')
             },
             save() {
+                loadingOn()
                 var EditData = this.customizedEdit_Data.Data
                 EditData.group = ''
                 var vue = this
                 apiWeb('api/Menu/attributes/' + storeId + '/' + this.customizedEdit_Data.Data.templateId, 'PUT', JSON.stringify(EditData), '修改客製化選項', function (v) {
                     if (v.success == true) {
                         toastr.success('修改完成');
-                        vue.getCustmizedList()
+                        location.reload()
                     } {
                         toastr.error("修改失敗");
                     }
@@ -523,12 +529,13 @@
                 $('#deletCustomizeClass').modal('show')
             },
             delet() {
+                loadingOn()
                 var vue = this
                 // console.log(this.customizedEdit_Data.Data.templateId);
                 apiWeb('/api/Menu/attributes/' + storeId + '/' + this.customizedEdit_Data.Data.templateId, "DELETE", null, '刪除客製化', function (v) {
                     if (v.success == true) {
                         toastr.success('刪除成功');
-                        vue.getCustmizedList()
+                        location.reload()
                     } else if (v.message == "無法刪除屬性模板，因為它正在被餐點使用") {
                         toastr.error("該客製化選項正在使用中，無法被刪除");
                     } else {

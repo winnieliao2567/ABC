@@ -56,12 +56,15 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="reloginModalLabel">刪除菜單</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
                     </div>
                     <div class="modal-body">
                         <p>是否刪除菜單 <b>{{DeletMenuDate.menuName}}?</b></p>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                        <!-- <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button> -->
                         <button type="button" class="btn btn-danger" v-on:click="delettMenu()">確認刪除</button>
                     </div>
                 </div>
@@ -76,7 +79,6 @@
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
-
                     </div>
                     <div class="modal-body">
                         <div class="row">
@@ -250,44 +252,20 @@
                                 <div class="col-12 col-md-6 col-lg-4 col-xl-3 mb-2 item"
                                     v-for="(item,index) in menuList" key="item.menuId">
                                     <div class="card">
-
-                                        <!-- <div class="badge rounded-pill text-muted position-absolute"
-                                            v-if="item.isActive==true" style="top: 10px;right: 20px;">
-                                            <i class="fas fa-lock mr-2"></i>已下架
-                                        </div>
-                                        <div class="badge rounded-pill text-success position-absolute"
-                                            v-if="item.isActive==false" style="top: 10px;right: 20px;">
-                                            <i class="far fa-check-circle mr-2"></i>上架中
-                                        </div> -->
-
-                                        <div class="card-body">
-                                            <!-- <div class="float-right d-inline-block">
-                                                <div class="custom-control custom-switch" v-if="!item.isActive">
-                                                    <input type="checkbox" class="custom-control-input"
-                                                        @change="changeActive(item.menuId,item.menuName,!item.isActive)"
-                                                        :id="'active'+item.menuId" v-model="item.isActive">
-                                                    <label class="custom-control-label text-success m-0 ml-2"
-                                                        :for="'active'+item.menuId">
-                                                    </label>
-                                                </div>
-                                            </div> -->
+                                        <div class="card-body btnHover">
                                             <div class="float-right d-inline-block" :id="'active-'+item.menuId">
                                                 <h5 v-if="item.isActive" class=" text-success">
                                                     <i class="fas fa-check-circle"></i>
-                                                    <!-- 啟用 -->
-                                                    <!-- <i v-if="!item.isActive"
-                                                        class="fas fa-minus-circle  text-danger"></i> -->
                                                 </h5>
                                                 <h5 v-if="!item.isActive" class=" text-danger">
                                                     <i class="fas fa-minus-circle"></i>
-                                                    <!-- 停用 -->
                                                 </h5>
                                             </div>
                                             <h4>
                                                 <i class="fas fa-apple-alt mr-2"></i>{{item.menuName}}
                                             </h4>
                                             <p class="card-text text-muted pl-2">{{item.description||''}}</p>
-                                            <div class="text-right">
+                                            <div class="text-right table-btn-div">
                                                 <button :id="'active-'+item.menuId" :data-id="item.menuId"
                                                     :data-name="item.menuName" :data-active="item.isActive"
                                                     @click="changeActive(item.menuId,item.menuName)"
@@ -299,13 +277,13 @@
                                                     :data-name="item.menuName" v-if="menuList.length>1"
                                                     class="btn btn-sm btn-outline-danger mr-2 d-inline-block"
                                                     v-on:click="showDeletModal(item.menuId)">
-                                                    <i class="fas fa-trash-alt mr-2"></i>刪除
+                                                    <i class="fas fa-trash-alt"></i>
                                                 </button>
                                                 <button :id="'edit-'+item.menuId" :data-id="item.menuId"
                                                     :data-name="item.menuName"
                                                     class="btn btn-sm btn-secondary d-inline-block"
                                                     v-on:click="selectMenu(item.menuId)">
-                                                    <i class="fas fa-edit mr-2"></i>編輯
+                                                    <i class="fas fa-edit"></i>
                                                 </button>
                                             </div>
                                         </div>

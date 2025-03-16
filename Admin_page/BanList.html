@@ -209,9 +209,6 @@
                                         <th class="longText">
                                             #
                                         </th>
-                                        <th class="">
-
-                                        </th>
                                         <th class="longText">
                                             帳號
                                         </th>
@@ -226,18 +223,20 @@
                                             沒有資料
                                         </td>
                                     </tr>
-                                    <tr v-for="(item,index) in paginatedOrders">
+                                    <tr v-for="(item,index) in paginatedOrders" class="btnHover">
                                         <td class="longText">
                                             {{ (currentPage - 1) * pageSize + index + 1 }}
                                         </td>
-                                        <td class="">
-                                            <button class="btn btn-sm btn-outline-secondary"
-                                                v-on:click="deletBan(item.mobileNumber)">
-                                                <i class="fas fa-trash-alt"></i>
-                                            </button>
-                                        </td>
                                         <td class="longText">{{item.mobileNumber}}</td>
-                                        <td>{{returnTime(item.createDate)}}</td>
+                                        <td>
+                                            {{returnTime(item.createDate)}}
+                                            <div class="table-btn-div float-right">
+                                                <button class="btn btn-sm btn-outline-secondary"
+                                                    v-on:click="deletBan(item.mobileNumber)">
+                                                    <i class="fas fa-trash-alt"></i>
+                                                </button>
+                                            </div>
+                                        </td>
                                     </tr>
                                 </tbody>
                             </table>

@@ -70,16 +70,36 @@
                     </div>
                     <div class="modal-footer">
                         <!-- <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button> -->
-                        <button type="button" class="btn btn-secondary" @click="deleteSort"
-                            v-if="editSortClass_Data.action=='編輯'">刪除</button>
                         <button type="button" class="btn btn-primary" :disabled="!checkSortClassForm" @click="addSort"
                             v-if="editSortClass_Data.action=='新增'">確認新增</button>
                         <button type="button" class="btn btn-primary" v-if="editSortClass_Data.action=='編輯'"
-                            @click="save" :disabled="!checkSortClassForm">儲存</button>
+                            @click="save" :disabled="!checkSortClassForm">確認儲存</button>
                     </div>
                 </div>
             </div>
         </div>
+        <div class="modal fade" id="deletProductorModal" tabindex="-1" role="dialog" aria-labelledby="reloginModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="reloginModalLabel">刪除菜單</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p>是否刪除 <b>{{editSortClass_Data.Data.title}}?</b></p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" @click="deleteSort">確認刪除</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
         <!-- Navbar -->
         <nav class="main-header navbar navbar-expand navbar-white navbar-light">
             <!-- Left navbar links -->
@@ -209,15 +229,25 @@
                             </div>
                         </div>
                         <div class="col-12 list-group sortableList" ref="sortableList">
-                            <div class="list-group-item" v-for="(sort,index) in SortClass_Data" :key="sort.priorityId"
-                                @click="showEditSortClassWin(sort.priorityId)">
+                            <div class="list-group-item btnHover" v-for="(sort,index) in SortClass_Data"
+                                :key="sort.priorityId">
                                 <div class="row m-0">
                                     <div class="handle col-2 col-md-1">
                                         <i class="fas fa-ellipsis-v"></i>
                                         <i class="fas fa-ellipsis-v"></i>
                                     </div>
-                                    <div class="col-10 col-md-11">
+                                    <div class="col">
                                         {{sort.sort}}. {{sort.title}}
+                                    </div>
+                                    <div class="text-right table-btn-div" style="">
+                                        <button class="btn btn-sm btn-outline-danger mr-2 d-inline-block"
+                                            v-on:click="showDeletModal(sort.priorityId)">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-secondary d-inline-block"
+                                            @click="showEditSortClassWin(sort.priorityId)">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -323,9 +353,8 @@
                     // loadingOn()
                     apiWeb('/api/MealPriority/titles/' + storeId + '/update-priority-ids', 'PUT', JSON.stringify(EditData), '修改排序', function (v) {
                         if (v.success == true) {
-                            // location.reload()
                             toastr.success('排序修改成功');
-                            vue.getSortList()
+                            location.reload()
                         } else {
                             toastr.error('排序修改失敗');
                         }
@@ -371,6 +400,17 @@
                 $('#createProductorClass').modal('show');
             },
 
+            //刪除視窗
+            showDeletModal(itemId) {
+                let item = this.SortClass_Data.find(a => a.priorityId == itemId);
+
+                this.editSortClass_Data = {
+                    action: '刪除',
+                    Data: JSON.parse(JSON.stringify(item)), // 深拷貝，完全獨立
+                };
+
+                $('#deletProductorModal').modal('show');
+            },
             deleteSort() {
                 // console.log('delete');
 
@@ -378,7 +418,7 @@
                 var vue = this
                 apiWeb('/api/MealPriority/titles/' + storeId + '/' + this.editSortClass_Data.Data.priorityId
                     , 'DELETE', null, '刪除排序', function (v) {
-                        console.log(vue.SortClass_Data[0].title, vue.editSortClass_Data.Data.title);
+                        // console.log(vue.SortClass_Data[0].title, vue.editSortClass_Data.Data.title);
                         if (v.success == true) {
                             location.reload()
                         } else {
@@ -408,11 +448,12 @@
                     })
             },
             addSort() {
+                loadingOn()
                 var addData = {
                     title: this.editSortClass_Data.Data.title
                 }
                 console.log(addData);
-
+                var vue = this
                 apiWeb('/api/MealPriority/titles/' + storeId, 'POST', JSON.stringify(addData), '新增排序', function (v) {
                     if (v.success == true) {
                         location.reload()

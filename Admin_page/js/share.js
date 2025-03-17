@@ -107,6 +107,13 @@ function apiWeb(_url, _type, _data, TimelogTag, _fun) {
             url: host + _url,
             data: _data,
             statusCode: {
+                400: function (xhr) {
+                    // console.log();
+                    toastr.error(xhr.responseJSON.message);
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1500);
+                },
                 403: function (xhr) {
                     console.log("Forbidden (403):", xhr);
                 },
@@ -115,6 +122,10 @@ function apiWeb(_url, _type, _data, TimelogTag, _fun) {
                 },
                 500: function (xhr) {
                     console.log("Server Error (500):", xhr);
+                },
+                default: function (xhr) {
+                    // 捕捉所有其他狀態碼
+                    toastr.error(TimelogTag + "系統問題導致失敗");
                 },
             },
             success: function (v) {
@@ -125,7 +136,7 @@ function apiWeb(_url, _type, _data, TimelogTag, _fun) {
             },
             error: function (v) {
                 console.timeEnd("● API-" + TimelogTag + "(" + _url + ")");
-                toastr.error(TimelogTag + "失敗");
+                // toastr.error(TimelogTag + "系統問題導致失敗");
                 console.log("Error:", JSON.stringify(v));
             },
         });

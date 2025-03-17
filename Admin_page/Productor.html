@@ -80,6 +80,7 @@
                 </div>
             </div>
         </div>
+
         <div class="modal fade" id="ProductorEdit" tabindex="-1" role="dialog" aria-labelledby="reloginModalLabel"
             aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable" role="document">
@@ -98,7 +99,7 @@
                             <div class="col-12 bg-light p-3 mb-2">
                                 <h5 class="mb-3">品項內容</h5>
                                 <div class="row flex-row-reverse m-0 align-items-stretch">
-                                    <div class="col-12 col-lg-4 p-1" v-if="AddProductor_data.data.imgurl==''">
+                                    <div class="col-12 col-lg-4 p-1" v-if="AddProductor_data.data.image==''">
                                         <label class="rounded-lg bg-white border-primary p-3 w-100 h-100"
                                             style="border-width:3px;border-style:dotted;"
                                             for="AddProductorImageDefault">
@@ -108,7 +109,7 @@
                                                 accept=".jpg,.jpeg,.png" @change="uploadImage">
                                         </label>
                                     </div>
-                                    <div class="col-12 col-lg-4 p-1" v-if="AddProductor_data.data.imgurl!=''">
+                                    <div class="col-12 col-lg-4 p-1" v-if="AddProductor_data.data.image!=''">
                                         <div class="result" v-if="AddProductor_data.userAction==='新增'">
                                             <label class="m-0">
                                                 品項圖片
@@ -144,27 +145,26 @@
                                                 品項名稱<span class="text-danger">*</span>
                                             </label>
                                             <input class="form-control" placeholder="品項名稱"
-                                                v-model="AddProductor_data.data">
+                                                v-model="AddProductor_data.data.name">
                                         </div>
                                         <div class="form-group mb-3">
                                             <label class="m-0">
                                                 品項敘述
                                             </label>
-                                            <textarea class="form-control" placeholder="品項敘述"
-                                                v-model="AddProductor_data.data.introduction"></textarea>
+                                            <textarea class="form-control" placeholder="品項敘述" v-model="AddProductor_data.data.remark
+                                                "></textarea>
                                         </div>
                                         <div class="form-group mb-3">
                                             <label class="m-0">
                                                 品項分類<span class="text-danger">*</span>
                                             </label>
-                                            <select v-model="AddProductor_data.data.productorsClass.id"
-                                                class="form-control">
+                                            <select v-model="AddProductor_data.data.categoryId" class="form-control">
                                                 <option value="" disabled v-if="AddProductor_data.userAction==='新增'">
                                                     --請選擇 --
                                                 </option>
-                                                <option v-for="(classList,classIndex) in ProductorEditData"
-                                                    :value="classList.id">
-                                                    {{classList.name}}
+                                                <option v-for="(classList,classIndex) in ClassList"
+                                                    :value="classList.categoryId">
+                                                    {{classList.categoryName}}
                                                 </option>
                                             </select>
                                         </div>
@@ -182,8 +182,8 @@
                                                         NT$
                                                     </span>
                                                 </div>
-                                                <input class="form-control" placeholder="價格" type="number"
-                                                    v-model="AddProductor_data.data.price" step="1">
+                                                <input class="form-control" placeholder="價格" type="number" v-model="AddProductor_data.data.
+                                                    price" step="1">
                                             </div>
                                         </div>
                                         <div class="form-group mb-3">
@@ -194,12 +194,13 @@
                                                     <i class="fas fa-question-circle"></i>
                                                 </span>
                                             </label>
-                                            <select class="form-control" v-model="AddProductor_data.data.sortClass">
-                                                <option value="" disabled v-if="AddProductor_data.userAction==='新增'">--
-                                                    請選擇 --
+                                            <select class="form-control" v-model="AddProductor_data.data.priority">
+                                                <option value="" disabled v-if="AddProductor_data.userAction==='新增'">
+                                                    -- 請選擇 --
                                                 </option>
-                                                <option v-for="(sort,classIndex) in SortClassList" :value="sort.id">
-                                                    {{sort.name}}
+                                                <option v-for="(sort,classIndex) in SortClass_Data"
+                                                    :value="sort.priorityId">
+                                                    {{sort.title}}
                                                 </option>
                                             </select>
                                         </div>
@@ -209,22 +210,24 @@
                             <div class="col-12 bg-light p-3 mb-2">
                                 <h5>份量</h5>
                                 <p class="text-muted">若您的餐點有不同份量，可以新增份量並設定差價。</p>
-                                <div class="form-group mb-3" v-if="AddProductor_data.data.size.length!==0">
-                                    <div class="input-group mb-1"
-                                        v-for="(size,sizeIndex) in AddProductor_data.data.size">
-                                        <input class="form-control" placeholder="份量名稱，EX：大杯" v-model="size.name">
-                                        <div class="input-group-prepend input-group-append">
-                                            <span class="input-group-text">
-                                                NT $
-                                            </span>
-                                        </div>
-                                        <input class="form-control" placeholder="EX:20或-50" type="number"
-                                            v-model="size.price" step="1">
-                                        <div class="input-group-append">
-                                            <button v-on:click="deletSize(sizeIndex)" class="btn btn-outline-secondary">
-                                                <i class="fas fa-trash-alt"></i>
-                                            </button>
-                                        </div>
+                                <div class="input-group mb-1"
+                                    v-for="(size, sizeIndex) in AddProductor_data.data.mealConfig.options"
+                                    :key="sizeIndex"
+                                    v-if="AddProductor_data.data.mealConfig.options && AddProductor_data.data.mealConfig.options.length > 0">
+
+                                    <input class="form-control" placeholder="份量名稱，EX：大杯" v-model="size.title">
+
+                                    <div class="input-group-prepend input-group-append">
+                                        <span class="input-group-text">NT $</span>
+                                    </div>
+
+                                    <input class="form-control" placeholder="EX:20或-50" type="number"
+                                        v-model="size.extraPrice" step="1">
+
+                                    <div class="input-group-append">
+                                        <button v-on:click="deletSize(sizeIndex)" class="btn btn-outline-secondary">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
                                     </div>
                                 </div>
                                 <div class="form-group mb-3">
@@ -243,62 +246,35 @@
                                             <th class="longText">
                                                 名稱
                                             </th>
-                                            <th class="longText">
+                                            <!-- <th class="longText">
                                                 選項
-                                            </th>
+                                            </th> -->
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr v-for="(cus,CIndex) in CustomizedClassList">
+                                        <tr v-for="(cuzt,CIndex) in customizedData">
                                             <td>
-                                                <input type="checkbox" v-model="AddProductor_data.data.customClassId"
-                                                    :value="cus.id" :id="'checkbox-'+cus.id">
+                                                <input type="checkbox" :id="'checkbox-'+cuzt.templateId" v-if=""
+                                                    :value="cuzt.templateId" v-model="">
                                             </td>
-                                            <td :for="'checkbox-'+cus.id">
-                                                {{cus.name}}
+                                            <td :for="'checkbox-'+cuzt.templateId">
+                                                {{cuzt.templateName}}
                                             </td>
-                                            <td :for="'checkbox-'+cus.id">
+                                            <!-- <td :for="'checkbox-'+cuzt.templateId">
                                                 <label class="d-none d-md-block col-6 m-0">
                                                     <span class="text-sm rounded-lg bg-muted"
-                                                        v-for="(cusOption,cusOPIndex) in cus.options">
-                                                        {{ cusOption }},
+                                                        v-for="(cusOption,cusOPIndex) in cuzt.options">
+                                                        {{ cusOption.title }},
                                                     </span>
                                                 </label>
-                                            </td>
+                                            </td> -->
                                         </tr>
                                     </tbody>
                                 </table>
-                                <!-- <div class="sortableList mb-3">
-                                    <div class="border-bottom text-bold text-muted p-0">
-                                        <div class="py-1 px-4 d-flex">
-                                            <div class="col-2 col-md-1 m-0"></div>
-                                            <div class="col-10 col-md-4 m-0">名稱</div>
-                                            <div class="d-none d-md-block col-6 m-0">選項</div>
-                                        </div>
-                                    </div>
-                                    <div class="list-group-item p-0" v-for="(cus,CIndex) in CustomizedClassList">
-                                        <div class="py-1 px-4 d-flex">
-                                            <div class="col-2 col-md-1 m-0">
-                                                <input type="checkbox" v-model="AddProductor_data.data.customClassId"
-                                                    :value="cus.id" :id="'checkbox-'+cus.id">
-                                            </div>
-                                            <label class="col-10 col-md-4 m-0" :for="'checkbox-'+cus.id">
-                                                {{cus.name}}
-                                            </label>
-                                            <label class="d-none d-md-block col-6 m-0" :for="'checkbox-'+cus.id">
-                                                <span class="text-sm rounded-lg bg-muted"
-                                                    v-for="(cusOption,cusOPIndex) in cus.options">
-                                                    {{ cusOption }},
-                                                </span>
-                                            </label>
-                                        </div>
-                                    </div>
-                                </div> -->
                             </div>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <!-- <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button> -->
                         <button type="button" class="btn btn-secondary" @click="deletProductor"
                             v-if="AddProductor_data.action=='編輯'">刪除</button>
                         <button type="button" class="btn btn-primary" @click="SaveProductor"
@@ -309,6 +285,7 @@
                 </div>
             </div>
         </div>
+
         <div class="modal fade" id="createProductorClass" tabindex="-1" role="dialog"
             aria-labelledby="reloginModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered modal-md" role="document">
@@ -326,22 +303,16 @@
                             <div class="col-12">
                                 <div class="form-group">
                                     <label for="">類別名稱<span class="text-danger">*</span></label>
-                                    <input v-model="ProductorClass_Data.data" class="form-control ">
+                                    <input v-model="ProductorClass_Data.data.categoryName" class="form-control ">
                                 </div>
-                                <!-- <div class="form-group mb-5">
-                                    <label for="">菜單描述</label>
-                                    <textarea class="form-control"
-                                        v-model="ProductorClass_Data.data.description"></textarea>
-                                </div> -->
                             </div>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <!-- <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button> -->
                         <button type="button" class="btn btn-primary" :disabled="!checkProductorClassForm"
                             @click="addClass()" v-if="ProductorClass_Data.action=='新增'">確認新增</button>
                         <button type="button" class="btn btn-primary" v-if="ProductorClass_Data.action=='編輯'"
-                            :disabled="!checkProductorClassForm">儲存</button>
+                            :disabled="!checkProductorClassForm">確認儲存</button>
                     </div>
                 </div>
             </div>
@@ -480,7 +451,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-12 col-md-8 col-xl-7 p-3" v-for="(Group, index) in productorData"
+                        <div class="col-12 col-md-8 col-xl-7 py-2" v-for="(Group, index) in productorData"
                             :key="Group.categoryId">
                             <div class="col-12">
                                 <div class="d-inline-block">
@@ -492,29 +463,23 @@
                                     <a href="#" class="ml-3" :data-id="Group.categoryId
                                     " @click="EditProductorGroup(index)">編輯品項類別</a>
                                 </div>
-                                <!-- <p class="text-muted text-sm"> {{ Group.description }}</p> -->
                                 <div class="list-group" v-if="Group.productors.length>0">
-                                    <div class="d-flex align-items-center py-2 list-group-item"
-                                        :data-id="item.categoryId" v-for="(item,itemindex) in Group.productors" @click="showProductorEditWin(index,item.categoryId
-                                        )">
+                                    <div class="d-flex align-items-center py-2 list-group-item btnHover"
+                                        :data-id="item.categoryId" v-for="(item,itemindex) in Group.productors">
                                         <div class="d-flex justify-content-center"
                                             style="width: 50px;overflow: hidden;">
                                             <img :src="item.image!=''?item.image:'img/unknowIMG.png'" class="border"
                                                 width="50px" height="50px">
                                         </div>
                                         <div class="pl-3">
-                                            <div class="text-bold">{{item.categoryName}}</div>
+                                            <div class="text-bold">{{item.name}}</div>
                                             <div class="text-muted">{{item.remark}}</div>
                                         </div>
-                                        <div class=" ml-auto">
-                                            <label v-if="item.enabled" class="text-success">
-                                                <i class="fas fa-circle"></i>
-                                                <!-- 上架中 -->
-                                            </label>
-                                            <label v-if="!item.enabled" class="text-danger">
-                                                <i class="fas fa-circle"></i>
-                                                <!-- 停售中 -->
-                                            </label>
+                                        <div class="float-right table-btn-div" style="position: absolute;right: 10px;">
+                                            <button class="btn btn-sm btn-secondary d-inline-block"
+                                                @click="showProductorEditWin(index,itemindex)">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
@@ -579,49 +544,7 @@
                     },
                 ],
 
-                // 品項列表
-                ProductorEditData: [
-                    {
-                        id: 'cl2025a01s09s',
-                        name: '分類A',
-                        description: '分類A的描述',
-                        productors: [
-                            {
-                                id: 'pro2024duc12it22em',
-                                name: '雞排',
-                                imgurl: 'img/bg/brooke-lark-IDTEXXXfS44-unsplash.jpg',
-                                sortClassInfo: {
-                                    id: 'c2024la12s24s',
-                                    name: '屬性01',
-                                    sort_number: 0,
-                                },
-                                productorsClass: {
-                                    id: 'cl2025a01s09s',
-                                    name: '分類A',
-                                    description: '分類A的描述',
-                                },
-                                sortClass: 'c2024la12s24s',
-                                customClassId: ['cu2024s01to11mized'],
-                                price: '20',
-                                introduction: '好吃好吃超好吃😋',
-                                size: [
-                                    {
-                                        name: '大份',
-                                        price: '10'
-                                    }
-                                ],
-                                enabled: true
-                            }
-                        ],
-                    },
-                    {
-                        id: 'cl2025a01s10s',
-                        name: '分類B',
-                        description: '分類B的描述',
-                        productors: []
-                    },
-                ],
-
+                // 分類中的品項列表
                 productorData: [],
 
                 //品項分類編輯/新增資料
@@ -634,80 +557,57 @@
                 AddProductor_data: {
                     userAction: '新增',
                     data: {
-                        name: '',
-                        imgurl: '',
-                        productorsClass: {
-                            id: '',
+                        "mealId": 0,
+                        "name": "",
+                        "remark": "",
+                        "price": 0,
+                        "image": "",
+                        "categoryId": 0,
+                        "categoryName": "",
+                        "priority": 0,
+                        "priorityTitle": "",
+                        "enabled": true,
+                        "createTime": "",
+                        "editTime": "",
+                        "customConfig": {
+                            "items": [
+                                {
+                                    "templateId": 0,
+                                    "options": []
+                                }
+                            ]
                         },
-                        sortClass: '',
-                        customClassId: [],
-                        price: '0',
-                        introduction: '',
-                        size: [],
-                        enabled: true
+                        "mealConfig": {
+                            "options": [
+                                {
+                                    "title": "",
+                                    "extraPrice": 0
+                                }
+                            ]
+                        }
                     },
-                    enabled: true
-                },
-                AddProductorDefault: {
-                    name: '',
-                    imgurl: '',
-                    productorsClass: {
-                        id: '',
-                    },
-                    sortClass: '',
-                    customClassId: [],
-                    price: '0',
-                    introduction: '',
-                    size: [],
-                    enabled: true
                 },
 
                 //排序類別清單
-                SortClassList: [
-                    {
-                        id: 'c2024la12s24s',
-                        name: '屬性01',
-                        sort_number: 0
-                    },
-                    {
-                        id: 'c2024la12s25s',
-                        name: '屬性02',
-                        sort_number: 1
-                    },
-                    {
-                        id: 'c2024la12s26s',
-                        name: '屬性03',
-                        sort_number: 2
-                    },
-                    {
-                        id: 'c2024la12s27s',
-                        name: '屬性04',
-                        sort_number: 3
-                    },
-                ],
-
+                SortClass_Data: {
+                    priorityId: '',
+                    title: '',
+                    sort: 0
+                }
+                ,
                 //客製化類別清單
-                CustomizedClassList: [
-                    {
-                        id: 'cu2024s01to10mized',
-                        name: '冰塊調整',
-                        type: 1,
-                        options:
-                            [
-                                '正常', '少冰', '微冰', '去冰'
-                            ]
-                    },
-                    {
-                        id: 'cu2024s01to11mized',
-                        name: '客制加料',
-                        type: 2,
-                        options:
-                            [
-                                '加珍珠', '少冰', '微冰', '去冰', ''
-                            ]
-                    }
-                ]
-
+                customizedData: [{
+                    "templateId": '',
+                    "templateName": "",
+                    "type": null,
+                    "required": false,
+                    "options": [
+                        {
+                            'title': '',
+                            "extra": 0
+                        }
+                    ],
+                }]
 
             }
         },
@@ -715,11 +615,11 @@
             // 新增/儲存 品項按鈕檢查
             checkProductorForm() {
                 // console.log(this.AddProductor_data.data);
-                if (this.AddProductor_data.data !== '' && this.AddProductor_data.data.sortClass !== '' && this.AddProductor_data.data.productorsClass.id !== '') {
-                    return true
-                } else {
-                    return false
-                }
+                // if (this.AddProductor_data.data !== '' && this.AddProductor_data.data.sortClass !== '' && this.AddProductor_data.data.productorsClass.id !== '') {
+                //     return true
+                // } else {
+                //     return false
+                // }
             },
             // 新增/儲存 品項分類按鈕檢查
             checkProductorClassForm() {
@@ -777,92 +677,134 @@
         watch: {
         },
         methods: {
+            //取得產品清單
             getProductorList() {
                 var vue = this;
-                // 獲取分類
-                apiWeb('/api/Meal/' + storeId, 'GET', null, '獲得分類', function (v) {
+                apiWeb('/api/Meal/category/' + storeId, 'GET', null, '獲得分類', function (v) {
                     if (v.success == true) {
-                        vue.ClassList = v; // 這樣 categories 仍然在 vue.ClassList.categories
-                        console.log('vue.ClassList=' + JSON.stringify(vue.ClassList));
+                        vue.ClassList = v.categories; // 確保 meals 在 vue.ProductList.meals
+                        // console.log('vue.ClassList=' + JSON.stringify(vue.ClassList));
 
-                        // 獲取品項
-                        apiWeb('/api/Meal/category/' + storeId, 'GET', null, '獲得品項', function (v) {
+                        apiWeb('/api/Meal/' + storeId, 'GET', null, '獲得品項', function (v) {
                             if (v.success == true) {
-                                vue.ProductList = v; // 確保 meals 在 vue.ProductList.meals
-                                console.log('vue.ProductList=' + JSON.stringify(vue.ProductList));
+                                vue.ProductList = v.meals;
+                                // console.log('vue.ProductList=' + JSON.stringify(vue.ProductList));
 
-                                // 建立分類對應陣列，並初始化 productors 陣列
-                                let categoryMap = vue.ProductList.categories.map(category => ({
+                                vue.productorData = vue.ClassList.map(category => ({
                                     categoryId: category.categoryId,
                                     categoryName: category.categoryName,
-                                    productors: []
+                                    productors: vue.ProductList.filter(product => product.categoryId === category.categoryId)
                                 }));
 
-                                // 遍歷 ClassList.meals，將產品依 categoryId 放入對應的 productors 陣列
-                                vue.ClassList.meals.forEach(product => {
-                                    let category = categoryMap.find(c => c.categoryId === product.categoryId);
-                                    if (category) {
-                                        category.productors.push(product);
-                                    }
-                                });
+                                // console.log(vue.productorData);
 
-                                // 將結果存入 this.productorData
-                                vue.productorData = categoryMap;
-                                console.log(vue.productorData);
+                                apiWeb('api/MealPriority/titles/' + storeId, 'GET', null, '取得排序列表', function (v) {
+                                    // console.log(v);
+                                    vue.SortClass_Data = v.titles
+                                    // console.log(vue.SortClass_Data);
+
+
+                                    apiWeb('api/Menu/attributes/list/' + storeId, 'GET', null, '獲得客製化選項', function (v) {
+                                        if (v.success == true) {
+                                            vue.customizedData = v.templates
+                                            // console.log(vue.customizedData);
+                                            loadingOff()
+                                        }
+                                    })
+
+                                })
 
                             }
                         });
                     }
-                    loadingOff();
                 });
             },
-            //顯示新增分類視窗
+
+
+
+
+
+            //＊顯示新增分類視窗
             AddProductorGroup() {
                 this.ProductorClass_Data = {
                     action: '新增',
-                    data: ''
+                    data: { categoryName: '' }
                 }
-                console.log(this.ProductorClass_Data);
+                console.log(this.ProductorClass_Data.data);
                 $('#createProductorClass').modal('show')
             },
             addClass() {
                 var data = {
                     "StoreId": storeId,
-                    "CategoryName": this.ProductorClass_Data.data
+                    "CategoryName": this.ProductorClass_Data.data.categoryName
                 }
+                console.log(data);
+
                 apiWeb('api/Menu/category/' + storeId + '/add', 'POST', JSON.stringify(data), '新增分類', function (v) {
-                    if (v.message == true) { }
+                    if (v.message == true) {
+                        location.reload()
+                    }
                 })
 
             },
-            //顯示編輯分類視窗
+
+            //＊顯示編輯分類視窗
             EditProductorGroup(index) {
+                // console.log(this.ClassList)
+
+                var k = this.ClassList[index]
+                // console.log(k);
+
                 this.ProductorClass_Data = {
                     action: '編輯',
-                    data: this.ProductorEditData[index]
+                    data: k
                 }
                 $('#createProductorClass').modal('show')
+            },
+            saveClass() {
+                console.log(this.ProductorClass_Data.data);
             },
 
             //顯示新增品項視窗
             showProductorAddWin(index) {
                 this.AddProductor_data = {
-                    enabled: true,
-                    data: this.AddProductorDefault,
+                    data: {
+                        "categoryName": "",
+                        "productors": [
+                            {
+                                "mealId": null,
+                                "name": "",
+                                "remark": "",
+                                "price": null,
+                                "image": "",
+                                "categoryId": null,
+                                "categoryName": "",
+                                "priority": null,
+                                "priorityTitle": "",
+                                "enabled": true,
+                                "customConfig": {
+                                    "items": []
+                                }
+                            }
+                        ]
+                    },
                     userAction: '新增'
                 }
-                if (index) {
-                    this.AddProductor_data.data.productorsClass.id = this.ProductorEditData[index].id
-                }
+                console.log('this.AddProductor_data.data---------------' + this.AddProductor_data.data);
                 $('#ProductorEdit').modal('show')
             },
+
             //顯示編輯品項視窗
-            showProductorEditWin(index, itemId) {
+            showProductorEditWin(index, itemindex) {
+                // console.log(index);
+
                 this.AddProductor_data = {
-                    enabled: false,
-                    data: this.ProductorEditData[index].productors.find(item => item.id === itemId),
+                    data: this.productorData[index].productors
+                    [itemindex],
                     userAction: '編輯'
                 }
+                console.log('this.AddProductor_data.data---------------' + JSON.stringify(this.AddProductor_data.data.mealConfig));
+
                 $('#ProductorEdit').modal('show')
             },
 

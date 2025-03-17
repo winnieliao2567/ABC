@@ -160,7 +160,7 @@ textarea {
     pointer-events: none;
     opacity: 0.5;
 }
-tr {
+.btnHover {
     position: relative;
 }
 /* td {
@@ -168,11 +168,13 @@ tr {
 } */
 .table-btn-div {
     /* display: none; */
-    top: 0.75rem;
-    right: 0.75rem;
-    display: none;
-    position: absolute;
-}
-tr:hover .table-btn-div {
+    /* display: none; */
+    opacity: 0;
+    pointer-events: none;
+    position: relative;
     display: inline-block;
+}
+.btnHover:hover .table-btn-div {
+    opacity: 1;
+    pointer-events: unset;
 }

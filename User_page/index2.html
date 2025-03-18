@@ -53,7 +53,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
     </style>
 </head>
 
-<body class="hold-transition sidebar-collapse layout-top-nav">
+<body class="hold-transition sidebar-collapse layout-top-nav layout-footer-fixed">
     <!-- <div class="preloader flex-column justify-content-center align-items-center">
         <img class="animation__shake" src="img/logo.svg" style="height: 15vh;">
     </div> -->
@@ -70,7 +70,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                     <span class="navbar-toggler-icon"></span>
                 </button> -->
 
-                <div class="collapse navbar-collapse order-3" id="navbarCollapse">
+                <!-- <div class="collapse navbar-collapse order-3" id="navbarCollapse">
                     <ul class="navbar-nav">
                         <li class="nav-item">
                             <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i
@@ -91,44 +91,37 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
                                 <li class="dropdown-divider"></li>
 
-                                <!-- Level two dropdown-->
-                                <li class="dropdown-submenu dropdown-hover">
-                                    <a id="dropdownSubMenu2" href="#" role="button" data-toggle="dropdown"
-                                        aria-haspopup="true" aria-expanded="false"
-                                        class="dropdown-item dropdown-toggle">Hover for action</a>
-                                    <ul aria-labelledby="dropdownSubMenu2" class="dropdown-menu border-0 shadow">
-                                        <li>
-                                            <a tabindex="-1" href="#" class="dropdown-item">level 2</a>
-                                        </li>
+                <li class="dropdown-submenu dropdown-hover">
+                    <a id="dropdownSubMenu2" href="#" role="button" data-toggle="dropdown" aria-haspopup="true"
+                        aria-expanded="false" class="dropdown-item dropdown-toggle">Hover for action</a>
+                    <ul aria-labelledby="dropdownSubMenu2" class="dropdown-menu border-0 shadow">
+                        <li>
+                            <a tabindex="-1" href="#" class="dropdown-item">level 2</a>
+                        </li>
 
-                                        <!-- Level three dropdown-->
-                                        <li class="dropdown-submenu">
-                                            <a id="dropdownSubMenu3" href="#" role="button" data-toggle="dropdown"
-                                                aria-haspopup="true" aria-expanded="false"
-                                                class="dropdown-item dropdown-toggle">level 2</a>
-                                            <ul aria-labelledby="dropdownSubMenu3"
-                                                class="dropdown-menu border-0 shadow">
-                                                <li><a href="#" class="dropdown-item">3rd level</a></li>
-                                                <li><a href="#" class="dropdown-item">3rd level</a></li>
-                                            </ul>
-                                        </li>
-                                        <!-- End Level three -->
-
-                                        <li><a href="#" class="dropdown-item">level 2</a></li>
-                                        <li><a href="#" class="dropdown-item">level 2</a></li>
-                                    </ul>
-                                </li>
-                                <!-- End Level two -->
+                        <li class="dropdown-submenu">
+                            <a id="dropdownSubMenu3" href="#" role="button" data-toggle="dropdown" aria-haspopup="true"
+                                aria-expanded="false" class="dropdown-item dropdown-toggle">level 2</a>
+                            <ul aria-labelledby="dropdownSubMenu3" class="dropdown-menu border-0 shadow">
+                                <li><a href="#" class="dropdown-item">3rd level</a></li>
+                                <li><a href="#" class="dropdown-item">3rd level</a></li>
                             </ul>
                         </li>
-                    </ul>
 
-                </div>
+                        <li><a href="#" class="dropdown-item">level 2</a></li>
+                        <li><a href="#" class="dropdown-item">level 2</a></li>
+                    </ul>
+                </li>
+                </ul>
+                </li>
+                </ul>
+
+            </div> -->
 
 
                 <ul class="order-1 order-md-3 navbar-nav navbar-no-expand ml-auto">
                     <li class="nav-item">
-                        <a class="nav-link" data-toggle="dropdown" href="#">
+                        <a class="nav-link" data-toggle="dropdown" :href="'cart.html?uid='+userInfo.id">
                             <i class="fas fa-shopping-cart"></i>
                             <span class="badge badge-primary navbar-badge">3</span>
                         </a>
@@ -154,674 +147,6 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 </ul>
             </div>
         </nav>
-
-        <!-- <aside class="main-sidebar sidebar-dark-primary elevation-4">
-            <a href="../../index3.html" class="brand-link">
-                <img src="../../dist/img/AdminLTELogo.png" alt="AdminLTE Logo"
-                    class="brand-image img-circle elevation-3" style="opacity: .8">
-                <span class="brand-text font-weight-light">AdminLTE 3</span>
-            </a>
-
-            <div class="sidebar">
-                <div class="user-panel mt-3 pb-3 mb-3 d-flex">
-                    <div class="image">
-                        <img src="../../dist/img/user2-160x160.jpg" class="img-circle elevation-2" alt="User Image">
-                    </div>
-                    <div class="info">
-                        <a href="#" class="d-block">Alexander Pierce</a>
-                    </div>
-                </div>
-
-                <div class="form-inline">
-                    <div class="input-group" data-widget="sidebar-search">
-                        <input class="form-control form-control-sidebar" type="search" placeholder="Search"
-                            aria-label="Search">
-                        <div class="input-group-append">
-                            <button class="btn btn-sidebar">
-                                <i class="fas fa-search fa-fw"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <nav class="mt-2">
-                    <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu"
-                        data-accordion="false">
-                        <li class="nav-item">
-                            <a href="#" class="nav-link">
-                                <i class="nav-icon fas fa-tachometer-alt"></i>
-                                <p>
-                                    Dashboard
-                                    <i class="right fas fa-angle-left"></i>
-                                </p>
-                            </a>
-                            <ul class="nav nav-treeview">
-                                <li class="nav-item">
-                                    <a href="../../index.html" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>Dashboard v1</p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="../../index2.html" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>Dashboard v2</p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="../../index3.html" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>Dashboard v3</p>
-                                    </a>
-                                </li>
-                            </ul>
-                        </li>
-                        <li class="nav-item">
-                            <a href="../widgets.html" class="nav-link">
-                                <i class="nav-icon fas fa-th"></i>
-                                <p>
-                                    Widgets
-                                    <span class="right badge badge-danger">New</span>
-                                </p>
-                            </a>
-                        </li>
-                        <li class="nav-item menu-open">
-                            <a href="#" class="nav-link active">
-                                <i class="nav-icon fas fa-copy"></i>
-                                <p>
-                                    Layout Options
-                                    <i class="fas fa-angle-left right"></i>
-                                    <span class="badge badge-info right">6</span>
-                                </p>
-                            </a>
-                            <ul class="nav nav-treeview">
-                                <li class="nav-item">
-                                    <a href="../layout/top-nav.html" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>Top Navigation</p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="../layout/top-nav-sidebar.html" class="nav-link active">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>Top Navigation + Sidebar</p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="../layout/boxed.html" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>Boxed</p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="../layout/fixed-sidebar.html" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>Fixed Sidebar</p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="../layout/fixed-sidebar-custom.html" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>Fixed Sidebar <small>+ Custom Area</small></p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="../layout/fixed-topnav.html" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>Fixed Navbar</p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="../layout/fixed-footer.html" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>Fixed Footer</p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="../layout/collapsed-sidebar.html" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>Collapsed Sidebar</p>
-                                    </a>
-                                </li>
-                            </ul>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#" class="nav-link">
-                                <i class="nav-icon fas fa-chart-pie"></i>
-                                <p>
-                                    Charts
-                                    <i class="right fas fa-angle-left"></i>
-                                </p>
-                            </a>
-                            <ul class="nav nav-treeview">
-                                <li class="nav-item">
-                                    <a href="../charts/chartjs.html" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>ChartJS</p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="../charts/flot.html" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>Flot</p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="../charts/inline.html" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>Inline</p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="../charts/uplot.html" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>uPlot</p>
-                                    </a>
-                                </li>
-                            </ul>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#" class="nav-link">
-                                <i class="nav-icon fas fa-tree"></i>
-                                <p>
-                                    UI Elements
-                                    <i class="fas fa-angle-left right"></i>
-                                </p>
-                            </a>
-                            <ul class="nav nav-treeview">
-                                <li class="nav-item">
-                                    <a href="../UI/general.html" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>General</p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="../UI/icons.html" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>Icons</p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="../UI/buttons.html" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>Buttons</p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="../UI/sliders.html" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>Sliders</p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="../UI/modals.html" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>Modals & Alerts</p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="../UI/navbar.html" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>Navbar & Tabs</p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="../UI/timeline.html" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>Timeline</p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="../UI/ribbons.html" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>Ribbons</p>
-                                    </a>
-                                </li>
-                            </ul>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#" class="nav-link">
-                                <i class="nav-icon fas fa-edit"></i>
-                                <p>
-                                    Forms
-                                    <i class="fas fa-angle-left right"></i>
-                                </p>
-                            </a>
-                            <ul class="nav nav-treeview">
-                                <li class="nav-item">
-                                    <a href="../forms/general.html" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>General Elements</p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="../forms/advanced.html" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>Advanced Elements</p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="../forms/editors.html" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>Editors</p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="../forms/validation.html" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>Validation</p>
-                                    </a>
-                                </li>
-                            </ul>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#" class="nav-link">
-                                <i class="nav-icon fas fa-table"></i>
-                                <p>
-                                    Tables
-                                    <i class="fas fa-angle-left right"></i>
-                                </p>
-                            </a>
-                            <ul class="nav nav-treeview">
-                                <li class="nav-item">
-                                    <a href="../tables/simple.html" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>Simple Tables</p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="../tables/data.html" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>DataTables</p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="../tables/jsgrid.html" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>jsGrid</p>
-                                    </a>
-                                </li>
-                            </ul>
-                        </li>
-                        <li class="nav-header">EXAMPLES</li>
-                        <li class="nav-item">
-                            <a href="../calendar.html" class="nav-link">
-                                <i class="nav-icon far fa-calendar-alt"></i>
-                                <p>
-                                    Calendar
-                                    <span class="badge badge-info right">2</span>
-                                </p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="../gallery.html" class="nav-link">
-                                <i class="nav-icon far fa-image"></i>
-                                <p>
-                                    Gallery
-                                </p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="../kanban.html" class="nav-link">
-                                <i class="nav-icon fas fa-columns"></i>
-                                <p>
-                                    Kanban Board
-                                </p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#" class="nav-link">
-                                <i class="nav-icon far fa-envelope"></i>
-                                <p>
-                                    Mailbox
-                                    <i class="fas fa-angle-left right"></i>
-                                </p>
-                            </a>
-                            <ul class="nav nav-treeview">
-                                <li class="nav-item">
-                                    <a href="../mailbox/mailbox.html" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>Inbox</p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="../mailbox/compose.html" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>Compose</p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="../mailbox/read-mail.html" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>Read</p>
-                                    </a>
-                                </li>
-                            </ul>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#" class="nav-link">
-                                <i class="nav-icon fas fa-book"></i>
-                                <p>
-                                    Pages
-                                    <i class="fas fa-angle-left right"></i>
-                                </p>
-                            </a>
-                            <ul class="nav nav-treeview">
-                                <li class="nav-item">
-                                    <a href="../examples/invoice.html" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>Invoice</p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="../examples/profile.html" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>Profile</p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="../examples/e-commerce.html" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>E-commerce</p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="../examples/projects.html" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>Projects</p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="../examples/project-add.html" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>Project Add</p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="../examples/project-edit.html" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>Project Edit</p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="../examples/project-detail.html" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>Project Detail</p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="../examples/contacts.html" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>Contacts</p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="../examples/faq.html" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>FAQ</p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="../examples/contact-us.html" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>Contact us</p>
-                                    </a>
-                                </li>
-                            </ul>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#" class="nav-link">
-                                <i class="nav-icon far fa-plus-square"></i>
-                                <p>
-                                    Extras
-                                    <i class="fas fa-angle-left right"></i>
-                                </p>
-                            </a>
-                            <ul class="nav nav-treeview">
-                                <li class="nav-item">
-                                    <a href="#" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>
-                                            Login & Register v1
-                                            <i class="fas fa-angle-left right"></i>
-                                        </p>
-                                    </a>
-                                    <ul class="nav nav-treeview">
-                                        <li class="nav-item">
-                                            <a href="../examples/login.html" class="nav-link">
-                                                <i class="far fa-circle nav-icon"></i>
-                                                <p>Login v1</p>
-                                            </a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a href="../examples/register.html" class="nav-link">
-                                                <i class="far fa-circle nav-icon"></i>
-                                                <p>Register v1</p>
-                                            </a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a href="../examples/forgot-password.html" class="nav-link">
-                                                <i class="far fa-circle nav-icon"></i>
-                                                <p>Forgot Password v1</p>
-                                            </a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a href="../examples/recover-password.html" class="nav-link">
-                                                <i class="far fa-circle nav-icon"></i>
-                                                <p>Recover Password v1</p>
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="#" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>
-                                            Login & Register v2
-                                            <i class="fas fa-angle-left right"></i>
-                                        </p>
-                                    </a>
-                                    <ul class="nav nav-treeview">
-                                        <li class="nav-item">
-                                            <a href="../examples/login-v2.html" class="nav-link">
-                                                <i class="far fa-circle nav-icon"></i>
-                                                <p>Login v2</p>
-                                            </a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a href="../examples/register-v2.html" class="nav-link">
-                                                <i class="far fa-circle nav-icon"></i>
-                                                <p>Register v2</p>
-                                            </a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a href="../examples/forgot-password-v2.html" class="nav-link">
-                                                <i class="far fa-circle nav-icon"></i>
-                                                <p>Forgot Password v2</p>
-                                            </a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a href="../examples/recover-password-v2.html" class="nav-link">
-                                                <i class="far fa-circle nav-icon"></i>
-                                                <p>Recover Password v2</p>
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="../examples/lockscreen.html" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>Lockscreen</p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="../examples/legacy-user-menu.html" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>Legacy User Menu</p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="../examples/language-menu.html" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>Language Menu</p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="../examples/404.html" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>Error 404</p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="../examples/500.html" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>Error 500</p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="../examples/pace.html" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>Pace</p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="../examples/blank.html" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>Blank Page</p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="../../starter.html" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>Starter Page</p>
-                                    </a>
-                                </li>
-                            </ul>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#" class="nav-link">
-                                <i class="nav-icon fas fa-search"></i>
-                                <p>
-                                    Search
-                                    <i class="fas fa-angle-left right"></i>
-                                </p>
-                            </a>
-                            <ul class="nav nav-treeview">
-                                <li class="nav-item">
-                                    <a href="../search/simple.html" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>Simple Search</p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="../search/enhanced.html" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>Enhanced</p>
-                                    </a>
-                                </li>
-                            </ul>
-                        </li>
-                        <li class="nav-header">MISCELLANEOUS</li>
-                        <li class="nav-item">
-                            <a href="../../iframe.html" class="nav-link">
-                                <i class="nav-icon fas fa-ellipsis-h"></i>
-                                <p>Tabbed IFrame Plugin</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="https://adminlte.io/docs/3.1/" class="nav-link">
-                                <i class="nav-icon fas fa-file"></i>
-                                <p>Documentation</p>
-                            </a>
-                        </li>
-                        <li class="nav-header">MULTI LEVEL EXAMPLE</li>
-                        <li class="nav-item">
-                            <a href="#" class="nav-link">
-                                <i class="fas fa-circle nav-icon"></i>
-                                <p>Level 1</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#" class="nav-link">
-                                <i class="nav-icon fas fa-circle"></i>
-                                <p>
-                                    Level 1
-                                    <i class="right fas fa-angle-left"></i>
-                                </p>
-                            </a>
-                            <ul class="nav nav-treeview">
-                                <li class="nav-item">
-                                    <a href="#" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>Level 2</p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="#" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>
-                                            Level 2
-                                            <i class="right fas fa-angle-left"></i>
-                                        </p>
-                                    </a>
-                                    <ul class="nav nav-treeview">
-                                        <li class="nav-item">
-                                            <a href="#" class="nav-link">
-                                                <i class="far fa-dot-circle nav-icon"></i>
-                                                <p>Level 3</p>
-                                            </a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a href="#" class="nav-link">
-                                                <i class="far fa-dot-circle nav-icon"></i>
-                                                <p>Level 3</p>
-                                            </a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a href="#" class="nav-link">
-                                                <i class="far fa-dot-circle nav-icon"></i>
-                                                <p>Level 3</p>
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="#" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>Level 2</p>
-                                    </a>
-                                </li>
-                            </ul>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#" class="nav-link">
-                                <i class="fas fa-circle nav-icon"></i>
-                                <p>Level 1</p>
-                            </a>
-                        </li>
-                        <li class="nav-header">LABELS</li>
-                        <li class="nav-item">
-                            <a href="#" class="nav-link">
-                                <i class="nav-icon far fa-circle text-danger"></i>
-                                <p class="text">Important</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#" class="nav-link">
-                                <i class="nav-icon far fa-circle text-warning"></i>
-                                <p>Warning</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#" class="nav-link">
-                                <i class="nav-icon far fa-circle text-info"></i>
-                                <p>Informational</p>
-                            </a>
-                        </li>
-                    </ul>
-                </nav>
-            </div>
-        </aside> -->
 
         <div class="content-wrapper">
             <div class="content-header">
@@ -865,13 +190,14 @@ scratch. This page gets rid of all links and provides the needed markup only.
                             </h3>
                             <div class="swiper-container w-100 overflow-hidden">
                                 <div class="swiper-wrapper">
-                                    <div class="card mb-2 bg-gradient-dark swiper-slide"
-                                        v-for="(item, index) in PromotionsList" :key="index">
+                                    <a class="card mb-2 bg-gradient-dark swiper-slide"
+                                        v-for="(item, index) in PromotionsList" :key="index"
+                                        :href="'ClassImformation2.html?cid='+item.id">
                                         <img class="card-img-top" :src="item.image" :alt="item.title" />
                                         <div class="card-img-overlay d-flex flex-column justify-content-end">
                                             <h5 class="card-title text-primary text-white">{{ item.title }}</h5>
                                         </div>
-                                    </div>
+                                    </a>
                                 </div>
                                 <button class="custom-prev-btn shadow">
                                     <i class="fas fa-arrow-left"></i>
@@ -889,13 +215,14 @@ scratch. This page gets rid of all links and provides the needed markup only.
                             </h3>
                             <div class="swiper-container w-100 overflow-hidden">
                                 <div class="swiper-wrapper">
-                                    <div class="card mb-2 bg-gradient-dark swiper-slide"
+                                    <a class="card mb-2 bg-gradient-dark swiper-slide"
+                                        :href="'ClassImformation2.html?cid='+item.id"
                                         v-for="(item, index) in BusinessDistrictList" :key="index">
                                         <img class="card-img-top" :src="item.image" :alt="item.title" />
                                         <div class="card-img-overlay d-flex flex-column justify-content-end">
                                             <h5 class="card-title text-primary text-white">{{ item.title }}</h5>
                                         </div>
-                                    </div>
+                                    </a>
                                 </div>
                                 <button class="custom-prev-btn shadow">
                                     <i class="fas fa-arrow-left"></i>
@@ -911,13 +238,13 @@ scratch. This page gets rid of all links and provides the needed markup only.
                             <h3>各類美食</h3>
                             <div class="swiper-container-foodtype w-100 overflow-hidden">
                                 <div class="swiper-wrapper">
-                                    <div class="swiper-slide footType" v-for="(item, index) in FoodTypeList"
-                                        :key="index">
+                                    <a class="swiper-slide footType" v-for="(item, index) in FoodTypeList"
+                                        :href="'ClassImformation2.html?cid='+item.id" :key="index">
                                         <img class="card-img-top" :src="item.image" :alt="item.title" />
                                         <div class="d-flex flex-column justify-content-end">
                                             <span class="card-title text-secondary text-sm">{{ item.title }}</span>
                                         </div>
-                                    </div>
+                                    </a>
                                 </div>
                                 <button class="custom-prev-btn shadow">
                                     <i class="fas fa-arrow-left"></i>
@@ -933,13 +260,9 @@ scratch. This page gets rid of all links and provides the needed markup only.
         </div>
 
         <footer class="main-footer">
-            <!-- To the right -->
-            <div class="float-right d-none d-sm-inline">
-                Anything you want
-            </div>
+            <span class="float-right d-none d-sm-inline" id="version"></span>
             <!-- Default to the left -->
-            <strong>Copyright &copy; 2014-2021 <a href="https://adminlte.io">AdminLTE.io</a>.</strong> All rights
-            reserved.
+            <strong id="copyRight"></strong>
         </footer>
     </div>
 
@@ -964,62 +287,64 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
                 //優惠專區
                 PromotionsList: [
-                    { title: '新客優惠', id: '', image: 'img/unknowIMG.png' },
-                    { title: '滿額免運', id: '', image: 'img/unknowIMG.png' },
-                    { title: '限時折扣', id: '', image: 'img/unknowIMG.png' },
-                    { title: '好友分享', id: '', image: 'img/unknowIMG.png' },
-                    { title: '回饋金', id: '', image: 'img/unknowIMG.png' },
-                    { title: '訂閱方案', id: '', image: 'img/unknowIMG.png' },
-                    { title: '早餐優惠', id: '', image: 'img/unknowIMG.png' },
-                    { title: '宵夜特價', id: '', image: 'img/unknowIMG.png' },
-                    { title: '信用卡折扣', id: '', image: 'img/unknowIMG.png' },
-                    { title: '指定店家折扣', id: '', image: 'img/unknowIMG.png' },
-                    { title: '週末限定', id: '', image: 'img/unknowIMG.png' },
-                    { title: '買一送一', id: '', image: 'img/unknowIMG.png' },
-                    { title: '組合餐優惠', id: '', image: 'img/unknowIMG.png' },
-                    { title: '生日折扣', id: '', image: 'img/unknowIMG.png' },
-                    { title: '會員專屬', id: '', image: 'img/unknowIMG.png' }
+                    { "title": "新客優惠", "id": "QgR0QNBITskvdD6b", "image": "img/unknowIMG.png" },
+                    { "title": "滿額免運", "id": "GBVHt3VaksUXVapD", "image": "img/unknowIMG.png" },
+                    { "title": "限時折扣", "id": "BiR18TKHusq4kUP1", "image": "img/unknowIMG.png" },
+                    { "title": "好友分享", "id": "6s0CmDhluQr5ytpM", "image": "img/unknowIMG.png" },
+                    { "title": "回饋金", "id": "9QH2sNjRT9EQBUP6", "image": "img/unknowIMG.png" },
+                    { "title": "訂閱方案", "id": "tb8i7Ln4RycYmKQB", "image": "img/unknowIMG.png" },
+                    { "title": "早餐優惠", "id": "n30fpvZzs2CZo6v5", "image": "img/unknowIMG.png" },
+                    { "title": "宵夜特價", "id": "X7sluvXvGxUIWtyo", "image": "img/unknowIMG.png" },
+                    { "title": "信用卡折扣", "id": "gXyT8B4cXR2QXeCQ", "image": "img/unknowIMG.png" },
+                    { "title": "指定店家折扣", "id": "BTXRTzFkBWXjPDYe", "image": "img/unknowIMG.png" },
+                    { "title": "週末限定", "id": "OuxgqWpNQsomCERD", "image": "img/unknowIMG.png" },
+                    { "title": "買一送一", "id": "caIzYJe3b3cBMg8F", "image": "img/unknowIMG.png" },
+                    { "title": "組合餐優惠", "id": "C8f3oZ01QWhyrwQX", "image": "img/unknowIMG.png" },
+                    { "title": "生日折扣", "id": "kWOxpLzpSTyQyi9j", "image": "img/unknowIMG.png" },
+                    { "title": "會員專屬", "id": "49XpI3bsVUbfADdu", "image": "img/unknowIMG.png" }
                 ],
 
+                //附近商圈
                 BusinessDistrictList: [
-                    { title: '西門町', id: '', image: 'img/unknowIMG.png' },
-                    { title: '信義商圈', id: '', image: 'img/unknowIMG.png' },
-                    { title: '東區商圈', id: '', image: 'img/unknowIMG.png' },
-                    { title: '士林夜市', id: '', image: 'img/unknowIMG.png' },
-                    { title: '饒河夜市', id: '', image: 'img/unknowIMG.png' },
-                    { title: '公館商圈', id: '', image: 'img/unknowIMG.png' },
-                    { title: '中山站商圈', id: '', image: 'img/unknowIMG.png' },
-                    { title: '永康商圈', id: '', image: 'img/unknowIMG.png' },
-                    { title: '南西商圈', id: '', image: 'img/unknowIMG.png' },
-                    { title: '南機場夜市', id: '', image: 'img/unknowIMG.png' },
-                    { title: '逢甲夜市', id: '', image: 'img/unknowIMG.png' },
-                    { title: '一中商圈', id: '', image: 'img/unknowIMG.png' },
-                    { title: '中友百貨商圈', id: '', image: 'img/unknowIMG.png' },
-                    { title: '草悟道商圈', id: '', image: 'img/unknowIMG.png' },
-                    { title: '台中大遠百', id: '', image: 'img/unknowIMG.png' },
-                    { title: '高雄瑞豐夜市', id: '', image: 'img/unknowIMG.png' },
-                    { title: '六合夜市', id: '', image: 'img/unknowIMG.png' },
-                    { title: '夢時代商圈', id: '', image: 'img/unknowIMG.png' },
-                    { title: '駁二藝術特區', id: '', image: 'img/unknowIMG.png' },
-                    { title: '安平老街', id: '', image: 'img/unknowIMG.png' }
+                    { "title": "西門町", "id": "Cml0riWyZ9", "image": "img/unknowIMG.png" },
+                    { "title": "信義商圈", "id": "c3aY8KQ6L0", "image": "img/unknowIMG.png" },
+                    { "title": "東區商圈", "id": "AGU25L9aTg", "image": "img/unknowIMG.png" },
+                    { "title": "士林夜市", "id": "Z7EUEYNx5W", "image": "img/unknowIMG.png" },
+                    { "title": "饒河夜市", "id": "DkHZFABPnZ", "image": "img/unknowIMG.png" },
+                    { "title": "公館商圈", "id": "oEWAFTjy4I", "image": "img/unknowIMG.png" },
+                    { "title": "中山站商圈", "id": "NeteuUVaUz", "image": "img/unknowIMG.png" },
+                    { "title": "永康商圈", "id": "pSgKhOCA1v", "image": "img/unknowIMG.png" },
+                    { "title": "南西商圈", "id": "Hsbcp2EW3q", "image": "img/unknowIMG.png" },
+                    { "title": "南機場夜市", "id": "9wJ2mJ5Nnk", "image": "img/unknowIMG.png" },
+                    { "title": "逢甲夜市", "id": "qqFvrJu9SZ", "image": "img/unknowIMG.png" },
+                    { "title": "一中商圈", "id": "Gv3pcPS70k", "image": "img/unknowIMG.png" },
+                    { "title": "中友百貨商圈", "id": "UeZ0J7zZ5a", "image": "img/unknowIMG.png" },
+                    { "title": "草悟道商圈", "id": "m63bY8Aje4", "image": "img/unknowIMG.png" },
+                    { "title": "台中大遠百", "id": "FCWPLQocjc", "image": "img/unknowIMG.png" },
+                    { "title": "高雄瑞豐夜市", "id": "OTS6Ic9i8j", "image": "img/unknowIMG.png" },
+                    { "title": "六合夜市", "id": "2CvbhRWQHI", "image": "img/unknowIMG.png" },
+                    { "title": "夢時代商圈", "id": "oV17vKd7y7", "image": "img/unknowIMG.png" },
+                    { "title": "駁二藝術特區", "id": "6ANTYYEXJA", "image": "img/unknowIMG.png" },
+                    { "title": "安平老街", "id": "eDePCLLlXN", "image": "img/unknowIMG.png" }
                 ],
 
+                //食物類型
                 FoodTypeList: [
-                    { title: '中式', id: '', image: 'img/foodtype/burger.png' },
-                    { title: '西式', id: '', image: 'img/foodtype/burger.png' },
-                    { title: '日式', id: '', image: 'img/foodtype/burger.png' },
-                    { title: '韓式', id: '', image: 'img/foodtype/burger.png' },
-                    { title: '泰式', id: '', image: 'img/foodtype/burger.png' },
-                    { title: '印度', id: '', image: 'img/foodtype/burger.png' },
-                    { title: '法式', id: '', image: 'img/foodtype/burger.png' },
-                    { title: '義式', id: '', image: 'img/foodtype/burger.png' },
-                    { title: '墨式', id: '', image: 'img/foodtype/burger.png' },
-                    { title: '素食', id: '', image: 'img/foodtype/burger.png' },
-                    { title: '燒烤', id: '', image: 'img/foodtype/burger.png' },
-                    { title: '海鮮', id: '', image: 'img/foodtype/burger.png' },
-                    { title: '甜品', id: '', image: 'img/foodtype/burger.png' },
-                    { title: '飲料', id: '', image: 'img/foodtype/burger.png' },
-                    { title: '早餐', id: '', image: 'img/foodtype/burger.png' }
+                    { "title": "中式", "id": "aYcwiNIy", "image": "img/foodtype/burger.png" },
+                    { "title": "西式", "id": "GNZmI5n8", "image": "img/foodtype/burger.png" },
+                    { "title": "日式", "id": "QgZ5styM", "image": "img/foodtype/burger.png" },
+                    { "title": "韓式", "id": "WHAOkS2g", "image": "img/foodtype/burger.png" },
+                    { "title": "泰式", "id": "sVsALrjJ", "image": "img/foodtype/burger.png" },
+                    { "title": "印度", "id": "TMzb36tq", "image": "img/foodtype/burger.png" },
+                    { "title": "法式", "id": "knrc3CTg", "image": "img/foodtype/burger.png" },
+                    { "title": "義式", "id": "60EC4bEp", "image": "img/foodtype/burger.png" },
+                    { "title": "墨式", "id": "3JGD29Pa", "image": "img/foodtype/burger.png" },
+                    { "title": "素食", "id": "gJFXhwBX", "image": "img/foodtype/burger.png" },
+                    { "title": "燒烤", "id": "K3CjavJi", "image": "img/foodtype/burger.png" },
+                    { "title": "海鮮", "id": "UYCpbdo8", "image": "img/foodtype/burger.png" },
+                    { "title": "甜品", "id": "fGOjDtrL", "image": "img/foodtype/burger.png" },
+                    { "title": "飲料", "id": "gThxxh6R", "image": "img/foodtype/burger.png" },
+                    { "title": "早餐", "id": "sQIZh8kg", "image": "img/foodtype/burger.png" }
                 ],
 
 
@@ -1027,7 +352,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
             }
         },
         mounted() {
-            console.log(this.userInfo);
+            // console.log(this.userInfo);
 
             // 頁面載入時自動請求位置
             this.getLocation();

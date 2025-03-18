@@ -5,12 +5,14 @@ const currentPage = 1; // 當前頁面
 const pageSize = 10; // 每頁顯示筆數
 const queryString = window.location.search;
 const urlParams = new URLSearchParams(queryString);
-console.log(urlParams);
+// console.log(urlParams);
 
-const menuId = urlParams.get("mid");
+const redirect = urlParams.get("redirect");
+const classId = urlParams.get("cid");
+const userId = urlParams.get("uid");
 const storeId = urlParams.get("sid");
 
-// console.log("menuId-------------" + menuId);
+// console.log("menuId-------------" + redirect);
 // console.log("storeId-------------" + storeId);
 
 const userFunction = [
@@ -92,13 +94,24 @@ function apiWeb(_url, _type, _data, TimelogTag, _fun) {
         });
     }
 }
-
+function SetUpError(errorInfo) {
+    $(function () {
+        $("body").append(
+            '<div class="modal fade" id="reloginModal" tabindex="-1" data-backdrop="static" data-keyboard="false" ole="dialog" aria-labelledby="reloginModalLabel" aria-hidden="true"><div class="modal-dialog" role="document"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="reloginModalLabel">錯誤</h5></div><div class="modal-body">' +
+                errorInfo +
+                '，請重新登入以繼續使用系統。</div><div class="modal-footer"><button type="button" class="btn btn-primary toLogin" >重新登入</button></div></div></div></div>'
+        );
+        $("#reloginModal").modal("show");
+    });
+}
 //加密
 const secretKey = "your-secure-key"; // 建議存入環境變數
 // 加密函數
 function encryptObject(data) {
     if (!data || typeof data !== "object") {
-        throw new Error("加密失敗：資料必須是物件-" + data);
+        SetUpError("系統錯誤");
+        console.error("加密失敗：資料必須是物件-" + data);
+        return;
     }
     const jsonString = JSON.stringify(data);
     return CryptoJS.AES.encrypt(jsonString, secretKey).toString();
@@ -106,14 +119,18 @@ function encryptObject(data) {
 // 解密函數
 function decryptObject(encryptedData) {
     if (!encryptedData || typeof encryptedData !== "string") {
-        throw new Error("解密失敗：加密資料必須是字串-" + encryptedData);
+        SetUpError("系統錯誤");
+        console.error("解密失敗：加密資料必須是字串-" + encryptedData);
+        return;
     }
     try {
         const bytes = CryptoJS.AES.decrypt(encryptedData, secretKey);
         const decryptedString = bytes.toString(CryptoJS.enc.Utf8);
         return JSON.parse(decryptedString);
     } catch (error) {
-        throw new Error("解密錯誤，可能是密鑰不匹配或加密數據格式錯誤");
+        SetUpError("系統錯誤");
+        console.error("解密錯誤，可能是密鑰不匹配或加密數據格式錯誤");
+        return;
     }
 }
 
@@ -170,10 +187,11 @@ $(function () {
         $(id).attr("type", "password");
     });
 
-    $(".toLogin").click(function () {
+    $("body").on("click", ".toLogin", function () {
         window.location.href = "login2.html";
     });
-    $(".toIndex").click(function () {
-        window.location.href = "index2.html?sid=" + storeId;
+
+    $("body").on("click", ".toIndex", function () {
+        window.location.href = "index2.html?";
     });
 });

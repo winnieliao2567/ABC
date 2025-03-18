@@ -43,12 +43,11 @@
 
 </head>
 
-<body class="login-page iframe-mode" style="height: 100%;">
+<body class="login-page iframe-mode layout-footer-fixed" style="height: 100%;">
   <div class="login-box" id="app">
     <div class="login-logo">
       <img src="img/logo2.svg" style="width: 75%;">
     </div>
-    <!-- /.login-logo -->
     <div class="card">
       <div class="card-body login-card-body">
         <form>
@@ -57,54 +56,8 @@
             <button class="btn btn-xl" @click="login" type="button"><img src="img/line.png"
                 style="height: 50px;"></button>
           </div>
-          <!-- <div class="mb-3">
-            <div class="input-group">
-              <input type="email" class="form-control" placeholder="請輸入信箱" v-model="loginVal.account" type="email"
-                autocomplete="username">
-              <div class="input-group-append">
-                <div class="input-group-text">
-                  <span class="fas fa-envelope"></span>
-                </div>
-              </div>
-            </div>
-            <div class="text-memo text-danger formHint" v-if="loginVal.account!=''&&validateEmail(loginVal.account)">
-              *Email格式錯誤
-            </div>
-          </div>
-          <div class="mb-3">
-            <div class="input-group">
-              <input type="password" v-model="loginVal.key" id="confirmPassword" class="form-control"
-                autocomplete="current-password" placeholder="請輸入密碼">
-              <div class="input-group-append">
-                <div class="input-group-text password-undisabled" data-for="#confirmPassword">
-                  <i class="fas fa-eye-slash"></i>
-                </div>
-                <div class="input-group-text">
-                  <span class="fas fa-lock"></span>
-                </div>
-              </div>
-            </div>
-            <div class="text-memo text-danger formHint" v-if="check.key==true">* 密碼錯誤
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-8">
-              <div class="form-check">
-                <input class="form-check-input" v-model="loginVal.keepLogIn" type="checkbox" id="flexCheckChecked"
-                  autocomplete="off" checked>
-                <label class="form-check-label" for="flexCheckChecked">
-                  保持登入
-                </label>
-              </div>
-            </div>
-            <div class="col-4">
-              <button type="button" class="btn btn-primary btn-block" v-on:click="login"
-                :disabled="validateEmail(loginVal.account)">登入</button>
-            </div>
-          </div> -->
         </form>
       </div>
-      <!-- /.login-card-body -->
     </div>
     <div class="mb-5 mt-2">
       <p class="text-muted text-xs text-center">

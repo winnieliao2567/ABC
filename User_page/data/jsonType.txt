@@ -1,0 +1,268 @@
+首頁：
+                //優惠專區
+                PromotionsList: [
+                    { "title": "新客優惠", "id": "QgR0QNBITskvdD6b", "image": "img/unknowIMG.png" },
+                    { "title": "滿額免運", "id": "GBVHt3VaksUXVapD", "image": "img/unknowIMG.png" },
+                    { "title": "限時折扣", "id": "BiR18TKHusq4kUP1", "image": "img/unknowIMG.png" },
+                    { "title": "好友分享", "id": "6s0CmDhluQr5ytpM", "image": "img/unknowIMG.png" },
+                    { "title": "回饋金", "id": "9QH2sNjRT9EQBUP6", "image": "img/unknowIMG.png" },
+                    { "title": "訂閱方案", "id": "tb8i7Ln4RycYmKQB", "image": "img/unknowIMG.png" },
+                    { "title": "早餐優惠", "id": "n30fpvZzs2CZo6v5", "image": "img/unknowIMG.png" },
+                    { "title": "宵夜特價", "id": "X7sluvXvGxUIWtyo", "image": "img/unknowIMG.png" },
+                    { "title": "信用卡折扣", "id": "gXyT8B4cXR2QXeCQ", "image": "img/unknowIMG.png" },
+                    { "title": "指定店家折扣", "id": "BTXRTzFkBWXjPDYe", "image": "img/unknowIMG.png" },
+                    { "title": "週末限定", "id": "OuxgqWpNQsomCERD", "image": "img/unknowIMG.png" },
+                    { "title": "買一送一", "id": "caIzYJe3b3cBMg8F", "image": "img/unknowIMG.png" },
+                    { "title": "組合餐優惠", "id": "C8f3oZ01QWhyrwQX", "image": "img/unknowIMG.png" },
+                    { "title": "生日折扣", "id": "kWOxpLzpSTyQyi9j", "image": "img/unknowIMG.png" },
+                    { "title": "會員專屬", "id": "49XpI3bsVUbfADdu", "image": "img/unknowIMG.png" }
+                ],
+
+                //附近商圈
+                BusinessDistrictList: [
+                    { "title": "西門町", "id": "Cml0riWyZ9", "image": "img/unknowIMG.png" },
+                    { "title": "信義商圈", "id": "c3aY8KQ6L0", "image": "img/unknowIMG.png" },
+                    { "title": "東區商圈", "id": "AGU25L9aTg", "image": "img/unknowIMG.png" },
+                    { "title": "士林夜市", "id": "Z7EUEYNx5W", "image": "img/unknowIMG.png" },
+                    { "title": "饒河夜市", "id": "DkHZFABPnZ", "image": "img/unknowIMG.png" },
+                    { "title": "公館商圈", "id": "oEWAFTjy4I", "image": "img/unknowIMG.png" },
+                    { "title": "中山站商圈", "id": "NeteuUVaUz", "image": "img/unknowIMG.png" },
+                    { "title": "永康商圈", "id": "pSgKhOCA1v", "image": "img/unknowIMG.png" },
+                    { "title": "南西商圈", "id": "Hsbcp2EW3q", "image": "img/unknowIMG.png" },
+                    { "title": "南機場夜市", "id": "9wJ2mJ5Nnk", "image": "img/unknowIMG.png" },
+                    { "title": "逢甲夜市", "id": "qqFvrJu9SZ", "image": "img/unknowIMG.png" },
+                    { "title": "一中商圈", "id": "Gv3pcPS70k", "image": "img/unknowIMG.png" },
+                    { "title": "中友百貨商圈", "id": "UeZ0J7zZ5a", "image": "img/unknowIMG.png" },
+                    { "title": "草悟道商圈", "id": "m63bY8Aje4", "image": "img/unknowIMG.png" },
+                    { "title": "台中大遠百", "id": "FCWPLQocjc", "image": "img/unknowIMG.png" },
+                    { "title": "高雄瑞豐夜市", "id": "OTS6Ic9i8j", "image": "img/unknowIMG.png" },
+                    { "title": "六合夜市", "id": "2CvbhRWQHI", "image": "img/unknowIMG.png" },
+                    { "title": "夢時代商圈", "id": "oV17vKd7y7", "image": "img/unknowIMG.png" },
+                    { "title": "駁二藝術特區", "id": "6ANTYYEXJA", "image": "img/unknowIMG.png" },
+                    { "title": "安平老街", "id": "eDePCLLlXN", "image": "img/unknowIMG.png" }
+                ],
+
+                //食物類型
+                FoodTypeList: [
+                    { "title": "中式", "id": "aYcwiNIy", "image": "img/foodtype/burger.png" },
+                    { "title": "西式", "id": "GNZmI5n8", "image": "img/foodtype/burger.png" },
+                    { "title": "日式", "id": "QgZ5styM", "image": "img/foodtype/burger.png" },
+                    { "title": "韓式", "id": "WHAOkS2g", "image": "img/foodtype/burger.png" },
+                    { "title": "泰式", "id": "sVsALrjJ", "image": "img/foodtype/burger.png" },
+                    { "title": "印度", "id": "TMzb36tq", "image": "img/foodtype/burger.png" },
+                    { "title": "法式", "id": "knrc3CTg", "image": "img/foodtype/burger.png" },
+                    { "title": "義式", "id": "60EC4bEp", "image": "img/foodtype/burger.png" },
+                    { "title": "墨式", "id": "3JGD29Pa", "image": "img/foodtype/burger.png" },
+                    { "title": "素食", "id": "gJFXhwBX", "image": "img/foodtype/burger.png" },
+                    { "title": "燒烤", "id": "K3CjavJi", "image": "img/foodtype/burger.png" },
+                    { "title": "海鮮", "id": "UYCpbdo8", "image": "img/foodtype/burger.png" },
+                    { "title": "甜品", "id": "fGOjDtrL", "image": "img/foodtype/burger.png" },
+                    { "title": "飲料", "id": "gThxxh6R", "image": "img/foodtype/burger.png" },
+                    { "title": "早餐", "id": "sQIZh8kg", "image": "img/foodtype/burger.png" }
+                ],
+
+分類頁（顯示商家list）：
+  storeList:
+                    [
+                        {
+                            "storeId": "1",
+                            "storeName": "阿文鹽酥雞",
+                            "storePhone": "0972846153",
+                            "minWaitingTime": 15,//最少等待時間
+                            "maxWaitingTime": 45,//最久等待時間
+                            "enable": true,//是否接單
+                            "isOpen": true,//是否開門
+                            "tags": ["小吃", "饒河夜市", "炸物", "宵夜"]
+                        },
+                        {
+                            "storeId": "2",
+                            "storeName": "大和壽司",
+                            "storePhone": "0964723859",
+                            "minWaitingTime": 10,
+                            "maxWaitingTime": 30,
+                            "enable": true,
+                            "isOpen": true,
+                            "tags": ["日式料理", "壽司", "生魚片", "海鮮"]
+                        },
+                        {
+                            "storeId": "3",
+                            "storeName": "首爾炭火烤肉",
+                            "storePhone": "0953826471",
+                            "minWaitingTime": 20,
+                            "maxWaitingTime": 60,
+                            "enable": true,
+                            "isOpen": true,
+                            "tags": ["韓式料理", "烤肉", "辣炒年糕", "泡菜"]
+                        },
+                        {
+                            "storeId": "4",
+                            "storeName": "美味漢堡王",
+                            "storePhone": "0938274615",
+                            "minWaitingTime": 15,
+                            "maxWaitingTime": 45,
+                            "enable": false,
+                            "isOpen": true,
+                            "tags": ["美式料理", "漢堡", "炸雞", "薯條"]
+                        },
+                        {
+                            "storeId": "5",
+                            "storeName": "羅馬披薩屋",
+                            "storePhone": "0983741625",
+                            "minWaitingTime": 10,
+                            "maxWaitingTime": 30,
+                            "enable": false,
+                            "isOpen": true,
+                            "tags": ["義式料理", "披薩", "義大利麵", "紅醬"]
+                        },
+                        {
+                            "storeId": "6",
+                            "storeName": "健康蔬食館",
+                            "storePhone": "0972634851",
+                            "minWaitingTime": 20,
+                            "maxWaitingTime": 60,
+                            "enable": true,
+                            "isOpen": false,
+                            "tags": ["素食", "健康", "蔬食", "低卡"]
+                        },
+                        {
+                            "storeId": "7",
+                            "storeName": "海王子燒烤",
+                            "storePhone": "0991827364",
+                            "minWaitingTime": 15,
+                            "maxWaitingTime": 45,
+                            "enable": false,
+                            "isOpen": true,
+                            "tags": ["海鮮", "燒烤", "海鮮鍋", "龍蝦"]
+                        },
+                        {
+                            "storeId": "8",
+                            "storeName": "晨曦早餐店",
+                            "storePhone": "0964718235",
+                            "minWaitingTime": 10,
+                            "maxWaitingTime": 30,
+                            "enable": false,
+                            "isOpen": true,
+                            "tags": ["早餐", "輕食", "三明治", "咖啡"]
+                        },
+                        {
+                            "storeId": "9",
+                            "storeName": "甜蜜點心坊",
+                            "storePhone": "0956382741",
+                            "minWaitingTime": 20,
+                            "maxWaitingTime": 60,
+                            "enable": true,
+                            "isOpen": true,
+                            "tags": ["甜品", "蛋糕", "珍珠奶茶", "冰品"]
+                        },
+                        {
+                            "storeId": "10",
+                            "storeName": "泰味十足",
+                            "storePhone": "0938726154",
+                            "minWaitingTime": 15,
+                            "maxWaitingTime": 45,
+                            "enable": true,
+                            "isOpen": true,
+                            "tags": ["泰式料理", "打拋豬", "綠咖哩", "冬蔭功"]
+                        },
+                        {
+                            "storeId": "11",
+                            "storeName": "老李滷味",
+                            "storePhone": "0973625418",
+                            "minWaitingTime": 10,
+                            "maxWaitingTime": 30,
+                            "enable": true,
+                            "isOpen": false,
+                            "tags": ["小吃", "夜市", "滷味", "宵夜"]
+                        },
+                        {
+                            "storeId": "12",
+                            "storeName": "好味熱炒店",
+                            "storePhone": "0982634715",
+                            "minWaitingTime": 20,
+                            "maxWaitingTime": 60,
+                            "enable": false,
+                            "isOpen": false,
+                            "tags": ["中式料理", "快炒", "家常菜", "熱炒"]
+                        },
+                        {
+                            "storeId": "13",
+                            "storeName": "旭日拉麵",
+                            "storePhone": "0938765412",
+                            "minWaitingTime": 15,
+                            "maxWaitingTime": 45,
+                            "enable": false,
+                            "isOpen": true,
+                            "tags": ["日式料理", "拉麵", "壽司", "刺身"]
+                        },
+                        {
+                            "storeId": "14",
+                            "storeName": "韓尚味",
+                            "storePhone": "0927384615",
+                            "minWaitingTime": 10,
+                            "maxWaitingTime": 30,
+                            "enable": false,
+                            "isOpen": false,
+                            "tags": ["韓式料理", "部隊鍋", "韓國炸雞", "泡菜"]
+                        },
+                        {
+                            "storeId": "15",
+                            "storeName": "紐約牛排館",
+                            "storePhone": "0917364825",
+                            "minWaitingTime": 20,
+                            "maxWaitingTime": 60,
+                            "enable": true,
+                            "isOpen": false,
+                            "tags": ["美式料理", "牛排", "漢堡", "炸物"]
+                        },
+                        {
+                            "storeId": "16",
+                            "storeName": "托斯卡納義式餐廳",
+                            "storePhone": "0938274651",
+                            "minWaitingTime": 15,
+                            "maxWaitingTime": 45,
+                            "enable": true,
+                            "isOpen": false,
+                            "tags": ["義式料理", "義大利麵", "披薩", "燉飯"]
+                        },
+                        {
+                            "storeId": "17",
+                            "storeName": "綠園素食坊",
+                            "storePhone": "0983746512",
+                            "minWaitingTime": 10,
+                            "maxWaitingTime": 30,
+                            "enable": false,
+                            "isOpen": true,
+                            "tags": ["素食", "蔬食", "健康", "無肉料理"]
+                        },
+                        {
+                            "storeId": "18",
+                            "storeName": "漁夫海鮮燒烤",
+                            "storePhone": "0952837461",
+                            "minWaitingTime": 20,
+                            "maxWaitingTime": 60,
+                            "enable": true,
+                            "isOpen": false,
+                            "tags": ["海鮮", "燒烤", "海鮮火鍋", "生魚片"]
+                        },
+                        {
+                            "storeId": "19",
+                            "storeName": "早安咖啡館",
+                            "storePhone": "0973628415",
+                            "minWaitingTime": 15,
+                            "maxWaitingTime": 45,
+                            "enable": true,
+                            "isOpen": false,
+                            "tags": ["早餐", "咖啡", "麵包", "輕食"]
+                        },
+                        {
+                            "storeId": "20",
+                            "storeName": "巧克力甜心",
+                            "storePhone": "0918273654",
+                            "minWaitingTime": 10,
+                            "maxWaitingTime": 30,
+                            "enable": false,
+                            "isOpen": true,
+                            "tags": ["甜品", "蛋糕", "巧克力", "奶酪"]
+                        }
+                    ],
+                

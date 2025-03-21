@@ -177,12 +177,15 @@
                                     <a class="d-block w-100 collapsed" data-toggle="collapse" :href="'#'+item.id"
                                         aria-expanded="false">
                                         <div class="card-header">
-                                            <h4 class="card-title w-100">
+                                            <h5 class="w-100 m-0">
                                                 <span v-html="item.name"></span>
                                                 <span class="" v-show="item.editDone">*</span>
                                                 <span class="text-danger ml-2" v-show="item.editError">
                                                     <i class="fas fa-exclamation-circle"></i></span>
-                                            </h4>
+                                            </h5>
+                                            <!-- <p class="text-muted m-0 ml-4">
+                                                {{item.discriptions}}
+                                            </p> -->
                                         </div>
                                     </a>
                                     <div :id="item.id" class="collapse" data-parent="#accordion" style="">
@@ -470,10 +473,10 @@
 
                                                 <!-- 最多可預訂天數 -->
                                                 <div class="col-12 col-md-8 col-xl-6 my-1"
-                                                    v-if="settingItem.groupitem.type === 'AdvanceReservation'">
+                                                    v-if="settingItem.groupitem.type === 'maxReservationDays'">
                                                     <input class="form-control w-50 d-inline-block" type="number"
                                                         autocomplete="off" :disabled="!settingItem.groupitem.enabled"
-                                                        v-model="storeInfoEdit.storeInfo.advanceReservation" min="0"
+                                                        v-model="storeInfoEdit.storeInfo.maxReservationDays" min="0"
                                                         :placeholder="settingItem.groupitem.placeholder">
                                                     <p class="pl-3 w-25 d-inline-block m-0 mr-5">天</p>
                                                 </div>
@@ -560,7 +563,6 @@
                             "家常菜",
                             "快速出餐"
                         ],
-                        "advanceReservation": "",
                         "basicwaitingTime": "",
                         "minimumOrderAmount": "",
                         "minimumOrderText": "",
@@ -584,6 +586,7 @@
                     {
                         id: 'StoreInfo',
                         name: '<i class="fas fa-store mr-2"></i>店家資訊',
+                        discriptions: '店家基本資訊，圖片、地址、電話...',
                         settingItem: [
                             {
                                 name: '店家名稱',
@@ -662,6 +665,7 @@
                     {
                         id: 'BusinessTime',
                         name: '<i class="fas fa-coffee mr-2"></i>營業時間設定',
+                        discriptions: '正常營業時間設定',
                         settingItem: [
                             {
                                 name: '',
@@ -681,6 +685,7 @@
                     {
                         id: 'WaitingTime',
                         name: '<i class="fas fa-clock mr-2"></i>取餐等待時間',
+                        discriptions: '用於計算取餐等待時間的設定',
                         settingItem: [
                             {
                                 name: '基礎時間',
@@ -722,13 +727,25 @@
                                 }
 
                             },
+                            {
+                                name: '最多可預訂天數',
+                                groupitem:
+                                {
+                                    type: 'maxReservationDays',
+                                    enabled: true,
+                                    placeholder: "可預訂天數，EX:0",
+                                }
+
+                            }
                         ],
                         editDone: false,
                         editError: false,
                         checkUndone: false
                     },
                     {
-                        id: 'ReminderToggle', name: '<i class="fas fa-bell mr-2"></i>低消提醒功能',
+                        id: 'ReminderToggle',
+                        name: '<i class="fas fa-bell mr-2"></i>低消提醒功能',
+                        discriptions: '訂單低消提醒設定',
                         settingItem: [
                             {
                                 name: '低消金額',
@@ -759,6 +776,7 @@
                     {
                         id: 'StoreClosed',
                         name: '<i class="fas fa-bed mr-2"></i>特定店休日',
+                        discriptions: '公休外的店休，EX:國定假日...自由新增',
                         settingItem: [
                             {
                                 name: '店休日期',
@@ -767,25 +785,6 @@
                                     type: 'StoreClosed',
                                     enabled: true,
                                     placeholder: "店休名稱，EX:端午節",
-                                }
-
-                            }
-                        ],
-                        editDone: false,
-                        editError: false,
-                        checkUndone: false
-                    },
-                    {
-                        id: 'AdvanceReservation',
-                        name: '<i class="fas fa-clipboard-list mr-2"></i>最多可預訂天數',
-                        settingItem: [
-                            {
-                                name: '',
-                                groupitem:
-                                {
-                                    type: 'AdvanceReservation',
-                                    enabled: true,
-                                    placeholder: "可預訂天數，EX:0",
                                 }
 
                             }

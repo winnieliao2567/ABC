@@ -347,13 +347,13 @@
                                                         v-if="settingItem.groupitem.type === 'IntervalTime'">
                                                         <input class="form-control w-50 d-inline-block"
                                                             autocomplete="off"
-                                                            :class="{'is-invalid':!validateIntervalTime(storeInfoEdit.storeInfo.intervalwaitingTime, 5)}"
+                                                            :class="{'is-invalid':!validateIntervalTime(storeInfoEdit.store.orderInterval, 5)}"
                                                             :disabled="!settingItem.groupitem.enabled" type="number"
-                                                            v-model="storeInfoEdit.storeInfo.intervalwaitingTime"
-                                                            min="0" max="60" step="5">
+                                                            v-model="storeInfoEdit.store.orderInterval" min="0" max="60"
+                                                            step="5">
                                                         <p class="pl-3 w-25 d-inline-block m-0 mr-5">分鐘</p>
                                                         <div class="text-memo text-danger"
-                                                            v-if="!validateIntervalTime(storeInfoEdit.storeInfo.intervalwaitingTime, 5)">
+                                                            v-if="!validateIntervalTime(storeInfoEdit.store.orderInterval, 5)">
                                                             *間隔時間須為5的倍數
                                                         </div>
                                                     </div>
@@ -376,17 +376,17 @@
                                                     <!-- 最低金額 -->
                                                     <div class="col-12 col-md-8 col-xl-6 my-1"
                                                         v-if="settingItem.groupitem.type === 'minPrice'">
+                                                        <p class="text-muted text-sm">若消費者下單總金額低於設定值，該訂單不成立並跳出警告訊息</p>
                                                         <input class="form-control w-50" type="number" min="0"
                                                             v-model="storeInfoEdit.storeInfo.minimumOrderAmount"
                                                             ref="inputs">
                                                     </div>
 
-                                                    <!-- 單數 -->
+                                                    <!-- 最低單數 -->
                                                     <div class="col-12 col-md-8 col-xl-6 my-1"
                                                         v-if="settingItem.groupitem.type === 'MinOrderCount'">
                                                         <input class="form-control w-50" type="number" min="0"
-                                                            v-model="storeInfoEdit.storeInfo.minimumOrderAmount"
-                                                            ref="inputs">
+                                                            v-model="storeInfoEdit.store.amountLimit">
                                                     </div>
 
                                                     <!-- 最高金額 -->
@@ -431,7 +431,7 @@
 
                                                         <!-- 提示內容 -->
                                                         <div class="p-3">
-                                                            <h6>提示內容</h6>
+                                                            <h6>警告提示</h6>
                                                             <textarea class="form-control"
                                                                 placeholder='提示內容文字，EX:未達最低消費金額'
                                                                 v-model="storeInfoEdit.storeInfo.minimumOrderText"></textarea>
@@ -543,7 +543,8 @@
                         "enable": true,
                         "deleted": false,
                         "id": 0,
-                        "slotLimit": 0
+                        "slotLimit": 0,
+                        "amountLimit": 0
                     },
                     "storeInfo": {
                         "storeId": "",
@@ -561,7 +562,6 @@
                         ],
                         "advanceReservation": "",
                         "basicwaitingTime": "",
-                        "intervalwaitingTime": "",
                         "minimumOrderAmount": "",
                         "minimumOrderText": "",
                         "minimumOrderEnabled": true,
@@ -728,10 +728,10 @@
                         checkUndone: false
                     },
                     {
-                        id: 'ReminderToggle', name: '<i class="fas fa-bell mr-2"></i>提醒功能開關',
+                        id: 'ReminderToggle', name: '<i class="fas fa-bell mr-2"></i>低消提醒功能',
                         settingItem: [
                             {
-                                name: '最低金額',
+                                name: '低消金額',
                                 groupitem:
                                 {
                                     type: 'minPrice',
@@ -1009,7 +1009,7 @@
                     // "Enable": true,
                     "SlotLimit": store.slotLimit,
                     // }
-
+                    'amountLimit': store.amountLimit,
                     //storeInfo:{
                     "City": storeInfo.city,
                     "Districts": storeInfo.districts,
@@ -1021,7 +1021,6 @@
                     // "Tags": "中式料理,家常菜,快速出餐",
                     // "AdvanceReservation": storeInfo.advanceReservation,
                     "BasicwaitingTime": storeInfo.basicwaitingTime,
-                    "IntervalwaitingTime": storeInfo.intervalwaitingTime,
                     "MinimumOrderAmount": storeInfo.minimumOrderAmount,
                     "MinimumOrderText": storeInfo.minimumOrderText,
                     "MinimumOrderEnabled": storeInfo.minimumOrderEnabled,

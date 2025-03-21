@@ -146,16 +146,17 @@
 
     },
     mounted() {
-      sessionStorage.clear()
+      localStorage.clear()
       loadingOff();
     },
     watch: {
     },
     methods: {
       login() {
+        loadingOn();
         // console.log(this.loginVal.keepLogIn);
-        if (this.loginVal.account == '') { this.check.account = true }
-        else if (this.loginVal.key == '') { this.check.key = true }
+        if (this.loginVal.account == '') { this.check.account = true; loadingOff(); }
+        else if (this.loginVal.key == '') { this.check.key = true; loadingOff(); }
         else {
           loadingOn();
 
@@ -176,12 +177,12 @@
               }
               // console.log('adminInfo----------' + JSON.stringify(adminInfo));
 
-              sessionStorage.userInfo = encryptObject(adminInfo)
+              localStorage.userInfo = encryptObject(adminInfo)
 
 
 
               vue.allStore = v.stores
-              sessionStorage.allStore = encryptObject(vue.allStore)
+              localStorage.allStore = encryptObject(vue.allStore)
 
               selectStore(v.stores[0].storeId)
 
@@ -196,11 +197,11 @@
       //   const foundStore = this.allStore.find(store => store.storeName === id);
       //   this.storeInfo = foundStore;
 
-      //   // 将 storeInfo 存储到 sessionStorage 中
-      //   sessionStorage.storeInfo = JSON.stringify(this.storeInfo);
+      //   // 将 storeInfo 存储到 localStorage 中
+      //   localStorage.storeInfo = JSON.stringify(this.storeInfo);
 
       //   // 跳转到 index.html 页面
-      //   if (sessionStorage.storeInfo == null) {
+      //   if (localStorage.storeInfo == null) {
       //     $('#storeModal').modal('hide')
       //     toastr.error("登入失敗");
       //   } else {

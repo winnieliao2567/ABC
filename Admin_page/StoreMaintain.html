@@ -75,12 +75,12 @@
                         {{storeInfo.store.storeName}}
                         <i class="fas fa-caret-down"></i>
                     </a>
-                    <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+                    <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right overflow-auto StoreSelector">
                         <a class="dropdown-item" v-for="(store,index) in allStore" :id="store.storeId"
                             onclick="itemClick($(this))">
                             <div class="store">
-                                <strong>{{ store.storeName }}</strong>
-                                <p class="text-muted">{{ store.city }}{{ store.districts }}{{ store.shortAddress }}</p>
+                                <strong>{{ store.expr1 }}</strong>
+                                <p class="text-muted">{{ store.expr4 }}{{ store.expr5 }}{{ store.expr6 }}</p>
                             </div>
                         </a>
                     </div>
@@ -527,9 +527,9 @@
 
 
                 //原始資料
-                userInfo: decryptObject(sessionStorage.userInfo),
-                storeInfo: decryptObject(sessionStorage.storeInfo),
-                allStore: decryptObject(sessionStorage.allStore),
+                userInfo: decryptObject(localStorage.userInfo),
+                storeInfo: decryptObject(localStorage.storeInfo),
+                allStore: decryptObject(localStorage.allStore),
 
                 //編輯資料
                 storeInfoEdit: {
@@ -1039,7 +1039,7 @@
                     if (v.message == '商店信息更新成功') {
                         apiWeb('api/Store/open/time', 'POST', JSON.stringify(aopenTime), '保存商店資訊-營業時間', function (v) {
                             if (v.message == "Store open time updated successfully") {
-                                // sessionStorage.storeInfo = encryptObject(vue.storeInfoEdit);
+                                // localStorage.storeInfo = encryptObject(vue.storeInfoEdit);
                                 // window.location.href = 'StoreMaintain.html?sid=' + storeId
                                 location.reload()
                             } else {

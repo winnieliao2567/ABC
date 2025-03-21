@@ -52,7 +52,7 @@
     <div id="app" class="wrapper">
         <div class="modal fade" id="AddBanWin" tabindex="-1" role="dialog" aria-labelledby="reloginModalLabel"
             aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
+            <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-sm" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="reloginModalLabel">新增黑名單</h5>
@@ -101,12 +101,12 @@
                         {{storeInfo.store.storeName}}
                         <i class="fas fa-caret-down"></i>
                     </a>
-                    <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+                    <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right overflow-auto StoreSelector">
                         <a class="dropdown-item" v-for="(store,index) in allStore" :id="store.storeId"
                             onclick="itemClick($(this))">
                             <div class="store">
-                                <strong>{{ store.storeName }}</strong>
-                                <p class="text-muted">{{ store.city }}{{ store.districts }}{{ store.shortAddress }}</p>
+                                <strong>{{ store.expr1 }}</strong>
+                                <p class="text-muted">{{ store.expr4 }}{{ store.expr5 }}{{ store.expr6 }}</p>
                             </div>
                         </a>
                     </div>
@@ -197,12 +197,21 @@
             <div class="content">
                 <div class="container-fluid">
                     <div class="row">
-                        <div class="col-12 mb-3">
+                        <div class="col-12 col-md-8 col-xl-7 mb-3">
+                            <div class="Myinput-group">
+                                <input type="search" class="" placeholder="搜尋手機號碼" v-model="searchKeyword">
+
+                                <button type="button" class="btn" @click="searchPhoneNum()">
+                                    <i class="fa fa-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-8 col-xl-7  mb-3">
                             <button class="btn btn-primary float-right" type="button" v-on:click="showAddBanWin">
                                 新增
                             </button>
                         </div>
-                        <div class="col-12">
+                        <div class="col-12 col-md-8 col-xl-7 ">
                             <table class="table table-bordered table-hover">
                                 <thead class="table-primary">
                                     <tr>
@@ -241,7 +250,7 @@
                                 </tbody>
                             </table>
                         </div>
-                        <div v-if="Ban_data.length>0" class="col-12">
+                        <div v-if="Ban_data.length>0" class="col-12 col-md-8 col-xl-7 ">
                             <ul class="pagination pagination-sm justify-content-center mt-3">
                                 <li class="page-item" :class="{ disabled: currentPage === 1 }">
                                     <a href="#" class="page-link" @click.prevent="prevPage">&laquo;</a>
@@ -289,9 +298,11 @@
                 PageTitle: '黑名單',
 
                 //原始資料
-                userInfo: decryptObject(sessionStorage.userInfo),
-                storeInfo: decryptObject(sessionStorage.storeInfo),
-                allStore: decryptObject(sessionStorage.allStore),
+                userInfo: decryptObject(localStorage.userInfo),
+                storeInfo: decryptObject(localStorage.storeInfo),
+                allStore: decryptObject(localStorage.allStore),
+
+                searchKeyword: '',
 
                 Ban_data: [{ mobileNumber: '', createDate: '' }],
 
@@ -339,7 +350,7 @@
                         $('#AddBanWin').modal('hide')
                         window.location.href = 'BanList.html?sid=' + storeId
                     } else {
-                        toastr.error(v.message);
+                        GetDataError('新增黑名單')
                     }
                 })
             },
@@ -373,6 +384,15 @@
             goToPage(page) {
                 this.currentPage = page;
             },
+            searchPhoneNum() {
+                apiWeb('api/Store/blacklist/search/' + storeId + '?keyword=' + this.searchKeyword, 'GET', null, '搜尋黑名單', function (v) {
+                    console.log(v);
+
+                    if (v.success == true) {
+
+                    }
+                })
+            }
         },
     });
     app.mount("#app");

@@ -1,6 +1,9 @@
 const copyRight = " 共饗有限公司. All Rights Reserved.";
+
+const Model = ""; //test
+
 const version = "1.0.1";
-const host = "https://202.182.109.207/";
+const host = "https://sharings.com.tw/";
 const currentPage = 1; // 當前頁面
 const pageSize = 10; // 每頁顯示筆數
 const queryString = window.location.search;
@@ -81,19 +84,22 @@ const userFunction = [
 function loadingOff() {
     console.log("移除遮罩");
     $(".preloader").css("height", 0);
-    setTimeout(function () {
-        $(".preloader").children().hide();
-    }, 0);
+    // setTimeout(function () {
+    $(".preloader").children().hide();
+    // }, 0);
 }
 function loadingOn() {
     console.log("顯示遮罩");
     $(".preloader").css("height", "100%");
-    setTimeout(function () {
-        $(".preloader").children().show();
-    }, 0);
+    // setTimeout(function () {
+    $(".preloader").children().show();
+    // }, 0);
 }
 function apiWeb(_url, _type, _data, TimelogTag, _fun) {
-    console.time("● API-" + TimelogTag + "(" + _url + ")");
+    if (Model != "test") {
+        console.time("● API-" + TimelogTag + "(" + _url + ")");
+    }
+
     console.log("● data-" + TimelogTag + ":", _data);
     if (_url == "_url") {
         if (_fun) _fun();
@@ -129,14 +135,18 @@ function apiWeb(_url, _type, _data, TimelogTag, _fun) {
                 },
             },
             success: function (v) {
-                console.timeEnd("● API-" + TimelogTag + "(" + _url + ")");
+                if (Model != "test") {
+                    console.timeEnd("● API-" + TimelogTag + "(" + _url + ")");
+                }
                 // toastr.success(TimelogTag + "成功");
-                console.log("● Reques-" + TimelogTag + " : " + JSON.stringify(v));
+                if (Model != "test") {
+                    console.log("● Reques-" + TimelogTag + " : " + JSON.stringify(v));
+                }
                 if (_fun) _fun(v);
             },
             error: function (v) {
                 console.timeEnd("● API-" + TimelogTag + "(" + _url + ")");
-                // toastr.error(TimelogTag + "系統問題導致失敗");
+                toastr.error(TimelogTag + "系統問題導致失敗");
                 console.log("Error:", JSON.stringify(v));
             },
         });
@@ -154,17 +164,17 @@ function checkUserInfo() {
         return;
     }
     if (
-        sessionStorage.userInfo == null ||
-        sessionStorage.allStore == null ||
-        sessionStorage.userInfo == "" ||
-        sessionStorage.allStore == ""
+        localStorage.userInfo == null ||
+        localStorage.allStore == null ||
+        localStorage.userInfo == "" ||
+        localStorage.allStore == ""
     ) {
         errorInfo = "找不到管理員資訊";
         console.error(errorInfo);
         userError();
     }
     apiWeb("api/Store/detail/" + storeId, "GET", null, "更新店家資訊", function (v) {
-        sessionStorage.storeInfo = encryptObject(v);
+        localStorage.storeInfo = encryptObject(v);
         if (v.status.isOpen == true) {
             $("#OpenStatus").addClass("fas fa-store text-success");
         } else {
@@ -191,9 +201,9 @@ function selectStore(Id) {
     console.log("selectid: " + Id);
     // loadingOn();
     apiWeb("api/Store/detail/" + Id, "GET", null, "更換店家，取得資訊", function (v) {
-        // 存入 sessionStorage
+        // 存入 localStorage
         // console.log("選擇的商店:", foundStore);
-        sessionStorage.storeInfo = encryptObject(v);
+        localStorage.storeInfo = encryptObject(v);
         // 跳轉頁面
         window.location.href = "index.html?sid=" + Id;
     });
@@ -247,6 +257,15 @@ function add3DotsMiddle(string, limit) {
 function formatCurrency(amount) {
     return new Intl.NumberFormat("en-US").format(amount);
 }
+
+//初始資料獲得失敗 func
+function GetDataError(data) {
+    toastr.error(data + "失敗，請重新登入");
+    setTimeout(() => {
+        window.location.href = "login.html";
+    }, 1500);
+}
+
 $(function () {
     //copyRight
     $("#copyRight").text("© " + moment().format("YYYY") + copyRight);

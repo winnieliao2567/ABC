@@ -1,123 +1,169 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-TW">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <!-- <script src="js/jquery-cropper.min.js"></script> -->
-    <!-- 引入 Cropper.js 的 JS -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
-    <!-- 引入 jquery-cropper 插件 -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cropper/1.0.1/jquery-cropper.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css" />
-
-    <!-- <link rel="stylesheet" href="text.sass"> -->
-
+    <title>Vue.js 圖片裁剪並轉 Base64</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
 </head>
 
 <body>
-    <div class="actions">
-        <input type="file" id="upload" accept="image/jpeg,image/png" value="" />
-        <hr>
-        <div class="crop">
-            <div class="box tailoring-box">
-                <img id="tailoringImg" src="" style="width: 500px;height: 300px;">
-            </div>
-            圖片預覽：
-            <div class="box preview">
-                <div id="previewImg"></div>
-            </div>
 
-            <button id="sureCut">裁剪</button>
+    <div id="app">
+        <!-- A Modal：上傳圖片 -->
+        <div class="modal fade" id="uploadModal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">上傳圖片</h5>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="file" class="form-control" @change="handleFileUpload">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- B Modal：裁剪圖片 -->
+        <div class="modal fade" id="cropModal" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-xl" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">裁剪圖片</h5>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                    <div class="modal-body text-center">
+                        <div class="img-container">
+                            <img id="image" ref="image" class="img-fluid">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-primary" @click="cropImage">確定裁剪</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 顯示 Base64 圖片 -->
+        <div class="container mt-4">
+            <h5>裁剪後的 Base64 圖片：</h5>
+            <img v-if="croppedImage" :src="croppedImage" class="img-thumbnail">
+            <textarea v-if="croppedImage" class="form-control mt-3" rows="5" readonly>{{ croppedImage }}</textarea>
+        </div>
+
+        <!-- 按鈕開啟 A Modal -->
+        <div class="container mt-4">
+            <button class="btn btn-success" data-toggle="modal" data-target="#uploadModal">上傳圖片</button>
         </div>
     </div>
 
-    <div class="result">
-        裁切壓縮後：
-        <p></p>
-        <span></span>
-        <input type="hidden">
-        <img id="newImg" src="">
-    </div>
-</body>
-<script>
-    var imgNewWidth = 800;  // px
-    var imgNewHeight;
-    var imgNewSize = 150;  // k
-    var $t = $('#tailoringImg');
+    <!-- Bootstrap 4 & jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
-    $('#upload').change(function () {
-        let file = this.files[0];
-        if (file) {
-            let reader = new FileReader();
-            reader.onload = function (evt) {
-                let imgSrc = evt.target.result;
-                $t.cropper('replace', imgSrc, false);
+    <script>
+        const app = new Vue({
+            el: "#app",
+            data: {
+                cropper: null,
+                imageUrl: "",
+                croppedImage: ""
+            },
+            methods: {
+                // 處理圖片上傳
+                handleFileUpload(event) {
+                    const file = event.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            this.imageUrl = e.target.result;
+
+                            // 確保 Modal 開啟後再初始化 Cropper
+                            $("#uploadModal").modal("hide");
+                            setTimeout(() => {
+                                $("#cropModal").modal("show");
+                            }, 500);
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                },
+                // 初始化 Cropper.js
+                initCropper() {
+                    if (this.cropper) {
+                        this.cropper.destroy();
+                    }
+                    this.$nextTick(() => {
+                        const image = this.$refs.image;
+                        image.onload = () => {
+                            this.cropper = new Cropper(image, {
+                                aspectRatio: 1,   // 1:1 比例
+                                viewMode: 2,      // 限制裁剪框不超出圖片範圍
+                                autoCropArea: 1,  // 預設裁剪範圍最大
+                                minCropBoxWidth: 800,
+                                minCropBoxHeight: 800,
+                                ready: () => {
+                                    this.cropper.setCropBoxData({ width: 800, height: 800 });
+                                },
+                                rotatable: false, // 禁止旋轉
+                                scalable: false,  // 禁止縮放
+                                zoomable: false,  // 禁止縮放
+                                movable: false,   // 禁止移動圖片
+                                checkOrientation: false // 禁止自動旋轉
+                            });
+                        };
+                        image.src = this.imageUrl;
+                    });
+                },
+                // 裁剪圖片並轉 Base64
+                cropImage() {
+                    if (this.cropper) {
+                        const canvas = this.cropper.getCroppedCanvas({
+                            width: 800,
+                            height: 800
+                        });
+                        this.croppedImage = canvas.toDataURL("image/png");
+
+                        // 關閉 B Modal
+                        $("#cropModal").modal("hide");
+                    }
+                }
             }
-            reader.readAsDataURL(file);
+        });
+
+        // 修正 Vue 無法直接存取的方法
+        $('#cropModal').on('shown.bs.modal', function () {
+            setTimeout(() => {
+                app.initCropper();
+            }, 300);
+        });
+    </script>
+
+    <style>
+        /* 修正裁剪區域異常的問題 */
+        .img-container {
+            width: 100%;
+            max-height: 500px;
+            overflow: hidden;
         }
-    });
 
-    // cropper圖片裁剪
-    $t.cropper({
-        aspectRatio: NaN,  // 預設比例
-        preview: '#previewImg',  // 預覽檢視
-        guides: false,   // 裁剪框的虛線(九宮格)
-        autoCropArea: 0.5, // 0-1之間的數值，定義自動剪裁區域的大小，預設0.8
-        dragMode: 'crop', // 拖曳模式 crop(Default,新增裁剪框) / move(移動裁剪框&圖片) / none(無動作)
-        cropBoxResizable: true, // 是否有裁剪框調整四邊八點
-        movable: true, // 是否允許移動圖片
-        zoomable: true, // 是否允許縮放圖片大小
-        rotatable: false,   // 是否允許旋轉圖片
-        zoomOnWheel: true, // 是否允許通過滑鼠滾輪來縮放圖片
-        zoomOnTouch: true, // 是否允許通過觸控移動來縮放圖片
-        ready: function (e) {
-            console.log('ready!');
+        /* 增加 modal-xl 讓裁剪區域更大 */
+        .modal-xl {
+            max-width: 90vw;
         }
-    });
 
-    $('#sureCut').click(function () {
-        if (!$t.attr("src")) {
-            return false;
-        } else {
-            var cropImg = $('#tailoringImg').cropper('getData');
-            console.log('cropImg', cropImg);
-            imgNewHeight = Math.round(imgNewWidth * cropImg.height / cropImg.width);
-            var cvs = $t.cropper('getCroppedCanvas');// 獲取被裁剪後的canvas
-            console.log('cvs', cvs);
-            var context = cvs.getContext('2d');
-            console.log('context', context);
-            var base64 = cvs.toDataURL('image/jpeg'); // 轉換為base64
-            var compressRatio = 102;
-
-            var img = new Image();
-            img.src = base64;
-            img.onload = function () {
-                var newImg;
-                // 使用 canvas 調整圖片寬高
-                cvs.width = imgNewWidth;
-                cvs.height = imgNewHeight;
-                context.clearRect(0, 0, imgNewWidth, imgNewHeight);
-                // 調整圖片尺寸
-                context.drawImage(img, 0, 0, imgNewWidth, imgNewHeight);
-                // 顯示新圖片
-                $('.result').show();
-                do {
-                    compressRatio -= 2;
-                    console.log('compressRatio', compressRatio);
-                    newImg = cvs.toDataURL("image/jpeg", compressRatio / 100);
-                } while (Math.round(0.75 * newImg.length / 1000) > imgNewSize);
-                console.log('compressRatio', compressRatio / 100);
-
-                $('.result p').text('新圖片尺寸 ' + imgNewWidth + 'x' + imgNewHeight);
-                $('.result span').text('檔案大小約 ' + Math.round(0.75 * newImg.length / 1000) + 'k / ' + Math.round(0.75 * base64.length / 1000) + 'k');
-                $('.result img').attr("src", newImg);
-                $('.result input').val(newImg);
-            };
+        /* 確保裁剪圖片可以完整顯示 */
+        #image {
+            display: block;
+            max-width: 100%;
+            height: auto;
         }
-    });
-</script>
+    </style>
+
+</body>
 
 </html>

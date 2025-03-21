@@ -60,7 +60,7 @@
         <!-- 當日提早關店設定 -->
         <div class="modal fade" id="EarlyClosureModal" tabindex="-1" aria-labelledby="exampleModalLabel"
             aria-hidden="true">
-            <div class="modal-dialog">
+            <div class="modal-dialog modal-dialog-scrollable">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="exampleModalLabel">提早關店設定</h5>
@@ -97,7 +97,7 @@
         <!-- 基礎等待時間 -->
         <div class="modal fade" id="BasicWaitingTimeModal" tabindex="-1" aria-labelledby="exampleModalLabel"
             aria-hidden="true">
-            <div class="modal-dialog">
+            <div class="modal-dialog modal-dialog-scrollable">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="exampleModalLabel">基礎等待時間</h5>
@@ -126,7 +126,7 @@
         <!-- 特定店休 -->
         <div class="modal fade" id="specialCloseDaysModal" tabindex="-1" aria-labelledby="exampleModalLabel"
             aria-hidden="true">
-            <div class="modal-dialog">
+            <div class="modal-dialog modal-dialog-scrollable">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="exampleModalLabel">特定店休</h5>
@@ -181,12 +181,12 @@
                         {{storeInfoEdit.store.storeName}}
                         <i class="fas fa-caret-down"></i>
                     </a>
-                    <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+                    <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right overflow-auto StoreSelector">
                         <a class="dropdown-item" v-for="(store,index) in allStore" :id="store.storeId"
                             onclick="itemClick($(this))">
                             <div class="store">
-                                <strong>{{ store.storeName }}</strong>
-                                <p class="text-muted">{{ store.city }}{{ store.districts }}{{ store.shortAddress }}</p>
+                                <strong>{{ store.expr1 }}</strong>
+                                <p class="text-muted">{{ store.expr4 }}{{ store.expr5 }}{{ store.expr6 }}</p>
                             </div>
                         </a>
                     </div>
@@ -326,9 +326,9 @@
                 PageTitle: '快速設定選單',
 
                 //原始資料
-                userInfo: decryptObject(sessionStorage.userInfo),
-                storeInfo: decryptObject(sessionStorage.storeInfo),
-                allStore: decryptObject(sessionStorage.allStore),
+                userInfo: decryptObject(localStorage.userInfo),
+                storeInfo: decryptObject(localStorage.storeInfo),
+                allStore: decryptObject(localStorage.allStore),
                 thismenuId: '',
                 storeInfoEdit: {
                     "store": {

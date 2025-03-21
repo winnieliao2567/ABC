@@ -60,12 +60,12 @@
                         {{storeInfo.store.storeName}}
                         <i class="fas fa-caret-down"></i>
                     </a>
-                    <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+                    <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right overflow-auto StoreSelector">
                         <a class="dropdown-item" v-for="(store,index) in allStore" :id="store.storeId"
                             onclick="itemClick($(this))">
                             <div class="store">
-                                <strong>{{ store.storeName }}</strong>
-                                <p class="text-muted">{{ store.city }}{{ store.districts }}{{ store.shortAddress }}</p>
+                                <strong>{{ store.expr1 }}</strong>
+                                <p class="text-muted">{{ store.expr4 }}{{ store.expr5 }}{{ store.expr6 }}</p>
                             </div>
                         </a>
                     </div>
@@ -242,9 +242,9 @@
                 PageTitle: '密碼修改',
 
                 //原始資料
-                userInfo: decryptObject(sessionStorage.userInfo),
-                storeInfo: decryptObject(sessionStorage.storeInfo),
-                allStore: decryptObject(sessionStorage.allStore),
+                userInfo: decryptObject(localStorage.userInfo),
+                storeInfo: decryptObject(localStorage.storeInfo),
+                allStore: decryptObject(localStorage.allStore),
 
                 Key: { oldPassword: '', newPassword: '', confirmPassword: '' },
                 Reset: { oldPassword: '', newPassword: '', confirmPassword: '' },

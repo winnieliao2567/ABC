@@ -48,7 +48,7 @@
 
         <div class="modal fade" id="EditTitleModal" tabindex="-1" role="dialog" aria-labelledby="reloginModalLabel"
             aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered modal-md" role="document">
+            <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-md" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="reloginModalLabel">更改菜單名稱
@@ -84,12 +84,12 @@
                         {{storeInfo.store.storeName}}
                         <i class="fas fa-caret-down"></i>
                     </a>
-                    <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+                    <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right overflow-auto StoreSelector">
                         <a class="dropdown-item" v-for="(store,index) in allStore" :id="store.storeId"
                             onclick="itemClick($(this))">
                             <div class="store">
-                                <strong>{{ store.storeName }}</strong>
-                                <p class="text-muted">{{ store.city }}{{ store.districts }}{{ store.shortAddress }}</p>
+                                <strong>{{ store.expr1 }}</strong>
+                                <p class="text-muted">{{ store.expr4 }}{{ store.expr5 }}{{ store.expr6 }}</p>
                             </div>
                         </a>
                     </div>
@@ -215,7 +215,7 @@
                             <div v-if="profuct_Data.length==0">
                                 <div class="emptyImage emptyImage2"></div>
                                 <p class="text-center">尚未新增餐點分類，前往
-                                    <button class="ml-2 btn btn-primary" type="button" href="">
+                                    <button class="ml-2 btn btn-primary" type="button" @click="toAddProductors">
                                         新增分類及品項
                                     </button>
                                 </p>
@@ -263,7 +263,8 @@
                                                 <div v-if="className.meals.length==0">
                                                     <div class="emptyImage emptyImage2"></div>
                                                     <p class="text-center">尚未新增餐點品項，前往
-                                                        <button class="ml-2 btn btn-primary" type="button" href="">
+                                                        <button class="ml-2 btn btn-primary" type="button"
+                                                            @click="toAddProductors">
                                                             新增分類及品項
                                                         </button>
                                                     </p>
@@ -305,9 +306,9 @@
                 PageTitle: '菜單',
 
                 //原始資料
-                userInfo: decryptObject(sessionStorage.userInfo),
-                storeInfo: decryptObject(sessionStorage.storeInfo),
-                allStore: decryptObject(sessionStorage.allStore),
+                userInfo: decryptObject(localStorage.userInfo),
+                storeInfo: decryptObject(localStorage.storeInfo),
+                allStore: decryptObject(localStorage.allStore),
 
                 menuInfo_DataEdit: {
                     "menuId": "",
@@ -371,6 +372,9 @@
             },
             showEditTitleModal() {
                 $('#EditTitleModal').modal('show')
+            },
+            toAddProductors() {
+                window.location.href = "Productor.html?sid=" + storeId
             }
         },
     });

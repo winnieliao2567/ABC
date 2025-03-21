@@ -1,10 +1,10 @@
 // //未保持登入且重新開啟網頁=>需重新登入
-// if (sessionStorage.userInfo == null && document.cookie == null) {
+// if (localStorage.userInfo == null && document.cookie == null) {
 //     window.location.href = "login.html";
 // }
 // //保持登入但重新開啟網頁=>自動重新登入
-// else if (sessionStorage.userInfo == null && document.cookie != null) {
-//     sessionStorage.allStore = JSON.stringify([
+// else if (localStorage.userInfo == null && document.cookie != null) {
+//     localStorage.allStore = JSON.stringify([
 //         {
 //             id: "216hewjfbwkef",
 //             name: "鹹酥雞 中和店",
@@ -48,12 +48,12 @@
 //             tags: ["A商圈", "B商圈", "鹹酥雞", "炸物", "宵夜"],
 //         },
 //     ]);
-//     sessionStorage.userInfo = JSON.stringify({
+//     localStorage.userInfo = JSON.stringify({
 //         name: "winnie",
 //         account: "winnieliao2567@gmail.com",
 //         accountKey: "123456",
 //     });
-//     if (JSON.parse(sessionStorage.allStore).length != 1) {
+//     if (JSON.parse(localStorage.allStore).length != 1) {
 //         $("#storeModal").modal("show");
 //     }
 // }

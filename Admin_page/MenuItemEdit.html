@@ -50,7 +50,7 @@
     <div id="app" class="wrapper">
         <div class="modal fade" id="ProductorEdit" tabindex="-1" role="dialog" aria-labelledby="reloginModalLabel"
             aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
+            <div class="modal-dialog  modal-dialog-centered modal-dialog-scrollable" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="reloginModalLabel">類別及品項管理</h5>
@@ -82,12 +82,12 @@
                         {{storeInfo.store.storeName}}
                         <i class="fas fa-caret-down"></i>
                     </a>
-                    <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+                    <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right overflow-auto StoreSelector">
                         <a class="dropdown-item" v-for="(store,index) in allStore" :id="store.storeId"
                             onclick="itemClick($(this))">
                             <div class="store">
-                                <strong>{{ store.storeName }}</strong>
-                                <p class="text-muted">{{ store.city }}{{ store.districts }}{{ store.shortAddress }}</p>
+                                <strong>{{ store.expr1 }}</strong>
+                                <p class="text-muted">{{ store.expr4 }}{{ store.expr5 }}{{ store.expr6 }}</p>
                             </div>
                         </a>
                     </div>
@@ -256,92 +256,12 @@
                 PageTitle: '菜單',
 
                 //原始資料
-                userInfo: decryptObject(sessionStorage.userInfo),
-                storeInfo: decryptObject(sessionStorage.storeInfo),
-                allStore: decryptObject(sessionStorage.allStore),
+                userInfo: decryptObject(localStorage.userInfo),
+                storeInfo: decryptObject(localStorage.storeInfo),
+                allStore: decryptObject(localStorage.allStore),
 
                 editStatus: { name: false, description: false },
 
-                // menuInfo_Data: {
-                //     id: 'm2024e12n31u130030',
-                //     name: '預設菜單',
-                //     description: '預設菜單',
-                //     create: {
-                //         date: '2024-12-31',
-                //         time: '13:00:30',
-                //         creator: {
-                //             id: 'dksla991024',
-                //             name: 'winnie',
-                //             account: 'winnieliao2567@gmail.com',
-                //             accountKey: '123456',
-                //         },
-                //     },
-                //     SortClassData: [
-                //         {
-                //             id: 'c2024la12s24s',
-                //             name: '排序屬性01',
-                //             sort_number: 0
-                //         },
-                //         {
-                //             id: 'c2024la12s27s',
-                //             name: '排序屬性02',
-                //             sort_number: 1
-                //         },
-                //         {
-                //             id: 'c2024la12s25s',
-                //             name: '排序屬性03',
-                //             sort_number: 2
-                //         },
-                //         {
-                //             id: 'c2024la12s26s',
-                //             name: '排序屬性04',
-                //             sort_number: 3
-                //         }
-                //     ],
-                //     ProductorEditData: [
-                //         {
-                //             id: 'cl2025a01s09s',
-                //             name: '分類A',
-                //             description: '分類A的描述',
-                //             productors: [
-                //                 {
-                //                     id: 'pro2024duc12it22em',
-                //                     name: '雞排',
-                //                     imgurl: 'img/bg/brooke-lark-IDTEXXXfS44-unsplash.jpg',
-                //                     sortClassInfo: {
-                //                         id: 'c2024la12s24s',
-                //                         name: '屬性01',
-                //                         sort_number: 0,
-                //                     },
-                //                     productorsClass: {
-                //                         id: 'cl2025a01s09s',
-                //                         name: '分類A',
-                //                         description: '分類A的描述',
-                //                     },
-                //                     sortClass: 'c2024la12s24s',
-                //                     customClassId: ['cu2024s01to11mized'],
-                //                     price: '20',
-                //                     introduction: '好吃好吃超好吃😋',
-                //                     size: [
-                //                         {
-                //                             name: '大份',
-                //                             price: '10'
-                //                         }
-                //                     ],
-                //                     enabled: true
-                //                 },
-                //             ],
-                //         },
-                //         {
-                //             id: 'cl2025a01s10s',
-                //             name: '分類B',
-                //             description: '分類B的描述',
-                //             productors: []
-                //         },
-                //     ],
-
-                //     enabled: true
-                // },
                 Edit_Data: {
                     id: 'm2024e12n31u130030',
                     name: '預設菜單',

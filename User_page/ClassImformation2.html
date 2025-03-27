@@ -54,9 +54,9 @@ scratch. This page gets rid of all links and provides the needed markup only.
 </head>
 
 <body class="hold-transition sidebar-collapse layout-top-nav layout-footer-fixed">
-    <!-- <div class="preloader flex-column justify-content-center align-items-center">
+    <div class="preloader flex-column justify-content-center align-items-center">
         <img class="animation__shake" src="img/logo.svg" style="height: 15vh;">
-    </div> -->
+    </div>
     <div class="wrapper" id="app">
         <nav class="main-header navbar navbar-expand-md navbar-light navbar-white">
             <div class="container">
@@ -121,7 +121,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
                 <ul class="order-1 order-md-3 navbar-nav navbar-no-expand ml-auto">
                     <li class="nav-item">
-                        <a class="nav-link" data-toggle="dropdown" :href="'cart.html?uid='+userInfo.id">
+                        <a class="nav-link toCart" data-toggle="dropdown">
                             <i class="fas fa-shopping-cart"></i>
                             <span class="badge badge-primary navbar-badge">3</span>
                         </a>
@@ -170,22 +170,32 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 <div class="container">
                     <div class="row">
                         <template v-for="(item, index) in visibleStores" :key="item.storeId">
-                            <div class="col-12 col-md-4 col-xl-3">
+                            <div class="col-6 col-md-4 col-xl-3">
                                 <a class="card sotreCard" :href="'StoreImformation2.html?sid='+item.storeId">
                                     <span class='badge text-bold text-success navbar-badge text-sm'>
                                         <i class="fas fa-circle"></i> <!-- 營業中 -->
                                     </span>
                                     <img src="img/unknowIMG.png" class="card-img-top">
                                     <div class="card-body">
-                                        <h6 class="text-dark">{{ item.storeName }}</h6>
-                                        <p class="text-muted text-sm card-text">
+                                        <h6 class="text-dark m-0">{{ item.storeName }}</h6>
+                                        <p class="text-muted text-sm m-0">
                                             <i class="far fa-clock mr-2"></i>{{ item.minWaitingTime }}-{{
-                                            item.maxWaitingTime }} 分鐘，外帶自取
+                                            item.maxWaitingTime }} 分鐘</br>
+                                            <i class="fas fa-map-pin mr-2"></i>
+                                            {{formatDistance(item.distanceInKM)}}
                                         </p>
                                     </div>
                                 </a>
                             </div>
                         </template>
+                        <div class="col-12" v-if="visibleStores.length==0">
+                            <div class="emptyImage emptyImage2"></div>
+                            <p class="text-center">沒有符合條件的店家，
+                                <button class="ml-2 btn btn-primary toIndex" type="button">
+                                    返回首頁
+                                </button>
+                            </p>
+                        </div>
                         <div class="text-center pb-3 col-12" v-if="filteredStoreList.length > visibleStores.length">
                             <button class="btn btn-outline-secondary" @click="loadMore">顯示更多結果</button>
                         </div>
@@ -210,229 +220,258 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 userFunction: userFunction,
 
                 PageTitle: '',
-                ClassGroup: { class: '優惠專區', name: '優惠名稱' },
+                ClassGroup: { class: '', name: '' },
 
                 //原始資料
                 userInfo: decryptObject(sessionStorage.userInfo),
 
                 storeList:
                     [
-                        {
-                            "storeId": "1",
-                            "storeName": "阿文鹽酥雞",
-                            "storePhone": "0942735787",
-                            "minWaitingTime": 10,
-                            "maxWaitingTime": 30,
-                            "enable": false,
-                            "isOpen": true,
-                            "tags": ["小吃", "饒河夜市", "炸物", "宵夜"]
-                        },
-                        {
-                            "storeId": "2",
-                            "storeName": "大和壽司",
-                            "storePhone": "0911585627",
-                            "minWaitingTime": 15,
-                            "maxWaitingTime": 30,
-                            "enable": true,
-                            "isOpen": true,
-                            "tags": ["日式料理", "壽司", "生魚片", "海鮮"]
-                        },
-                        {
-                            "storeId": "3",
-                            "storeName": "首爾炭火烤肉",
-                            "storePhone": "0944554654",
-                            "minWaitingTime": 20,
-                            "maxWaitingTime": 45,
-                            "enable": false,
-                            "isOpen": true,
-                            "tags": ["韓式料理", "烤肉", "辣炒年糕", "泡菜"]
-                        },
-                        {
-                            "storeId": "4",
-                            "storeName": "美味漢堡王",
-                            "storePhone": "0980098219",
-                            "minWaitingTime": 20,
-                            "maxWaitingTime": 45,
-                            "enable": false,
-                            "isOpen": false,
-                            "tags": ["美式料理", "漢堡", "炸雞", "薯條"]
-                        },
-                        {
-                            "storeId": "5",
-                            "storeName": "羅馬披薩屋",
-                            "storePhone": "0919842382",
-                            "minWaitingTime": 20,
-                            "maxWaitingTime": 60,
-                            "enable": true,
-                            "isOpen": false,
-                            "tags": ["義式料理", "披薩", "義大利麵", "紅醬"]
-                        },
-                        {
-                            "storeId": "6",
-                            "storeName": "健康蔬食館",
-                            "storePhone": "0934706241",
-                            "minWaitingTime": 20,
-                            "maxWaitingTime": 30,
-                            "enable": true,
-                            "isOpen": true,
-                            "tags": ["素食", "健康", "蔬食", "低卡"]
-                        },
-                        {
-                            "storeId": "7",
-                            "storeName": "海王子燒烤",
-                            "storePhone": "0947561404",
-                            "minWaitingTime": 10,
-                            "maxWaitingTime": 45,
-                            "enable": false,
-                            "isOpen": true,
-                            "tags": ["海鮮", "燒烤", "海鮮鍋", "龍蝦"]
-                        },
-                        {
-                            "storeId": "8",
-                            "storeName": "晨曦早餐店",
-                            "storePhone": "0981241369",
-                            "minWaitingTime": 10,
-                            "maxWaitingTime": 45,
-                            "enable": false,
-                            "isOpen": true,
-                            "tags": ["早餐", "輕食", "三明治", "咖啡"]
-                        },
-                        {
-                            "storeId": "9",
-                            "storeName": "甜蜜點心坊",
-                            "storePhone": "0937918528",
-                            "minWaitingTime": 15,
-                            "maxWaitingTime": 30,
-                            "enable": true,
-                            "isOpen": false,
-                            "tags": ["甜品", "蛋糕", "珍珠奶茶", "冰品"]
-                        },
-                        {
-                            "storeId": "10",
-                            "storeName": "泰味十足",
-                            "storePhone": "0926158889",
-                            "minWaitingTime": 10,
-                            "maxWaitingTime": 60,
-                            "enable": false,
-                            "isOpen": true,
-                            "tags": ["泰式料理", "打拋豬", "綠咖哩", "冬蔭功"]
-                        },
-                        {
-                            "storeId": "21",
-                            "storeName": "店家 21",
-                            "storePhone": "0991403844",
-                            "minWaitingTime": 10,
-                            "maxWaitingTime": 60,
-                            "enable": false,
-                            "isOpen": true,
-                            "tags": ["義式料理", "中式料理", "甜品", "美式料理"]
-                        },
-                        {
-                            "storeId": "22",
-                            "storeName": "店家 22",
-                            "storePhone": "0927125252",
-                            "minWaitingTime": 15,
-                            "maxWaitingTime": 60,
-                            "enable": false,
-                            "isOpen": true,
-                            "tags": ["日式料理", "壽司", "義式料理", "美式料理"]
-                        },
-                        {
-                            "storeId": "23",
-                            "storeName": "店家 23",
-                            "storePhone": "0918023891",
-                            "minWaitingTime": 10,
-                            "maxWaitingTime": 60,
-                            "enable": true,
-                            "isOpen": true,
-                            "tags": ["壽司", "韓式料理", "日式料理", "素食"]
-                        },
-                        {
-                            "storeId": "24",
-                            "storeName": "店家 24",
-                            "storePhone": "0944809812",
-                            "minWaitingTime": 20,
-                            "maxWaitingTime": 30,
-                            "enable": true,
-                            "isOpen": false,
-                            "tags": ["中式料理", "韓式料理", "素食", "燒烤"]
-                        },
-                        {
-                            "storeId": "25",
-                            "storeName": "店家 25",
-                            "storePhone": "0957335386",
-                            "minWaitingTime": 15,
-                            "maxWaitingTime": 60,
-                            "enable": false,
-                            "isOpen": true,
-                            "tags": ["海鮮", "日式料理", "中式料理", "牛排"]
-                        },
-                        {
-                            "storeId": "26",
-                            "storeName": "店家 26",
-                            "storePhone": "0958819019",
-                            "minWaitingTime": 20,
-                            "maxWaitingTime": 30,
-                            "enable": true,
-                            "isOpen": true,
-                            "tags": ["漢堡", "素食", "美式料理", "中式料理"]
-                        },
-                        {
-                            "storeId": "27",
-                            "storeName": "店家 27",
-                            "storePhone": "0927371315",
-                            "minWaitingTime": 15,
-                            "maxWaitingTime": 30,
-                            "enable": false,
-                            "isOpen": true,
-                            "tags": ["牛排", "壽司", "咖啡", "漢堡"]
-                        },
-                        {
-                            "storeId": "28",
-                            "storeName": "店家 28",
-                            "storePhone": "0939415497",
-                            "minWaitingTime": 10,
-                            "maxWaitingTime": 60,
-                            "enable": false,
-                            "isOpen": false,
-                            "tags": ["美式料理", "咖啡", "燒烤", "牛排"]
-                        },
-                        {
-                            "storeId": "29",
-                            "storeName": "店家 29",
-                            "storePhone": "0913642917",
-                            "minWaitingTime": 15,
-                            "maxWaitingTime": 60,
-                            "enable": true,
-                            "isOpen": false,
-                            "tags": ["海鮮", "壽司", "咖啡", "美式料理"]
-                        },
-                        {
-                            "storeId": "30",
-                            "storeName": "店家 30",
-                            "storePhone": "0991496867",
-                            "minWaitingTime": 15,
-                            "maxWaitingTime": 30,
-                            "enable": true,
-                            "isOpen": false,
-                            "tags": ["韓式料理", "早餐", "咖啡", "漢堡"]
-                        }
+                        //     {
+                        //         "storeId": "1",
+                        //         "storeName": "阿文鹽酥雞",
+                        //         "storePhone": "0942735787",
+                        //         "minWaitingTime": 10,
+                        //         "maxWaitingTime": 30,
+                        //         "enable": false,
+                        //         "isOpen": true,
+                        //         "tags": ["小吃", "饒河夜市", "炸物", "宵夜"]
+                        //     },
+                        //     {
+                        //         "storeId": "2",
+                        //         "storeName": "大和壽司",
+                        //         "storePhone": "0911585627",
+                        //         "minWaitingTime": 15,
+                        //         "maxWaitingTime": 30,
+                        //         "enable": true,
+                        //         "isOpen": true,
+                        //         "tags": ["日式料理", "壽司", "生魚片", "海鮮"]
+                        //     },
+                        //     {
+                        //         "storeId": "3",
+                        //         "storeName": "首爾炭火烤肉",
+                        //         "storePhone": "0944554654",
+                        //         "minWaitingTime": 20,
+                        //         "maxWaitingTime": 45,
+                        //         "enable": false,
+                        //         "isOpen": true,
+                        //         "tags": ["韓式料理", "烤肉", "辣炒年糕", "泡菜"]
+                        //     },
+                        //     {
+                        //         "storeId": "4",
+                        //         "storeName": "美味漢堡王",
+                        //         "storePhone": "0980098219",
+                        //         "minWaitingTime": 20,
+                        //         "maxWaitingTime": 45,
+                        //         "enable": false,
+                        //         "isOpen": false,
+                        //         "tags": ["美式料理", "漢堡", "炸雞", "薯條"]
+                        //     },
+                        //     {
+                        //         "storeId": "5",
+                        //         "storeName": "羅馬披薩屋",
+                        //         "storePhone": "0919842382",
+                        //         "minWaitingTime": 20,
+                        //         "maxWaitingTime": 60,
+                        //         "enable": true,
+                        //         "isOpen": false,
+                        //         "tags": ["義式料理", "披薩", "義大利麵", "紅醬"]
+                        //     },
+                        //     {
+                        //         "storeId": "6",
+                        //         "storeName": "健康蔬食館",
+                        //         "storePhone": "0934706241",
+                        //         "minWaitingTime": 20,
+                        //         "maxWaitingTime": 30,
+                        //         "enable": true,
+                        //         "isOpen": true,
+                        //         "tags": ["素食", "健康", "蔬食", "低卡"]
+                        //     },
+                        //     {
+                        //         "storeId": "7",
+                        //         "storeName": "海王子燒烤",
+                        //         "storePhone": "0947561404",
+                        //         "minWaitingTime": 10,
+                        //         "maxWaitingTime": 45,
+                        //         "enable": false,
+                        //         "isOpen": true,
+                        //         "tags": ["海鮮", "燒烤", "海鮮鍋", "龍蝦"]
+                        //     },
+                        //     {
+                        //         "storeId": "8",
+                        //         "storeName": "晨曦早餐店",
+                        //         "storePhone": "0981241369",
+                        //         "minWaitingTime": 10,
+                        //         "maxWaitingTime": 45,
+                        //         "enable": false,
+                        //         "isOpen": true,
+                        //         "tags": ["早餐", "輕食", "三明治", "咖啡"]
+                        //     },
+                        //     {
+                        //         "storeId": "9",
+                        //         "storeName": "甜蜜點心坊",
+                        //         "storePhone": "0937918528",
+                        //         "minWaitingTime": 15,
+                        //         "maxWaitingTime": 30,
+                        //         "enable": true,
+                        //         "isOpen": false,
+                        //         "tags": ["甜品", "蛋糕", "珍珠奶茶", "冰品"]
+                        //     },
+                        //     {
+                        //         "storeId": "10",
+                        //         "storeName": "泰味十足",
+                        //         "storePhone": "0926158889",
+                        //         "minWaitingTime": 10,
+                        //         "maxWaitingTime": 60,
+                        //         "enable": false,
+                        //         "isOpen": true,
+                        //         "tags": ["泰式料理", "打拋豬", "綠咖哩", "冬蔭功"]
+                        //     },
+                        //     {
+                        //         "storeId": "21",
+                        //         "storeName": "店家 21",
+                        //         "storePhone": "0991403844",
+                        //         "minWaitingTime": 10,
+                        //         "maxWaitingTime": 60,
+                        //         "enable": false,
+                        //         "isOpen": true,
+                        //         "tags": ["義式料理", "中式料理", "甜品", "美式料理"]
+                        //     },
+                        //     {
+                        //         "storeId": "22",
+                        //         "storeName": "店家 22",
+                        //         "storePhone": "0927125252",
+                        //         "minWaitingTime": 15,
+                        //         "maxWaitingTime": 60,
+                        //         "enable": false,
+                        //         "isOpen": true,
+                        //         "tags": ["日式料理", "壽司", "義式料理", "美式料理"]
+                        //     },
+                        //     {
+                        //         "storeId": "23",
+                        //         "storeName": "店家 23",
+                        //         "storePhone": "0918023891",
+                        //         "minWaitingTime": 10,
+                        //         "maxWaitingTime": 60,
+                        //         "enable": true,
+                        //         "isOpen": true,
+                        //         "tags": ["壽司", "韓式料理", "日式料理", "素食"]
+                        //     },
+                        //     {
+                        //         "storeId": "24",
+                        //         "storeName": "店家 24",
+                        //         "storePhone": "0944809812",
+                        //         "minWaitingTime": 20,
+                        //         "maxWaitingTime": 30,
+                        //         "enable": true,
+                        //         "isOpen": false,
+                        //         "tags": ["中式料理", "韓式料理", "素食", "燒烤"]
+                        //     },
+                        //     {
+                        //         "storeId": "25",
+                        //         "storeName": "店家 25",
+                        //         "storePhone": "0957335386",
+                        //         "minWaitingTime": 15,
+                        //         "maxWaitingTime": 60,
+                        //         "enable": false,
+                        //         "isOpen": true,
+                        //         "tags": ["海鮮", "日式料理", "中式料理", "牛排"]
+                        //     },
+                        //     {
+                        //         "storeId": "26",
+                        //         "storeName": "店家 26",
+                        //         "storePhone": "0958819019",
+                        //         "minWaitingTime": 20,
+                        //         "maxWaitingTime": 30,
+                        //         "enable": true,
+                        //         "isOpen": true,
+                        //         "tags": ["漢堡", "素食", "美式料理", "中式料理"]
+                        //     },
+                        //     {
+                        //         "storeId": "27",
+                        //         "storeName": "店家 27",
+                        //         "storePhone": "0927371315",
+                        //         "minWaitingTime": 15,
+                        //         "maxWaitingTime": 30,
+                        //         "enable": false,
+                        //         "isOpen": true,
+                        //         "tags": ["牛排", "壽司", "咖啡", "漢堡"]
+                        //     },
+                        //     {
+                        //         "storeId": "28",
+                        //         "storeName": "店家 28",
+                        //         "storePhone": "0939415497",
+                        //         "minWaitingTime": 10,
+                        //         "maxWaitingTime": 60,
+                        //         "enable": false,
+                        //         "isOpen": false,
+                        //         "tags": ["美式料理", "咖啡", "燒烤", "牛排"]
+                        //     },
+                        //     {
+                        //         "storeId": "29",
+                        //         "storeName": "店家 29",
+                        //         "storePhone": "0913642917",
+                        //         "minWaitingTime": 15,
+                        //         "maxWaitingTime": 60,
+                        //         "enable": true,
+                        //         "isOpen": false,
+                        //         "tags": ["海鮮", "壽司", "咖啡", "美式料理"]
+                        //     },
+                        //     {
+                        //         "storeId": "30",
+                        //         "storeName": "店家 30",
+                        //         "storePhone": "0991496867",
+                        //         "minWaitingTime": 15,
+                        //         "maxWaitingTime": 30,
+                        //         "enable": true,
+                        //         "isOpen": false,
+                        //         "tags": ["韓式料理", "早餐", "咖啡", "漢堡"]
+                        //     }
                     ],
                 addCount: 12,
                 visibleCount: 12 // 初始顯示 12 筆
             }
         },
         mounted() {
-            this.PageTitle = '共有 ' + this.storeList.length + ' 間符合條件的結果'
-
+            this.getStoreList()
         },
         watch: {
         },
 
         methods: {
+            getStoreList() {
+                var vue = this
+                if (keyWord == null) {
+                    apiWeb('/api/stores?latitude=' + localStorage.latitude + '&longitude=' + localStorage.longitude + '&radius=' + radius + '&tagIds="' + classId + '"&requireAllTags=false', 'GET', null, '取得標籤商店', function (v) {
+                        // console.log(v);
+                        vue.ClassGroup.name = className
+                        vue.ClassGroup.class = classType
+                        vue.storeList = v.data
+                        vue.PageTitle = '共有 ' + vue.storeList.length + ' 間符合條件的結果'
+                        loadingOff()
+                    })
+                } else {
+                    apiWeb('/api/Search?keyword=' + keyWord + '&latitude=' + localStorage.latitude + '&longitude=' + localStorage.longitude + '&openStatus=open', 'GET', null, '關鍵字搜尋', function (v) {
+                        vue.ClassGroup.name = className
+                        vue.ClassGroup.class = classType
+                        vue.storeList = v.data
+                        vue.PageTitle = '共有 ' + vue.storeList.length + ' 間符合條件的結果'
+                        loadingOff()
+                    })
+                }
+            },
+
             loadMore() {
                 this.visibleCount += this.addCount; // 每次點擊按鈕時增加 10 筆
-            }
+            },
+            // 格式化距離顯示
+            formatDistance(distance) {
+                if (distance < 1) {
+                    return `${Math.round(distance * 1000)} 公尺`;
+                } else {
+                    return `${distance.toFixed(1)} 公里`;
+                }
+            },
         },
         computed: {
             // 過濾掉 isOpen = false && enable = true 的店家 = 營業中
@@ -448,6 +487,9 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 // console.log('visibleStores------' + a.length);
                 return this.filteredStoreList.slice(0, this.visibleCount)
             },
+
+
+
         }
     });
     app.mount("#app");

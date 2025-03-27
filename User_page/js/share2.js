@@ -1,14 +1,19 @@
 const copyRight = " 共饗有限公司. All Rights Reserved.";
 const version = "1.0.1";
-const host = "https://202.182.109.207/";
+const host = "https://sharings.com.tw/";
 const currentPage = 1; // 當前頁面
 const pageSize = 10; // 每頁顯示筆數
 const queryString = window.location.search;
 const urlParams = new URLSearchParams(queryString);
 // console.log(urlParams);
-
+const radius = 10000000; //距離半徑
 const redirect = urlParams.get("redirect");
+
 const classId = urlParams.get("cid");
+const classType = urlParams.get("ctype");
+const className = urlParams.get("cname");
+const keyWord = urlParams.get("kw");
+
 const userId = urlParams.get("uid");
 const storeId = urlParams.get("sid");
 
@@ -193,5 +198,9 @@ $(function () {
 
     $("body").on("click", ".toIndex", function () {
         window.location.href = "index2.html?";
+    });
+
+    $("body").on("click", ".toCart", function () {
+        window.location.href = "cart2.html";
     });
 });

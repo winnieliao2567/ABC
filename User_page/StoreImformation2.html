@@ -53,10 +53,11 @@ scratch. This page gets rid of all links and provides the needed markup only.
     </style>
 </head>
 
-<body class="hold-transition sidebar-collapse layout-top-nav layout-footer-fixed">
-    <!-- <div class="preloader flex-column justify-content-center align-items-center">
+<body class="hold-transition sidebar-collapse layout-top-nav layout-footer-fixed" data-spy="scroll"
+    data-target="#scrollProductor" data-offset="0" class="overflow-auto">
+    <div class="preloader flex-column justify-content-center align-items-center">
         <img class="animation__shake" src="img/logo.svg" style="height: 15vh;">
-    </div> -->
+    </div>
     <div class="wrapper" id="app">
         <div class="modal fade" id="AnnouncementModal" tabindex="-1" role="dialog" aria-labelledby=""
             aria-hidden="true">
@@ -64,17 +65,48 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="">
+                            <i class="fas fa-bullhorn mr-2"></i>店家公告
+                        </h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body" style="min-height: 30vh;">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="FoodModal" tabindex="-1" role="dialog" aria-labelledby="" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-md" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="">
+                            <!-- <i class="fas fa-bullhorn mr-2"></i>店家公告 -->
                         </h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
                     <div class="modal-body">
-
+                        <img :src="addData.image" v-if="addData.image">
+                        <h3>{{addData.name}}</h3>
+                        <p>{{addData.remark}} </p>
+                        <div class="row m-0" v-if="addData.mealConfig?.Options?.[0]?.Items?.length > 0">
+                            <div class="col-12">
+                                <h5>份量</h5>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <!-- <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button> -->
+                        <button type="button" class="btn btn-primary btn-block" @click="AddCart">加入購物車</button>
                     </div>
                 </div>
             </div>
         </div>
+
         <nav class="main-header navbar navbar-expand-md navbar-light navbar-white">
             <div class="container">
                 <a class="toIndex navbar-brand">
@@ -137,12 +169,6 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
 
                 <ul class="order-1 order-md-3 navbar-nav navbar-no-expand ml-auto">
-                    <!-- <li class="nav-item">
-                        <a class="nav-link" data-toggle="dropdown" :href="'cart.html?uid='+userInfo.id">
-                            <i class="fas fa-shopping-cart"></i>
-                            <span class="badge badge-primary navbar-badge">3</span>
-                        </a>
-                    </li> -->
                     <li class="nav-item dropdown">
                         <a class="nav-link" data-toggle="dropdown" href="#">
                             <i class="fas fa-user"></i>
@@ -170,7 +196,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 <div class="container">
                     <div class="row mb-2">
                         <div class="col-12 px-0 overflow-hidden" style="max-height: 300px;">
-                            <img :src="storeInfo.image" style="width: 100%;">
+                            <img :src="storeInfo.storeInfo.image||'img/unknowIMG.png'" style="width: 100%;">
                         </div>
                     </div>
                 </div>
@@ -180,37 +206,43 @@ scratch. This page gets rid of all links and provides the needed markup only.
                     <div class="row">
                         <div class="col-12 p-0">
                             <h1 class="m-0">{{ PageTitle }}
-                                <span class="text-muted text-sm">
-                                    <template v-for="(tag, index) in storeInfo.tags" :key="index">
+                                <p class="text-muted text-sm">
+                                    <template v-for="(tag, index) in storeInfo.storeInfo.tags" :key="index">
                                         <span>{{ tag }}</span>
-                                        <span v-if="storeInfo.tags.length !== 1 && index < storeInfo.tags.length - 1">
-                                            /
+                                        <span
+                                            v-if="storeInfo.storeInfo.tags.length !== 1 && index < storeInfo.storeInfo.tags.length - 1">
+                                            ,
                                         </span>
                                     </template>
-                                </span>
+                                </p>
                             </h1>
                         </div>
-                        <div class="col-12 col-md-3 p-0">
-                            <div class="py-3">
-                                <h6 class="m-0" v-if="storeInfo.isOpen" data-toggle="collapse" href="#opentimeCollapse"
-                                    role="button" aria-expanded="false" aria-controls="collapseExample">
+                        <div class="col-12 p-0">
+                            <!-- 營業時間 -->
+                            <div class="p-3 item">
+                                <h6 class="m-0" v-if="storeInfo.status.isOpen" data-toggle="collapse"
+                                    href="#opentimeCollapse" role="button" aria-expanded="false"
+                                    aria-controls="collapseExample">
                                     <i class="fas fa-clock mr-2 text-secondary"></i>
                                     <span class="text-success">營業中</span>
                                     <span>，預計等待時間{{storeInfo.minwaitingTime}} -
                                         {{storeInfo.maxwaitingTime}}分鐘</span>
                                     <i class="fas fa-chevron-down float-right text-muted"></i>
                                 </h6>
-                                <h6 class="m-0" v-if="!storeInfo.isOpen" data-toggle="collapse" href="#opentimeCollapse"
-                                    role="button" aria-expanded="false" aria-controls="collapseExample">
+                                <h6 class="m-0" v-if="!storeInfo.status.isOpen" data-toggle="collapse"
+                                    href="#opentimeCollapse" role="button" aria-expanded="false"
+                                    aria-controls="collapseExample">
                                     <i class="fas fa-clock mr-2 text-secondary"></i> <span
                                         class="text-danger">休息中</span>
                                     <i class="fas fa-chevron-down float-right text-muted"></i>
                                 </h6>
                                 <div class="collapse" id="opentimeCollapse">
-                                    <div class="p-2 bg-white ml-3">
-                                        <template v-for="(day, dayIndex) in storeInfo.businessDays" :key="dayIndex">
+                                    <div class="p-2 ml-3">
+                                        <template v-for="(day, dayIndex) in storeInfo.openTime.businessDays"
+                                            :key="dayIndex">
                                             <div class="row m-0">
-                                                <p class="col-3 p-0" :class="{'text-bold': day.id === date.day}">{{
+                                                <p class="col-3 p-0"
+                                                    :class="{'text-bold text-primary': day.id === date.day}">{{
                                                     day.title
                                                     }}
                                                 </p>
@@ -230,35 +262,112 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                     </div>
                                 </div>
                             </div>
-                            <div class="py-3 btnHover">
+
+                            <!-- 地址 -->
+                            <div class="p-3 btnHover item">
                                 <h6 class="m-0">
                                     <i class="fas fa-map-marker-alt mr-2 text-secondary"></i>
-                                    {{storeInfo.city}}
-                                    {{storeInfo.districts}}
-                                    {{storeInfo.shortAddress}}
+                                    {{storeInfo.storeInfo.city}}
+                                    {{storeInfo.storeInfo.districts}}
+                                    {{storeInfo.storeInfo.shortAddress}}
                                     <div class="table-btn-div float-right">
-                                        <button target="_blank" class="btn btn-sm btn-secondary"
-                                            @click="OpenMap(storeInfo.city+storeInfo.districts+storeInfo.shortAddress)">
+                                        <button target="_blank" class="btn btn-xs btn-default"
+                                            @click="OpenMap(storeInfo.storeInfo.city+storeInfo.storeInfo.districts+storeInfo.storeInfo.shortAddress)">
                                             <i class="fas fa-share-square"></i>
                                         </button>
                                     </div>
                                 </h6>
                             </div>
-                            <div class="py-3">
-                                <h6 class="m-0">
-                                    <i class="fas fa-phone mr-2 text-secondary"></i>
-                                    <a :href="'tel:' + storeInfo.tel">{{ storeInfo.tel }}</a>
-                                </h6>
+
+                            <!-- 電話 -->
+                            <div class="p-3 item">
+                                <a :href="'tel:' + storeInfo.storeInfo.tel">
+                                    <h6 class="m-0">
+                                        <i class="fas fa-phone mr-2 text-secondary"></i>
+                                        {{ storeInfo.storeInfo.tel }}
+                                    </h6>
+                                </a>
+                            </div>
+
+                            <!-- 搜尋 -->
+                            <div class="p-3 pt-0" v-if="productorData.length>0">
+                                <div class="Myinput-group">
+                                    <input type="search" class="" placeholder="搜尋料理" v-model="searchKeyword">
+                                    <button type="button" class="btn" :disabled="searchKeyword.length==0">
+                                        <i class="fa fa-search"></i>
+                                    </button>
+                                </div>
                             </div>
                         </div>
 
-                        <div class="col-12">
-
+                        <!-- 餐點 -->
+                        <div class="col-12 p-0">
+                            <div class="col-12" v-if="productorData.length==0">
+                                <div class="emptyImage emptyImage1"></div>
+                                <p class="text-center">沒有上架餐點，
+                                    <button class="ml-2 btn btn-primary toIndex" type="button">
+                                        返回首頁
+                                    </button>
+                                </p>
+                            </div>
+                            <nav v-if="productorData.length>0" id="scrollProductor"
+                                class="navbar navbar-light sticky-top">
+                                <ul class="nav nav-pills">
+                                    <template v-for="(group,index) in productorData" :key="group.categoryId">
+                                        <li class="nav-item">
+                                            <a class="nav-link"
+                                                :href="'#scroll'+group.categoryId">{{group.categoryName}}</a>
+                                        </li>
+                                    </template>
+                                </ul>
+                            </nav>
+                            <div v-if="productorData.length>0" id="scrollProductor-content" class="p-3 mb-5">
+                                <template v-for="(group,index) in productorData">
+                                    <div class="mb-3" :id="'scroll'+group.categoryId">
+                                        <h4>{{group.categoryName}}</h4>
+                                        <div class="row m-0">
+                                            <template v-for="(item,itemIndex) in group.productors">
+                                                <div class="col-12 col-md-6 ">
+                                                    <div class="card" @click="showAddCartModal(group.categoryId,item.mealId
+                                                    )">
+                                                        <!-- <img :src="'img/unknowIMG.png'" class="card-img-top"> -->
+                                                        <div class="card-body p-2 row m-0">
+                                                            <div class="col-3 p-0">
+                                                                <div class="d-flex justify-content-center embed-responsive embed-responsive-1by1 unknowIMG"
+                                                                    style="overflow: hidden;" :src="item.image"
+                                                                    :class="{'unknowIMG':item.image==''}">
+                                                                    <img class="border w-100">
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-9 pt-2">
+                                                                <h6 class="m-0">{{item.name}}
+                                                                    <span class="float-right text-primary text-bold">$
+                                                                        {{item.price}}
+                                                                    </span>
+                                                                </h6>
+                                                                <p class="text-muted text-sm m-0">
+                                                                    {{item.remark}}
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </template>
+                                        </div>
+                                    </div>
+                                </template>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-
+            <div style="" class="fixRightSide">
+                <a class="btn btn-lg btn-secondary toCart">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="badge badge-primary navbar-badge">3</span>
+                    <span class="d-none d-lg-inline-block">查看購物車</span>
+                </a>
+            </div>
         </div>
 
         <footer class="main-footer">
@@ -286,127 +395,168 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 },
 
                 storeInfo: {
+                    "store": {
+                        "storeId": "",
+                        "storeName": "",
+                        "storePhone": "",
+                        "minOrderAmount": 0,
+                        "orderInterval": 0,
+                        "createdDate": "",
+                        "enable": true,
+                        "deleted": false,
+                        "id": 0,
+                        "slotLimit": 0,
+                        "amountLimit": 0
+                    },
+                    "storeInfo": {
+                        "storeId": "",
+                        "city": "",
+                        "districts": "",
+                        "shortAddress": "",
+                        "email": "",
+                        "tel": "",
+                        "businessNum": "",
+                        "introduction": "",
+                        "tags": [],
+                        "basicwaitingTime": "",
+                        "minimumOrderAmount": "",
+                        "minimumOrderText": "",
+                        "minimumOrderEnabled": true,
+                        "maxReservationDays": 0
+                    },
+                    "openTime": {
+                        "businessDays": [
+                            {
+                                "id": "",
+                                "title": "",
+                                "operation": true,
+                                "time": [
+                                    {
+                                        "open": "00:00",
+                                        "close": "00:00"
+                                    }
+                                ]
+                            },
+                        ],
+                        "specialCloseDays": [
+                            {
+                                "title": "春節",
+                                "date": "2025-01-28"
+                            },
+                            {
+                                "title": "春節",
+                                "date": "2025-01-29"
+                            },
+                            {
+                                "title": "家庭旅遊",
+                                "date": "2025-03-12"
+                            },
+                            {
+                                "title": "家庭旅遊",
+                                "date": "2025-03-13"
+                            },
+                            {
+                                "title": "家庭旅遊",
+                                "date": "2025-03-14"
+                            },
+                            {
+                                "title": "家庭旅遊",
+                                "date": "2025-03-15"
+                            },
+                            {
+                                "title": "家庭旅遊",
+                                "date": "2025-03-16"
+                            },
+                            {
+                                "title": "家庭旅遊",
+                                "date": "2025-03-17"
+                            },
+                            {
+                                "title": "家庭旅遊",
+                                "date": "2025-03-18"
+                            }
+                        ]
+                    },
+                    "status": {
+                        "storeId": "",
+                        "isOpen": false,
+                        "closedReason": "",
+                        "lastUpdated": ""
+                    },
+                    "activeMenu": {
+                        "menuId": "",
+                        "menuName": "",
+                        "isActive": true,
+                        "createdDate": "",
+                        "itemCount": 0
+                    },
+                    "nextAvailable": {
+                        "time": "",
+                        "timeFormatted": ""
+                    }
+                },
 
-                    "storeId": "1",
-                    "storeName": "測試商店",
-                    "storePhone": "0912345678",
-                    "minOrderAmount": 300,
-                    "orderInterval": 15,
-                    "createdDate": "2025-01-27T00:00:00",
-                    "enable": true,
-                    "deleted": false,
-                    "id": 2,
-                    "slotLimit": 1000,
-                    minwaitingTime: 15,//最短等待時間
-                    maxwaitingTime: 30,//最長等待時間
-                    image: 'img/store.png',//店家圖片
-                    "city": "雲林縣",
-                    "districts": "二崙鄉",
-                    "shortAddress": "松高路",
-                    "email": "contact@foodstore.com",
-                    "tel": "0212345678",
-                    "businessNum": "12345678",
-                    "introduction": "<p>123456</p>",
-                    "tags": [
-                        "中式料理",
-                        "家常菜",
-                        "快速出餐"
-                    ],
-                    "basicwaitingTime": "15",
-                    "minimumOrderAmount": "300",
-                    "minimumOrderText": "低於最低訂單金額無法下單",
-                    "minimumOrderEnabled": true,
-                    "maxReservationDays": 10,
+                addData: {
 
+                },
 
-                    "businessDays": [
-                        {
-                            "id": "Mon",
-                            "title": "週一",
-                            "operation": true,
-                            "time": [
-                                {
-                                    "open": "00:00",
-                                    "close": "00:00"
-                                },
-                                {
-                                    "open": "00:00",
-                                    "close": "00:00"
-                                }
-                            ]
-                        },
-                        {
-                            "id": "Tue",
-                            "title": "週二",
-                            "operation": false,
-                            "time": []
-                        },
-                        {
-                            "id": "Wed",
-                            "title": "週三",
-                            "operation": false,
-                            "time": []
-                        },
-                        {
-                            "id": "Thu",
-                            "title": "週四",
-                            "operation": false,
-                            "time": []
-                        },
-                        {
-                            "id": "Fri",
-                            "title": "週五",
-                            "operation": true,
-                            "time": [
-                                {
-                                    "open": "00:00",
-                                    "close": "00:00"
-                                },
-                                {
-                                    "open": "00:00",
-                                    "close": "00:00"
-                                }
-                            ]
-                        },
-                        {
-                            "id": "Sat",
-                            "title": "週六",
-                            "operation": true,
-                            "time": [
-                                {
-                                    "open": "00:00",
-                                    "close": "00:00"
-                                }
-                            ]
-                        },
-                        {
-                            "id": "Sun",
-                            "title": "週日",
-                            "operation": false,
-                            "time": []
-                        }
-                    ],
-                    "isOpen": false,
-                    "closedReason": "特殊休店日",
-                    "lastUpdated": "2025-03-18T05:50:46",
-
-                }
+                productorData: [],
+                searchKeyword: ''
             }
         },
         mounted() {
-            this.PageTitle = this.storeInfo.storeName
-            this.date.day = moment().format('ddd')
-            console.log(this.date.day);
+            this.getStoreInfo()
 
-            if (this.storeInfo.introduction != '') {
-                $('#AnnouncementModal .modal-body').html(this.storeInfo.introduction)
-                $('#AnnouncementModal').modal('show')
-            }
         },
         watch: {
         },
 
         methods: {
+            //取得產品清單
+            getProductorList() {
+                var vue = this;
+                apiWeb('/api/Meal/category/' + storeId, 'GET', null, '獲得分類', function (v) {
+                    if (v.success == true) {
+                        vue.ClassList = v.categories;
+                        apiWeb('/api/Meal/user/' + storeId, 'GET', null, '獲得品項', function (v) {
+                            if (v.success == true) {
+                                vue.ProductList = v.meals;
+                                vue.productorData = vue.ClassList.map(category => ({
+                                    categoryId: category.categoryId,
+                                    categoryName: category.categoryName,
+                                    productors: vue.ProductList.filter(product => product.categoryId === category.categoryId)
+                                }));
+                                console.log(vue.productorData);
+                                setTimeout(() => {
+                                    vue.adjustHeight()
+                                    loadingOff()
+                                }, 1000);
+                            } else {
+                                GetDataError('獲得品項資料')
+                            }
+                        });
+                    } else {
+                        GetDataError('獲得分類資料')
+                    }
+                });
+            },
+            getStoreInfo() {
+                var vue = this
+                apiWeb('api/Store/detail/' + storeId, 'GET', null, '取得店家資訊', function (v) {
+                    vue.storeInfo = v
+                    // console.log(v);
+                    vue.PageTitle = vue.storeInfo.store.storeName
+                    vue.date.day = moment().format('ddd')
+                    // console.log(this.date.day);
+                    // console.log(vue.storeInfo.storeInfo.introduction);
+                    if (vue.storeInfo.introduction != '') {
+                        $('#AnnouncementModal .modal-body').html(vue.storeInfo.storeInfo.introduction)
+                        $('#AnnouncementModal').modal('show')
+                    }
+                    // loadingOff()
+                    vue.getProductorList()
+                })
+            },
             OpenMap(address) {
                 if (!address) {
                     console.error("地址為空，無法開啟地圖");
@@ -419,6 +569,30 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
                 // 開啟新視窗 (新分頁)
                 window.open(mapUrl, '_blank');
+            },
+            adjustHeight() {
+                var navbarHeight = $('#scrollProductor').outerHeight(); // 獲取 #scrollProductor 的高度
+                var footerHeight = $('.main-footer').outerHeight()
+
+                // console.log('Height-----------', navbarHeight, footerHeight);
+
+                var newMaxHeight = `calc(100vh - ${navbarHeight}px - ${footerHeight}px)`; // 計算新的 max-height
+
+                // console.log('Height-----------' + newMaxHeight);
+
+                // $('#scrollProductor-content').get(0).style.setProperty('max-height', newMaxHeight); // 設定 max-height
+                // $('#scrollProductor-content').get(0).style.setProperty('padding-top', navbarHeight + 20 + 'px', 'important');
+            },
+            showAddCartModal(GroupId, MealId) {
+                // console.log(GroupId, MealId);
+
+                const category = this.productorData.find(c => c.categoryId === GroupId);
+                const meal = category?.productors.find(m => m.mealId === MealId);
+
+                // console.log(meal);
+                this.addData = JSON.parse(JSON.stringify(meal))
+                console.log(this.addData);
+                $('#FoodModal').modal('show')
             }
         },
         computed: {

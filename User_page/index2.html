@@ -54,9 +54,9 @@ scratch. This page gets rid of all links and provides the needed markup only.
 </head>
 
 <body class="hold-transition sidebar-collapse layout-top-nav layout-footer-fixed">
-    <!-- <div class="preloader flex-column justify-content-center align-items-center">
+    <div class="preloader flex-column justify-content-center align-items-center">
         <img class="animation__shake" src="img/logo.svg" style="height: 15vh;">
-    </div> -->
+    </div>
     <div class="wrapper" id="app">
         <nav class="main-header navbar navbar-expand-md navbar-light navbar-white">
             <div class="container">
@@ -121,7 +121,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
                 <ul class="order-1 order-md-3 navbar-nav navbar-no-expand ml-auto">
                     <li class="nav-item">
-                        <a class="nav-link" data-toggle="dropdown" :href="'cart.html?uid='+userInfo.id">
+                        <a class="nav-link toCart" data-toggle="dropdown">
                             <i class="fas fa-shopping-cart"></i>
                             <span class="badge badge-primary navbar-badge">3</span>
                         </a>
@@ -169,35 +169,70 @@ scratch. This page gets rid of all links and provides the needed markup only.
                     <div class="row">
                         <!-- 搜尋 -->
                         <div class="col-12 mb-3">
-                            <div class="form-group">
-                                <div class="input-group input-group-lg">
-                                    <input type="search" class="form-control form-control-lg"
-                                        placeholder="搜尋餐廳、料理類型、商圈">
-                                    <div class="input-group-append">
-                                        <button type="submit" class="btn btn-lg btn-default">
-                                            <i class="fa fa-search"></i>
-                                        </button>
-                                    </div>
-                                </div>
+                            <div class="Myinput-group">
+                                <input type="search" class="" placeholder="搜尋餐廳、料理類型、商圈" v-model="searchKeyword">
+                                <button @click="search" type="button" class="btn" :disabled="searchKeyword.length==0">
+                                    <i class="fa fa-search"></i>
+                                </button>
                             </div>
                         </div>
 
                         <!-- 優惠專區 -->
-                        <div class="col-12 mb-3 p-3 PromotionsList">
+                        <div class="col-12 mb-3 p-3 PromotionsList" v-show="PromotionsList.length>0">
                             <h3>
                                 <img src="img/bonus.png" class="mr-2" width="60px">
                                 優惠專區
                             </h3>
                             <div class="swiper-container w-100 overflow-hidden">
                                 <div class="swiper-wrapper">
-                                    <a class="card mb-2 bg-gradient-dark swiper-slide"
-                                        v-for="(item, index) in PromotionsList" :key="index"
-                                        :href="'ClassImformation2.html?cid='+item.id">
-                                        <img class="card-img-top" :src="item.image" :alt="item.title" />
-                                        <div class="card-img-overlay d-flex flex-column justify-content-end">
-                                            <h5 class="card-title text-primary text-white">{{ item.title }}</h5>
-                                        </div>
-                                    </a>
+                                    <template v-for="(item, index) in PromotionsList" :key="index">
+                                        <a class="card mb-2 bg-gradient-dark swiper-slide"
+                                            :href="'ClassImformation2.html?cid='+item.tagId">
+                                            <img class="card-img-top" :src="item.image || 'img/unknowIMG.png'" />
+                                            <div class="card-img-overlay d-flex flex-column justify-content-end">
+                                                <h5 class="card-title text-primary text-white">{{ item.title }}</h5>
+                                            </div>
+                                        </a></template>
+                                </div>
+                                <button class="custom-prev-btn shadow">
+                                    <i class="fas fa-arrow-left"></i>
+                                </button>
+                                <button class="custom-next-btn shadow">
+                                    <i class="fas fa-arrow-right"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- 附近店家 -->
+                        <div class="col-12 mb-3 p-3" v-show="StoreList.length>0">
+                            <h3>附近店家
+                                <!-- <button type="button" class="btn btn-link float-right">查看全部</button> -->
+                            </h3>
+                            <div class="swiper-container-store w-100 overflow-hidden">
+                                <div class="swiper-wrapper">
+                                    <template v-for="(item, index) in StoreList" :key="index">
+                                        <a class="card border shadow-none mb-2 swiper-slide"
+                                            :href="'StoreImformation2.html?sid='+item.storeId">
+                                            <span class='badge text-bold text-success navbar-badge text-sm'
+                                                v-if="item.isOpen">
+                                                <i class="fas fa-circle"></i> <!-- 營業中 -->
+                                            </span>
+                                            <span class='badge text-bold text-danger navbar-badge text-sm'
+                                                v-if="!item.isOpen">
+                                                <i class="fas fa-circle"></i>
+                                            </span>
+                                            <img class="card-img-top" :src="item.image || 'img/unknowIMG.png'" />
+                                            <div class="card-body">
+                                                <h6 class="text-dark">{{ item.storeName }}</h6>
+                                                <p class="text-muted text-xs card-text">
+                                                    <i class="far fa-clock mr-2"></i>
+                                                    {{ item.minWaitingTime }}-{{ item.maxWaitingTime }} 分鐘</br>
+                                                    <i class="fas fa-map-pin mr-2"></i>
+                                                    {{formatDistance(item.distanceInKM)}}
+                                                </p>
+                                            </div>
+                                        </a>
+                                    </template>
                                 </div>
                                 <button class="custom-prev-btn shadow">
                                     <i class="fas fa-arrow-left"></i>
@@ -209,20 +244,21 @@ scratch. This page gets rid of all links and provides the needed markup only.
                         </div>
 
                         <!-- 查看附近的商圈 -->
-                        <div class="col-12 mb-3 p-3">
+                        <div class="col-12 mb-3 p-3" v-show="BusinessDistrictList.length>0">
                             <h3>查看附近的商圈
-                                <button type="button" class="btn btn-link float-right">查看全部</button>
+                                <!-- <button type="button" class="btn btn-link float-right">查看全部</button> -->
                             </h3>
                             <div class="swiper-container w-100 overflow-hidden">
                                 <div class="swiper-wrapper">
-                                    <a class="card mb-2 bg-gradient-dark swiper-slide"
-                                        :href="'ClassImformation2.html?cid='+item.id"
-                                        v-for="(item, index) in BusinessDistrictList" :key="index">
-                                        <img class="card-img-top" :src="item.image" :alt="item.title" />
-                                        <div class="card-img-overlay d-flex flex-column justify-content-end">
-                                            <h5 class="card-title text-primary text-white">{{ item.title }}</h5>
-                                        </div>
-                                    </a>
+                                    <template v-for="(item, index) in BusinessDistrictList" :key="index">
+                                        <a class="card mb-2 bg-gradient-dark swiper-slide"
+                                            :href="'ClassImformation2.html?cid='+item.tagId+'&cname='+item.title+'&ctype=附近的商圈'">
+                                            <img class="card-img-top" :src="item.image || 'img/unknowIMG.png'" />
+                                            <div class="card-img-overlay d-flex flex-column justify-content-end">
+                                                <h5 class="card-title text-primary text-white">{{ item.title }}</h5>
+                                            </div>
+                                        </a>
+                                    </template>
                                 </div>
                                 <button class="custom-prev-btn shadow">
                                     <i class="fas fa-arrow-left"></i>
@@ -234,17 +270,19 @@ scratch. This page gets rid of all links and provides the needed markup only.
                         </div>
 
                         <!-- 各類美食 -->
-                        <div class="col-12 mb-3 p-3">
+                        <div class="col-12 mb-3 p-3" v-show="FoodTypeList.length>0">
                             <h3>各類美食</h3>
                             <div class="swiper-container-foodtype w-100 overflow-hidden">
                                 <div class="swiper-wrapper">
-                                    <a class="swiper-slide footType" v-for="(item, index) in FoodTypeList"
-                                        :href="'ClassImformation2.html?cid='+item.id" :key="index">
-                                        <img class="card-img-top" :src="item.image" :alt="item.title" />
-                                        <div class="d-flex flex-column justify-content-end">
-                                            <span class="card-title text-secondary text-sm">{{ item.title }}</span>
-                                        </div>
-                                    </a>
+                                    <template v-for="(item, index) in FoodTypeList" :key="index">
+                                        <a class="swiper-slide footType"
+                                            :href="'ClassImformation2.html?cid='+item.tagId">
+                                            <img class="card-img-top" :src="item.image || 'img/unknowIMG.png'" />
+                                            <div class="d-flex flex-column justify-content-end">
+                                                <span class="card-title text-secondary text-sm">{{ item.title }}</span>
+                                            </div>
+                                        </a>
+                                    </template>
                                 </div>
                                 <button class="custom-prev-btn shadow">
                                     <i class="fas fa-arrow-left"></i>
@@ -287,78 +325,78 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
                 //優惠專區
                 PromotionsList: [
-                    { "title": "新客優惠", "id": "QgR0QNBITskvdD6b", "image": "img/unknowIMG.png" },
-                    { "title": "滿額免運", "id": "GBVHt3VaksUXVapD", "image": "img/unknowIMG.png" },
-                    { "title": "限時折扣", "id": "BiR18TKHusq4kUP1", "image": "img/unknowIMG.png" },
-                    { "title": "好友分享", "id": "6s0CmDhluQr5ytpM", "image": "img/unknowIMG.png" },
-                    { "title": "回饋金", "id": "9QH2sNjRT9EQBUP6", "image": "img/unknowIMG.png" },
-                    { "title": "訂閱方案", "id": "tb8i7Ln4RycYmKQB", "image": "img/unknowIMG.png" },
-                    { "title": "早餐優惠", "id": "n30fpvZzs2CZo6v5", "image": "img/unknowIMG.png" },
-                    { "title": "宵夜特價", "id": "X7sluvXvGxUIWtyo", "image": "img/unknowIMG.png" },
-                    { "title": "信用卡折扣", "id": "gXyT8B4cXR2QXeCQ", "image": "img/unknowIMG.png" },
-                    { "title": "指定店家折扣", "id": "BTXRTzFkBWXjPDYe", "image": "img/unknowIMG.png" },
-                    { "title": "週末限定", "id": "OuxgqWpNQsomCERD", "image": "img/unknowIMG.png" },
-                    { "title": "買一送一", "id": "caIzYJe3b3cBMg8F", "image": "img/unknowIMG.png" },
-                    { "title": "組合餐優惠", "id": "C8f3oZ01QWhyrwQX", "image": "img/unknowIMG.png" },
-                    { "title": "生日折扣", "id": "kWOxpLzpSTyQyi9j", "image": "img/unknowIMG.png" },
-                    { "title": "會員專屬", "id": "49XpI3bsVUbfADdu", "image": "img/unknowIMG.png" }
+                    // { "title": "新客優惠", "id": "QgR0QNBITskvdD6b", "image": "img/unknowIMG.png" },
+                    // { "title": "滿額免運", "id": "GBVHt3VaksUXVapD", "image": "img/unknowIMG.png" },
+                    // { "title": "限時折扣", "id": "BiR18TKHusq4kUP1", "image": "img/unknowIMG.png" },
+                    // { "title": "好友分享", "id": "6s0CmDhluQr5ytpM", "image": "img/unknowIMG.png" },
+                    // { "title": "回饋金", "id": "9QH2sNjRT9EQBUP6", "image": "img/unknowIMG.png" },
+                    // { "title": "訂閱方案", "id": "tb8i7Ln4RycYmKQB", "image": "img/unknowIMG.png" },
+                    // { "title": "早餐優惠", "id": "n30fpvZzs2CZo6v5", "image": "img/unknowIMG.png" },
+                    // { "title": "宵夜特價", "id": "X7sluvXvGxUIWtyo", "image": "img/unknowIMG.png" },
+                    // { "title": "信用卡折扣", "id": "gXyT8B4cXR2QXeCQ", "image": "img/unknowIMG.png" },
+                    // { "title": "指定店家折扣", "id": "BTXRTzFkBWXjPDYe", "image": "img/unknowIMG.png" },
+                    // { "title": "週末限定", "id": "OuxgqWpNQsomCERD", "image": "img/unknowIMG.png" },
+                    // { "title": "買一送一", "id": "caIzYJe3b3cBMg8F", "image": "img/unknowIMG.png" },
+                    // { "title": "組合餐優惠", "id": "C8f3oZ01QWhyrwQX", "image": "img/unknowIMG.png" },
+                    // { "title": "生日折扣", "id": "kWOxpLzpSTyQyi9j", "image": "img/unknowIMG.png" },
+                    // { "title": "會員專屬", "id": "49XpI3bsVUbfADdu", "image": "img/unknowIMG.png" }
                 ],
 
                 //附近商圈
                 BusinessDistrictList: [
-                    { "title": "西門町", "id": "Cml0riWyZ9", "image": "img/unknowIMG.png" },
-                    { "title": "信義商圈", "id": "c3aY8KQ6L0", "image": "img/unknowIMG.png" },
-                    { "title": "東區商圈", "id": "AGU25L9aTg", "image": "img/unknowIMG.png" },
-                    { "title": "士林夜市", "id": "Z7EUEYNx5W", "image": "img/unknowIMG.png" },
-                    { "title": "饒河夜市", "id": "DkHZFABPnZ", "image": "img/unknowIMG.png" },
-                    { "title": "公館商圈", "id": "oEWAFTjy4I", "image": "img/unknowIMG.png" },
-                    { "title": "中山站商圈", "id": "NeteuUVaUz", "image": "img/unknowIMG.png" },
-                    { "title": "永康商圈", "id": "pSgKhOCA1v", "image": "img/unknowIMG.png" },
-                    { "title": "南西商圈", "id": "Hsbcp2EW3q", "image": "img/unknowIMG.png" },
-                    { "title": "南機場夜市", "id": "9wJ2mJ5Nnk", "image": "img/unknowIMG.png" },
-                    { "title": "逢甲夜市", "id": "qqFvrJu9SZ", "image": "img/unknowIMG.png" },
-                    { "title": "一中商圈", "id": "Gv3pcPS70k", "image": "img/unknowIMG.png" },
-                    { "title": "中友百貨商圈", "id": "UeZ0J7zZ5a", "image": "img/unknowIMG.png" },
-                    { "title": "草悟道商圈", "id": "m63bY8Aje4", "image": "img/unknowIMG.png" },
-                    { "title": "台中大遠百", "id": "FCWPLQocjc", "image": "img/unknowIMG.png" },
-                    { "title": "高雄瑞豐夜市", "id": "OTS6Ic9i8j", "image": "img/unknowIMG.png" },
-                    { "title": "六合夜市", "id": "2CvbhRWQHI", "image": "img/unknowIMG.png" },
-                    { "title": "夢時代商圈", "id": "oV17vKd7y7", "image": "img/unknowIMG.png" },
-                    { "title": "駁二藝術特區", "id": "6ANTYYEXJA", "image": "img/unknowIMG.png" },
-                    { "title": "安平老街", "id": "eDePCLLlXN", "image": "img/unknowIMG.png" }
+                    // { "title": "西門町", "id": "Cml0riWyZ9", "image": "img/unknowIMG.png" },
+                    // { "title": "信義商圈", "id": "c3aY8KQ6L0", "image": "img/unknowIMG.png" },
+                    // { "title": "東區商圈", "id": "AGU25L9aTg", "image": "img/unknowIMG.png" },
+                    // { "title": "士林夜市", "id": "Z7EUEYNx5W", "image": "img/unknowIMG.png" },
+                    // { "title": "饒河夜市", "id": "DkHZFABPnZ", "image": "img/unknowIMG.png" },
+                    // { "title": "公館商圈", "id": "oEWAFTjy4I", "image": "img/unknowIMG.png" },
+                    // { "title": "中山站商圈", "id": "NeteuUVaUz", "image": "img/unknowIMG.png" },
+                    // { "title": "永康商圈", "id": "pSgKhOCA1v", "image": "img/unknowIMG.png" },
+                    // { "title": "南西商圈", "id": "Hsbcp2EW3q", "image": "img/unknowIMG.png" },
+                    // { "title": "南機場夜市", "id": "9wJ2mJ5Nnk", "image": "img/unknowIMG.png" },
+                    // { "title": "逢甲夜市", "id": "qqFvrJu9SZ", "image": "img/unknowIMG.png" },
+                    // { "title": "一中商圈", "id": "Gv3pcPS70k", "image": "img/unknowIMG.png" },
+                    // { "title": "中友百貨商圈", "id": "UeZ0J7zZ5a", "image": "img/unknowIMG.png" },
+                    // { "title": "草悟道商圈", "id": "m63bY8Aje4", "image": "img/unknowIMG.png" },
+                    // { "title": "台中大遠百", "id": "FCWPLQocjc", "image": "img/unknowIMG.png" },
+                    // { "title": "高雄瑞豐夜市", "id": "OTS6Ic9i8j", "image": "img/unknowIMG.png" },
+                    // { "title": "六合夜市", "id": "2CvbhRWQHI", "image": "img/unknowIMG.png" },
+                    // { "title": "夢時代商圈", "id": "oV17vKd7y7", "image": "img/unknowIMG.png" },
+                    // { "title": "駁二藝術特區", "id": "6ANTYYEXJA", "image": "img/unknowIMG.png" },
+                    // { "title": "安平老街", "id": "eDePCLLlXN", "image": "img/unknowIMG.png" }
                 ],
 
                 //食物類型
                 FoodTypeList: [
-                    { "title": "中式", "id": "aYcwiNIy", "image": "img/foodtype/burger.png" },
-                    { "title": "西式", "id": "GNZmI5n8", "image": "img/foodtype/burger.png" },
-                    { "title": "日式", "id": "QgZ5styM", "image": "img/foodtype/burger.png" },
-                    { "title": "韓式", "id": "WHAOkS2g", "image": "img/foodtype/burger.png" },
-                    { "title": "泰式", "id": "sVsALrjJ", "image": "img/foodtype/burger.png" },
-                    { "title": "印度", "id": "TMzb36tq", "image": "img/foodtype/burger.png" },
-                    { "title": "法式", "id": "knrc3CTg", "image": "img/foodtype/burger.png" },
-                    { "title": "義式", "id": "60EC4bEp", "image": "img/foodtype/burger.png" },
-                    { "title": "墨式", "id": "3JGD29Pa", "image": "img/foodtype/burger.png" },
-                    { "title": "素食", "id": "gJFXhwBX", "image": "img/foodtype/burger.png" },
-                    { "title": "燒烤", "id": "K3CjavJi", "image": "img/foodtype/burger.png" },
-                    { "title": "海鮮", "id": "UYCpbdo8", "image": "img/foodtype/burger.png" },
-                    { "title": "甜品", "id": "fGOjDtrL", "image": "img/foodtype/burger.png" },
-                    { "title": "飲料", "id": "gThxxh6R", "image": "img/foodtype/burger.png" },
-                    { "title": "早餐", "id": "sQIZh8kg", "image": "img/foodtype/burger.png" }
+                    // { "title": "中式", "id": "aYcwiNIy", "image": "img/foodtype/burger.png" },
+                    // { "title": "西式", "id": "GNZmI5n8", "image": "img/foodtype/burger.png" },
+                    // { "title": "日式", "id": "QgZ5styM", "image": "img/foodtype/burger.png" },
+                    // { "title": "韓式", "id": "WHAOkS2g", "image": "img/foodtype/burger.png" },
+                    // { "title": "泰式", "id": "sVsALrjJ", "image": "img/foodtype/burger.png" },
+                    // { "title": "印度", "id": "TMzb36tq", "image": "img/foodtype/burger.png" },
+                    // { "title": "法式", "id": "knrc3CTg", "image": "img/foodtype/burger.png" },
+                    // { "title": "義式", "id": "60EC4bEp", "image": "img/foodtype/burger.png" },
+                    // { "title": "墨式", "id": "3JGD29Pa", "image": "img/foodtype/burger.png" },
+                    // { "title": "素食", "id": "gJFXhwBX", "image": "img/foodtype/burger.png" },
+                    // { "title": "燒烤", "id": "K3CjavJi", "image": "img/foodtype/burger.png" },
+                    // { "title": "海鮮", "id": "UYCpbdo8", "image": "img/foodtype/burger.png" },
+                    // { "title": "甜品", "id": "fGOjDtrL", "image": "img/foodtype/burger.png" },
+                    // { "title": "飲料", "id": "gThxxh6R", "image": "img/foodtype/burger.png" },
+                    // { "title": "早餐", "id": "sQIZh8kg", "image": "img/foodtype/burger.png" }
                 ],
 
+                StoreList: [],
 
+                searchKeyword: ''
 
             }
         },
         mounted() {
-            // console.log(this.userInfo);
-
             // 頁面載入時自動請求位置
             this.getLocation();
 
             new Swiper(".swiper-container", {
-                loop: true, // 無限輪播
+                loop: false, // 無限輪播
                 slidesPerView: 4, // 預設桌機 4 個
                 spaceBetween: 10, // 間距
                 navigation: {
@@ -366,15 +404,33 @@ scratch. This page gets rid of all links and provides the needed markup only.
                     prevEl: ".custom-prev-btn",
                 },
                 breakpoints: {
-                    1024: { slidesPerView: 4.5 },  // 桌機
-                    768: { slidesPerView: 3.3 },   // 平板
-                    480: { slidesPerView: 1.5 }, // 一般手機
-                    375: { slidesPerView: 1.5 }, // iPhone SE
-                    320: { slidesPerView: 1.2 }  // 超小手機
+                    1024: { slidesPerView: 5.5 },  // 桌機
+                    768: { slidesPerView: 4.3 },   // 平板
+                    480: { slidesPerView: 2.5 }, // 一般手機
+                    375: { slidesPerView: 2.5 }, // iPhone SE
+                    320: { slidesPerView: 2.2 }  // 超小手機
                 },
             });
+
+            new Swiper(".swiper-container-store", {
+                loop: false, // 無限輪播
+                slidesPerView: 1.5, // 預設桌機 4 個
+                spaceBetween: 10, // 間距
+                navigation: {
+                    nextEl: ".custom-next-btn",
+                    prevEl: ".custom-prev-btn",
+                },
+                breakpoints: {
+                    1024: { slidesPerView: 5.5 },  // 桌機
+                    768: { slidesPerView: 4.3 },   // 平板
+                    480: { slidesPerView: 2.5 }, // 一般手機
+                    375: { slidesPerView: 2.5 }, // iPhone SE
+                    320: { slidesPerView: 1.5 }  // 超小手機
+                },
+            });
+
             new Swiper(".swiper-container-foodtype", {
-                loop: true, // 無限輪播
+                loop: false, // 無限輪播
                 slidesPerView: 12, // 預設桌機 4 個
                 spaceBetween: 10, // 間距
                 navigation: {
@@ -382,7 +438,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                     prevEl: ".custom-prev-btn",
                 },
                 breakpoints: {
-                    1024: { slidesPerView: 12.5 },  // 桌機
+                    1024: { slidesPerView: 10.5 },  // 桌機
                     768: { slidesPerView: 10.2 },   // 平板
                     480: { slidesPerView: 4.5 }, // 一般手機
                     375: { slidesPerView: 4.5 }, // iPhone SE
@@ -409,6 +465,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
             },
             // 獲取用戶位置並查詢附近店家
             getLocation() {
+                loadingOn()
                 this.loading = true;
                 this.error = null;
                 this.stores = [];
@@ -422,7 +479,10 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                 latitude: position.coords.latitude,
                                 longitude: position.coords.longitude,
                             };
-                            console.log("獲取位置成功:", this.currentCoords);
+                            // console.log("獲取位置成功:", this.currentCoords);
+                            localStorage.latitude = this.currentCoords.latitude
+                            localStorage.longitude = this.currentCoords.longitude
+
                             this.fetchNearbyStores();
                         },
                         // 獲取位置失敗
@@ -495,25 +555,35 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
             // 獲取附近店家
             fetchNearbyStores() {
-                // 使用 fetch API 發送請求到後端
-                fetch(
-                    `/api/stores?latitude=${this.currentCoords.latitude}&longitude=${this.currentCoords.longitude}`
-                )
-                    .then((response) => {
-                        if (!response.ok) {
-                            throw new Error(`HTTP 錯誤! 狀態: ${response.status}`);
-                        }
-                        return response.json();
-                    })
-                    .then((data) => {
-                        this.stores = data;
-                        this.loading = false;
-                    })
-                    .catch((error) => {
-                        this.error = `獲取店家數據失敗: ${error.message}`;
-                        this.loading = false;
-                        console.error("API 請求錯誤:", error);
-                    });
+                var vue = this
+                this.getTheTags(function () { vue.getOpeningStore(function () { loadingOff() }) })
+            },
+
+            //附近營業店家
+            getOpeningStore(_func) {
+                var vue = this
+                apiWeb('/api/stores?latitude=' + localStorage.latitude + '&longitude=' + localStorage.longitude + '&&radius=' + radius, 'GET', null, '獲得附近店家', function (v) {
+                    if (v.success == true) {
+                        vue.StoreList = v.data
+                        // console.log(vue.StoreList);
+                        if (_func) _func()
+                    }
+                })
+            },
+
+            //可用標籤
+            getTheTags(_func) {
+                var vue = this
+                apiWeb('/api/stores/tags', 'GET', null, '獲得所有標籤', function (v) {
+                    if (v.success == true) {
+                        vue.BusinessDistrictList = v.data
+                        console.log(vue.BusinessDistrictList);
+
+                        // vue.PromotionsList = v.data
+                        // vue.FoodTypeList = v.data
+                        if (_func) _func()
+                    }
+                })
             },
 
             // 格式化距離顯示
@@ -524,6 +594,11 @@ scratch. This page gets rid of all links and provides the needed markup only.
                     return `${distance.toFixed(1)} 公里`;
                 }
             },
+
+            //搜尋
+            search() {
+                window.location.href = "classimformation2.html?kw=" + this.searchKeyword + '&ctype=關鍵字搜尋&cname=' + this.searchKeyword
+            }
         },
         computed: {
         }

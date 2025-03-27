@@ -1,0 +1,40 @@
+我這邊順便統一一下
+      [basicwaitingTime] >>區間用(基礎等待時間
+      ,[minimumOrderAmount] >>低消功能用(最低下單金額)
+      ,[minimumOrderText] >>低消功能用(最低下單 提醒文字)
+      ,[minimumOrderEnabled]>>低消功能用(啟用)
+      ,[max_reservation_days] >>最多可預定的時間(例如未來7天)
+
+  FROM [SHARING].[dbo].[StoreInformation]
+
+      ,[MinOrderAmount] >>區間用(最低區間數量
+      ,[OrderInterval]  >>區間用(間格時間
+      ,[slotLimit] >>區間用(最高上限金額
+  FROM [SHARING].[dbo].[Store]
+需要
+最低金額/最低單數 , 區間時間, 最高金額 ,基礎等待時間,鎖定間格(爆單用)
+正常邏輯
+現在時間+基礎等待時間 取 間格時間 =最近可取時間
+EX:
+當前02:01 + 基礎15m = 02:16 |||| 區間設定15分 所以 結果 = 02:30 最快可取時間
+ 
+
+缺少 
+amountLimit最低金額 >> 區間用(區間訂單下線
+
+
+缺少功能
+GET獲取最快可取時間
+POST鎖定間格(區間間格*鎖定格數) / 取消
+GET營業時間內 可預定時間表
+GET營業時間內 不可預定時間表
+
+
+邏輯
+目前 sync 店家open 特殊休店=不可下訂 / 僅營業時間區塊可下訂
+
+特殊狀況
+若 當日內 提早休店 當日內未來時間 訂單狀態自動為取消?
+假設 設定提早休店 5點PM ,原本6點有訂單 自動設定為取消?
+
+

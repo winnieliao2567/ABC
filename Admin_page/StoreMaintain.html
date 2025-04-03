@@ -197,7 +197,7 @@
             <div class="content">
                 <div class="container-fluid">
                     <div class="row">
-                        <div class="col-6 col-md-6" v-for="(item, index) in StoreEditItem" :key="item.id">
+                        <div class="col-12 col-md-6" v-for="(item, index) in StoreEditItem" :key="item.id">
                             <!-- <div class="accordion" id="accordion"> -->
                             <div class="card">
                                 <!-- <a class="d-block w-100 collapsed" data-toggle="collapse" :href="'#'+item.id"
@@ -251,7 +251,7 @@
                                             <div class="input-group mb-1">
                                                 <label
                                                     class="embed-responsive embed-responsive-1by1 d-flex justify-content-center"
-                                                    style="overflow: hidden;width: 300px;">
+                                                    style="overflow: hidden;max-width: 300px;">
 
                                                     <img :src="storeInfoEdit.store.image || 'img/unknowIMG.png'"
                                                         class="border h-100">

@@ -197,267 +197,288 @@
             <div class="content">
                 <div class="container-fluid">
                     <div class="row">
-                        <div class="col-12 col-md-6" v-for="(item, index) in StoreEditItem" :key="item.id">
-                            <!-- <div class="accordion" id="accordion"> -->
-                            <div class="card">
-                                <!-- <a class="d-block w-100 collapsed" data-toggle="collapse" :href="'#'+item.id"
-                                        aria-expanded="false"> -->
-                                <div class="card-header">
-                                    <h6 class="w-100 m-0">
-                                        <span v-html="item.name"></span>
-                                        <span class="" v-show="item.editDone">*</span>
-                                        <span class="text-danger ml-2" v-show="item.editError">
-                                            <i class="fas fa-exclamation-circle"></i></span>
-                                    </h6>
-                                    <!-- <p class="text-muted m-0 ml-4">
+                        <div class="col-12 col-md-8">
+                            <div class="accordion" id="accordion">
+                                <div class="card m-0" v-for="(item, index) in StoreEditItem" :key="item.id">
+                                    <a class="d-block w-100 collapsed" data-toggle="collapse" :href="'#'+item.id"
+                                        aria-expanded="false">
+                                        <div class="card-header">
+                                            <h6 class="w-100 m-0">
+                                                <span v-html="item.name"></span>
+                                                <span class="" v-show="item.editDone">*</span>
+                                                <span class="text-danger ml-2" v-show="item.editError">
+                                                    <i class="fas fa-exclamation-circle"></i></span>
+                                            </h6>
+                                            <!-- <p class="text-muted m-0 ml-4">
                                                 {{item.discriptions}}
                                             </p> -->
-                                </div>
-                                <!-- </a> -->
-                                <!-- <div :id="item.id" class="collapse" data-parent="#accordion" style=""> -->
-                                <div class="card-body py-2 px-3">
-                                    <div class="mb-3" v-for="(settingItem, index) in item.settingItem" :key="index">
-                                        <p class="m-0">
-                                            {{ settingItem.name }}
-                                            <span class="text-muted text-sm"
-                                                v-if="settingItem.groupitem.type === 'BannerImage'||settingItem.groupitem.type === 'LogoImage'">(點擊圖片更換)</span>
-                                        </p>
-                                        <!-- 店家地址 -->
-                                        <div class="col-12 my-1" v-if="settingItem.groupitem.type === 'address'">
-                                            <div class="input-group mb-1">
-                                                <select class="form-control" :disabled="!settingItem.groupitem.enabled"
-                                                    v-model="storeInfoEdit.storeInfo.city">
-                                                    <option v-for="(city, index) in allCity" :key="index"
-                                                        :value="city.name">
-                                                        {{ city.name }}
-                                                    </option>
-                                                </select>
-                                                <select class="form-control" :disabled="!settingItem.groupitem.enabled"
-                                                    v-model="storeInfoEdit.storeInfo.districts">
-                                                    <option v-for="(district, index) in allDistricts" :key="index"
-                                                        :value="district.name">
-                                                        {{ district.name }}
-                                                    </option>
-                                                </select>
-                                            </div>
-                                            <input class="form-control" autocomplete="off"
-                                                :disabled="!settingItem.groupitem.enabled"
-                                                v-model="storeInfoEdit.storeInfo.shortAddress"
-                                                :placeholder="settingItem.groupitem.placeholder">
                                         </div>
-
-                                        <!-- logo -->
-                                        <div class="col-12 my-1" v-if="settingItem.groupitem.type === 'LogoImage'">
-                                            <div class="input-group mb-1">
-                                                <label
-                                                    class="embed-responsive embed-responsive-1by1 d-flex justify-content-center"
-                                                    style="overflow: hidden;max-width: 300px;">
-
-                                                    <img :src="storeInfoEdit.store.image || 'img/unknowIMG.png'"
-                                                        class="border h-100">
-
-                                                    <input type="file" class="custom-file-input" id="LogoImage"
-                                                        @change="handleFileUpload_logo" accept=".jpg,.jpeg,.png">
-
-                                                </label>
-                                            </div>
-                                        </div>
-
-                                        <!-- Banner -->
-                                        <div class="col-12 my-1" v-if="settingItem.groupitem.type === 'BannerImage'">
-                                            <div class="input-group mb-1">
-                                                <label
-                                                    class="embed-responsive embed-responsive-16by9 d-flex justify-content-center"
-                                                    style="overflow: hidden">
-
-                                                    <img :src="storeInfoEdit.store.bannerimage || 'img/unknowIMG.png'"
-                                                        class="border w-100">
-
-                                                    <input type="file" class="custom-file-input" id="BannerImage"
-                                                        @change="handleFileUpload_banner" accept=".jpg,.jpeg,.png">
-
-                                                </label>
-                                            </div>
-                                        </div>
-
-                                        <!-- 店家信箱 -->
-                                        <div class="col-12 my-1" v-if="settingItem.groupitem.type === 'email'">
-                                            <input class="form-control" type="email" autocomplete="off"
-                                                :disabled="!settingItem.groupitem.enabled"
-                                                v-model="storeInfoEdit.storeInfo.email"
-                                                :class="{'is-invalid': !validateEmail(storeInfoEdit.storeInfo.email)}"
-                                                :placeholder="settingItem.groupitem.placeholder">
-                                            <div class="text-memo text-danger"
-                                                v-if="!validateEmail(storeInfoEdit.storeInfo.email)">
-                                                *請輸入正確的Email格式
-                                            </div>
-                                        </div>
-
-                                        <!-- 店家電話 -->
-                                        <div class="col-12 my-1" v-if="settingItem.groupitem.type === 'tel'">
-                                            <input class="form-control" type="tel" autocomplete="off"
-                                                :disabled="!settingItem.groupitem.enabled"
-                                                v-model="storeInfoEdit.storeInfo.tel"
-                                                :class="{'is-invalid': !validateTalAndPhone(this.storeInfoEdit.storeInfo.tel)}"
-                                                :placeholder="settingItem.groupitem.placeholder">
-                                            <div class="text-memo text-danger"
-                                                v-if="!validateTalAndPhone(storeInfoEdit.storeInfo.tel)">
-                                                *請輸入正確的市話或手機格式
-                                            </div>
-                                        </div>
-
-                                        <!-- 店家簡介 -->
-                                        <div class="col-12 my-1" v-if="settingItem.groupitem.type === 'text editor'">
-                                            <div class="form-control" id="storeIntroduction"
-                                                :disabled="!settingItem.groupitem.enabled"></div>
-                                        </div>
-
-                                        <!-- 店家名稱 -->
-                                        <div class="col-12 my-1" v-if="settingItem.groupitem.type === 'storeName'">
-                                            <input class="form-control" type="tel" autocomplete="off"
-                                                :disabled="!settingItem.groupitem.enabled"
-                                                v-model="storeInfoEdit.store.storeName"
-                                                :placeholder="settingItem.groupitem.placeholder">
-                                        </div>
-
-                                        <!-- 統一編號 -->
-                                        <div class="col-12 my-1" v-if="settingItem.groupitem.type === 'businessNum'">
-                                            <input class="form-control" type="tel" autocomplete="off"
-                                                :disabled="!settingItem.groupitem.enabled"
-                                                v-model="storeInfoEdit.storeInfo.businessNum"
-                                                :class="{'is-invalid': storeInfoEdit.storeInfo.businessNum.length!=8}"
-                                                :placeholder="settingItem.groupitem.placeholder">
-                                            <div class="text-memo text-danger"
-                                                v-if="storeInfoEdit.storeInfo.businessNum.length!=8">
-                                                *統一編號格式須為8碼數字
-                                            </div>
-                                        </div>
-
-                                        <!-- 標籤 -->
-                                        <div class="col-12 my-1" v-if="settingItem.groupitem.type === 'KeyWord Tag'">
-                                            <input class="form-control" id="input-tags" autocomplete="off"
-                                                :placeholder="settingItem.groupitem.placeholder"
-                                                v-model="storeInfoEdit.storeInfo.tags"
-                                                :disabled="!settingItem.groupitem.enabled">
-                                        </div>
-
-                                        <!-- 營業時間 -->
-                                        <div class="col-12 my-1" v-if="settingItem.groupitem.type === 'BusinessTime'">
-                                            <div class="row m-0 py-3 border-bottom"
-                                                v-for="(day,index) in storeInfoEdit.openTime.businessDays">
-                                                <div class="col m-0">
-                                                    {{day.title}}
+                                    </a>
+                                    <div :id="item.id" class="collapse" data-parent="#accordion" style="">
+                                        <div class="card-body py-2 px-3">
+                                            <div class="mb-3" v-for="(settingItem, index) in item.settingItem"
+                                                :key="index">
+                                                <p class="m-0">
+                                                    {{ settingItem.name }}
+                                                    <span class="text-muted text-sm"
+                                                        v-if="settingItem.groupitem.type === 'BannerImage'||settingItem.groupitem.type === 'LogoImage'">(點擊圖片更換)</span>
+                                                </p>
+                                                <!-- 店家地址 -->
+                                                <div class="col-12 my-1"
+                                                    v-if="settingItem.groupitem.type === 'address'">
+                                                    <div class="input-group mb-1">
+                                                        <select class="form-control"
+                                                            :disabled="!settingItem.groupitem.enabled"
+                                                            v-model="storeInfoEdit.storeInfo.city">
+                                                            <option v-for="(city, index) in allCity" :key="index"
+                                                                :value="city.name">
+                                                                {{ city.name }}
+                                                            </option>
+                                                        </select>
+                                                        <select class="form-control"
+                                                            :disabled="!settingItem.groupitem.enabled"
+                                                            v-model="storeInfoEdit.storeInfo.districts">
+                                                            <option v-for="(district, index) in allDistricts"
+                                                                :key="index" :value="district.name">
+                                                                {{ district.name }}
+                                                            </option>
+                                                        </select>
+                                                    </div>
+                                                    <input class="form-control" autocomplete="off"
+                                                        :disabled="!settingItem.groupitem.enabled"
+                                                        v-model="storeInfoEdit.storeInfo.shortAddress"
+                                                        :placeholder="settingItem.groupitem.placeholder">
                                                 </div>
-                                                <div class="custom-control custom-switch">
-                                                    <input type="checkbox" class="custom-control-input"
-                                                        :id="'operation'+day.id" v-model="day.operation"
-                                                        @change="toggleOperation(day.id, day.operation)">
-                                                    <label class="custom-control-label text-success m-0 ml-2"
-                                                        v-if="day.operation" :for="'operation'+day.id">
-                                                        營業
-                                                    </label>
-                                                    <label class="custom-control-label text-danger m-0 ml-2"
-                                                        v-if="!day.operation" :for="'operation'+day.id">
-                                                        休息
-                                                    </label>
+
+                                                <!-- logo -->
+                                                <div class="col-12 my-1"
+                                                    v-if="settingItem.groupitem.type === 'LogoImage'">
+                                                    <div class="input-group mb-1">
+                                                        <label
+                                                            class="embed-responsive embed-responsive-1by1 d-flex justify-content-center"
+                                                            style="overflow: hidden;max-width: 300px;">
+
+                                                            <img :src="storeInfoEdit.store.image || 'img/unknowIMG.png'"
+                                                                class="border h-100">
+
+                                                            <input type="file" class="custom-file-input" id="LogoImage"
+                                                                @change="handleFileUpload_logo"
+                                                                accept=".jpg,.jpeg,.png">
+
+                                                        </label>
+                                                    </div>
                                                 </div>
-                                                <div v-if="day.operation" class="col-12 m-0">
-                                                    <div class="row">
-                                                        <div class="col-12 mt-3">
-                                                            <div class="input-group mb-2"
-                                                                v-for="(time,index) in day.time">
-                                                                <input class="form-control" v-model="time.open"
-                                                                    type="time" :data-for="'open-'+day.id">
-                                                                <span class="mx-2">~</span>
-                                                                <input class="form-control" v-model="time.close"
-                                                                    type="time" :data-for="'close-'+day.id">
-                                                                <div class="input-group-append">
-                                                                    <button
-                                                                        v-on:click="deletOperationTime(day.id,index)"
-                                                                        class="btn btn-outline-secondary">
-                                                                        <i class="fas fa-trash-alt"></i>
+
+                                                <!-- Banner -->
+                                                <div class="col-12 my-1"
+                                                    v-if="settingItem.groupitem.type === 'BannerImage'">
+                                                    <div class="input-group mb-1">
+                                                        <label
+                                                            class="embed-responsive embed-responsive-16by9 d-flex justify-content-center"
+                                                            style="overflow: hidden">
+
+                                                            <img :src="storeInfoEdit.store.bannerimage || 'img/unknowIMG.png'"
+                                                                class="border w-100">
+
+                                                            <input type="file" class="custom-file-input"
+                                                                id="BannerImage" @change="handleFileUpload_banner"
+                                                                accept=".jpg,.jpeg,.png">
+
+                                                        </label>
+                                                    </div>
+                                                </div>
+
+                                                <!-- 店家信箱 -->
+                                                <div class="col-12 my-1" v-if="settingItem.groupitem.type === 'email'">
+                                                    <input class="form-control" type="email" autocomplete="off"
+                                                        :disabled="!settingItem.groupitem.enabled"
+                                                        v-model="storeInfoEdit.storeInfo.email"
+                                                        :class="{'is-invalid': !validateEmail(storeInfoEdit.storeInfo.email)}"
+                                                        :placeholder="settingItem.groupitem.placeholder">
+                                                    <div class="text-memo text-danger"
+                                                        v-if="!validateEmail(storeInfoEdit.storeInfo.email)">
+                                                        *請輸入正確的Email格式
+                                                    </div>
+                                                </div>
+
+                                                <!-- 店家電話 -->
+                                                <div class="col-12 my-1" v-if="settingItem.groupitem.type === 'tel'">
+                                                    <input class="form-control" type="tel" autocomplete="off"
+                                                        :disabled="!settingItem.groupitem.enabled"
+                                                        v-model="storeInfoEdit.storeInfo.tel"
+                                                        :class="{'is-invalid': !validateTalAndPhone(this.storeInfoEdit.storeInfo.tel)}"
+                                                        :placeholder="settingItem.groupitem.placeholder">
+                                                    <div class="text-memo text-danger"
+                                                        v-if="!validateTalAndPhone(storeInfoEdit.storeInfo.tel)">
+                                                        *請輸入正確的市話或手機格式
+                                                    </div>
+                                                </div>
+
+                                                <!-- 店家簡介 -->
+                                                <div class="col-12 my-1"
+                                                    v-if="settingItem.groupitem.type === 'text editor'">
+                                                    <div class="form-control" id="storeIntroduction"
+                                                        :disabled="!settingItem.groupitem.enabled"></div>
+                                                </div>
+
+                                                <!-- 店家名稱 -->
+                                                <div class="col-12 my-1"
+                                                    v-if="settingItem.groupitem.type === 'storeName'">
+                                                    <input class="form-control" type="tel" autocomplete="off"
+                                                        :disabled="!settingItem.groupitem.enabled"
+                                                        v-model="storeInfoEdit.store.storeName"
+                                                        :placeholder="settingItem.groupitem.placeholder">
+                                                </div>
+
+                                                <!-- 統一編號 -->
+                                                <div class="col-12 my-1"
+                                                    v-if="settingItem.groupitem.type === 'businessNum'">
+                                                    <input class="form-control" type="tel" autocomplete="off"
+                                                        :disabled="!settingItem.groupitem.enabled"
+                                                        v-model="storeInfoEdit.storeInfo.businessNum"
+                                                        :class="{'is-invalid': storeInfoEdit.storeInfo.businessNum.length!=8}"
+                                                        :placeholder="settingItem.groupitem.placeholder">
+                                                    <div class="text-memo text-danger"
+                                                        v-if="storeInfoEdit.storeInfo.businessNum.length!=8">
+                                                        *統一編號格式須為8碼數字
+                                                    </div>
+                                                </div>
+
+                                                <!-- 標籤 -->
+                                                <div class="col-12 my-1"
+                                                    v-if="settingItem.groupitem.type === 'KeyWord Tag'">
+                                                    <input class="form-control" id="input-tags" autocomplete="off"
+                                                        :placeholder="settingItem.groupitem.placeholder"
+                                                        v-model="storeInfoEdit.storeInfo.tags"
+                                                        :disabled="!settingItem.groupitem.enabled">
+                                                </div>
+
+                                                <!-- 營業時間 -->
+                                                <div class="col-12 my-1"
+                                                    v-if="settingItem.groupitem.type === 'BusinessTime'">
+                                                    <div class="row m-0 py-3 border-bottom"
+                                                        v-for="(day,index) in storeInfoEdit.openTime.businessDays">
+                                                        <div class="col m-0">
+                                                            {{day.title}}
+                                                        </div>
+                                                        <div class="custom-control custom-switch">
+                                                            <input type="checkbox" class="custom-control-input"
+                                                                :id="'operation'+day.id" v-model="day.operation"
+                                                                @change="toggleOperation(day.id, day.operation)">
+                                                            <label class="custom-control-label text-success m-0 ml-2"
+                                                                v-if="day.operation" :for="'operation'+day.id">
+                                                                營業
+                                                            </label>
+                                                            <label class="custom-control-label text-danger m-0 ml-2"
+                                                                v-if="!day.operation" :for="'operation'+day.id">
+                                                                休息
+                                                            </label>
+                                                        </div>
+                                                        <div v-if="day.operation" class="col-12 m-0">
+                                                            <div class="row">
+                                                                <div class="col-12 mt-3">
+                                                                    <div class="input-group mb-2"
+                                                                        v-for="(time,index) in day.time">
+                                                                        <input class="form-control" v-model="time.open"
+                                                                            type="time" :data-for="'open-'+day.id">
+                                                                        <span class="mx-2">~</span>
+                                                                        <input class="form-control" v-model="time.close"
+                                                                            type="time" :data-for="'close-'+day.id">
+                                                                        <div class="input-group-append">
+                                                                            <button
+                                                                                v-on:click="deletOperationTime(day.id,index)"
+                                                                                class="btn btn-outline-secondary">
+                                                                                <i class="fas fa-trash-alt"></i>
+                                                                            </button>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-12">
+                                                                    <button class="btn-link btn btn-sm"
+                                                                        v-show="3>day.time.length" :data-for="index"
+                                                                        v-on:click="addOperationTime(index)">
+                                                                        + 新增營業區間
                                                                     </button>
                                                                 </div>
                                                             </div>
-                                                        </div>
-                                                        <div class="col-12">
-                                                            <button class="btn-link btn btn-sm"
-                                                                v-show="3>day.time.length" :data-for="index"
-                                                                v-on:click="addOperationTime(index)">
-                                                                + 新增營業區間
-                                                            </button>
-                                                        </div>
-                                                    </div>
 
+                                                        </div>
+
+                                                    </div>
                                                 </div>
 
-                                            </div>
-                                        </div>
+                                                <!-- 間隔等待時間 -->
+                                                <div class="col-12 my-1"
+                                                    v-if="settingItem.groupitem.type === 'IntervalTime'">
+                                                    <input class="form-control w-25 d-inline-block" autocomplete="off"
+                                                        :class="{'is-invalid':!validateIntervalTime(storeInfoEdit.store.orderInterval, 5)}"
+                                                        :disabled="!settingItem.groupitem.enabled" type="number"
+                                                        v-model="storeInfoEdit.store.orderInterval" min="0" max="60"
+                                                        step="5">
+                                                    <p class="pl-3 w-25 d-inline-block m-0 mr-5">分鐘</p>
+                                                    <div class="text-memo text-danger"
+                                                        v-if="!validateIntervalTime(storeInfoEdit.store.orderInterval, 5)">
+                                                        *間隔時間須為5的倍數
+                                                    </div>
+                                                </div>
 
-                                        <!-- 間隔等待時間 -->
-                                        <div class="col-12 my-1" v-if="settingItem.groupitem.type === 'IntervalTime'">
-                                            <input class="form-control w-25 d-inline-block" autocomplete="off"
-                                                :class="{'is-invalid':!validateIntervalTime(storeInfoEdit.store.orderInterval, 5)}"
-                                                :disabled="!settingItem.groupitem.enabled" type="number"
-                                                v-model="storeInfoEdit.store.orderInterval" min="0" max="60" step="5">
-                                            <p class="pl-3 w-25 d-inline-block m-0 mr-5">分鐘</p>
-                                            <div class="text-memo text-danger"
-                                                v-if="!validateIntervalTime(storeInfoEdit.store.orderInterval, 5)">
-                                                *間隔時間須為5的倍數
-                                            </div>
-                                        </div>
+                                                <!-- 基礎等待時間 -->
+                                                <div class="col-12 my-1"
+                                                    v-if="settingItem.groupitem.type === 'BasicTime'">
+                                                    <select class="form-control w-25 d-inline-block" autocomplete="off"
+                                                        :disabled="!settingItem.groupitem.enabled"
+                                                        v-model="storeInfoEdit.storeInfo.basicwaitingTime">
+                                                        <option v-for="num in generateNumbers(0, 60, 5)" :key="num"
+                                                            :value="num">
+                                                            {{ num }}
+                                                        </option>
+                                                    </select>
+                                                    <p class="pl-3 w-25 d-inline-block m-0 mr-5">分鐘</p>
+                                                </div>
 
-                                        <!-- 基礎等待時間 -->
-                                        <div class="col-12 my-1" v-if="settingItem.groupitem.type === 'BasicTime'">
-                                            <select class="form-control w-25 d-inline-block" autocomplete="off"
-                                                :disabled="!settingItem.groupitem.enabled"
-                                                v-model="storeInfoEdit.storeInfo.basicwaitingTime">
-                                                <option v-for="num in generateNumbers(0, 60, 5)" :key="num"
-                                                    :value="num">
-                                                    {{ num }}
-                                                </option>
-                                            </select>
-                                            <p class="pl-3 w-25 d-inline-block m-0 mr-5">分鐘</p>
-                                        </div>
+                                                <!-- 最低金額 -->
+                                                <div class="col-12 my-1"
+                                                    v-if="settingItem.groupitem.type === 'minPrice'">
+                                                    <p class="text-muted text-sm">若消費者下單總金額低於設定值，該訂單不成立並跳出警告訊息</p>
+                                                    <input class="form-control w-25" type="number" min="0"
+                                                        v-model="storeInfoEdit.storeInfo.minimumOrderAmount"
+                                                        ref="inputs">
+                                                </div>
 
-                                        <!-- 最低金額 -->
-                                        <div class="col-12 my-1" v-if="settingItem.groupitem.type === 'minPrice'">
-                                            <p class="text-muted text-sm">若消費者下單總金額低於設定值，該訂單不成立並跳出警告訊息</p>
-                                            <input class="form-control w-25" type="number" min="0"
-                                                v-model="storeInfoEdit.storeInfo.minimumOrderAmount" ref="inputs">
-                                        </div>
+                                                <!-- 最低單數 -->
+                                                <div class="col-12 my-1"
+                                                    v-if="settingItem.groupitem.type === 'MinOrderCount'">
+                                                    <input class="form-control w-25" type="number" min="0"
+                                                        v-model="storeInfoEdit.store.amountLimit">
+                                                </div>
 
-                                        <!-- 最低單數 -->
-                                        <div class="col-12 my-1" v-if="settingItem.groupitem.type === 'MinOrderCount'">
-                                            <input class="form-control w-25" type="number" min="0"
-                                                v-model="storeInfoEdit.store.amountLimit">
-                                        </div>
+                                                <!-- 最高金額 -->
+                                                <div class="col-12 my-1"
+                                                    v-if="settingItem.groupitem.type === 'maxPrice'">
+                                                    <input class="form-control w-25" type="number" min="0"
+                                                        v-model="storeInfoEdit.store.slotLimit" ref="inputs">
+                                                </div>
 
-                                        <!-- 最高金額 -->
-                                        <div class="col-12 my-1" v-if="settingItem.groupitem.type === 'maxPrice'">
-                                            <input class="form-control w-25" type="number" min="0"
-                                                v-model="storeInfoEdit.store.slotLimit" ref="inputs">
-                                        </div>
-
-                                        <!-- 低消提示 -->
-                                        <div class="col-12 my-1" v-if="settingItem.groupitem.type === 'Reminder'">
-                                            <div class="custom-control custom-switch">
-                                                <input type="checkbox" class="custom-control-input"
-                                                    id="minimumOrderReminder"
-                                                    v-model="storeInfoEdit.storeInfo.minimumOrderEnabled">
-                                                <label class="custom-control-label text-success m-0 ml-2"
-                                                    for="minimumOrderReminder"
-                                                    v-if="storeInfoEdit.storeInfo.minimumOrderEnabled">
-                                                    開啟
-                                                </label>
-                                                <label class="custom-control-label text-danger m-0 ml-2"
-                                                    for="minimumOrderReminder"
-                                                    v-if="!storeInfoEdit.storeInfo.minimumOrderEnabled">
-                                                    關閉
-                                                </label>
-                                            </div>
-                                            <!-- 低消金額 -->
-                                            <!-- <div class="col-12 py-3"
+                                                <!-- 低消提示 -->
+                                                <div class="col-12 my-1"
+                                                    v-if="settingItem.groupitem.type === 'Reminder'">
+                                                    <div class="custom-control custom-switch">
+                                                        <input type="checkbox" class="custom-control-input"
+                                                            id="minimumOrderReminder"
+                                                            v-model="storeInfoEdit.storeInfo.minimumOrderEnabled">
+                                                        <label class="custom-control-label text-success m-0 ml-2"
+                                                            for="minimumOrderReminder"
+                                                            v-if="storeInfoEdit.storeInfo.minimumOrderEnabled">
+                                                            開啟
+                                                        </label>
+                                                        <label class="custom-control-label text-danger m-0 ml-2"
+                                                            for="minimumOrderReminder"
+                                                            v-if="!storeInfoEdit.storeInfo.minimumOrderEnabled">
+                                                            關閉
+                                                        </label>
+                                                    </div>
+                                                    <!-- 低消金額 -->
+                                                    <!-- <div class="col-12 py-3"
                                                             v-if="storeInfoEdit.minimumOrderEnabled==true">
                                                             <div class="p-3">
                                                                 <h6>低消金額</h6>
@@ -471,55 +492,58 @@
                                                                     v-model="storeInfoEdit.storeInfo.minimumOrderReminder.minimumOrder">
                                                             </div> -->
 
-                                            <!-- 提示內容 -->
-                                            <div class="p-3">
-                                                <h6>警告提示</h6>
-                                                <textarea class="form-control" placeholder='提示內容文字，EX:未達最低消費金額'
-                                                    v-model="storeInfoEdit.storeInfo.minimumOrderText"></textarea>
-                                            </div>
-                                        </div>
-
-
-                                        <!-- 店休 -->
-                                        <div class="col-12 my-1" v-if="settingItem.groupitem.type === 'StoreClosed'">
-                                            <div class="row mt-3">
-                                                <div class="col-12"
-                                                    v-for="(day,index) in storeInfoEdit.openTime.specialCloseDays">
-                                                    <div class="input-group mb-2" v-if="day.date>today">
-                                                        <!-- <div class="input-group mb-2"> -->
-                                                        <input type="text" class="form-control" v-model="day.title"
-                                                            :placeholder="settingItem.groupitem.placeholder">
-                                                        <input type="date" class="form-control"
-                                                            :class="{'is-invalid': today > day.date}" v-model="day.date"
-                                                            :min="today">
-                                                        <div class="input-group-append">
-                                                            <button class="btn btn-outline-secondary"
-                                                                @click="delStoreClosed(index)" type="button">
-                                                                <i class="fas fa-trash-alt" aria-hidden="true"></i>
-                                                            </button>
-                                                        </div>
+                                                    <!-- 提示內容 -->
+                                                    <div class="p-3">
+                                                        <h6>警告提示</h6>
+                                                        <textarea class="form-control" placeholder='提示內容文字，EX:未達最低消費金額'
+                                                            v-model="storeInfoEdit.storeInfo.minimumOrderText"></textarea>
                                                     </div>
                                                 </div>
-                                                <button class="btn-link btn btn-sm" @click="addStoreClosed">
-                                                    + 特殊店休日期
-                                                </button>
-                                            </div>
-                                        </div>
 
-                                        <!-- 最多可預訂天數 -->
-                                        <div class="col-12 my-1"
-                                            v-if="settingItem.groupitem.type === 'maxReservationDays'">
-                                            <input class="form-control w-25 d-inline-block" type="number"
-                                                autocomplete="off" :disabled="!settingItem.groupitem.enabled"
-                                                v-model="storeInfoEdit.storeInfo.maxReservationDays" min="0"
-                                                :placeholder="settingItem.groupitem.placeholder">
-                                            <p class="pl-3 w-25 d-inline-block m-0 mr-5">天</p>
+
+                                                <!-- 店休 -->
+                                                <div class="col-12 my-1"
+                                                    v-if="settingItem.groupitem.type === 'StoreClosed'">
+                                                    <div class="row mt-3">
+                                                        <div class="col-12"
+                                                            v-for="(day,index) in storeInfoEdit.openTime.specialCloseDays">
+                                                            <div class="input-group mb-2" v-if="day.date>today">
+                                                                <!-- <div class="input-group mb-2"> -->
+                                                                <input type="text" class="form-control"
+                                                                    v-model="day.title"
+                                                                    :placeholder="settingItem.groupitem.placeholder">
+                                                                <input type="date" class="form-control"
+                                                                    :class="{'is-invalid': today > day.date}"
+                                                                    v-model="day.date" :min="today">
+                                                                <div class="input-group-append">
+                                                                    <button class="btn btn-outline-secondary"
+                                                                        @click="delStoreClosed(index)" type="button">
+                                                                        <i class="fas fa-trash-alt"
+                                                                            aria-hidden="true"></i>
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <button class="btn-link btn btn-sm" @click="addStoreClosed">
+                                                            + 特殊店休日期
+                                                        </button>
+                                                    </div>
+                                                </div>
+
+                                                <!-- 最多可預訂天數 -->
+                                                <div class="col-12 my-1"
+                                                    v-if="settingItem.groupitem.type === 'maxReservationDays'">
+                                                    <input class="form-control w-25 d-inline-block" type="number"
+                                                        autocomplete="off" :disabled="!settingItem.groupitem.enabled"
+                                                        v-model="storeInfoEdit.storeInfo.maxReservationDays" min="0"
+                                                        :placeholder="settingItem.groupitem.placeholder">
+                                                    <p class="pl-3 w-25 d-inline-block m-0 mr-5">天</p>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                                <!-- </div> -->
                             </div>
-                            <!-- </div> -->
                         </div>
                         <div class="p-3 text-end col-12 border-top mt-3" id="saveBar">
                             <button class="btn btn-secondary mr-2" v-on:click="reset">
@@ -849,7 +873,7 @@
                 ],
 
                 LogoImageSize: { w: 300, h: 300 },
-                BannerImageSize: { w: 1280, h: 720 },
+                BannerImageSize: { w: 1920, h: 1080 },
                 imageAction: '',
             }
         },
@@ -869,7 +893,7 @@
                 items: this.storeInfoEdit.storeInfo.tags,
             });
 
-            console.log(this.storeInfoEdit);
+            // console.log(this.storeInfoEdit);
 
 
 
@@ -980,7 +1004,9 @@
             //刪除營業時間
             deletOperationTime(id, index) {
                 // 找到 id 為 "Mon" 的項目
-                const targetDay = this.storeInfoEdit.businessDays.find(day => day.id === id);
+                console.log(this.storeInfoEdit.openTime);
+
+                const targetDay = this.storeInfoEdit.openTime.businessDays.find(day => day.id === id);
                 targetDay.time.splice(index, 1);
 
                 if (targetDay.time.length == 0) {
@@ -1059,9 +1085,6 @@
 
                 var store = this.storeInfoEdit.store
                 var storeInfo = this.storeInfoEdit.storeInfo
-                console.log(' store.bannerimage----------', store.bannerimage);
-                console.log(' store.image----------', store.image);
-
 
                 var EditData = {
                     // store:{
@@ -1080,7 +1103,7 @@
                     //storeInfo:{
                     "City": storeInfo.city,
                     "Districts": storeInfo.districts,
-                    "ShortAddress": storeInfo.ShortAddress,
+                    "ShortAddress": storeInfo.shortAddress,
                     "Email": storeInfo.email,
                     "Tel": storeInfo.tel,
                     "BusinessNum": storeInfo.businessNum,
@@ -1094,7 +1117,9 @@
                     "MaxReservationDays": storeInfo.maxReservationDays
                     // }
                 }
-                console.log('this.storeInfoEdit.storeInfo.image-----' + EditData.image);
+
+                // console.log(EditData);
+
 
 
                 var aopenTime = {

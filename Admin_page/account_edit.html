@@ -64,8 +64,8 @@
                         <a class="dropdown-item" v-for="(store,index) in allStore" :id="store.storeId"
                             onclick="itemClick($(this))">
                             <div class="store">
-                                <strong>{{ store.expr1 }}</strong>
-                                <p class="text-muted">{{ store.expr4 }}{{ store.expr5 }}{{ store.expr6 }}</p>
+                                <strong>{{ store.storeName }}</strong>
+                                <p class="text-muted">{{ store.city }}{{ store.districts }}{{ store.shortAddress }}</p>
                             </div>
                         </a>
                     </div>

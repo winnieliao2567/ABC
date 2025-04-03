@@ -372,8 +372,8 @@
                         <a class="dropdown-item" v-for="(store,index) in allStore" :id="store.storeId"
                             onclick="itemClick($(this))">
                             <div class="store">
-                                <strong>{{ store.expr1 }}</strong>
-                                <p class="text-muted">{{ store.expr4 }}{{ store.expr5 }}{{ store.expr6 }}</p>
+                                <strong>{{ store.storeName }}</strong>
+                                <p class="text-muted">{{ store.city }}{{ store.districts }}{{ store.shortAddress }}</p>
                             </div>
                         </a>
                     </div>
@@ -717,7 +717,7 @@
                 imageUrl: "",
                 croppedImage: "",
 
-                imageSize: { w: 640, h: 640 }
+                imageSize: { w: 300, h: 300 }
             }
         },
         computed: {
@@ -847,7 +847,7 @@
                     "storeId": storeId,
                     "categoryName": s.categoryName
                 }
-                apiWeb('/api/Meal/category/' + storeId + '/' + s.categoryId, 'PUT', data, '編輯分類', function (v) {
+                apiWeb('/api/Meal/category/' + storeId + '/' + s.categoryId, 'PUT', JSON.stringify(data), '編輯分類', function (v) {
                     if (v.success == true) {
                         location.reload()
                     }

@@ -79,14 +79,34 @@
                                         <label for="MultipleSelection">複選</label>
                                     </div>
                                 </div>
+                                <div class="form-group d-flex" v-if="customizedEdit_Data.Data.type==1">
+                                    <label>最少必須選</label>
+                                    <input type="number" class="form-control form-control-sm w-25" val="1" min="0"
+                                        :max="customizedEdit_Data.Data.options.length"
+                                        v-model="customizedEdit_Data.Data.minChoices">
+                                    <label>個選項</label>
+                                    <label class="text-primary text-sm"
+                                        v-if="customizedEdit_Data.Data.minChoices>=customizedEdit_Data.Data.options.length">(已達到最高數量)</label>
+                                </div>
+                                <div class="form-group d-flex" v-if="customizedEdit_Data.Data.type==1">
+                                    <label>最多必須選</label>
+                                    <input type="number" class="form-control form-control-sm w-25"
+                                        :val="customizedEdit_Data.Data.minChoices"
+                                        :min="customizedEdit_Data.Data.minChoices"
+                                        :max="customizedEdit_Data.Data.options.length"
+                                        v-model="customizedEdit_Data.Data.maxChoices">
+                                    <label>個選項</label>
+                                    <label class="text-primary text-sm"
+                                        v-if="customizedEdit_Data.Data.maxChoices>=customizedEdit_Data.Data.options.length">(已達到最高數量)</label>
+                                </div>
                                 <div class="form-group">
                                     <label for="">必填項目</label>
                                     <div class="pl-4 d-inline-block">
                                         <input class="" type="checkbox" v-model="customizedEdit_Data.Data.required"
                                             id="defaultCheck1">
-
                                     </div>
                                 </div>
+
                                 <div class="form-group">
                                     <label for="">選擇項目</label>
                                     <p class="text-muted">可以在此增加客製化選項，EX：加珍珠、去冰...，提供給客人客製化餐點</p>
@@ -169,8 +189,8 @@
                         <a class="dropdown-item" v-for="(store,index) in allStore" :id="store.storeId"
                             onclick="itemClick($(this))">
                             <div class="store">
-                                <strong>{{ store.expr1 }}</strong>
-                                <p class="text-muted">{{ store.expr4 }}{{ store.expr5 }}{{ store.expr6 }}</p>
+                                <strong>{{ store.storeName }}</strong>
+                                <p class="text-muted">{{ store.city }}{{ store.districts }}{{ store.shortAddress }}</p>
                             </div>
                         </a>
                     </div>
@@ -505,6 +525,8 @@
             save() {
                 loadingOn()
                 var EditData = this.customizedEdit_Data.Data
+                console.log(EditData);
+
                 EditData.group = ''
                 var vue = this
                 apiWeb('api/Menu/attributes/' + storeId + '/' + this.customizedEdit_Data.Data.templateId, 'PUT', JSON.stringify(EditData), '修改客製化選項', function (v) {
@@ -578,6 +600,7 @@
                 this.currentPage = page;
             },
         },
+
     });
     app.mount("#app");
 </script>

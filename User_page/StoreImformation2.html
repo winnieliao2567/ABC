@@ -91,11 +91,51 @@ scratch. This page gets rid of all links and provides the needed markup only.
                     </div>
                     <div class="modal-body">
                         <img :src="addData.image" v-if="addData.image">
-                        <h3>{{addData.name}}</h3>
-                        <p>{{addData.remark}} </p>
-                        <div class="row m-0" v-if="addData.mealConfig?.Options?.[0]?.Items?.length > 0">
+                        <h3 class="m-0">{{addData.name}}</h3>
+                        <p class="m-0">{{addData.remark}} </p>
+                        <div class="row m-0s" v-if="addData.mealConfig?.Options?.[0]?.Items?.length > 0">
                             <div class="col-12">
-                                <h5>份量</h5>
+                                <!-- <h5>份量</h5> -->
+                                <template v-for="(item, index) in addData.mealConfig.Options[0].Items" :key="index">
+                                    <div class="item" :class="{ 'selected-item': addToCart.mealConfig === index }">
+                                        <input type="radio" :id="'mealConfig-' + index" name="mealConfig" :value="index"
+                                            v-model="addToCart.mealConfig" hidden="true">
+                                        <label :for="'mealConfig-' + index" class="w-100 m-0 py-2 px-3">
+                                            {{ item.Name }}
+                                            <span class="text-primary text-bold float-right">
+                                                $ {{ item.Price }}
+                                            </span>
+                                        </label>
+                                    </div>
+                                </template>
+                                <template v-for="(item, index) in addData.customConfigDetails" :key="index">
+                                    <div class=" py-3">
+                                        <h5>{{item.templateName}}
+                                            <span class="text-primary text-sm" v-if="item.required">
+                                                （必填）
+                                            </span>
+                                        </h5>
+                                        <template v-for="(options,opIndex) in item.options">
+                                            <div class="item"
+                                                :class="{ 'selected-item': addToCart.CustmonConfig === index }">
+                                                <input v-if="options.type==0" type="radio"
+                                                    :id="'CustmonConfig-'+opIndex"
+                                                    :name="'CustmonConfig'+item.templateId" :value="index"
+                                                    hidden="true">
+                                                <input v-if="options.type==1" type="checkbox"
+                                                    :id="'CustmonConfig-'+opIndex"
+                                                    :name="'CustmonConfig'+item.templateId" :value="index"
+                                                    hidden="true">
+                                                <label :for="'CustmonConfig-'+opIndex" class="w-100 m-0 py-2 px-3">
+                                                    {{ options.title }}
+                                                    <span class="text-primary text-bold float-right">
+                                                        $ {{ options.extra }}
+                                                    </span>
+                                                </label>
+                                            </div>
+                                    </div>
+                                </template>
+                                </template>
                             </div>
                         </div>
                     </div>
@@ -196,7 +236,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 <div class="container">
                     <div class="row mb-2">
                         <div class="col-12 px-0 overflow-hidden" style="max-height: 300px;">
-                            <img :src="storeInfo.storeInfo.image||'img/unknowIMG.png'" style="width: 100%;">
+                            <img :src="storeInfo.store.bannerimage||'img/unknowIMG.png'" style="width: 100%;">
                         </div>
                     </div>
                 </div>
@@ -388,7 +428,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 ClassGroup: '',
 
                 //原始資料
-                userInfo: decryptObject(sessionStorage.userInfo),
+                userInfo: decryptObject(localStorage.userInfo),
 
                 date: {
                     day: 0
@@ -499,6 +539,10 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 addData: {
 
                 },
+                addToCart: {
+                    // mealConfig: 0,
+
+                },
 
                 productorData: [],
                 searchKeyword: ''
@@ -544,12 +588,12 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 var vue = this
                 apiWeb('api/Store/detail/' + storeId, 'GET', null, '取得店家資訊', function (v) {
                     vue.storeInfo = v
-                    // console.log(v);
+                    console.log(v);
                     vue.PageTitle = vue.storeInfo.store.storeName
                     vue.date.day = moment().format('ddd')
                     // console.log(this.date.day);
-                    // console.log(vue.storeInfo.storeInfo.introduction);
-                    if (vue.storeInfo.introduction != '') {
+                    // console.log(vue.storeInfo.introduction === "<p><br></p>");
+                    if (vue.storeInfo.introduction !== "<p><br></p>") {
                         $('#AnnouncementModal .modal-body').html(vue.storeInfo.storeInfo.introduction)
                         $('#AnnouncementModal').modal('show')
                     }
@@ -591,15 +635,60 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
                 // console.log(meal);
                 this.addData = JSON.parse(JSON.stringify(meal))
-                console.log(this.addData);
+                // console.log(this.addData);
                 $('#FoodModal').modal('show')
-            }
+            },
+            AddCart() { }
         },
         computed: {
 
         }
     });
     app.mount("#app");
+
+    // a = {
+    //     "meal":
+    //         [
+    //             {
+    //                 "mealId": 26,
+    //                 "name": "珍珠奶茶1",
+    //                 "categoryId": 7,
+    //                 "priority": 1,
+    //                 "createTime": "2025-03-19T18:15:06.083",
+    //                 "mealConfig": {
+    //                     "options": [
+    //                         {
+    //                             "key": "尺寸",
+    //                             "value": "大",
+    //                         },
+    //                         {
+    //                             "key": "甜度",
+    //                             "value": "半糖",
+    //                         }
+    //                     ]
+    //                 }
+    //             },
+    //             {
+    //                 "mealId": 2,
+    //                 "name": "甜不辣",
+    //                 "categoryId": 6,
+    //                 "priority": 4,
+    //                 "createTime": "2025-03-19T18:15:06.083",
+    //                 "mealConfig": {
+    //                     "options": [
+    //                         {
+    //                             "key": "尺寸",
+    //                             "value": "中",
+    //                         },
+    //                         {
+    //                             "key": "調味",
+    //                             "value": "梅粉",
+    //                         }
+    //                     ]
+    //                 }
+    //             },
+    //         ]
+    // }
 </script>
 
 </html>

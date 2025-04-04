@@ -75,6 +75,10 @@ nav {
 .item {
     cursor: pointer;
     position: relative;
+    border: 3px dashed transparent;
+}
+.item * {
+    cursor: pointer;
 }
 .item:hover {
     background-color: var(--primary_bg);
@@ -87,10 +91,11 @@ nav {
     background-color: var(--secondary_bg);
 } */
 .selected-item {
-    background-color: var(--secondary_bg);
+    border: 3px dashed var(--primary);
+    background-color: var(--primary_bg);
 }
 .selected-item > * {
-    color: var(--bs-primary);
+    /* color: var(--bs-primary); */
 }
 textarea {
     resize: none;

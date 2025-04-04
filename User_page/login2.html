@@ -41,6 +41,8 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
 
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+
 </head>
 
 <body class="login-page iframe-mode layout-footer-fixed" style="height: 100%;">
@@ -74,34 +76,76 @@
         loginVal: { account: '', key: '', keepLogIn: true },
         check: { account: false, key: false },
         allStore: [], // 如果没有 allStore, 使用默认空数组
-        storeInfo: {}
+        storeInfo: {},
+        myLiffId: '2006327628-8x1g1rAv'
       }
     },
     computed: {
 
     },
     mounted() {
-      sessionStorage.clear()
+      localStorage.clear()
       loadingOff();
     },
     watch: {
     },
     methods: {
+      // login() {
+      //   localStorage.userInfo = encryptObject({
+      //     name: "Winnie",
+      //     id: "userId",
+      //     linekey: 'ndjkwae565f78awmefka156789120oewaafhdsjc0987rtyghe==',
+      //   });
+      //   window.location.href = 'index2.html?'
+      // },
+
       login() {
-        sessionStorage.userInfo = encryptObject({
-          name: "Winnie",
-          id: "userId",
-          linekey: 'ndjkwae565f78awmefka156789120oewaafhdsjc0987rtyghe==',
-        });
-        window.location.href = 'index2.html?'
-      },
-      //驗證信箱格式
-      validateEmail(par) {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        return !emailRegex.test(par); // 如果格式不正確，顯示錯誤
-      },
+        console.log(this.myLiffId);
+
+        liff
+          .init({
+            liffId: this.myLiffId
+          })
+          .then(() => {
+            // if (!liff.isLoggedIn()) {
+            //   liff.login();
+            // } else {
+            //   liff.getFriendship().then(data => {
+            //     // Optionally handle the friendship data
+            //   });
+            // }
+
+            liff.getProfile().then((profile) => {
+              console.log('profile------', profile);
+
+              apiWeb("api/login/line/login", 'POST', JSON.stringify({
+                "lineid": profile.userId,
+                "username": profile.displayName
+              }), '使用lineID登入', function (v) {
+
+                localStorage.userInfo = encryptObject(
+                  {
+                    name: v.username,
+                    id: v.lineid,
+                    //linekey: 'ndjkwae565f78awmefka156789120oewaafhdsjc0987rtyghe==',
+                  }
+                );
+              })
+            });
+
+          })
+          .catch((err) => {
+            alert(JSON.stringify(err));
+          });
+      }
     },
-  });
+
+    //驗證信箱格式
+    validateEmail(par) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return !emailRegex.test(par); // 如果格式不正確，顯示錯誤
+    },
+  })
   app.mount("#app");
 </script>
 

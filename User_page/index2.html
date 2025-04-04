@@ -315,7 +315,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 PageTitle: '首頁',
 
                 //原始資料
-                userInfo: decryptObject(sessionStorage.userInfo),
+                userInfo: decryptObject(localStorage.userInfo),
 
                 currentCoords: null, // 用戶當前座標
                 stores: [], // 店家列表
@@ -564,6 +564,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 var vue = this
                 apiWeb('/api/stores?latitude=' + localStorage.latitude + '&longitude=' + localStorage.longitude + '&&radius=' + radius, 'GET', null, '獲得附近店家', function (v) {
                     if (v.success == true) {
+                        console.log(v.data);
+
                         vue.StoreList = v.data
                         // console.log(vue.StoreList);
                         if (_func) _func()
@@ -577,7 +579,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 apiWeb('/api/stores/tags', 'GET', null, '獲得所有標籤', function (v) {
                     if (v.success == true) {
                         vue.BusinessDistrictList = v.data
-                        console.log(vue.BusinessDistrictList);
+                        // console.log(vue.BusinessDistrictList);
 
                         // vue.PromotionsList = v.data
                         // vue.FoodTypeList = v.data

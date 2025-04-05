@@ -101,19 +101,20 @@
 
       login() {
         console.log(this.myLiffId);
+        var vue = this
 
         liff
           .init({
-            liffId: this.myLiffId
+            liffId: vue.myLiffId
           })
           .then(() => {
-            // if (!liff.isLoggedIn()) {
-            //   liff.login();
-            // } else {
-            //   liff.getFriendship().then(data => {
-            //     // Optionally handle the friendship data
-            //   });
-            // }
+            if (!liff.isLoggedIn()) {
+              liff.login();
+            } else {
+              liff.getFriendship().then(data => {
+                // Optionally handle the friendship data
+              });
+            }
 
             liff.getProfile().then((profile) => {
               console.log('profile------', profile);
@@ -127,7 +128,7 @@
                   {
                     name: v.username,
                     id: v.lineid,
-                    //linekey: 'ndjkwae565f78awmefka156789120oewaafhdsjc0987rtyghe==',
+                    linekey: 'ndjkwae565f78awmefka156789120oewaafhdsjc0987rtyghe==',
                   }
                 );
               })

@@ -469,6 +469,7 @@
                         </div>
                         <div class="col-12 col-md-8 col-xl-7 text-right mb-3"
                             v-if="productorData.length>0&&disabledType=='List'">
+                            <!-- <button class="btn btn-primary" @click="AddProductorGroup">新增品項類別</button> -->
                             <div class="dropdown">
                                 <a class="btn btn-primary dropdown-toggle" href="#" role="button" data-toggle="dropdown"
                                     aria-expanded="false">
@@ -483,20 +484,24 @@
                         <template v-for="(Group, index) in productorData" :key="Group.categoryId"
                             v-if="disabledType=='List'">
                             <div class="col-12 col-md-8 col-xl-7 py-2">
-                                <div class="col-12">
+                                <div class="col-12 p-3">
 
                                     <h5 class="btnHover">
                                         <span class="text-bold">{{ Group.categoryName }}</span>
 
-                                        <div class="d-inline-block table-btn-div ml-2">
+                                        <div class="d-inline-block table-btn-div ml-2 float-right">
                                             <button class="btn btn-sm btn-outline-danger mr-2 d-inline-block"
                                                 @click="DeleteProductorGroup(index)">
                                                 <i class="fas fa-trash-alt"></i>
                                             </button>
-                                            <div class="d-inline-block">
-                                                <button class="btn btn-sm btn-secondary d-inline-block" :data-id="Group.categoryId
-                                    " @click="EditProductorGroup(index)"><i class="fas fa-edit"></i></button>
-                                            </div>
+                                            <button class="btn mr-2 btn-sm btn-secondary d-inline-block" :data-id="Group.categoryId
+                                    " @click="EditProductorGroup(index)">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-primary d-inline-block"
+                                                @click="showProductorAddWin(index)">
+                                                <i class="fas fa-plus mr-2"></i>新增餐點
+                                            </button>
                                         </div>
                                     </h5>
                                     <div class="list-group" v-if="Group.productors.length>0">
@@ -507,7 +512,7 @@
                                                 style="width: 50px;height: 50px;overflow: hidden;">
                                                 <img :src="item.image" class="border w-100">
                                             </div>
-                                            <div class="pl-3">
+                                            <div class="pl-3 col-6">
                                                 <div class="text-bold">{{item.name}}</div>
                                                 <div class="text-muted">{{item.remark}}</div>
                                             </div>
@@ -525,8 +530,8 @@
                                         </div>
                                     </div>
                                     <div v-if="Group.productors.length===0" class="">
-                                        <p class="text-muted" :data-id="Group.id">該分類尚未新增品項，
-                                            <a href="#" @click="showProductorAddWin(index)">前往新增</a>
+                                        <p class="text-muted" :data-id="Group.id">該分類尚未新增品項
+                                            <!-- <a href="#" @click="showProductorAddWin(index)">前往新增</a> -->
                                         </p>
                                     </div>
                                 </div>
@@ -559,11 +564,10 @@
                                                 @click="DeleteProductorGroup(index)">
                                                 <i class="fas fa-trash-alt"></i>
                                             </button>
-                                            <div class="d-inline-block">
-                                                <button class="btn btn-sm btn-secondary d-inline-block"
-                                                    :data-id="Group.categoryId" @click="EditProductorGroup(index)"><i
-                                                        class="fas fa-edit"></i></button>
-                                            </div>
+                                            <button class="btn btn-sm btn-secondary d-inline-block"
+                                                :data-id="Group.categoryId" @click="EditProductorGroup(index)">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
                                         </div>
                                     </h5>
                                     <div class="list-group">
@@ -771,6 +775,8 @@
                                     categoryName: category.categoryName,
                                     productors: vue.ProductList.filter(product => product.categoryId === category.categoryId)
                                 }));
+                                console.log(vue.productorData);
+
                                 apiWeb('api/MealPriority/titles/' + storeId, 'GET', null, '取得排序列表', function (v) {
                                     if (v.success == true) {
                                         vue.SortClass_Data = v.titles
@@ -882,6 +888,13 @@
 
             //新增品項視窗
             showProductorAddWin(index) {
+                // var categoryId = ''
+                // if (index != null) {
+                //     categoryId = this.productorData[index].categoryId
+                // }
+                // console.log(this.productorData[index], categoryId);
+
+
                 this.AddProductor_data = {}
                 this.AddProductor_data = {
                     data: {
@@ -889,7 +902,7 @@
                         "remark": "",
                         "price": 0,
                         "image": "",
-                        "categoryId": '',
+                        "categoryId": index != null ? this.productorData[index].categoryId : '',
                         "priority": 5,
                         // "enabled": true,
                         "customConfig": [],
@@ -899,7 +912,7 @@
                     },
                     userAction: '新增'
                 }
-                // console.log('this.AddProductor_data.data---------------' + this.AddProductor_data.data);
+                // console.log('this.AddProductor_data.data---------------', this.AddProductor_data.data);
                 $('#ProductorEdit').modal('show')
             },
             //確認新增品項

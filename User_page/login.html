@@ -42,7 +42,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
 
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
-
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
 </head>
 
 <body class="login-page iframe-mode layout-footer-fixed" style="height: 100%;">
@@ -70,84 +70,61 @@
   </div>
 </body>
 <script>
-  const app = Vue.createApp({
-    data() {
-      return {
-        loginVal: { account: '', key: '', keepLogIn: true },
-        check: { account: false, key: false },
-        allStore: [], // 如果没有 allStore, 使用默认空数组
-        storeInfo: {},
-        myLiffId: '2006327628-8x1g1rAv'
+
+  async function initializeLiff(liffId) {
+    try {
+      await liff.init({ liffId });
+
+      // 如果未登入，執行登入
+      if (!liff.isLoggedIn()) {
+        console.log("未登入，重新導向登入...");
+        liff.login();
+        return;
       }
-    },
-    computed: {
 
-    },
-    mounted() {
-      localStorage.clear()
-      loadingOff();
-    },
-    watch: {
-    },
-    methods: {
-      // login() {
-      //   localStorage.userInfo = encryptObject({
-      //     name: "Winnie",
-      //     id: "userId",
-      //     linekey: 'ndjkwae565f78awmefka156789120oewaafhdsjc0987rtyghe==',
-      //   });
-      //   window.location.href = 'index.html?'
-      // },
+      // 取得 LINE Profile（在登入後立即取得）
+      const profile = await liff.getProfile();
+      console.log("取得使用者資料：", profile);
 
-      login() {
-        console.log(this.myLiffId);
-        var vue = this
+      // 顯示資料
+      $("#userinfo1").html(`歡迎，${profile.displayName}`);
+      $("#myImg").attr("src", profile.pictureUrl);
 
-        liff
-          .init({
-            liffId: vue.myLiffId
-          })
-          .then(() => {
-            if (!liff.isLoggedIn()) {
-              liff.login();
-            } else {
-              liff.getFriendship().then(data => {
-                // Optionally handle the friendship data
-              });
-            }
-
-            liff.getProfile().then((profile) => {
-              console.log('profile------', profile);
-
-              apiWeb("api/login/line/login", 'POST', JSON.stringify({
-                "lineid": profile.userId,
-                "username": profile.displayName
-              }), '使用lineID登入', function (v) {
-
-                localStorage.userInfo = encryptObject(
-                  {
-                    name: v.username,
-                    id: v.lineid,
-                    linekey: 'ndjkwae565f78awmefka156789120oewaafhdsjc0987rtyghe==',
-                  }
-                );
-              })
-            });
-
-          })
-          .catch((err) => {
-            alert(JSON.stringify(err));
+      // 發送給後端
+      $.ajax({
+        type: 'POST',
+        url: '/api/login/line/login',
+        contentType: 'application/json',
+        data: JSON.stringify({ lineid: profile.userId, username: profile.displayName }),
+        success: function (res) {
+          console.log("✅ 成功登入後端:", res);
+          $("#ajax-status").html("✅ 登入成功：" + JSON.stringify(res));
+          localStorage.userInfo = encryptObject({
+            name: res.username,
+            id: res.lineid,
+            linekey: res.lineid,
           });
-      }
-    },
+          console.log(localStorage.userInfo);
 
-    //驗證信箱格式
-    validateEmail(par) {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      return !emailRegex.test(par); // 如果格式不正確，顯示錯誤
-    },
-  })
-  app.mount("#app");
+          window.location.href = 'index.html'
+        },
+        error: function (err) {
+          console.error("❌ 後端錯誤：", err);
+          $("#ajax-status").html("❌ 錯誤：" + err.responseText);
+        }
+      });
+
+    } catch (e) {
+      console.error("LIFF 初始化錯誤：", e);
+      alert("LIFF 初始化錯誤：" + JSON.stringify(e));
+    }
+  }
+
+  $(function () {
+    initializeLiff("2006327628-8x1g1rAv");
+  });
+
 </script>
+
 
 </html>

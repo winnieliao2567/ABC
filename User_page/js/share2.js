@@ -25,13 +25,13 @@ const userFunction = [
         icon: "fas fa-history",
         name: "歷史訂單",
         status: "",
-        url: "historyList2.html?uid=",
+        url: "historyList.html?uid=",
     },
     {
         icon: "fas fa-sign-out-alt",
         name: "登出",
         status: "",
-        url: "login2.html",
+        url: "login.html",
     },
 ];
 
@@ -193,11 +193,11 @@ $(function () {
     });
 
     $("body").on("click", ".toLogin", function () {
-        window.location.href = "login2.html";
+        window.location.href = "login.html";
     });
 
     $("body").on("click", ".toIndex", function () {
-        window.location.href = "index2.html?";
+        window.location.href = "index.html?";
     });
 
     $("body").on("click", ".toCart", function () {

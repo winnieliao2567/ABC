@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <title>LIFF 測試</title>
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+  <h2 id="userinfo1">載入中...</h2>
+  <img id="myImg" src="" width="100" height="100" />
+  <div id="ajax-status"></div>
+
+  <script>
+    async function initializeLiff(liffId) {
+      try {
+        await liff.init({ liffId });
+
+        // 如果未登入，執行登入
+        if (!liff.isLoggedIn()) {
+          console.log("未登入，重新導向登入...");
+          liff.login();
+          return; // ⚠️記得 return，避免繼續執行後續程式碼
+        }
+
+        // 取得 URL 參數中的 code
+        const queryParams = new URLSearchParams(window.location.search);
+        const code = queryParams.get('code');
+        const state = queryParams.get('state');
+
+        if (code) {
+          console.log("已取得 code，開始處理...");
+          
+          // 這裡可以將 code 發送給後端，進行 token 交換
+          $.ajax({
+            type: 'POST',
+            url: 'https://sharings.com.tw/api/login/line/login',
+            contentType: 'application/json',
+            data: JSON.stringify({ code: code,password: '123' }),
+            success: function (res) {
+              console.log("成功取得 token:", res);
+              $("#ajax-status").html("✅ 登入成功：" + JSON.stringify(res));
+            },
+            error: function (err) {
+              console.error("後端錯誤：", err);
+              $("#ajax-status").html("❌ 錯誤：" + err.responseText);
+            }
+          });
+        } else {
+          console.log("未取得 code，跳過 token 交換");
+        }
+
+        // 取得 LINE Profile
+        const profile = await liff.getProfile();
+        console.log("取得使用者資料：", profile);
+        
+        $("#userinfo1").html(`歡迎，${profile.displayName}`);
+        $("#myImg").attr("src", profile.pictureUrl);
+      } catch (e) {
+        console.error("LIFF 初始化錯誤：", e);
+        alert("LIFF 初始化錯誤：" + JSON.stringify(e));
+      }
+    }
+
+    $(function () {
+      initializeLiff("2006327628-8x1g1rAv");
+    });
+  </script>
+</body>
+</html>

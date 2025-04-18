@@ -77,7 +77,7 @@ const userFunction = [
         icon: "fas fa-user-clock",
         name: "快速設定",
         status: "",
-        url: "quicksetup.html?sid=" + storeId,
+        url: "QuickSetup.html?sid=" + storeId,
     },
 ];
 
@@ -120,6 +120,11 @@ function apiWeb(_url, _type, _data, TimelogTag, _fun) {
                         location.reload();
                     }, 1500);
                 },
+                401: function (xhr) {
+                    console.log("Forbidden (401):", xhr);
+                    toastr.error("登入失敗");
+                    loadingOff();
+                },
                 403: function (xhr) {
                     console.log("Forbidden (403):", xhr);
                 },
@@ -146,7 +151,7 @@ function apiWeb(_url, _type, _data, TimelogTag, _fun) {
             },
             error: function (v) {
                 console.timeEnd("● API-" + TimelogTag + "(" + _url + ")");
-                toastr.error(TimelogTag + "系統問題導致失敗");
+                // toastr.error(TimelogTag + "系統問題導致失敗");
                 console.log("Error:", JSON.stringify(v));
             },
         });

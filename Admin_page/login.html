@@ -44,6 +44,10 @@
 </head>
 
 <body class="login-page iframe-mode" style="height: 100%;">
+  <!-- Preloader -->
+  <div class="preloader flex-column justify-content-center align-items-center">
+    <img class="animation__shake" src="img/logo.svg" style="height: 15vh;">
+  </div>
   <!--  <div class="modal fade" id="storeModal" tabindex="-1" data-backdrop="static" data-keyboard="false" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
@@ -108,7 +112,7 @@
             <div class="col-8">
               <div class="form-check">
                 <input class="form-check-input" v-model="loginVal.keepLogIn" type="checkbox" id="flexCheckChecked"
-                  autocomplete="off" checked>
+                  autocomplete="off">
                 <label class="form-check-label" for="flexCheckChecked">
                   保持登入
                 </label>
@@ -154,12 +158,11 @@
     methods: {
       login() {
         loadingOn();
-        // console.log(this.loginVal.keepLogIn);
+        console.log(this.loginVal.keepLogIn);
         if (this.loginVal.account == '') { this.check.account = true; loadingOff(); }
         else if (this.loginVal.key == '') { this.check.key = true; loadingOff(); }
         else {
           loadingOn();
-
           var apiData = {
             "Email": this.loginVal.account,
             "Password": this.loginVal.key

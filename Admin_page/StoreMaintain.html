@@ -436,27 +436,39 @@
                                                     <p class="pl-3 w-25 d-inline-block m-0 mr-5">分鐘</p>
                                                 </div>
 
+                                                <!-- 最低區間數量 -->
+                                                <div class="col-12 my-1"
+                                                    v-if="settingItem.groupitem.type === 'minOrderAmount'">
+                                                    <input class="form-control w-25 d-inline-block" autocomplete="off"
+                                                        :disabled="!settingItem.groupitem.enabled" type="number" min="0"
+                                                        max="10" step="1" v-model="storeInfoEdit.store.minOrderAmount">
+                                                    <p class="pl-3 w-25 d-inline-block m-0 mr-5">單</p>
+                                                </div>
+
                                                 <!-- 最低金額 -->
                                                 <div class="col-12 my-1"
                                                     v-if="settingItem.groupitem.type === 'minPrice'">
                                                     <p class="text-muted text-sm">若消費者下單總金額低於設定值，該訂單不成立並跳出警告訊息</p>
-                                                    <input class="form-control w-25" type="number" min="0"
-                                                        v-model="storeInfoEdit.storeInfo.minimumOrderAmount"
+                                                    <input class="form-control w-25 d-inline-block" type="number"
+                                                        min="0" v-model="storeInfoEdit.storeInfo.minimumOrderAmount"
                                                         ref="inputs">
                                                 </div>
 
                                                 <!-- 最低單數 -->
                                                 <div class="col-12 my-1"
                                                     v-if="settingItem.groupitem.type === 'MinOrderCount'">
-                                                    <input class="form-control w-25" type="number" min="0"
-                                                        v-model="storeInfoEdit.store.amountLimit">
+                                                    <input class="form-control w-25 d-inline-block" type="number"
+                                                        min="0" v-model="storeInfoEdit.store.amountLimit">
+                                                    <p class="pl-3 w-25 d-inline-block m-0 mr-5">元</p>
                                                 </div>
 
                                                 <!-- 最高金額 -->
                                                 <div class="col-12 my-1"
                                                     v-if="settingItem.groupitem.type === 'maxPrice'">
-                                                    <input class="form-control w-25" type="number" min="0"
-                                                        v-model="storeInfoEdit.store.slotLimit" ref="inputs">
+                                                    <p class="text-muted m-0">若有訂單超過該金額，後續訂單全部推至下一區間</p>
+                                                    <input class="form-control w-25 d-inline-block" type="number"
+                                                        min="0" v-model="storeInfoEdit.store.slotLimit" ref="inputs">
+                                                    <p class="pl-3 w-25 d-inline-block m-0 mr-5">元</p>
                                                 </div>
 
                                                 <!-- 低消提示 -->
@@ -775,6 +787,15 @@
 
                             },
                             {
+                                name: '最低區間數量',
+                                groupitem:
+                                {
+                                    type: 'minOrderAmount',
+                                    enabled: true,
+                                    placeholder: "",
+                                }
+                            },
+                            {
                                 name: '間隔時間',
                                 groupitem:
                                 {
@@ -930,8 +951,8 @@
             },
             'storeInfoEdit.openTime.businessDays'(newVal, oldVal) {
 
-            }
-
+            },
+            'storeInfoEdit.store.minOrderAmount'(newVal, oldVal) { if (newVal > 10) { newVal = 10 } }
 
         },
         methods: {

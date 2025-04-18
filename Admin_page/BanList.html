@@ -349,6 +349,9 @@
                     if (v.status == 0) {
                         $('#AddBanWin').modal('hide')
                         window.location.href = 'BanList.html?sid=' + storeId
+                    } else if (v.status == 1) {
+                        $('#AddBanWin').modal('hide')
+                        toastr.error("該用戶不存在");
                     } else {
                         GetDataError('新增黑名單')
                     }

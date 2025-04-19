@@ -304,7 +304,7 @@ $(function () {
     }
 
     $(".toEditAccount").click(function () {
-        window.location.href = "account_edit.html";
+        window.location.href = "account_edit.html?sid=" + storeId;
     });
     $(".toLogin").click(function () {
         window.location.href = "login.html";

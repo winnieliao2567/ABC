@@ -187,7 +187,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                 <div class="swiper-wrapper">
                                     <template v-for="(item, index) in PromotionsList" :key="index">
                                         <a class="card mb-2 bg-gradient-dark swiper-slide"
-                                            :href="'ClassImformation2.html?cid='+item.tagId">
+                                            :href="'ClassImformation.html?cid='+item.tagId">
                                             <img class="card-img-top" :src="item.image || 'img/unknowIMG.png'" />
                                             <div class="card-img-overlay d-flex flex-column justify-content-end">
                                                 <h5 class="card-title text-primary text-white">{{ item.title }}</h5>
@@ -252,7 +252,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                 <div class="swiper-wrapper">
                                     <template v-for="(item, index) in BusinessDistrictList" :key="index">
                                         <a class="card mb-2 bg-gradient-dark swiper-slide"
-                                            :href="'ClassImformation2.html?cid='+item.tagId+'&cname='+item.title+'&ctype=附近的商圈'">
+                                            :href="'ClassImformation.html?cid='+item.tagId+'&cname='+item.title+'&ctype=附近的商圈'">
                                             <img class="card-img-top" :src="item.image || 'img/unknowIMG.png'" />
                                             <div class="card-img-overlay d-flex flex-column justify-content-end">
                                                 <h5 class="card-title text-primary text-white">{{ item.title }}</h5>
@@ -276,7 +276,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                 <div class="swiper-wrapper">
                                     <template v-for="(item, index) in FoodTypeList" :key="index">
                                         <a class="swiper-slide footType"
-                                            :href="'ClassImformation2.html?cid='+item.tagId">
+                                            :href="'ClassImformation.html?cid='+item.tagId">
                                             <img class="card-img-top" :src="item.image || 'img/unknowIMG.png'" />
                                             <div class="d-flex flex-column justify-content-end">
                                                 <span class="card-title text-secondary text-sm">{{ item.title }}</span>
@@ -599,7 +599,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
             //搜尋
             search() {
-                window.location.href = "classimformation2.html?kw=" + this.searchKeyword + '&ctype=關鍵字搜尋&cname=' + this.searchKeyword
+                window.location.href = "ClassImformation.html?kw=" + this.searchKeyword + '&ctype=關鍵字搜尋&cname=' + this.searchKeyword
             }
         },
         computed: {

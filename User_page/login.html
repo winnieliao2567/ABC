@@ -102,6 +102,7 @@
           localStorage.userInfo = encryptObject({
             name: res.username,
             id: res.lineid,
+            phoneNum: res.MobileNumber,
             linekey: res.lineid,
           });
           console.log(localStorage.userInfo);

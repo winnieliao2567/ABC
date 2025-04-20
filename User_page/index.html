@@ -123,7 +123,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                     <li class="nav-item">
                         <a class="nav-link toCart" data-toggle="dropdown">
                             <i class="fas fa-shopping-cart"></i>
-                            <span class="badge badge-primary navbar-badge">3</span>
+                            <span class="badge badge-primary navbar-badge">{{cartCount}}</span>
                         </a>
                     </li>
                     <li class="nav-item dropdown">
@@ -316,6 +316,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
                 //原始資料
                 userInfo: decryptObject(localStorage.userInfo),
+                cartCount: localStorage.cart ? decryptObject(localStorage.cart).length : '',
 
                 currentCoords: null, // 用戶當前座標
                 stores: [], // 店家列表
@@ -503,6 +504,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                 case error.UNKNOWN_ERROR:
                                     this.error = "發生未知錯誤，請重新整理頁面後再試";
                                     break;
+
                             }
                         },
                         // 選項
@@ -562,7 +564,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
             //附近營業店家
             getOpeningStore(_func) {
                 var vue = this
-                apiWeb('/api/stores?latitude=' + localStorage.latitude + '&longitude=' + localStorage.longitude + '&&radius=' + radius, 'GET', null, '獲得附近店家', function (v) {
+                apiWeb('/api/stores?openOnly=true&latitude=' + localStorage.latitude + '&longitude=' + localStorage.longitude + '&&radius=' + radius, 'GET', null, '獲得附近店家', function (v) {
                     if (v.success == true) {
                         console.log(v.data);
 

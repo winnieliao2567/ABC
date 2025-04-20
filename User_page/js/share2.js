@@ -1,6 +1,8 @@
 const copyRight = " 共饗有限公司. All Rights Reserved.";
 const version = "1.0.1";
 const host = "https://sharings.com.tw/";
+const AutoKey = "sharings-api-r^rz-jofw-ccwf";
+
 const currentPage = 1; // 當前頁面
 const pageSize = 10; // 每頁顯示筆數
 const queryString = window.location.search;
@@ -16,6 +18,8 @@ const keyWord = urlParams.get("kw");
 
 const userId = urlParams.get("uid");
 const storeId = urlParams.get("sid");
+
+const mode = "test";
 
 // console.log("menuId-------------" + redirect);
 // console.log("storeId-------------" + storeId);
@@ -52,53 +56,72 @@ function loadingOn() {
 function apiWeb(_url, _type, _data, TimelogTag, _fun) {
     console.time("● API-" + TimelogTag + "(" + _url + ")");
     console.log("● data-" + TimelogTag + ":", _data);
-    if (_url == "_url") {
-        if (_fun) _fun();
-    } else {
-        $.ajax({
-            type: _type == "" ? "POST" : _type,
-            headers: {
-                "Content-Type": "application/json; charset=utf-8",
-                // Authorization: localStorage.token, // 需要的話可以加上授權標頭
-            },
-            url: host + _url,
-            data: _data,
-            statusCode: {
-                400: function (xhr) {
-                    // console.log();
-                    toastr.error(xhr.responseJSON.message);
-                    setTimeout(() => {
-                        location.reload();
-                    }, 1500);
-                },
-                403: function (xhr) {
-                    console.log("Forbidden (403):", xhr);
-                },
-                404: function (xhr) {
-                    console.log("Not Found (404):", xhr);
-                },
-                500: function (xhr) {
-                    console.log("Server Error (500):", xhr);
-                },
-                default: function (xhr) {
-                    // 捕捉所有其他狀態碼
-                    toastr.error(TimelogTag + "系統問題導致失敗");
-                },
-            },
-            success: function (v) {
-                console.timeEnd("● API-" + TimelogTag + "(" + _url + ")");
-                // toastr.success(TimelogTag + "成功");
-                console.log("● Reques-" + TimelogTag + " : " + JSON.stringify(v));
-                if (_fun) _fun(v);
-            },
-            error: function (v) {
-                console.timeEnd("● API-" + TimelogTag + "(" + _url + ")");
-                // toastr.error(TimelogTag + "系統問題導致失敗");
-                console.log("Error:", JSON.stringify(v));
-            },
-        });
-    }
+
+    let ApiAuto = "";
+    $.ajax({
+        type: "POST",
+        headers: {
+            "Content-Type": "application/json; charset=utf-8",
+        },
+        url: host + "/api/auth/keylogin",
+        data: JSON.stringify({
+            key: AutoKey,
+        }),
+        success: function (v) {
+            ApiAuto = "Bearer " + v.token;
+
+            console.log("● auto-" + TimelogTag + ":", ApiAuto);
+
+            if (_url == "_url") {
+                if (_fun) _fun();
+            } else {
+                $.ajax({
+                    type: _type == "" ? "POST" : _type,
+                    headers: {
+                        "Content-Type": "application/json; charset=utf-8",
+                        Authorization: ApiAuto, // 需要的話可以加上授權標頭
+                    },
+                    url: host + _url,
+                    data: _data,
+                    statusCode: {
+                        400: function (xhr) {
+                            // console.log();
+                            toastr.error(xhr.responseJSON.message);
+                            setTimeout(() => {
+                                location.reload();
+                            }, 1500);
+                        },
+                        403: function (xhr) {
+                            console.log("Forbidden (403):", xhr);
+                        },
+                        404: function (xhr) {
+                            console.log("Not Found (404):", xhr);
+                        },
+                        500: function (xhr) {
+                            console.log("Server Error (500):", xhr);
+                        },
+                        default: function (xhr) {
+                            // 捕捉所有其他狀態碼
+                            toastr.error(TimelogTag + "系統問題導致失敗");
+                        },
+                    },
+                    success: function (v) {
+                        console.timeEnd("● API-" + TimelogTag + "(" + _url + ")");
+                        // toastr.success(TimelogTag + "成功");
+                        console.log("● Reques-" + TimelogTag + " : " + JSON.stringify(v));
+                        if (_fun) _fun(v);
+                    },
+                    error: function (v) {
+                        console.timeEnd("● API-" + TimelogTag + "(" + _url + ")");
+                        // toastr.error(TimelogTag + "系統問題導致失敗");
+                        console.log("Error:", JSON.stringify(v));
+                    },
+                });
+            }
+        },
+    });
 }
+
 function SetUpError(errorInfo) {
     $(function () {
         $("body").append(
@@ -164,6 +187,7 @@ function add3DotsMiddle(string, limit) {
 function formatCurrency(amount) {
     return new Intl.NumberFormat("en-US").format(amount);
 }
+
 $(function () {
     //copyRight
     $("#copyRight").text("© " + moment().format("YYYY") + copyRight);
@@ -201,6 +225,6 @@ $(function () {
     });
 
     $("body").on("click", ".toCart", function () {
-        window.location.href = "cart2.html";
+        window.location.href = "cart.html";
     });
 });

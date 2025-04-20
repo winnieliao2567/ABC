@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>編輯使用者資料</title>
+
+    <!-- jquery -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+    <!-- JavaScript Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- <link rel="stylesheet" href="css/bootstrap.min.css"> -->
+
+    <!-- fontawesome -->
+    <script src="https://kit.fontawesome.com/4de7eaf6aa.js" crossorigin="anonymous"></script>
+
+    <!-- Theme style -->
+    <link rel="stylesheet" href="AdminLTE3/dist/css/adminlte.min.css">
+    <script src="AdminLTE3/dist/js/adminlte.min.js"></script>
+
+    <!-- Chart.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.bundle.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.css" />
+
+    <!-- toastr -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css" />
+
+    <!-- datepicker -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.30.1/moment.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+
+    <!-- Vue.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.5.13/vue.global.min.js"></script>
+
+    <script src="js/share2.js"></script>
+    <link rel="stylesheet" href="css/share2.css" />
+
+    <!-- Swiper -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/11.0.5/swiper-bundle.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/11.0.5/swiper-bundle.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+</head>
+
+<body class="hold-transition sidebar-collapse layout-top-nav layout-footer-fixed">
+    <div class="preloader flex-column justify-content-center align-items-center">
+        <img class="animation__shake" src="img/logo.svg" style="height: 15vh;">
+    </div>
+    <div class="wrapper" id="app">
+        <nav class="main-header navbar navbar-expand-md navbar-light navbar-white">
+            <div class="container">
+                <a class="toIndex navbar-brand">
+                    <img src="img/logo2.svg" alt="AdminLTE Logo" class="" style="width: 200px;">
+                </a>
+
+                <!-- <button class="navbar-toggler order-1" type="button" data-toggle="collapse"
+                    data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false"
+                    aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button> -->
+
+                <!-- <div class="collapse navbar-collapse order-3" id="navbarCollapse">
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i
+                                    class="fas fa-bars"></i></a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="index3.html" class="nav-link">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">Contact</a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a id="dropdownSubMenu1" href="#" data-toggle="dropdown" aria-haspopup="true"
+                                aria-expanded="false" class="nav-link dropdown-toggle">Dropdown</a>
+                            <ul aria-labelledby="dropdownSubMenu1" class="dropdown-menu border-0 shadow">
+                                <li><a href="#" class="dropdown-item">Some action </a></li>
+                                <li><a href="#" class="dropdown-item">Some other action</a></li>
+
+                                <li class="dropdown-divider"></li>
+
+                <li class="dropdown-submenu dropdown-hover">
+                    <a id="dropdownSubMenu2" href="#" role="button" data-toggle="dropdown" aria-haspopup="true"
+                        aria-expanded="false" class="dropdown-item dropdown-toggle">Hover for action</a>
+                    <ul aria-labelledby="dropdownSubMenu2" class="dropdown-menu border-0 shadow">
+                        <li>
+                            <a tabindex="-1" href="#" class="dropdown-item">level 2</a>
+                        </li>
+
+                        <li class="dropdown-submenu">
+                            <a id="dropdownSubMenu3" href="#" role="button" data-toggle="dropdown" aria-haspopup="true"
+                                aria-expanded="false" class="dropdown-item dropdown-toggle">level 2</a>
+                            <ul aria-labelledby="dropdownSubMenu3" class="dropdown-menu border-0 shadow">
+                                <li><a href="#" class="dropdown-item">3rd level</a></li>
+                                <li><a href="#" class="dropdown-item">3rd level</a></li>
+                            </ul>
+                        </li>
+
+                        <li><a href="#" class="dropdown-item">level 2</a></li>
+                        <li><a href="#" class="dropdown-item">level 2</a></li>
+                    </ul>
+                </li>
+                </ul>
+                </li>
+                </ul>
+
+            </div> -->
+
+
+                <ul class="order-1 order-md-3 navbar-nav navbar-no-expand ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link toCart" data-toggle="dropdown">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span class="badge badge-primary navbar-badge">3</span>
+                        </a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link" data-toggle="dropdown" href="#">
+                            <i class="fas fa-user"></i>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+                            <span class="dropdown-header">使用者功能</span>
+                            <div class="dropdown-divider"></div>
+                            <div v-for="(func,index) in userFunction">
+                                <a :href="func.url" class="dropdown-item">
+                                    {{func.name}}
+                                    <span class="float-right text-muted text-sm">
+                                        <i :class="func.icon"></i>
+                                    </span>
+                                </a>
+                                <div class="dropdown-divider"></div>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <div class="content-wrapper">
+            <div class="content-header">
+                <div class="container">
+                    <div class="row mb-2">
+                        <div class="col-sm-6">
+                            <h1 class="m-0">{{PageTitle}}</h1>
+                        </div>
+                        <div class="col-sm-6">
+                            <ol class="breadcrumb float-sm-right">
+                                <li class="breadcrumb-item"><a class="toIndex">SHARING</a></li>
+                                <li class="breadcrumb-item">{{PageTitle}}</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="content">
+                <div class="container">
+                    <div class="form-group col-12 col-md-4 col-3">
+                        <label class="">名稱<span class="text-danger">*</span></label>
+                        <input class="form-control" v-model="userInfoEdit.username">
+                    </div>
+                    <div class="form-group col-12 col-md-4 col-3">
+                        <label class="">手機號碼<span class="text-danger">*</span></label>
+                        <input class="form-control" v-model="userInfoEdit.phoneNum">
+                    </div>
+                    <div class="form-group col-12 col-md-4 col-3">
+                        <button class="btn btn-primary float-right" :disabled="!saveCheck">儲存</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="main-footer">
+            <span class="float-right d-none d-sm-inline" id="version"></span>
+            <!-- Default to the left -->
+            <strong id="copyRight"></strong>
+        </footer>
+    </div>
+
+</body>
+
+<script>
+    const app = Vue.createApp({
+        data() {
+            return {
+                userFunction: userFunction,
+
+                PageTitle: '編輯使用者資料',
+
+                //原始資料
+                userInfo: decryptObject(localStorage.userInfo),
+                userInfoEdit: decryptObject(localStorage.userInfo)
+
+            }
+        },
+        mounted() {
+
+            loadingOff()
+
+            // console.log(this.userInfoEdit, this.saveCheck());
+
+
+        },
+        watch: {
+
+        },
+
+        methods: {
+
+        },
+        computed: {
+            // saveCheck() {
+            //     if (this.userInfoEdit.username && this.userInfoEdit.phoneNum) {
+            //         return true
+            //     } else {
+            //         return false
+            //     }
+
+            // },
+            saveCheck() {
+                const phoneRegex = /^09\d{8}$/;
+                return (
+                    this.userInfoEdit.username &&
+                    phoneRegex.test(this.userInfoEdit.phoneNum)
+                );
+            }
+        }
+    });
+    app.mount("#app");
+</script>
+
+</html>

@@ -4,6 +4,8 @@ const Model = ""; //test
 
 const version = "1.0.1";
 const host = "https://sharings.com.tw/";
+const AutoKey = "sharings-api-r^rz-jofw-ccwf";
+
 const currentPage = 1; // 當前頁面
 const pageSize = 10; // 每頁顯示筆數
 const queryString = window.location.search;
@@ -101,61 +103,90 @@ function apiWeb(_url, _type, _data, TimelogTag, _fun) {
     }
 
     console.log("● data-" + TimelogTag + ":", _data);
-    if (_url == "_url") {
-        if (_fun) _fun();
-    } else {
-        $.ajax({
-            type: _type == "" ? "POST" : _type,
-            headers: {
-                "Content-Type": "application/json; charset=utf-8",
-                // Authorization: localStorage.token, // 需要的話可以加上授權標頭
-            },
-            url: host + _url,
-            data: _data,
-            statusCode: {
-                400: function (xhr) {
-                    // console.log();
-                    toastr.error(xhr.responseJSON.message);
-                    setTimeout(() => {
-                        location.reload();
-                    }, 1500);
-                },
-                401: function (xhr) {
-                    console.log("Forbidden (401):", xhr);
-                    toastr.error("登入失敗");
-                    loadingOff();
-                },
-                403: function (xhr) {
-                    console.log("Forbidden (403):", xhr);
-                },
-                404: function (xhr) {
-                    console.log("Not Found (404):", xhr);
-                },
-                500: function (xhr) {
-                    console.log("Server Error (500):", xhr);
-                },
-                default: function (xhr) {
-                    // 捕捉所有其他狀態碼
-                    toastr.error(TimelogTag + "系統問題導致失敗");
-                },
-            },
-            success: function (v) {
-                if (Model != "test") {
-                    console.timeEnd("● API-" + TimelogTag + "(" + _url + ")");
-                }
-                // toastr.success(TimelogTag + "成功");
-                if (Model != "test") {
-                    console.log("● Reques-" + TimelogTag + " : " + JSON.stringify(v));
-                }
-                if (_fun) _fun(v);
-            },
-            error: function (v) {
-                console.timeEnd("● API-" + TimelogTag + "(" + _url + ")");
-                // toastr.error(TimelogTag + "系統問題導致失敗");
-                console.log("Error:", JSON.stringify(v));
-            },
-        });
-    }
+
+    let ApiAuto = "";
+
+    $.ajax({
+        type: "POST",
+        headers: {
+            "Content-Type": "application/json; charset=utf-8",
+            Authorization: ApiAuto, // 需要的話可以加上授權標頭
+        },
+        url: host + "/api/auth/keylogin",
+        data: JSON.stringify({
+            key: AutoKey,
+        }),
+        success: function (v) {
+            ApiAuto = "Bearer " + v.token;
+
+            console.log("● auto-" + TimelogTag + ":", ApiAuto);
+
+            if (_url == "_url") {
+                if (_fun) _fun();
+            } else {
+                $.ajax({
+                    type: _type == "" ? "POST" : _type,
+                    headers: {
+                        "Content-Type": "application/json; charset=utf-8",
+                        Authorization: ApiAuto, // 需要的話可以加上授權標頭
+                    },
+                    url: host + _url,
+                    data: _data,
+                    statusCode: {
+                        400: function (xhr) {
+                            console.log(xhr);
+                            toastr.error(xhr.responseText);
+                            setTimeout(() => {
+                                location.reload();
+                            }, 1500);
+                        },
+                        401: function (xhr) {
+                            console.log("Forbidden (401):", xhr);
+
+                            if (TimelogTag == "管理員登入") {
+                                toastr.error("登入失敗");
+                                loadingOff();
+                            } else {
+                                // apiWeb(_url, _type, _data, TimelogTag, _fun);
+                                toastr.error("憑證錯誤，請登入後再試一次");
+                                setTimeout(() => {
+                                    window.location.href = "login.html";
+                                }, 3000);
+                            }
+                        },
+                        403: function (xhr) {
+                            console.log("Forbidden (403):", xhr);
+                        },
+                        404: function (xhr) {
+                            console.log("Not Found (404):", xhr);
+                        },
+                        500: function (xhr) {
+                            console.log("Server Error (500):", xhr);
+                        },
+                        default: function (xhr) {
+                            // 捕捉所有其他狀態碼
+                            toastr.error(TimelogTag + "系統問題導致失敗");
+                        },
+                    },
+                    success: function (v) {
+                        if (Model != "test") {
+                            console.timeEnd("● API-" + TimelogTag + "(" + _url + ")");
+                        }
+                        // toastr.success(TimelogTag + "成功");
+                        if (Model != "test") {
+                            console.log("● Reques-" + TimelogTag + " : ", v);
+                        }
+                        if (_fun) _fun(v);
+                    },
+                    error: function (v) {
+                        console.timeEnd("● API-" + TimelogTag + "(" + _url + ")");
+                        // toastr.error(TimelogTag + "系統問題導致失敗");
+                        console.log("Error:", JSON.stringify(v));
+                    },
+                });
+            }
+        },
+    });
 }
 
 //確認登入資料
@@ -180,6 +211,8 @@ function checkUserInfo() {
     }
     apiWeb("api/Store/detail/" + storeId, "GET", null, "更新店家資訊", function (v) {
         localStorage.storeInfo = encryptObject(v);
+        // console.log(v.status.isOpen);
+
         if (v.status.isOpen == true) {
             $("#OpenStatus").addClass("fas fa-store text-success");
         } else {
@@ -200,6 +233,7 @@ function checkUserInfo() {
 }
 function itemClick(obj) {
     // console.log(obj.attr("id"));
+    loadingOn();
     selectStore(obj.attr("id"));
 }
 function selectStore(Id) {

@@ -277,7 +277,8 @@
             <div class="content">
                 <div class="container-fluid">
                     <div class="row">
-                        <div class="col-6 col-md-6 col-xl-4 mb-3 item" v-for="(item, index) in menuList" :key="index">
+                        <div class="col-6 col-md-6 col-xl-4 mb-3 item" v-for="(item, index) in menuList" :key="index"
+                            v-show="item.enabled">
                             <div class="card h-100" :id="item.name">
                                 <div class="card-body row m-0">
                                     <h1 class="col-12 col-md-4 col-xl-2 text-center d-flex justify-content-center align-items-center"
@@ -330,82 +331,100 @@
                 storeInfo: decryptObject(localStorage.storeInfo),
                 allStore: decryptObject(localStorage.allStore),
                 thismenuId: '',
-                storeInfoEdit: {
-                    "store": {
-                        "storeId": "",
-                        "storeName": "",
-                        "storePhone": "",
-                        "minOrderAmount": 0,
-                        "orderInterval": 0,
-                        "createdDate": "",
-                        "enable": true,
-                        "deleted": false,
-                        "id": 0,
-                        "slotLimit": 0
-                    },
-                    "storeInfo": {
-                        "storeId": "",
-                        "city": "",
-                        "districts": "",
-                        "shortAddress": "",
-                        "email": "",
-                        "tel": "",
-                        "businessNum": "",
-                        "introduction": "",
-                        "tags": [
-                            "中式料理",
-                            "家常菜",
-                            "快速出餐"
-                        ],
-                        "advanceReservation": "",
-                        "basicwaitingTime": "",
-                        "intervalwaitingTime": "",
-                        "minimumOrderAmount": "",
-                        "minimumOrderText": "",
-                        "minimumOrderEnabled": true,
-                        "maxReservationDays": 0
-                    },
-                    "openTime": {
-                        "businessDays": [
+                // storeInfoEdit: {
+                //     "store": {
+                //         "storeId": "",
+                //         "storeName": "",
+                //         "storePhone": "",
+                //         "minOrderAmount": 0,
+                //         "orderInterval": 0,
+                //         "createdDate": "",
+                //         "enable": true,
+                //         "deleted": false,
+                //         "id": 0,
+                //         "slotLimit": 0
+                //     },
+                //     "storeInfo": {
+                //         "storeId": "",
+                //         "city": "",
+                //         "districts": "",
+                //         "shortAddress": "",
+                //         "email": "",
+                //         "tel": "",
+                //         "businessNum": "",
+                //         "introduction": "",
+                //         "tags": [
+                //             "中式料理",
+                //             "家常菜",
+                //             "快速出餐"
+                //         ],
+                //         "advanceReservation": "",
+                //         "basicwaitingTime": "",
+                //         "intervalwaitingTime": "",
+                //         "minimumOrderAmount": "",
+                //         "minimumOrderText": "",
+                //         "minimumOrderEnabled": true,
+                //         "maxReservationDays": 0
+                //     },
+                //     "openTime": {
+                //         "businessDays": [],
+                //         "specialCloseDays": []
+                //     },
+                //     'status': { 'isOpen': true }
+                // },
 
-                        ],
-                        "specialCloseDays": [
+                storeInfoEdit: decryptObject(localStorage.storeInfo),
 
-                        ]
-                    }
-                },
                 menuList: [
                     {
                         name: 'OrderList',
                         title: '訂餐紀錄',
                         src: '<i class="fas fa-history"></i>',
                         discrition: '查看訂單記錄',
-
+                        enabled: true
                     },
                     {
                         name: 'EarlyClosure',
                         title: '提早關店',
                         src: '<i class="fas fa-store-alt-slash"></i>',
                         discrition: '今日訂單系統的關閉時間',
-                        data: { enabled: false, time: '' }
+                        data: { enabled: false, time: '' },
+                        enabled: true
                     },
                     {
                         name: 'MenuAdjustment',
                         title: '菜單調整',
                         src: '<i class="fas fa-clipboard-list"></i>',
                         discrition: '今日菜單項目調整',
+                        enabled: true
                     },
                     {
                         name: 'BasicWaitingTime',
                         title: '基礎等待時間',
                         src: '<i class="fas fa-clock"></i>',
                         discrition: '今日系統等待時間調整',
+                        enabled: true
                     },
                     {
                         name: 'specialCloseDays',
                         title: '特定店休',
                         src: '<i class="fas fa-bed"></i>',
                         discrition: '特定店休設定',
+                        enabled: true
+                    },
+                    {
+                        name: 'lock',
+                        title: '鎖定區間',
+                        src: '<i class="fas fa-lock"></i>',
+                        discrition: '將當前區間鎖定',
+                        enabled: true
+                    },
+                    {
+                        name: 'unlock',
+                        title: '取消鎖定區間',
+                        src: '<i class="fas fa-unlock"></i>',
+                        discrition: '取消當前區間鎖定',
+                        enabled: true
                     }],
                 EarlyClosure: {
                     enabled: '', time: '', data: moment().format("YYYY-MM-DD")
@@ -414,7 +433,11 @@
         },
         mounted() {
             var vue = this
-            this.GetStoreInfo()
+            // this.GetStoreInfo()
+            loadingOff()
+
+            this.menuList[5].enabled = this.storeInfoEdit.status.isOpen
+            this.menuList[6].enabled = this.storeInfoEdit.status.isOpen
 
 
             $('#OrderList').click(function () {
@@ -424,7 +447,6 @@
             $('#EarlyClosure').click(function () {
                 $('#EarlyClosureModal').modal('show')
             })
-
 
             $('#MenuAdjustment').click(function () {
                 window.location.href = 'MenuPage.html?sid=' + storeId + '&mid=' + vue.thismenuId
@@ -436,6 +458,34 @@
 
             $('#specialCloseDays').click(function () {
                 $('#specialCloseDaysModal').modal('show')
+            })
+
+            $('#lock').click(function () {
+                loadingOn()
+                apiWeb(
+                    '/api/TimeSlot/Block',
+                    'POST',
+                    JSON.stringify({ "storeId": storeId, "blockedSlots": 2 }),
+                    '鎖定區間',
+                    function () {
+                        loadingOff()
+                        toastr.success('已鎖定區間');
+                    }
+                )
+            })
+
+            $('#unlock').click(function () {
+                loadingOn()
+                apiWeb(
+                    '/api/TimeSlot/Unblock/' + storeId,
+                    'POST',
+                    '',
+                    '取消鎖定區間',
+                    function () {
+                        loadingOff()
+                        toastr.success('已取消鎖定區間');
+                    }
+                )
             })
 
             this.EarlyClosure.data = moment().format("YYYY-MM-DD")

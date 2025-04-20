@@ -422,7 +422,7 @@
                                                     </div>
                                                 </div>
 
-                                                <!-- 基礎等待時間 -->
+                                                <!-- 每單基礎等待時間 -->
                                                 <div class="col-12 my-1"
                                                     v-if="settingItem.groupitem.type === 'BasicTime'">
                                                     <select class="form-control w-25 d-inline-block" autocomplete="off"
@@ -448,15 +448,6 @@
                                                 <!-- 最低金額 -->
                                                 <div class="col-12 my-1"
                                                     v-if="settingItem.groupitem.type === 'minPrice'">
-                                                    <p class="text-muted text-sm">若消費者下單總金額低於設定值，該訂單不成立並跳出警告訊息</p>
-                                                    <input class="form-control w-25 d-inline-block" type="number"
-                                                        min="0" v-model="storeInfoEdit.storeInfo.minimumOrderAmount"
-                                                        ref="inputs">
-                                                </div>
-
-                                                <!-- 最低單數 -->
-                                                <div class="col-12 my-1"
-                                                    v-if="settingItem.groupitem.type === 'MinOrderCount'">
                                                     <input class="form-control w-25 d-inline-block" type="number"
                                                         min="0" v-model="storeInfoEdit.store.amountLimit">
                                                     <p class="pl-3 w-25 d-inline-block m-0 mr-5">元</p>
@@ -469,6 +460,15 @@
                                                     <input class="form-control w-25 d-inline-block" type="number"
                                                         min="0" v-model="storeInfoEdit.store.slotLimit" ref="inputs">
                                                     <p class="pl-3 w-25 d-inline-block m-0 mr-5">元</p>
+                                                </div>
+
+                                                <!-- 低消金額 -->
+                                                <div class="col-12 my-1"
+                                                    v-if="settingItem.groupitem.type === 'LowSpendingAmount'">
+                                                    <p class="text-muted text-sm">若消費者下單總金額低於設定值，該訂單不成立並跳出警告訊息</p>
+                                                    <input class="form-control w-25 d-inline-block" type="number"
+                                                        min="0" v-model="storeInfoEdit.storeInfo.minimumOrderAmount"
+                                                        ref="inputs">
                                                 </div>
 
                                                 <!-- 低消提示 -->
@@ -489,20 +489,6 @@
                                                             關閉
                                                         </label>
                                                     </div>
-                                                    <!-- 低消金額 -->
-                                                    <!-- <div class="col-12 py-3"
-                                                            v-if="storeInfoEdit.minimumOrderEnabled==true">
-                                                            <div class="p-3">
-                                                                <h6>低消金額</h6>
-                                                                <p class="pr-3 w-auto d-inline-block m-0 text-end">
-                                                                    $
-                                                                </p>
-                                                                <input class="form-control w-auto d-inline-block"
-                                                                    autocomplete="off" min="0" placeholder="低消金額，EX:100"
-                                                                    :disabled="!settingItem.groupitem.enabled"
-                                                                    type="number"
-                                                                    v-model="storeInfoEdit.storeInfo.minimumOrderReminder.minimumOrder">
-                                                            </div> -->
 
                                                     <!-- 提示內容 -->
                                                     <div class="p-3">
@@ -606,50 +592,50 @@
                 allStore: decryptObject(localStorage.allStore),
 
                 //編輯資料
-                storeInfoEdit: {
-                    "store": {
-                        "storeId": "",
-                        "storeName": "",
-                        "storePhone": "",
-                        "minOrderAmount": 0,
-                        "orderInterval": 0,
-                        "createdDate": "",
-                        "enable": true,
-                        "deleted": false,
-                        "id": 0,
-                        "slotLimit": 0,
-                        "amountLimit": 0
-                    },
-                    "storeInfo": {
-                        "storeId": "",
-                        "city": "",
-                        "districts": "",
-                        "shortAddress": "",
-                        "email": "",
-                        "tel": "",
-                        "businessNum": "",
-                        "introduction": "",
-                        "tags": [
-                            "中式料理",
-                            "家常菜",
-                            "快速出餐"
-                        ],
-                        "basicwaitingTime": "",
-                        "minimumOrderAmount": "",
-                        "minimumOrderText": "",
-                        "minimumOrderEnabled": true,
-                        "maxReservationDays": 0
-                    },
-                    "openTime": {
-                        "businessDays": [
+                // storeInfoEdit: {
+                //     "store": {
+                //         "storeId": "",
+                //         "storeName": "",
+                //         "storePhone": "",
+                //         "minOrderAmount": 0,
+                //         "orderInterval": 0,
+                //         "createdDate": "",
+                //         "enable": true,
+                //         "deleted": false,
+                //         "id": 0,
+                //         "slotLimit": 0,
+                //         "amountLimit": 0
+                //     },
+                //     "storeInfo": {
+                //         "storeId": "",
+                //         "city": "",
+                //         "districts": "",
+                //         "shortAddress": "",
+                //         "email": "",
+                //         "tel": "",
+                //         "businessNum": "",
+                //         "introduction": "",
+                //         "tags": [
+                //             "中式料理",
+                //             "家常菜",
+                //             "快速出餐"
+                //         ],
+                //         "basicwaitingTime": "",
+                //         "minimumOrderAmount": "",
+                //         "minimumOrderText": "",
+                //         "minimumOrderEnabled": true,
+                //         "maxReservationDays": 0
+                //     },
+                //     "openTime": {
+                //         "businessDays": [
 
-                        ],
-                        "specialCloseDays": [
+                //         ],
+                //         "specialCloseDays": [
 
-                        ]
-                    }
-                },
-
+                //         ]
+                //     }
+                // },
+                storeInfoEdit: decryptObject(localStorage.storeInfo),
                 allCity: [],
                 allDistricts: [],
 
@@ -777,7 +763,7 @@
                         discriptions: '用於計算取餐等待時間的設定',
                         settingItem: [
                             {
-                                name: '基礎時間',
+                                name: '每單基礎等待時間',
                                 groupitem:
                                 {
                                     type: 'BasicTime',
@@ -806,10 +792,10 @@
 
                             },
                             {
-                                name: '最低單數',
+                                name: '最低金額',
                                 groupitem:
                                 {
-                                    type: 'MinOrderCount',
+                                    type: 'minPrice',
                                     enabled: true,
                                     placeholder: "",
                                 }
@@ -849,7 +835,7 @@
                                 name: '低消金額',
                                 groupitem:
                                 {
-                                    type: 'minPrice',
+                                    type: 'LowSpendingAmount',
                                     enabled: true,
                                     placeholder: "",
                                 }
@@ -916,7 +902,7 @@
 
             // console.log(this.storeInfoEdit);
 
-
+            // loadingOff()
 
             this.$nextTick(() => {
                 this.$refs.inputs.forEach(input => {

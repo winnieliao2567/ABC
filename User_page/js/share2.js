@@ -19,7 +19,7 @@ const keyWord = urlParams.get("kw");
 const userId = urlParams.get("uid");
 const storeId = urlParams.get("sid");
 
-const mode = "test";
+const mode = "";
 
 // console.log("menuId-------------" + redirect);
 // console.log("storeId-------------" + storeId);
@@ -54,8 +54,10 @@ function loadingOn() {
     }, 0);
 }
 function apiWeb(_url, _type, _data, TimelogTag, _fun) {
-    console.time("● API-" + TimelogTag + "(" + _url + ")");
-    console.log("● data-" + TimelogTag + ":", _data);
+    if (mode != "test") {
+        console.time("● API-" + TimelogTag + "(" + _url + ")");
+        console.log("● data-" + TimelogTag + ":", _data);
+    }
 
     let ApiAuto = "";
     $.ajax({
@@ -70,7 +72,9 @@ function apiWeb(_url, _type, _data, TimelogTag, _fun) {
         success: function (v) {
             ApiAuto = "Bearer " + v.token;
 
-            console.log("● auto-" + TimelogTag + ":", ApiAuto);
+            if (mode != "test") {
+                console.log("● auto-" + TimelogTag + ":", ApiAuto);
+            }
 
             if (_url == "_url") {
                 if (_fun) _fun();
@@ -106,9 +110,12 @@ function apiWeb(_url, _type, _data, TimelogTag, _fun) {
                         },
                     },
                     success: function (v) {
-                        console.timeEnd("● API-" + TimelogTag + "(" + _url + ")");
-                        // toastr.success(TimelogTag + "成功");
-                        console.log("● Reques-" + TimelogTag + " : " + JSON.stringify(v));
+                        if (mode != "test") {
+                            console.timeEnd("● API-" + TimelogTag + "(" + _url + ")");
+                            // toastr.success(TimelogTag + "成功");
+
+                            console.log("● Reques-" + TimelogTag + " : " + JSON.stringify(v));
+                        }
                         if (_fun) _fun(v);
                     },
                     error: function (v) {

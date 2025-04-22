@@ -212,7 +212,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                 <div class="swiper-wrapper">
                                     <template v-for="(item, index) in StoreList" :key="index">
                                         <a class="card border shadow-none mb-2 swiper-slide"
-                                            :href="'StoreImformation2.html?sid='+item.storeId">
+                                            :href="'StoreImformation.html?sid='+item.storeId">
                                             <span class='badge text-bold text-success navbar-badge text-sm'
                                                 v-if="item.isOpen">
                                                 <i class="fas fa-circle"></i> <!-- 營業中 -->
@@ -316,7 +316,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
                 //原始資料
                 userInfo: decryptObject(localStorage.userInfo),
-                cartCount: localStorage.cart ? decryptObject(localStorage.cart).length : '',
+                cartCount: localStorage.cart ? JSON.parse(localStorage.cart).length : '',
 
                 currentCoords: null, // 用戶當前座標
                 stores: [], // 店家列表

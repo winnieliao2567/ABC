@@ -116,7 +116,7 @@
                     <li class="nav-item">
                         <a class="nav-link toCart" data-toggle="dropdown">
                             <i class="fas fa-shopping-cart"></i>
-                            <span class="badge badge-primary navbar-badge">3</span>
+                            <span class="badge badge-primary navbar-badge">{{cartCount}}</span>
                         </a>
                     </li>
                     <li class="nav-item dropdown">
@@ -193,6 +193,8 @@
 
                 //原始資料
                 userInfo: decryptObject(localStorage.userInfo),
+                cartCount: localStorage.cart ? JSON.parse(localStorage.cart).length : '',
+
                 userInfoEdit: decryptObject(localStorage.userInfo)
 
             }

@@ -91,7 +91,8 @@ nav {
     background-color: var(--secondary_bg);
 } */
 .selected-item {
-    border: 3px dashed var(--primary);
+    border: 3px solid var(--primary);
+    border-radius: 6px;
     background-color: var(--primary_bg);
 }
 .selected-item > * {

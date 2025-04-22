@@ -110,7 +110,9 @@
             type: 'POST',
             url: '/api/login/line/login',
             contentType: 'application/json',
-            Authorization: ApiAuto, // 需要的話可以加上授權標頭
+            headers: {
+              Authorization: ApiAuto, // 需要的話可以加上授權標頭
+            },
             data: JSON.stringify({ lineid: profile.userId, username: profile.displayName }),
             success: function (res) {
               console.log("✅ 成功登入後端:", res);

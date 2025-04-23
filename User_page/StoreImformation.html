@@ -98,7 +98,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                 <!-- <h5>份量</h5> -->
                                 <div class=" py-3">
                                     <div class="item" @click="clickMealConfig(item)"
-                                        v-for="(item, index) in addData.mealConfig?.Options?.[0]?.Items" :key="index"
+                                        v-for="(item, index) in addData.mealConfig?.options?.[0]?.Items" :key="index"
                                         :class="{'selected-item':isMealConfigSelected(item.Name)}">
 
                                         <label :for="'mealConfig-' + index" class="w-100 m-0 py-2 px-3">
@@ -114,6 +114,9 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                     <h5>{{item.templateName}}
                                         <span class="text-primary text-sm" v-if="item.required">
                                             （必填）
+                                        </span>
+                                        <span class="text-primary text-sm" v-if="!item.required">
+                                            （可選{{item.minChoices}}~{{item.maxChoices}}個項目）
                                         </span>
                                     </h5>
                                     <template v-for="(options,opIndex) in item.options">
@@ -205,7 +208,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                     <li class="nav-item">
                         <a class="nav-link toCart" data-toggle="dropdown">
                             <i class="fas fa-shopping-cart"></i>
-                            <span class="badge badge-primary navbar-badge">{{cartCount}}</span>
+                            <span class="badge badge-primary navbar-badge text-sm">{{cartCount}}</span>
                         </a>
                     </li>
                     <li class="nav-item dropdown">
@@ -404,7 +407,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
             <div style="" class="fixRightSide" v-if="cartCount>0">
                 <a class="btn btn-lg btn-secondary toCart">
                     <i class="fas fa-shopping-cart"></i>
-                    <span class="badge badge-primary navbar-badge">{{cartCount}}</span>
+                    <span class="badge badge-primary navbar-badge text-md">{{cartCount}}</span>
                     <span class="d-none d-lg-inline-block">查看購物車</span>
                 </a>
             </div>
@@ -581,7 +584,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                         vue.ClassList = v.categories;
                         apiWeb('/api/Meal/user/' + storeId, 'GET', null, '獲得品項', function (v) {
                             if (v.success == true) {
-                                console.log('/api/Meal/user/-----', v);
+                                // console.log('/api/Meal/user/-----', v);
 
                                 vue.ProductList = v.meals;
                                 vue.productorData = vue.ClassList.map(category => ({
@@ -703,6 +706,11 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 const templateId = dataTemplate.templateId;
                 const titleToToggle = dataOption.title;
                 const extraToToggle = dataOption.extra;
+                const max = dataTemplate.maxChoices
+                const min = dataTemplate.minChoices
+
+
+                dataOption.min
                 this.addToCart.customConfig.forEach(config => {
                     config.options.forEach(option => {
                         if (option.TemplateID === templateId) {
@@ -713,16 +721,19 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                     extra: extraToToggle
                                 }];
                             } else if (dataTemplate.type === 1) {
+
                                 // 多選：toggle 模式
                                 const index = option.content.findIndex(c => c.title === titleToToggle);
 
                                 if (index !== -1) {
                                     option.content.splice(index, 1); // 已有 → 移除
                                 } else {
-                                    option.content.push({
-                                        title: titleToToggle,
-                                        extra: extraToToggle
-                                    }); // 沒有 → 加入
+                                    if (option.content.length < max) {
+                                        option.content.push({
+                                            title: titleToToggle,
+                                            extra: extraToToggle
+                                        }); // 沒有 → 加入
+                                    }
                                 }
                             }
                         }
@@ -759,8 +770,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
             validateMealConfig() {
                 if (this.addData.mealConfig) {
                     // console.log(this.addData.mealConfig.options);
-                    // console.log(this.addData.mealConfig.options.length);
-                    if (this.addData.mealConfig.options.length > 0) {
+                    // console.log(this.addData);
+                    if (this.addData.mealConfig.options) {
                         // console.log(this.productorData);
                         return this.addToCart.mealConfig.options[0].value ? true : false
                     } else {

@@ -83,6 +83,9 @@ nav {
 .item:hover {
     background-color: var(--primary_bg);
 }
+.itemOnlyHover:hover {
+    background-color: var(--primary_bg);
+}
 /* .item > * {
     background-color: #fff;
 }

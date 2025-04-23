@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>編輯使用者資料</title>
+  <title>購物車</title>
 
   <!-- jquery -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
@@ -51,6 +51,25 @@
     <img class="animation__shake" src="img/logo.svg" style="height: 15vh;">
   </div>
   <div class="wrapper" id="app">
+    <div class="modal fade" id="deleteMeal" tabindex="-1" aria-labelledby="deleteMealLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <p class="modal-title" id="deleteMealLabel">刪除餐點</p>
+            <!-- <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button> -->
+          </div>
+          <div class="modal-body">
+            <h5>是否將 {{deleteData.name}} 移除購物車？</h5>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" data-dismiss="modal">取消</button>
+            <button type="button" class="btn btn-default" @click="deleteFunc()" data-dismiss="modal">確定</button>
+          </div>
+        </div>
+      </div>
+    </div>
     <nav class="main-header navbar navbar-expand-md navbar-light navbar-white">
       <div class="container">
         <a class="toIndex navbar-brand">
@@ -161,21 +180,40 @@
         <div class="container">
           <div class="row">
             <div class="col-12 col-md-8 pb-3">
-              <h5 class="m-0">
-                <span class="text-primary"><i class="fas fa-receipt"></i></span>
+              <h6 class="m-0">
+                <span class="text-primary mr-2"><i class="fas fa-receipt"></i></span>
                 訂單內容（{{cartCount}}）
-              </h5>
+              </h6>
               <div class="item border-bottom p-3" v-for="(item,index) in cartList">
-                <h5>{{item.mealName}} <span class="float-right text-primary">${{item.totalPrice}}</span></h5>
-                <p class="text-muted m-0 text-sm">
-                  <span>{{item.mealConfig.options[0].value}},</span>
+                <p class="text-bold mb-2">{{item.mealName}} <span
+                    class="float-right text-primary">${{item.totalPrice}}</span></p>
+                <p class="text-muted m-0 text-xs">
+                  <span v-if="item.mealConfig.options[0].value.length>0">{{item.mealConfig.options[0].value}},</span>
                   <template v-for="(option,opIndex) in item.customConfig[0].options">
                     <span v-for="(select,selectIndex) in option.content">{{select.title}}(+{{select.extra}}),</span>
                   </template>
                 </p>
+                <div class="text-right">
+                  <button class="btn btn-default btn-sm" @click="deleteWindow(item,index)" data-toggle="modal"
+                    data-target="#deleteMeal">
+                    <i class="fas fa-trash-alt"></i>
+                  </button>
+                </div>
+              </div>
+              <div class="p-3" v-if="cartList.length>0">
+                <h6>總金額<span class="text-primary float-right">${{getTotalPrice}}</span></h6>
               </div>
             </div>
-            <div class="col-12 col-md-8 pb-3">
+            <div class="col-12 col-md-8 pb-3" v-if="cartList.length==0">
+              <div class="emptyImage emptyImage1"></div>
+              <p class="text-center">購物車是空的
+                <a class="ml-2 btn btn-primary" type="button" href="index.html">
+                  前往點餐
+                </a>
+              </p>
+            </div>
+
+            <!-- <div class="col-12 pb-3" v-if="cartList.length>0">
               <h5 class="m-0">
                 <span class="text-primary"><i class="fas fa-comment-dots"></i></span>
                 備註
@@ -183,9 +221,16 @@
               <div class="item border-bottom p-3">
                 <textarea class="form-control" maxlength="50"></textarea>
               </div>
-            </div>
-            <div class="col-12 col-md-8">
-              <div class="btn btn-block btn-primary">前往結帳</div>
+            </div> -->
+            <div class="col-12 col-md-8 py-3" v-if="cartList.length>0">
+              <div class="row m-0">
+                <div class="col-6">
+                  <div class="btn btn-block btn-outline-secondary" @click="backToStore">繼續點餐</div>
+                </div>
+                <div class="col-6">
+                  <div class="btn btn-block btn-primary" @click="toPay">前往結帳</div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -211,28 +256,70 @@
 
         //原始資料
         userInfo: decryptObject(localStorage.userInfo),
-        cartCount: localStorage.cart ? JSON.parse(localStorage.cart).length : '',
 
-        cartList: localStorage.cart ? JSON.parse(localStorage.cart) : ''
+        cartList: localStorage.cart ? JSON.parse(localStorage.cart) : '',
+        cartCount: 0,
+
+
+        deleteData: { name: '', index: 0 },
+
+        // toPayData: {}
 
       }
     },
     mounted() {
 
       loadingOff()
-      console.log(this.cartList);
+      // console.log(this.userInfo);
 
-
+      this.cartCount = this.cartList.length
     },
     watch: {
 
     },
 
     methods: {
+      deleteWindow(data, index) {
+        // console.log(data);
+        // console.log(index);
+        this.deleteData.name = data.mealName
+        this.deleteData.index = index
 
+      },
+      deleteFunc() {
+        this.cartList.splice(this.deleteData.index, 1);
+        localStorage.cart = JSON.stringify(this.cartList)
+        this.cartCount = this.cartList.length
+      },
+      backToStore() {
+        window.location.href = "StoreImformation.html?sid=" + this.cartList[0].storeId
+      },
+      toPay() {
+        window.location.href = "pay.html?sid=" + this.cartList[0].storeId
+        // this.toPayData = {
+        //   "MemberId": this.userInfo.id,
+        //   "StoreId": storeId,
+        //   // "Price": 100,
+        //   // "Discount": 0,
+        //   "Menu": this.cartList,
+        //   "IsTableware": false,
+        //   "IsOnlyPrice": false, //只想要取得目前訂單價格
+        //   "PaymentMethods": "cash",
+        //   "appointmentDate": "2025-03-31", //日期
+        //   "appointmentTime": "12:00:00" //時間
+        // }
+      }
     },
     computed: {
+      getTotalPrice() {
+        let vue = this
+        let totalPrice = total = vue.cartList.reduce((sum, meal) => {
+          return sum + Number(meal.totalPrice);
+        }, 0);
 
+        return totalPrice
+
+      }
     }
   });
   app.mount("#app");

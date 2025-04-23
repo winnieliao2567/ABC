@@ -123,7 +123,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                     <li class="nav-item">
                         <a class="nav-link toCart" data-toggle="dropdown">
                             <i class="fas fa-shopping-cart"></i>
-                            <span class="badge badge-primary navbar-badge">{{cartCount}}</span>
+                            <span class="badge badge-primary navbar-badge text-sm">{{cartCount}}</span>
                         </a>
                     </li>
                     <li class="nav-item dropdown">
@@ -452,7 +452,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                         loadingOff()
                     })
                 } else {
-                    apiWeb('/api/Search?keyword=' + keyWord + '&latitude=' + localStorage.latitude + '&longitude=' + localStorage.longitude + '&openStatus=open', 'GET', null, '關鍵字搜尋', function (v) {
+                    apiWeb('/api/Search?keyword=' + keyWord + '&latitude=' + localStorage.latitude + '&longitude=' + localStorage.longitude, 'GET', null, '關鍵字搜尋', function (v) {
                         vue.ClassGroup.name = className
                         vue.ClassGroup.class = classType
                         vue.storeList = v.data

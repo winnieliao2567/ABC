@@ -79,22 +79,34 @@
                                         <label for="MultipleSelection">複選</label>
                                     </div>
                                 </div>
-                                <div class="form-group d-flex" v-if="customizedEdit_Data.Data.type==1">
+                                <div class="form-group d-flex">
                                     <label>最少必須選</label>
-                                    <input type="number" class="form-control form-control-sm w-25" val="1" min="0"
-                                        :max="customizedEdit_Data.Data.options.length"
-                                        v-model="customizedEdit_Data.Data.minChoices">
+                                    <!-- <input type="number" class="form-control form-control-sm w-25" :min="minChoices.min"
+                                        :max="minChoices.max" :disabled="!minChoices.enabled"
+                                        v-model="customizedEdit_Data.Data.minChoices"> -->
+                                    <select class="form-control form-control-sm w-25"
+                                        v-model="customizedEdit_Data.Data.minChoices" :disabled="!minChoices.enabled">
+                                        <option v-for="n in (minChoices.max - minChoices.min + 1)" :key="n"
+                                            :value="n + minChoices.min - 1">
+                                            {{ n + minChoices.min - 1 }}
+                                        </option>
+                                    </select>
                                     <label>個選項</label>
                                     <label class="text-primary text-sm"
                                         v-if="customizedEdit_Data.Data.minChoices>=customizedEdit_Data.Data.options.length">(已達到最高數量)</label>
                                 </div>
-                                <div class="form-group d-flex" v-if="customizedEdit_Data.Data.type==1">
-                                    <label>最多必須選</label>
-                                    <input type="number" class="form-control form-control-sm w-25"
-                                        :val="customizedEdit_Data.Data.minChoices"
-                                        :min="customizedEdit_Data.Data.minChoices"
-                                        :max="customizedEdit_Data.Data.options.length"
-                                        v-model="customizedEdit_Data.Data.maxChoices">
+                                <div class="form-group d-flex">
+                                    <label>最多可以選</label>
+                                    <select class="form-control form-control-sm w-25"
+                                        v-model="customizedEdit_Data.Data.maxChoices" :disabled="!maxChoices.enabled">
+                                        <option v-for="n in (maxChoices.max - maxChoices.min + 1)" :key="n"
+                                            :value="n + maxChoices.min - 1">
+                                            {{ n + maxChoices.min - 1 }}
+                                        </option>
+                                    </select>
+                                    <!-- <input type="number" class="form-control form-control-sm w-25" :min="maxChoices.min"
+                                        :max="maxChoices.max" :disabled="!maxChoices.enabled"
+                                        v-model="customizedEdit_Data.Data.maxChoices"> -->
                                     <label>個選項</label>
                                     <label class="text-primary text-sm"
                                         v-if="customizedEdit_Data.Data.maxChoices>=customizedEdit_Data.Data.options.length">(已達到最高數量)</label>
@@ -403,6 +415,8 @@
                     "templateName": "",
                     "type": null,
                     "required": false,
+                    minChoices: 1,
+                    maxChoices: 1,
                     "options": [
                         {
                             'title': '',
@@ -417,12 +431,18 @@
                         templateName: '',
                         type: 1,
                         required: false,
+                        minChoices: 0,
+                        maxChoices: 1,
                         options: [{
                             title: '',
                             extra: ''
                         }]
                     }
                 },
+
+                minChoices: { min: 0, max: 0, enabled: false },
+                maxChoices: { min: 0, max: 0, enabled: false },
+
 
                 currentPage: currentPage, // 當前頁面
                 pageSize: pageSize, // 每頁顯示筆數
@@ -443,6 +463,13 @@
             this.getCustmizedList()
         },
         watch: {
+            'customizedEdit_Data.Data.options': {
+                deep: true,
+                handler(newVal, oldVal) {
+                    this.checkChoice();
+                    // console.log(this.customizedEdit_Data);
+                }
+            }
         },
         methods: {
             getCustmizedList() {
@@ -479,9 +506,11 @@
                         templateName: '',
                         type: 1,
                         required: false,
+                        minChoices: 0,
+                        maxChoices: 1,
                         options: [{
                             title: '',
-                            extra: ''
+                            extra: '0'
                         }]
                     }
                 }
@@ -525,7 +554,7 @@
             save() {
                 loadingOn()
                 var EditData = this.customizedEdit_Data.Data
-                console.log(EditData);
+                console.log(JSON.stringify(EditData));
 
                 EditData.group = ''
                 var vue = this
@@ -572,7 +601,7 @@
                 this.customizedEdit_Data.Data.options.push(
                     {
                         title: '',
-                        extra: ''
+                        extra: '0'
                     }
                 )
 
@@ -598,6 +627,92 @@
             // 跳轉到指定頁數
             goToPage(page) {
                 this.currentPage = page;
+            },
+
+            checkChoice() {
+                let data = this.customizedEdit_Data.Data
+                // minChoices: { min: 0, max: 0 },
+                // maxChoices: { min: 0, max: 0 },
+
+                // console.log(data);
+
+
+                let vue = this
+                let length = data.options.length
+                // 單選非必選
+                if (data.type == 0 && data.required == false) {
+                    // console.log('單選非必選');
+
+                    //預設值
+                    data.maxChoices = 1
+                    data.minChoices = 0
+
+                    // 最小選項數量的最小/大值
+                    vue.minChoices.min = 0
+                    vue.minChoices.max = 1
+                    vue.minChoices.enabled = false
+
+                    // 最大選項數量的最小/大值
+                    vue.maxChoices.min = 0
+                    vue.maxChoices.max = 1
+                    vue.maxChoices.enabled = false
+                }
+                // 單選必選
+                else if (data.type == 0 && data.required == true) {
+                    // console.log('單選必選');
+
+                    //預設值
+                    data.maxChoices = 1
+                    data.minChoices = 1
+
+                    // 最小選項數量的最小/大值
+                    vue.minChoices.min = 1
+                    vue.minChoices.max = 1
+                    vue.minChoices.enabled = false
+
+                    // 最大選項數量的最小/大值
+                    vue.maxChoices.min = 1
+                    vue.maxChoices.max = 1
+                    vue.maxChoices.enabled = false
+                }
+                //複選非必選
+                else if (data.type == 1 && data.required == false) {
+                    // console.log('複選非必選');
+
+                    //預設值
+                    data.maxChoices = length
+                    data.minChoices = 0
+
+                    // 最小選項數量的最小/大值
+                    vue.minChoices.min = 0
+                    vue.minChoices.max = length
+                    vue.minChoices.enabled = true
+
+                    // 最大選項數量的最小/大值
+                    vue.maxChoices.min = data.minChoices
+                    vue.maxChoices.max = length
+                    vue.maxChoices.enabled = true
+                }
+                // 複選必選
+                else if (data.type == 1 && data.required == true) {
+                    // console.log('複選必選');
+
+                    //預設值
+                    data.maxChoices = length
+                    data.minChoices = 1
+
+                    // 最小選項數量的最小/大值
+                    vue.minChoices.min = 1
+                    vue.minChoices.max = length
+                    vue.minChoices.enabled = true
+
+
+                    // 最大選項數量的最小/大值
+                    vue.maxChoices.min = 1
+                    vue.maxChoices.max = length
+                    vue.maxChoices.enabled = true
+
+                }
             },
         },
 

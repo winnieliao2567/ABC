@@ -8,7 +8,7 @@ const pageSize = 10; // 每頁顯示筆數
 const queryString = window.location.search;
 const urlParams = new URLSearchParams(queryString);
 // console.log(urlParams);
-const radius = 8000; //距離半徑
+const radius = 800000; //距離半徑
 const redirect = urlParams.get("redirect");
 
 const classId = urlParams.get("cid");

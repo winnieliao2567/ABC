@@ -491,7 +491,7 @@
 
                                         <div class="d-inline-block table-btn-div ml-2 float-right">
                                             <button class="btn btn-sm btn-outline-danger mr-2 d-inline-block"
-                                                @click="DeleteProductorGroup(index)">
+                                                v-if="Group.productors.length==0" @click="DeleteProductorGroup(index)">
                                                 <i class="fas fa-trash-alt"></i>
                                             </button>
                                             <button class="btn mr-2 btn-sm btn-secondary d-inline-block" :data-id="Group.categoryId

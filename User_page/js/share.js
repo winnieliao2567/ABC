@@ -192,9 +192,9 @@ $(function () {
             }
         }
     });
-    $("#goToCart").click(function () {
+    $(".goToCart").click(function () {
         var storeId = getParameterByName("id");
-        window.location = "cart.html?id=" + storeId;
+        window.location = "cart.html";
     });
     $("#continueToOrder").click(function () {
         var id = getParameterByName("id");

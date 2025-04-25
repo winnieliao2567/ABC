@@ -489,7 +489,6 @@
                     }
                 ],
 
-
                 showOrderInfo: {
                     storeInfo: {
                         name: ''
@@ -513,8 +512,6 @@
                     mealItem: []
                 },
 
-
-
                 currentPage: currentPage, // 當前頁面
                 pageSize: pageSize, // 每頁顯示筆數
             }
@@ -534,28 +531,15 @@
             $('[data-toggle="tooltip"]').tooltip();
 
             var vue = this
-            apiWeb('api/Store/waitinglist/' + storeId, 'GET', null, '取得訂單列表', function (v) {
+            apiWeb('/api/store/order/list/' + storeId, 'POST', null, '取得訂單列表', function (v) {
                 if (v.success == true) {
 
                     vue.Order_data = []
 
                     // vue.Order_data = v.data.waitingList
 
-                    for (var i = 0; i < v.data.waitingList.length; i++) {
-                        // console.log(v.data.waitingList[i]);
+                    vue.Order_data = v.orders
 
-                        var k = {
-                            orderId: v.data.waitingList[i].orderId,
-                            status: 2,//1:訂單成立;2:訂單取消
-                            // takeNum: '12',
-                            orderDisableId: v.data.waitingList[i].orderId.slice(-4),
-                            userName: add3Dots('某某人', 3),
-                            price: formatCurrency(v.data.waitingList[i].totalAmount),
-                        }
-                        vue.Order_data.push(k)
-
-
-                    }
                     loadingOff()
                     // console.log(vue.Order_data);
                 }

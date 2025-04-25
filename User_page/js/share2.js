@@ -8,7 +8,7 @@ const pageSize = 10; // 每頁顯示筆數
 const queryString = window.location.search;
 const urlParams = new URLSearchParams(queryString);
 // console.log(urlParams);
-const radius = 800000; //距離半徑
+const radius = 8000; //距離半徑
 const redirect = urlParams.get("redirect");
 
 const classId = urlParams.get("cid");
@@ -25,6 +25,12 @@ const mode = "";
 // console.log("storeId-------------" + storeId);
 
 const userFunction = [
+    {
+        icon: "fas fa-user-edit",
+        name: "會員資訊",
+        status: "",
+        url: "userInfomationEdit.html?",
+    },
     {
         icon: "fas fa-history",
         name: "歷史訂單",
@@ -69,6 +75,7 @@ function apiWeb(_url, _type, _data, TimelogTag, _fun) {
         data: JSON.stringify({
             key: AutoKey,
         }),
+        // sync: true,
         success: function (v) {
             ApiAuto = "Bearer " + v.token;
 
@@ -76,55 +83,52 @@ function apiWeb(_url, _type, _data, TimelogTag, _fun) {
                 console.log("● auto-" + TimelogTag + ":", ApiAuto);
             }
 
-            if (_url == "_url") {
-                if (_fun) _fun();
-            } else {
-                $.ajax({
-                    type: _type == "" ? "POST" : _type,
-                    headers: {
-                        "Content-Type": "application/json; charset=utf-8",
-                        Authorization: ApiAuto, // 需要的話可以加上授權標頭
+            $.ajax({
+                type: _type == "" ? "POST" : _type,
+                headers: {
+                    "Content-Type": "application/json; charset=utf-8",
+                    Authorization: ApiAuto, // 需要的話可以加上授權標頭
+                },
+                url: host + _url,
+                data: _data,
+                // sync: true,
+                statusCode: {
+                    400: function (xhr) {
+                        // console.log();
+                        toastr.error(xhr.responseJSON.message);
+                        setTimeout(() => {
+                            location.reload();
+                        }, 1500);
                     },
-                    url: host + _url,
-                    data: _data,
-                    statusCode: {
-                        400: function (xhr) {
-                            // console.log();
-                            toastr.error(xhr.responseJSON.message);
-                            setTimeout(() => {
-                                location.reload();
-                            }, 1500);
-                        },
-                        403: function (xhr) {
-                            console.log("Forbidden (403):", xhr);
-                        },
-                        404: function (xhr) {
-                            console.log("Not Found (404):", xhr);
-                        },
-                        500: function (xhr) {
-                            console.log("Server Error (500):", xhr);
-                        },
-                        default: function (xhr) {
-                            // 捕捉所有其他狀態碼
-                            toastr.error(TimelogTag + "系統問題導致失敗");
-                        },
+                    403: function (xhr) {
+                        console.log("Forbidden (403):", xhr);
                     },
-                    success: function (v) {
-                        if (mode != "test") {
-                            console.timeEnd("● API-" + TimelogTag + "(" + _url + ")");
-                            // toastr.success(TimelogTag + "成功");
-
-                            console.log("● Reques-" + TimelogTag + " : " + JSON.stringify(v));
-                        }
-                        if (_fun) _fun(v);
+                    404: function (xhr) {
+                        console.log("Not Found (404):", xhr);
                     },
-                    error: function (v) {
+                    500: function (xhr) {
+                        console.log("Server Error (500):", xhr);
+                    },
+                    default: function (xhr) {
+                        // 捕捉所有其他狀態碼
+                        toastr.error(TimelogTag + "系統問題導致失敗");
+                    },
+                },
+                success: function (v) {
+                    if (mode != "test") {
                         console.timeEnd("● API-" + TimelogTag + "(" + _url + ")");
-                        // toastr.error(TimelogTag + "系統問題導致失敗");
-                        console.log("Error:", JSON.stringify(v));
-                    },
-                });
-            }
+                        // toastr.success(TimelogTag + "成功");
+
+                        console.log("● Reques-" + TimelogTag + " : " + JSON.stringify(v));
+                    }
+                    if (_fun) _fun(v);
+                },
+                error: function (v) {
+                    console.timeEnd("● API-" + TimelogTag + "(" + _url + ")");
+                    // toastr.error(TimelogTag + "系統問題導致失敗");
+                    console.log("Error:", JSON.stringify(v));
+                },
+            });
         },
     });
 }

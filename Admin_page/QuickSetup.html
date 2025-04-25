@@ -436,10 +436,6 @@
             // this.GetStoreInfo()
             loadingOff()
 
-            this.menuList[5].enabled = this.storeInfoEdit.status.isOpen
-            this.menuList[6].enabled = this.storeInfoEdit.status.isOpen
-
-
             $('#OrderList').click(function () {
                 window.location.href = 'OrderList.html?sid=' + storeId
             })
@@ -490,6 +486,7 @@
 
             this.EarlyClosure.data = moment().format("YYYY-MM-DD")
 
+            this.getActiveBlocks()
         },
         watch: {
             'EarlyClosure.enabled'(newValue, oldValue) {
@@ -508,7 +505,7 @@
                 if (newValue !== oldValue && oldValue != '') {
                     this.BasicWaitingTimeSave();
                 }
-            }
+            },
         },
         methods: {
             GetStoreInfo() {
@@ -523,6 +520,22 @@
                     }
                     loadingOff()
                 });
+            },
+
+            getActiveBlocks() {
+                let vue = this
+                apiWeb('/api/TimeSlot/ActiveBlocks/' + storeId, 'GET', null, '檢查當前是否有封鎖時間段', function (v) {
+                    if (vue.storeInfoEdit.status.isOpen && v.hasActiveBlocks == false) {
+                        vue.menuList[5].enabled = true
+                        vue.menuList[6].enabled = false
+                    } else if (vue.storeInfoEdit.status.isOpen && v.hasActiveBlocks == true) {
+                        vue.menuList[6].enabled = true
+                        vue.menuList[5].enabled = false
+                    } else if (vue.storeInfoEdit.status.isOpen == false) {
+                        vue.menuList[6].enabled = false
+                        vue.menuList[5].enabled = false
+                    }
+                })
             },
 
             //提早關店

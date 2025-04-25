@@ -545,7 +545,12 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 },
 
                 productorData: [],
-                searchKeyword: ''
+                searchKeyword: '',
+
+                disabledType: 'List',//現在顯示的區塊（List / Search）
+
+                searchList: [],
+                searchCount: 0,
             }
         },
         mounted() {
@@ -640,6 +645,27 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 window.open(mapUrl, '_blank');
             },
 
+            //搜尋餐點
+            searchProductors() {
+                loadingOn()
+                var vue = this
+                apiWeb('api/Meal/' + storeId + '/search?keyword=' + this.searchKeyword, 'GET', null, '搜尋品項：' + this.searchKeyword, function (v) {
+                    vue.disabledType = 'Search'
+                    vue.searchCount = v.meals.length
+                    if (vue.searchCount != 0) {
+                        vue.searchList = vue.ClassList.map(category => ({
+                            categoryId: category.categoryId,
+                            categoryName: category.categoryName,
+                            productors: v.meals.filter(product => product.categoryId === category.categoryId)
+                        }));
+                    } else {
+                        vue.searchList = []
+                    }
+                    loadingOff()
+
+                    // console.log(vue.searchList.length);
+                })
+            },
 
             adjustHeight() {
                 var navbarHeight = $('#scrollProductor').outerHeight(); // 獲取 #scrollProductor 的高度

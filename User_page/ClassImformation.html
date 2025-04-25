@@ -179,9 +179,9 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                     <div class="card-body">
                                         <h6 class="text-dark m-0">{{ item.storeName }}</h6>
                                         <p class="text-muted text-sm m-0">
-                                            <i class="far fa-clock mr-2"></i>{{ item.minWaitingTime }}-{{
-                                            item.maxWaitingTime }} 分鐘</br>
-                                            <i class="fas fa-map-pin mr-2"></i>
+                                            <i class="far fa-clock mr-2"></i>
+                                            {{getWaitingTimeString(item.waitingTimeDisplay)}} 分鐘</br>
+                                            <i class="fas fa-map-pin ml-1 mr-2 "></i>
                                             {{formatDistance(item.distanceInKM)}}
                                         </p>
                                     </div>
@@ -473,6 +473,25 @@ scratch. This page gets rid of all links and provides the needed markup only.
                     return `${distance.toFixed(1)} 公里`;
                 }
             },
+
+            //回傳等待時間
+            getWaitingTimeString(timeint) {
+                if (timeint) {
+                    // console.log('getWaitingTimeString--------', timeint);
+
+
+                    if (typeof timeint !== 'number') {
+                        timeint = Number(timeint)
+                    }
+
+                    if (timeint < 60) {
+                        return timeint + '-' + (timeint + 10)
+                    } else {
+                        return "60 分鐘以上"
+                    }
+                }
+            }
+
         },
         computed: {
             // 過濾掉 isOpen = false && enable = true 的店家 = 營業中

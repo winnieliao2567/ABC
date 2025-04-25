@@ -167,50 +167,77 @@
         <div class="container">
           <div class="row">
 
-            <div class="col-12 col-md-8 p-3 itemOnlyHover">
-              <h6 class="m-0">
-                <span class="text-primary mr-2">
-                  <i class="fas fa-clock"></i>
-                </span>
-                <label for="IsTableware" class="m-0">取餐時間</label>
-              </h6>
-              <div class="row m-0 pl-4">
-                <select v-model="takeTime.type" class="form-control form-control-sm col-4 mr-3">
-                  <option value="0">現在</option>
-                  <option value="1">預定</option>
-                </select>
-                <!-- <input type="date" class="form-control col" v-show="takeTime.type==1">
+            <div class="col-12 col-md-6">
+              <div class="p-3 itemOnlyHover">
+                <h6 class="m-0">
+                  <span class="text-primary mr-2">
+                    <i class="fas fa-clock"></i>
+                  </span>
+                  <label for="IsTableware" class="m-0">取餐時間</label>
+                </h6>
+                <div class="row m-0 pl-4">
+                  <select v-model="takeTime.type" class="form-control form-control-sm col-4 mr-3">
+                    <option value="0">現在</option>
+                    <option value="1">預定</option>
+                  </select>
+                  <!-- <input type="date" class="form-control col" v-show="takeTime.type==1">
                 <input type="time" class="form-control col" v-show="takeTime.type==1"> -->
-                <input class="form-control datetimelocal form-control-sm col" :disabled="takeTime.type != 1"
-                  :value="takeTime.datetime" placeholder="YYYY-MM-DD HH:mm">
+                  <input class="form-control datetimelocal form-control-sm col" :disabled="takeTime.type != 1"
+                    :value="takeTime.datetime" placeholder="YYYY-MM-DD HH:mm">
+                </div>
+
               </div>
 
-            </div>
+              <div class="p-3 itemOnlyHover">
+                <h6 class="m-0">
+                  <span class="text-primary mr-2"><i class="fas fa-user-circle"></i></span>
+                  <label for="UserInfo" class="m-0">訂購人資訊</label>
+                  <input type="checkbox" class="float-right" id="UserInfo" v-model="userInfoSync">
+                  <span class="float-right text-muted text-sm mr-2">同此帳號資料</span>
+                </h6>
+                <div class="m-0 pl-4">
+                  <div class="form-group p-0">
+                    <label class="text-muted text-sm">名稱</label>
+                    <input class="form-control form-control-sm" :disabled="userInfoSync" v-model="toPayData.UserName
+                  ">
+                  </div>
+                  <div class="form-group p-0">
+                    <label class="text-muted text-sm">手機號碼</label>
+                    <input class="form-control form-control-sm" :disabled="userInfoSync"
+                      v-model="toPayData.UserPhoneNum">
+                  </div>
+                </div>
+              </div>
 
-            <div class="col-12 col-md-8 p-3 itemOnlyHover">
-              <h6 class="m-0">
-                <span class="text-primary mr-2"><i class="fas fa-utensils"></i></span>
-                <label for="IsTableware" class="m-0">需要餐具</label>
-                <input type="checkbox" class="float-right" id="IsTableware" v-model="toPayData.IsTableware">
-                <span class="float-right text-muted text-sm mr-2" v-show="toPayData.IsTableware">為了地球環保請盡量使用環保餐具</span>
-              </h6>
-            </div>
-
-            <div class="col-12 col-md-8 p-3 itemOnlyHover">
-              <h6 class="m-0">
-                <span class="text-primary mr-2"><i class="fas fa-shopping-bag"></i></span>
-                <label for="IsPlacetic" class="m-0">需要塑膠袋</label>
-                <input type="checkbox" class="float-right" id="IsPlacetic" v-model="toPayData.IsPlacetic">
-                <span class="float-right text-muted text-sm mr-2" v-show="toPayData.IsPlacetic">+ $2</span>
-              </h6>
-            </div>
-
-            <div class="col-12 col-md-8 p-3">
-              <h6 class="m-0">
-                <span class="text-primary mr-2"><i class="fas fa-receipt"></i></span>
-                訂單內容（{{cartCount}}）
-              </h6>
-              <div class="item border-bottom p-3" v-for="(item,index) in cartList">
+              <div class="p-3">
+                <h6 class="m-0">
+                  <span class="text-primary mr-2"><i class="fas fa-receipt"></i></span>
+                  訂單內容（{{cartCount}}）
+                </h6>
+                <div class="">
+                  <h6 class="m-0 p-3 item" data-toggle="collapse" href="#MealsCollapse" role="button"
+                    aria-expanded="false" aria-controls="MealsCollapse">
+                    <span>共{{cartCount}}項，總金額</span>
+                    <i class="fas fa-chevron-down float-right text-muted" aria-hidden="true"></i>
+                    <span class="float-right mr-2 text-primary">${{getTotalPrice}}</span>
+                  </h6>
+                  <div class="collapse" id="MealsCollapse">
+                    <div class="p-3" v-for="(item,index) in cartList">
+                      <p class="text-bold text-sm m-0">{{item.mealName}}
+                        <span class="text-primary float-right">${{item.totalPrice}}</span>
+                      </p>
+                      <p class="text-muted m-0 text-xs">
+                        <span
+                          v-if="item.mealConfig.options[0].value.length>0">{{item.mealConfig.options[0].value}},</span>
+                        <template v-for="(option,opIndex) in item.customConfig[0].options">
+                          <span
+                            v-for="(select,selectIndex) in option.content">{{select.title}}(+{{select.extra}}),</span>
+                        </template>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <!-- <div class="item border-bottom p-3" v-for="(item,index) in cartList">
                 <p class="text-bold m-0">{{item.mealName}} <span
                     class="float-right text-primary">${{item.totalPrice}}</span></p>
                 <p class="text-muted m-0 text-xs">
@@ -222,55 +249,60 @@
               </div>
               <div class="item p-3">
                 <h6 class="m-0">總金額<span class="text-primary float-right">${{getTotalPrice}}</span></h6>
-
+              </div> -->
               </div>
             </div>
-
-            <div class="col-12 col-md-8 p-3 itemOnlyHover">
-              <h6 class="m-0">
-                <span class="text-primary mr-2"><i class="fas fa-user-circle"></i></span>
-                <label for="UserInfo" class="m-0">訂購人資訊</label>
-                <input type="checkbox" class="float-right" id="UserInfo" v-model="userInfoSync">
-                <span class="float-right text-muted text-sm mr-2">同此帳號資料</span>
-              </h6>
-              <div class="m-0 pl-4">
-                <div class="form-group p-0">
-                  <label class="text-muted text-sm">名稱</label>
-                  <input class="form-control form-control-sm" :disabled="userInfoSync" v-model="toPayData.UserName
-                  ">
-                </div>
-                <div class="form-group p-0">
-                  <label class="text-muted text-sm">手機號碼</label>
-                  <input class="form-control form-control-sm" :disabled="userInfoSync" v-model="toPayData.UserPhoneNum">
-                </div>
-              </div>
-            </div>
-
-            <div class="col-12 col-md-8 p-3">
-              <h6 class="m-0">
-                <span class="text-primary mr-2"><i class="fas fa-money-check-alt"></i></span>
-                <label for="UserInfo" class="m-0">付款方式</label>
-              </h6>
-              <div class="item p-3 row" v-for="(item,index) in PaymentMethodsList"
-                :class="{ 'disabled': !item.enabled }">
-                <input type="radio" :value="item.value" :id="'PaymentMethods_' + item.value" name="PaymentMethods"
-                  v-model="toPayData.PaymentMethods">
-                <label :for="'PaymentMethods_'+item.value" class="m-0 col">{{item.name}}</label>
-              </div>
-            </div>
-
-            <div class="col-12 col-md-8 p-3 itemOnlyHover" v-if="cartList.length>0">
-              <h6 class="m-0">
-                <span class="text-primary"><i class="fas fa-comment-dots"></i></span>
-                備註
-              </h6>
+            <div class="col-12 col-md-6 sticky-top" style="height: max-content;background-color: var(--primary_bg);">
               <div class="p-3">
-                <textarea class="form-control" maxlength="50"></textarea>
+                <h6 class="m-0">
+                  <span class="text-primary mr-2"><i class="fas fa-money-check-alt"></i></span>
+                  <label for="UserInfo" class="m-0">付款方式</label>
+                </h6>
+                <div class="item p-3 row" v-for="(item,index) in PaymentMethodsList"
+                  :class="{ 'disabled': !item.enabled }">
+                  <input type="radio" :value="item.value" :id="'PaymentMethods_' + item.value" name="PaymentMethods"
+                    v-model="toPayData.PaymentMethods">
+                  <label :for="'PaymentMethods_'+item.value" class="m-0 col">{{item.name}}</label>
+                </div>
               </div>
-            </div>
 
-            <div class="col-12 col-md-8 py-5" v-if="cartList.length>0">
-              <div class="btn btn-block btn-primary" @click="Pay">確認送出</div>
+              <div class="p-3 itemOnlyHover" v-if="cartList.length>0">
+                <h6 class="m-0">
+                  <span class="text-primary"><i class="fas fa-comment-dots"></i></span>
+                  備註
+                </h6>
+                <div class="p-3">
+                  <textarea class="form-control" maxlength="50"></textarea>
+                </div>
+              </div>
+
+              <div class="p-3 itemOnlyHover">
+                <h6 class="m-0">
+                  <span class="text-primary mr-2"><i class="fas fa-utensils"></i></span>
+                  <label for="IsTableware" class="m-0">需要餐具</label>
+                  <input type="checkbox" class="float-right" id="IsTableware" v-model="toPayData.IsTableware">
+                  <span class="float-right text-muted text-xs mr-2"
+                    v-show="toPayData.IsTableware">為了地球環保請盡量使用環保餐具</span>
+                </h6>
+              </div>
+
+              <div class="p-3 itemOnlyHover">
+                <h6 class="m-0">
+                  <span class="text-primary mr-2"><i class="fas fa-shopping-bag"></i></span>
+                  <label for="IsPlacetic" class="m-0">需要塑膠袋</label>
+                  <input type="checkbox" class="float-right" id="IsPlacetic" v-model="toPayData.IsPlacetic">
+                  <span class="float-right text-muted text-sm mr-2" v-show="toPayData.IsPlacetic">+ $2</span>
+                </h6>
+              </div>
+
+              <div class="py-5 row m-0">
+                <div class="col-6">
+                  <div class="btn btn-block btn-secondary toCart">返回購物車</div>
+                </div>
+                <div class="col-6">
+                  <div class="btn btn-block btn-primary" @click="Pay">確認送出</div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -411,7 +443,7 @@
 
       // console.log(this.carstList);
 
-      console.log(this.userInfo);
+      // console.log(this.userInfo);
 
 
       this.cartCount = this.cartList.length
@@ -446,6 +478,7 @@
 
         // 只有在預約時初始化日期選擇器
         if (val == 1) {
+          loadingOn()
           this.$nextTick(() => {
             const $input = $('.datetimelocal');
 
@@ -455,21 +488,29 @@
             }
 
             // 初始化日期時間選擇器
-            $input.daterangepicker({
-              singleDatePicker: true,
-              timePicker: true,
-              timePicker24Hour: true,
-              autoApply: true,
-              autoUpdateInput: true,
-              startDate: moment(this.takeTime.datetime),
-              minDate: moment(),
-              maxDate: moment().add(this.storeInfo.storeInfo.maxReservationDays, 'days'),
-              locale: {
-                format: 'YYYY-MM-DD HH:mm:ss',
-                firstDay: 0
-              }
-            }).on('apply.daterangepicker', (ev, picker) => {
-              this.takeTime.datetime = picker.startDate.format('YYYY-MM-DD HH:mm:ss');
+            // $input.daterangepicker({
+            //   singleDatePicker: true,
+            //   timePicker: true,
+            //   timePicker24Hour: true,
+            //   autoApply: true,
+            //   autoUpdateInput: true,
+            //   startDate: moment(this.takeTime.datetime),
+            //   minDate: moment(),
+            //   maxDate: moment().add(this.storeInfo.storeInfo.maxReservationDays, 'days'),
+            //   locale: {
+            //     format: 'YYYY-MM-DD HH:mm:ss',
+            //     firstDay: 0
+            //   }
+            // }).on('apply.daterangepicker', (ev, picker) => {
+            //   this.takeTime.datetime = picker.startDate.format('YYYY-MM-DD HH:mm:ss');
+            // });
+            apiWeb('/api/TimeSlot/' + this.cartList[0].storeId + '?hideExpired=true', 'GET', null, '獲得可預定時間', function (v) {
+
+              console.log(v);
+
+
+              loadingOff()
+
             });
           });
         }
@@ -492,10 +533,10 @@
         this.toPayData.appointmentTime = timePart //時間
 
         console.log(this.toPayData);
-        apiWeb('/api/store/send/order', 'POST', JSON.stringify(this.toPayData), '送出訂單',
-          function () {
-            window.location.href = "succes.html"
-          })
+        // apiWeb('/api/store/send/order', 'POST', JSON.stringify(this.toPayData), '送出訂單',
+        //   function () {
+        window.location.href = "succes.html"
+        // })
 
       }
     },

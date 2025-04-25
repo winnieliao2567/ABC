@@ -167,6 +167,21 @@ scratch. This page gets rid of all links and provides the needed markup only.
             <div class="content">
                 <div class="container">
                     <div class="row">
+                        <!-- 猜你想看 -->
+                        <div class="col-12 col-md-3 mb-3" v-if="fromStore.store.storeId.length>0">
+                            <a class="card border shadow-none mb-2 swiper-slide"
+                                :href="'StoreImformation.html?sid='+fromStore.store.storeId">
+                                <img class="card-img-top" :src="fromStore.store.image || 'img/unknowIMG.png'" />
+                                <div class="card-body">
+                                    <h6 class="text-dark">{{ fromStore.store.storeName }}</h6>
+                                    <p class="text-muted text-xs card-text">
+                                        <i class="far fa-clock mr-2"></i>
+                                        {{getWaitingTimeString(fromStore.nextAvailable.waitingTimeDisplay)}}分鐘
+                                    </p>
+                                </div>
+                            </a>
+                        </div>
+
                         <!-- 搜尋 -->
                         <div class="col-12 mb-3">
                             <div class="Myinput-group">
@@ -226,10 +241,35 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                                 <h6 class="text-dark">{{ item.storeName }}</h6>
                                                 <p class="text-muted text-xs card-text">
                                                     <i class="far fa-clock mr-2"></i>
-                                                    {{ item.minWaitingTime }}-{{ item.maxWaitingTime }} 分鐘</br>
-                                                    <i class="fas fa-map-pin mr-2"></i>
+                                                    {{getWaitingTimeString(item.waitingTimeDisplay)}}分鐘</br>
+                                                    <i class="fas fa-map-pin ml-1 mr-2 "></i>
                                                     {{formatDistance(item.distanceInKM)}}
                                                 </p>
+                                            </div>
+                                        </a>
+                                    </template>
+                                </div>
+                                <button class="custom-prev-btn shadow">
+                                    <i class="fas fa-arrow-left"></i>
+                                </button>
+                                <button class="custom-next-btn shadow">
+                                    <i class="fas fa-arrow-right"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- 各類美食 -->
+                        <div class="col-12 mb-3 p-3" v-show="FoodTypeList.length>0">
+                            <h3>各類美食</h3>
+                            <div class="swiper-container-foodtype w-100 overflow-hidden">
+                                <div class="swiper-wrapper">
+                                    <template v-for="(item, index) in FoodTypeList" :key="index">
+                                        <a class="swiper-slide footType"
+                                            :href="'ClassImformation.html?cid='+item.tagId">
+                                            <img class="card-img-top" :src="item.image || 'img/unknowIMG.png'" />
+                                            <div class="d-flex flex-column justify-content-end">
+                                                <span class="card-title text-secondary text-sm text-center">
+                                                    {{ item.title }}</span>
                                             </div>
                                         </a>
                                     </template>
@@ -256,30 +296,6 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                             <img class="card-img-top" :src="item.image || 'img/unknowIMG.png'" />
                                             <div class="card-img-overlay d-flex flex-column justify-content-end">
                                                 <h5 class="card-title text-primary text-white">{{ item.title }}</h5>
-                                            </div>
-                                        </a>
-                                    </template>
-                                </div>
-                                <button class="custom-prev-btn shadow">
-                                    <i class="fas fa-arrow-left"></i>
-                                </button>
-                                <button class="custom-next-btn shadow">
-                                    <i class="fas fa-arrow-right"></i>
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- 各類美食 -->
-                        <div class="col-12 mb-3 p-3" v-show="FoodTypeList.length>0">
-                            <h3>各類美食</h3>
-                            <div class="swiper-container-foodtype w-100 overflow-hidden">
-                                <div class="swiper-wrapper">
-                                    <template v-for="(item, index) in FoodTypeList" :key="index">
-                                        <a class="swiper-slide footType"
-                                            :href="'ClassImformation.html?cid='+item.tagId">
-                                            <img class="card-img-top" :src="item.image || 'img/unknowIMG.png'" />
-                                            <div class="d-flex flex-column justify-content-end">
-                                                <span class="card-title text-secondary text-sm">{{ item.title }}</span>
                                             </div>
                                         </a>
                                     </template>
@@ -388,11 +404,24 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
                 StoreList: [],
 
+                fromStore: {
+                    store: {
+                        storeName: '',
+                        storeId: '',
+                        image: ''
+                    },
+                    nextAvailable: {
+                        waitingTimeDisplay: ''
+                    }
+                },
+
                 searchKeyword: ''
 
             }
         },
         mounted() {
+            let vue = this
+
             // 頁面載入時自動請求位置
             this.getLocation();
 
@@ -446,6 +475,18 @@ scratch. This page gets rid of all links and provides the needed markup only.
                     320: { slidesPerView: 5.2 }  // 超小手機
                 },
             });
+
+            // console.log(storeId);
+            if (storeId) {
+
+                apiWeb('/api/Store/detail/' + storeId, 'GET', null, '透過鏈結進入首頁', function (v) {
+                    // console.log(v);
+                    vue.fromStore = v
+                    // console.log('透過鏈結進入首頁--------', vue.fromStore);
+                })
+            }
+
+
         },
         watch: {
         },
@@ -555,7 +596,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 this.getLocation();
             },
 
-            // 獲取附近店家
+            // 獲得店家
             fetchNearbyStores() {
                 var vue = this
                 this.getTheTags(function () { vue.getOpeningStore(function () { loadingOff() }) })
@@ -566,7 +607,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 var vue = this
                 apiWeb('/api/stores?openOnly=true&latitude=' + localStorage.latitude + '&longitude=' + localStorage.longitude + '&&radius=' + radius, 'GET', null, '獲得附近店家', function (v) {
                     if (v.success == true) {
-                        console.log(v.data);
+                        // console.log(v.data);
 
                         vue.StoreList = v.data
                         // console.log(vue.StoreList);
@@ -578,9 +619,19 @@ scratch. This page gets rid of all links and provides the needed markup only.
             //可用標籤
             getTheTags(_func) {
                 var vue = this
-                apiWeb('/api/stores/tags', 'GET', null, '獲得所有標籤', function (v) {
+                apiWeb('/api/tags', 'GET', null, '獲得所有標籤', function (v) {
                     if (v.success == true) {
-                        vue.BusinessDistrictList = v.data
+                        // console.log(v.data);
+
+                        let tags = v.data
+
+                        vue.BusinessDistrictList = tags.filter(tag => tag.type === "地區/商圈標籤");
+                        // console.log(vue.BusinessDistrictList);
+
+                        vue.FoodTypeList = tags.filter(tag => tag.type === "食物類別標籤");
+                        vue.PromotionsList = tags.filter(tag => tag.type === "優惠專區標籤");
+
+                        // vue.BusinessDistrictList = v.data
                         // console.log(vue.BusinessDistrictList);
 
                         // vue.PromotionsList = v.data
@@ -602,9 +653,29 @@ scratch. This page gets rid of all links and provides the needed markup only.
             //搜尋
             search() {
                 window.location.href = "ClassImformation.html?kw=" + this.searchKeyword + '&ctype=關鍵字搜尋&cname=' + this.searchKeyword
+            },
+
+            //回傳等待時間
+            getWaitingTimeString(timeint) {
+                if (timeint) {
+                    // console.log('getWaitingTimeString--------', timeint);
+
+
+                    if (typeof timeint !== 'number') {
+                        timeint = Number(timeint)
+                    }
+
+                    if (timeint < 60) {
+                        return timeint + '-' + (timeint + 10)
+                    } else {
+                        return "60 分鐘以上"
+                    }
+                }
             }
+
         },
         computed: {
+
         }
     });
     app.mount("#app");

@@ -116,6 +116,7 @@ function apiWeb(_url, _type, _data, TimelogTag, _fun) {
         data: JSON.stringify({
             key: AutoKey,
         }),
+        // sync: true,
         success: function (v) {
             ApiAuto = "Bearer " + v.token;
 
@@ -210,8 +211,9 @@ function checkUserInfo() {
         userError();
     }
     apiWeb("api/Store/detail/" + storeId, "GET", null, "更新店家資訊", function (v) {
+        // console.log(v.status);
+
         localStorage.storeInfo = encryptObject(v);
-        // console.log(v.status.isOpen);
 
         if (v.status.isOpen == true) {
             $("#OpenStatus").addClass("fas fa-store text-success");

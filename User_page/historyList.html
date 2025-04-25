@@ -168,38 +168,47 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 <div class="container">
 
                     <div class="accordion" id="accordionExample">
-                        <template v-for="(item,index) in paginatedOrders" :key="item.id">
+                        <template v-for="(item,index) in paginatedOrders" :key="item.no">
                             <div class="card m-0">
                                 <div class="card-header" id="headingOne">
-                                    <div class="row m-0" data-toggle="collapse"
-                                        :data-target="'#collapse'+item.orderInfo.orderId" aria-expanded="true"
-                                        :aria-controls="'collapse'+item.orderInfo.orderId">
+                                    <div class="row m-0" data-toggle="collapse" :data-target="'#collapse'+item.no"
+                                        aria-expanded="true" :aria-controls="'collapse'+item.no">
                                         <!-- <div class="col-4 col-md-4 col-xl-2 p-0">
                                             <img :src="item.storeInfo.image" style="width: 100%;">
                                         </div> -->
                                         <div class="col">
-                                            <h5>{{item.storeInfo.storeName}}
+                                            <h5>{{item.storeName}}
                                                 <span class="text-dark text-bold float-right">
-                                                    ${{ formatCurrency(item.orderInfo.Price)}}
+                                                    ${{ formatCurrency(item.price)}}
                                                 </span>
                                             </h5>
-                                            <p class="text-muted text-sm m-0">{{item.orderInfo.AppointmentDate}}
-                                                {{item.orderInfo.AppointmentTime}}</p>
+                                            <p class="text-muted text-sm m-0">下單時間：{{item.createDate}}
+                                                {{item.createTime}}</p>
+                                            <p class="text-muted text-sm m-0">取餐時間：{{item.appointmentDate}}
+                                                {{item.appointmentTime}}</p>
                                         </div>
                                     </div>
                                 </div>
 
-                                <div :id="'collapse'+item.orderInfo.orderId" class="collapse"
-                                    aria-labelledby="headingOne" data-parent="#accordionExample">
+                                <div :id="'collapse'+item.no" class="collapse" aria-labelledby="headingOne"
+                                    data-parent="#accordionExample">
                                     <div class="card-body">
-                                        <template v-for="(meal,mealIndex) in item.orderInfo.items">
-                                            <p class="m-0">{{meal.mealName}}*{{meal.count}}</p>
+                                        <template v-for="(meal,mealIndex) in item.menu">
+                                            <p class="m-0">{{meal.mealName}}</p>
                                         </template>
                                     </div>
                                 </div>
                             </div>
                         </template>
 
+                    </div>
+                    <div v-if="HistoryList.length==0" class="col-12">
+                        <div class="emptyImage emptyImage2"></div>
+                        <p class="text-center">還沒有點餐紀錄喔，
+                            <button class="ml-2 btn btn-primary" type="button" href="index.html">
+                                前往點餐
+                            </button>
+                        </p>
                     </div>
 
                     <div v-if="HistoryList.length>0" class="col-12">
@@ -250,576 +259,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 error: null, // 錯誤信息
                 locationRequired: true, // 標記位置是否必須
 
-                HistoryList: [
-                    {
-                        "storeInfo": {
-                            "storeId": "1",
-                            "storeName": "超值速食",
-                            "image": "img/store.png"
-                        },
-                        "orderInfo": {
-                            "PaymentMethods": "現金",
-                            "CreateDate": "2024-02-26",
-                            "CreateTime": "20:04:08",
-                            "AppointmentDate": "2024-03-01",
-                            "AppointmentTime": "18:05:54",
-                            "Price": 1468,
-                            "items": [
-                                {
-                                    "mealName": "滷肉飯",
-                                    "count": 3
-                                },
-                                {
-                                    "mealName": "炸雞套餐",
-                                    "count": 1
-                                }
-                            ],
-                            "orderId": "e0bf01c3-8"
-                        }
-                    },
-                    {
-                        "storeInfo": {
-                            "storeId": "2",
-                            "storeName": "豪華燒肉",
-                            "image": "img/store.png"
-                        },
-                        "orderInfo": {
-                            "PaymentMethods": "現金",
-                            "CreateDate": "2024-01-05",
-                            "CreateTime": "18:40:13",
-                            "AppointmentDate": "2024-01-06",
-                            "AppointmentTime": "15:40:13",
-                            "Price": 926,
-                            "items": [
-                                {
-                                    "mealName": "炸雞套餐",
-                                    "count": 1
-                                },
-                                {
-                                    "mealName": "麻辣鍋",
-                                    "count": 3
-                                }
-                            ],
-                            "orderId": "b05c8364-5"
-                        }
-                    },
-                    {
-                        "storeInfo": {
-                            "storeId": "3",
-                            "storeName": "火鍋樂",
-                            "image": "img/store.png"
-                        },
-                        "orderInfo": {
-                            "PaymentMethods": "現金",
-                            "CreateDate": "2024-01-19",
-                            "CreateTime": "17:32:10",
-                            "AppointmentDate": "2024-01-22",
-                            "AppointmentTime": "14:29:22",
-                            "Price": 1241,
-                            "items": [
-                                {
-                                    "mealName": "薯條",
-                                    "count": 3
-                                },
-                                {
-                                    "mealName": "雞排",
-                                    "count": 2
-                                }
-                            ],
-                            "orderId": "ef1cbfd6-8"
-                        }
-                    },
-                    {
-                        "storeInfo": {
-                            "storeId": "4",
-                            "storeName": "金牌炸雞",
-                            "image": "img/store.png"
-                        },
-                        "orderInfo": {
-                            "PaymentMethods": "現金",
-                            "CreateDate": "2024-01-16",
-                            "CreateTime": "17:11:53",
-                            "AppointmentDate": "2024-01-17",
-                            "AppointmentTime": "18:12:40",
-                            "Price": 636,
-                            "items": [
-                                {
-                                    "mealName": "義大利麵",
-                                    "count": 3
-                                },
-                                {
-                                    "mealName": "炸雞套餐",
-                                    "count": 1
-                                }
-                            ],
-                            "orderId": "3f4ca715-8"
-                        }
-                    },
-                    {
-                        "storeInfo": {
-                            "storeId": "5",
-                            "storeName": "快樂漢堡",
-                            "image": "img/store.png"
-                        },
-                        "orderInfo": {
-                            "PaymentMethods": "現金",
-                            "CreateDate": "2024-01-03",
-                            "CreateTime": "16:33:29",
-                            "AppointmentDate": "2024-01-05",
-                            "AppointmentTime": "13:09:09",
-                            "Price": 681,
-                            "items": [
-                                {
-                                    "mealName": "握壽司",
-                                    "count": 2
-                                },
-                                {
-                                    "mealName": "麻辣鍋",
-                                    "count": 3
-                                },
-                                {
-                                    "mealName": "雞排",
-                                    "count": 2
-                                }
-                            ],
-                            "orderId": "f49ac92b-4"
-                        }
-                    },
-                    {
-                        "storeInfo": {
-                            "storeId": "6",
-                            "storeName": "異國美食",
-                            "image": "img/store.png"
-                        },
-                        "orderInfo": {
-                            "PaymentMethods": "現金",
-                            "CreateDate": "2024-01-12",
-                            "CreateTime": "10:59:24",
-                            "AppointmentDate": "2024-01-13",
-                            "AppointmentTime": "11:59:34",
-                            "Price": 531,
-                            "items": [
-                                {
-                                    "mealName": "握壽司",
-                                    "count": 2
-                                },
-                                {
-                                    "mealName": "薯條",
-                                    "count": 3
-                                },
-                                {
-                                    "mealName": "義大利麵",
-                                    "count": 3
-                                }
-                            ],
-                            "orderId": "0c64c5e0-b"
-                        }
-                    },
-                    {
-                        "storeInfo": {
-                            "storeId": "7",
-                            "storeName": "金牌炸雞",
-                            "image": "img/store.png"
-                        },
-                        "orderInfo": {
-                            "PaymentMethods": "現金",
-                            "CreateDate": "2024-02-29",
-                            "CreateTime": "12:17:33",
-                            "AppointmentDate": "2024-03-02",
-                            "AppointmentTime": "12:09:22",
-                            "Price": 1239,
-                            "items": [
-                                {
-                                    "mealName": "握壽司",
-                                    "count": 2
-                                }
-                            ],
-                            "orderId": "ea470e63-6"
-                        }
-                    },
-                    {
-                        "storeInfo": {
-                            "storeId": "8",
-                            "storeName": "超讚便當",
-                            "image": "img/store.png"
-                        },
-                        "orderInfo": {
-                            "PaymentMethods": "現金",
-                            "CreateDate": "2024-01-30",
-                            "CreateTime": "17:44:03",
-                            "AppointmentDate": "2024-02-02",
-                            "AppointmentTime": "16:58:24",
-                            "Price": 1037,
-                            "items": [
-                                {
-                                    "mealName": "握壽司",
-                                    "count": 2
-                                },
-                                {
-                                    "mealName": "牛肉麵",
-                                    "count": 3
-                                },
-                                {
-                                    "mealName": "壽喜燒",
-                                    "count": 2
-                                }
-                            ],
-                            "orderId": "cec864f0-4"
-                        }
-                    },
-                    {
-                        "storeInfo": {
-                            "storeId": "9",
-                            "storeName": "金牌炸雞",
-                            "image": "img/store.png"
-                        },
-                        "orderInfo": {
-                            "PaymentMethods": "現金",
-                            "CreateDate": "2024-01-10",
-                            "CreateTime": "18:04:27",
-                            "AppointmentDate": "2024-01-12",
-                            "AppointmentTime": "12:33:13",
-                            "Price": 1294,
-                            "items": [
-                                {
-                                    "mealName": "薯條",
-                                    "count": 3
-                                },
-                                {
-                                    "mealName": "雞排",
-                                    "count": 2
-                                }
-                            ],
-                            "orderId": "d6e20bce-6"
-                        }
-                    },
-                    {
-                        "storeInfo": {
-                            "storeId": "10",
-                            "storeName": "新鮮海鮮",
-                            "image": "img/store.png"
-                        },
-                        "orderInfo": {
-                            "PaymentMethods": "現金",
-                            "CreateDate": "2024-02-27",
-                            "CreateTime": "20:42:55",
-                            "AppointmentDate": "2024-02-29",
-                            "AppointmentTime": "17:56:58",
-                            "Price": 840,
-                            "items": [
-                                {
-                                    "mealName": "炸雞套餐",
-                                    "count": 1
-                                }
-                            ],
-                            "orderId": "f97d9550-a"
-                        }
-                    },
-                    {
-                        "storeInfo": {
-                            "storeId": "11",
-                            "storeName": "超值速食",
-                            "image": "img/store.png"
-                        },
-                        "orderInfo": {
-                            "PaymentMethods": "現金",
-                            "CreateDate": "2024-01-20",
-                            "CreateTime": "12:02:55",
-                            "AppointmentDate": "2024-01-21",
-                            "AppointmentTime": "17:37:48",
-                            "Price": 819,
-                            "items": [
-                                {
-                                    "mealName": "牛肉麵",
-                                    "count": 3
-                                }
-                            ],
-                            "orderId": "9e424c36-4"
-                        }
-                    },
-                    {
-                        "storeInfo": {
-                            "storeId": "12",
-                            "storeName": "超值速食",
-                            "image": "img/store.png"
-                        },
-                        "orderInfo": {
-                            "PaymentMethods": "現金",
-                            "CreateDate": "2024-01-20",
-                            "CreateTime": "16:47:53",
-                            "AppointmentDate": "2024-01-23",
-                            "AppointmentTime": "16:41:43",
-                            "Price": 1389,
-                            "items": [
-                                {
-                                    "mealName": "雞排",
-                                    "count": 2
-                                },
-                                {
-                                    "mealName": "滷肉飯",
-                                    "count": 3
-                                },
-                                {
-                                    "mealName": "麻辣鍋",
-                                    "count": 3
-                                }
-                            ],
-                            "orderId": "7a420a40-c"
-                        }
-                    },
-                    {
-                        "storeInfo": {
-                            "storeId": "13",
-                            "storeName": "超值速食",
-                            "image": "img/store.png"
-                        },
-                        "orderInfo": {
-                            "PaymentMethods": "現金",
-                            "CreateDate": "2024-01-26",
-                            "CreateTime": "14:45:19",
-                            "AppointmentDate": "2024-01-31",
-                            "AppointmentTime": "11:11:54",
-                            "Price": 264,
-                            "items": [
-                                {
-                                    "mealName": "炸蝦天婦羅",
-                                    "count": 1
-                                },
-                                {
-                                    "mealName": "滷肉飯",
-                                    "count": 3
-                                }
-                            ],
-                            "orderId": "f2e1deaa-c"
-                        }
-                    },
-                    {
-                        "storeInfo": {
-                            "storeId": "14",
-                            "storeName": "新鮮海鮮",
-                            "image": "img/store.png"
-                        },
-                        "orderInfo": {
-                            "PaymentMethods": "現金",
-                            "CreateDate": "2024-02-17",
-                            "CreateTime": "10:46:45",
-                            "AppointmentDate": "2024-02-20",
-                            "AppointmentTime": "15:45:26",
-                            "Price": 896,
-                            "items": [
-                                {
-                                    "mealName": "麻辣鍋",
-                                    "count": 3
-                                },
-                                {
-                                    "mealName": "義大利麵",
-                                    "count": 3
-                                }
-                            ],
-                            "orderId": "a02407f4-9"
-                        }
-                    },
-                    {
-                        "storeInfo": {
-                            "storeId": "15",
-                            "storeName": "異國美食",
-                            "image": "img/store.png"
-                        },
-                        "orderInfo": {
-                            "PaymentMethods": "現金",
-                            "CreateDate": "2024-01-07",
-                            "CreateTime": "16:47:05",
-                            "AppointmentDate": "2024-01-12",
-                            "AppointmentTime": "19:43:47",
-                            "Price": 924,
-                            "items": [
-                                {
-                                    "mealName": "握壽司",
-                                    "count": 2
-                                },
-                                {
-                                    "mealName": "麻辣鍋",
-                                    "count": 3
-                                }
-                            ],
-                            "orderId": "5d9e6fc4-2"
-                        }
-                    },
-                    {
-                        "storeInfo": {
-                            "storeId": "16",
-                            "storeName": "火鍋樂",
-                            "image": "img/store.png"
-                        },
-                        "orderInfo": {
-                            "PaymentMethods": "現金",
-                            "CreateDate": "2024-01-08",
-                            "CreateTime": "19:44:33",
-                            "AppointmentDate": "2024-01-13",
-                            "AppointmentTime": "18:25:41",
-                            "Price": 377,
-                            "items": [
-                                {
-                                    "mealName": "炸蝦天婦羅",
-                                    "count": 1
-                                },
-                                {
-                                    "mealName": "牛肉麵",
-                                    "count": 3
-                                }
-                            ],
-                            "orderId": "e989a7e2-7"
-                        }
-                    },
-                    {
-                        "storeInfo": {
-                            "storeId": "17",
-                            "storeName": "異國美食",
-                            "image": "img/store.png"
-                        },
-                        "orderInfo": {
-                            "PaymentMethods": "現金",
-                            "CreateDate": "2024-02-13",
-                            "CreateTime": "15:50:50",
-                            "AppointmentDate": "2024-02-14",
-                            "AppointmentTime": "20:52:46",
-                            "Price": 1282,
-                            "items": [
-                                {
-                                    "mealName": "麻辣鍋",
-                                    "count": 3
-                                },
-                                {
-                                    "mealName": "壽喜燒",
-                                    "count": 2
-                                }
-                            ],
-                            "orderId": "f8095002-4"
-                        }
-                    },
-                    {
-                        "storeInfo": {
-                            "storeId": "18",
-                            "storeName": "異國美食",
-                            "image": "img/store.png"
-                        },
-                        "orderInfo": {
-                            "PaymentMethods": "現金",
-                            "CreateDate": "2024-01-08",
-                            "CreateTime": "15:50:59",
-                            "AppointmentDate": "2024-01-10",
-                            "AppointmentTime": "11:32:24",
-                            "Price": 1356,
-                            "items": [
-                                {
-                                    "mealName": "壽喜燒",
-                                    "count": 2
-                                },
-                                {
-                                    "mealName": "牛肉麵",
-                                    "count": 3
-                                }
-                            ],
-                            "orderId": "c818b3a6-8"
-                        }
-                    },
-                    {
-                        "storeInfo": {
-                            "storeId": "19",
-                            "storeName": "火鍋樂",
-                            "image": "img/store.png"
-                        },
-                        "orderInfo": {
-                            "PaymentMethods": "現金",
-                            "CreateDate": "2024-02-05",
-                            "CreateTime": "19:32:45",
-                            "AppointmentDate": "2024-02-06",
-                            "AppointmentTime": "16:04:25",
-                            "Price": 1144,
-                            "items": [
-                                {
-                                    "mealName": "牛肉麵",
-                                    "count": 3
-                                },
-                                {
-                                    "mealName": "麻辣鍋",
-                                    "count": 3
-                                }
-                            ],
-                            "orderId": "0692ad07-f"
-                        }
-                    },
-                    {
-                        "storeInfo": {
-                            "storeId": "20",
-                            "storeName": "快樂漢堡",
-                            "image": "img/store.png"
-                        },
-                        "orderInfo": {
-                            "PaymentMethods": "現金",
-                            "CreateDate": "2024-01-08",
-                            "CreateTime": "10:21:58",
-                            "AppointmentDate": "2024-01-12",
-                            "AppointmentTime": "13:25:27",
-                            "Price": 217,
-                            "items": [
-                                {
-                                    "mealName": "雞排",
-                                    "count": 2
-                                }
-                            ],
-                            "orderId": "11eb7733-2"
-                        }
-                    },
-                    {
-                        "storeInfo": {
-                            "storeId": "21",
-                            "storeName": "超值速食",
-                            "image": "img/store.png"
-                        },
-                        "orderInfo": {
-                            "PaymentMethods": "現金",
-                            "CreateDate": "2024-01-18",
-                            "CreateTime": "13:54:55",
-                            "AppointmentDate": "2024-01-19",
-                            "AppointmentTime": "20:28:26",
-                            "Price": 1485,
-                            "items": [
-                                {
-                                    "mealName": "義大利麵",
-                                    "count": 3
-                                }
-                            ],
-                            "orderId": "9bb88b4c-5"
-                        }
-                    },
-                    {
-                        "storeInfo": {
-                            "storeId": "22",
-                            "storeName": "快樂漢堡",
-                            "image": "img/store.png"
-                        },
-                        "orderInfo": {
-                            "PaymentMethods": "現金",
-                            "CreateDate": "2024-01-28",
-                            "CreateTime": "11:08:21",
-                            "AppointmentDate": "2024-02-02",
-                            "AppointmentTime": "10:47:55",
-                            "Price": 271,
-                            "items": [
-                                {
-                                    "mealName": "薯條",
-                                    "count": 3
-                                },
-                                {
-                                    "mealName": "炸蝦天婦羅",
-                                    "count": 1
-                                }
-                            ],
-                            "orderId": "a05f2eff-4"
-                        }
-                    }
-                ],
+                HistoryList: [],
 
                 currentPage: currentPage, // 當前頁面
                 pageSize: pageSize, // 每頁顯示筆數
@@ -828,12 +268,21 @@ scratch. This page gets rid of all links and provides the needed markup only.
         },
         mounted() {
 
-
+            this.getHistoryList()
         },
         watch: {
         },
 
         methods: {
+            getHistoryList() {
+                // console.log(this.userInfo);
+                let vue = this
+                apiWeb('/api/store/user/order/list/' + this.userInfo.id, 'GET', null, '取得歷史資料', function (v) {
+                    vue.HistoryList = v.orders
+                    console.log(vue.HistoryList);
+
+                })
+            },
             formatCurrency(amount) {
                 var k = new Intl.NumberFormat("en-US").format(amount);
                 console.log(k);

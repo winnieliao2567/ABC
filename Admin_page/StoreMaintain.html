@@ -98,14 +98,17 @@
                 <li class="nav-item dropdown">
                     <a class="nav-link" data-toggle="dropdown" href="#">
                         <i class="fas fa-store" id="OpenStatus"></i>
-                        {{storeInfo.store.storeName}}
+                        {{storeInfo.storeName}}
                         <i class="fas fa-caret-down"></i>
                     </a>
                     <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right overflow-auto StoreSelector">
                         <a class="dropdown-item" v-for="(store,index) in allStore" :id="store.storeId"
                             onclick="itemClick($(this))">
                             <div class="store">
-                                <strong>{{ store.storeName }}</strong>
+                                <strong><span class="mr-2 text-xs"
+                                        :class="store.storeStatus.isOpen ? 'text-success' : 'text-danger'">
+                                        <i class="fas fa-dot-circle"></i>
+                                    </span>{{ store.storeName }}</strong>
                                 <p class="text-muted">{{ store.city }}{{ store.districts }}{{ store.shortAddress }}</p>
                             </div>
                         </a>
@@ -636,7 +639,141 @@
                 //         ]
                 //     }
                 // },
-                storeInfoEdit: decryptObject(localStorage.storeInfo),
+                storeInfoEdit:
+                {
+                    "store": {
+                        "storeId": "262318e8-e447-4f58-9757-258d348046d7",
+                        "storeName": "Store001",
+                        "storePhone": "0223456789",
+                        "minOrderAmount": 5,
+                        "orderInterval": 15,
+                        "createdDate": "2025-03-18T10:12:14.013",
+                        "enable": true,
+                        "deleted": false,
+                        "id": 11,
+                        "slotLimit": 1000,
+                        "amountLimit": 200,
+                    },
+                    "storeInfo": {
+                        "storeId": "262318e8-e447-4f58-9757-258d348046d7",
+                        "city": "新北市",
+                        "districts": "新店區",
+                        "shortAddress": "",
+                        "email": "",
+                        "tel": "",
+                        "businessNum": "",
+                        "introduction": "<p><br></p>",
+                        "tags": [],
+                        "basicwaitingTime": "",
+                        "minimumOrderAmount": "",
+                        "minimumOrderText": "",
+                        "minimumOrderEnabled": true,
+                        "maxReservationDays": 0
+                    },
+                    "openTime": {
+                        "businessDays": [
+                            {
+                                "id": "Mon",
+                                "title": "週一",
+                                "operation": true,
+                                "time": [
+                                    {
+                                        "open": "",
+                                        "close": ""
+                                    }
+                                ]
+                            },
+                            {
+                                "id": "Tue",
+                                "title": "週二",
+                                "operation": true,
+                                "time": [
+                                    {
+                                        "open": "",
+                                        "close": ""
+                                    }
+                                ]
+                            },
+                            {
+                                "id": "Wed",
+                                "title": "週三",
+                                "operation": true,
+                                "time": [
+                                    {
+                                        "open": "",
+                                        "close": ""
+                                    }
+                                ]
+                            },
+                            {
+                                "id": "Thu",
+                                "title": "週四",
+                                "operation": true,
+                                "time": [
+                                    {
+                                        "open": "",
+                                        "close": ""
+                                    }
+                                ]
+                            },
+                            {
+                                "id": "Fri",
+                                "title": "週五",
+                                "operation": true,
+                                "time": [
+                                    {
+                                        "open": "",
+                                        "close": ""
+                                    }
+                                ]
+                            },
+                            {
+                                "id": "Sat",
+                                "title": "週六",
+                                "operation": true,
+                                "time": [
+                                    {
+                                        "open": "",
+                                        "close": ""
+                                    }
+                                ]
+                            },
+                            {
+                                "id": "Sun",
+                                "title": "週日",
+                                "operation": true,
+                                "time": [
+                                    {
+                                        "open": "",
+                                        "close": ""
+                                    }
+                                ]
+                            }
+                        ],
+                        "specialCloseDays": []
+                    },
+                    "status": {
+                        "storeId": "",
+                        "isOpen": true,
+                        "currentOpenTime": "",
+                        "currentCloseTime": "",
+                        "lastUpdated": ""
+                    },
+                    "activeMenu": {
+                        "menuId": "",
+                        "menuName": "",
+                        "isActive": true,
+                        "createdDate": "",
+                        "itemCount": 0
+                    },
+                    "nextAvailable": {
+                        "time": "",
+                        "timeFormatted": "",
+                        "waitingMinutes": 0,
+                        "waitingTimeDisplay": ""
+                    }
+                },
+
                 allCity: [],
                 allDistricts: [],
 

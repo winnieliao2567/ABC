@@ -114,14 +114,17 @@
                 <li class="nav-item dropdown">
                     <a class="nav-link" data-toggle="dropdown" href="#">
                         <i class="fas fa-store" id="OpenStatus"></i>
-                        {{storeInfo.store.storeName}}
+                        {{storeInfo.storeName}}
                         <i class="fas fa-caret-down"></i>
                     </a>
                     <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right overflow-auto StoreSelector">
                         <a class="dropdown-item" v-for="(store,index) in allStore" :id="store.storeId"
                             onclick="itemClick($(this))">
                             <div class="store">
-                                <strong>{{ store.storeName }}</strong>
+                                <strong><span class="mr-2 text-xs"
+                                        :class="store.storeStatus.isOpen ? 'text-success' : 'text-danger'">
+                                        <i class="fas fa-dot-circle"></i>
+                                    </span>{{ store.storeName }}</strong>
                                 <p class="text-muted">{{ store.city }}{{ store.districts }}{{ store.shortAddress }}</p>
                             </div>
                         </a>

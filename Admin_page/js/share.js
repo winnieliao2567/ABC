@@ -1,6 +1,6 @@
 const copyRight = " 共饗有限公司. All Rights Reserved.";
 
-const Model = ""; //test
+const TestModel = false; //test
 
 const version = "1.0.1";
 const host = "https://sharings.com.tw/";
@@ -10,7 +10,7 @@ const currentPage = 1; // 當前頁面
 const pageSize = 10; // 每頁顯示筆數
 const queryString = window.location.search;
 const urlParams = new URLSearchParams(queryString);
-console.log(urlParams);
+// console.log(urlParams);
 
 const menuId = urlParams.get("mid");
 const storeId = urlParams.get("sid");
@@ -98,11 +98,9 @@ function loadingOn() {
     // }, 0);
 }
 function apiWeb(_url, _type, _data, TimelogTag, _fun) {
-    if (Model != "test") {
-        console.time("● API-" + TimelogTag + "(" + _url + ")");
-    }
+    // console.log("● API-" + TimelogTag + "(" + _url + ")");
 
-    console.log("● data-" + TimelogTag + ":", _data);
+    // console.log("● data-" + TimelogTag + ":", _data);
 
     let ApiAuto = "";
 
@@ -170,13 +168,12 @@ function apiWeb(_url, _type, _data, TimelogTag, _fun) {
                         },
                     },
                     success: function (v) {
-                        if (Model != "test") {
-                            console.timeEnd("● API-" + TimelogTag + "(" + _url + ")");
-                        }
+                        console.log("● API-" + TimelogTag + "(" + _url + ")");
+
                         // toastr.success(TimelogTag + "成功");
-                        if (Model != "test") {
-                            console.log("● Reques-" + TimelogTag + " : ", v);
-                        }
+
+                        console.log("● Reques-" + TimelogTag + " : ", v);
+
                         if (_fun) _fun(v);
                     },
                     error: function (v) {
@@ -210,15 +207,17 @@ function checkUserInfo() {
         console.error(errorInfo);
         userError();
     }
-    apiWeb("api/Store/detail/" + storeId, "GET", null, "更新店家資訊", function (v) {
-        // console.log(v.status);
+    apiWeb("/api/Store/basic-info/" + storeId, "GET", null, "更新店家資訊", function (v) {
+        // console.log(v);
 
         localStorage.storeInfo = encryptObject(v);
 
+        console.log(v.status.isOpen);
+
         if (v.status.isOpen == true) {
-            $("#OpenStatus").addClass("fas fa-store text-success");
+            $("#OpenStatus").addClass("text-success");
         } else {
-            $("#OpenStatus").addClass("fas fa-store-slash text-danger");
+            $("#OpenStatus").addClass("text-danger");
         }
     });
 
@@ -241,7 +240,7 @@ function itemClick(obj) {
 function selectStore(Id) {
     console.log("selectid: " + Id);
     // loadingOn();
-    apiWeb("api/Store/detail/" + Id, "GET", null, "更換店家，取得資訊", function (v) {
+    apiWeb("/api/Store/basic-info/" + Id, "GET", null, "更換店家，取得資訊", function (v) {
         // 存入 localStorage
         // console.log("選擇的商店:", foundStore);
         localStorage.storeInfo = encryptObject(v);

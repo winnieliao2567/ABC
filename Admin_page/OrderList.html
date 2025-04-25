@@ -113,7 +113,7 @@
                                     <div class="col-12 col-md-6 col-xl-6">
                                         <div class="form-group mb-3">
                                             <div class="text-muted text-sm">
-                                                <i class="fas fa-store" id="OpenStatus"></i>
+                                                <i class="fas fa-store" id=""></i>
                                                 店家
                                             </div>
                                             <h6 class="">{{showOrderInfo.storeInfo.storeName}}</h6>
@@ -275,14 +275,17 @@
                 <li class="nav-item dropdown">
                     <a class="nav-link" data-toggle="dropdown" href="#">
                         <i class="fas fa-store" id="OpenStatus"></i>
-                        {{storeInfo.store.storeName}}
+                        {{storeInfo.storeName}}
                         <i class="fas fa-caret-down"></i>
                     </a>
                     <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
                         <a class="dropdown-item" v-for="(store,index) in allStore" :id="store.storeId"
                             onclick="itemClick($(this))">
                             <div class="store">
-                                <strong>{{ store.storeName }}</strong>
+                                <strong><span class="mr-2 text-xs"
+                                        :class="store.storeStatus.isOpen ? 'text-success' : 'text-danger'">
+                                        <i class="fas fa-dot-circle"></i>
+                                    </span>{{ store.storeName }}</strong>
                                 <p class="text-muted">{{ store.city }}{{ store.districts }}{{ store.shortAddress }}</p>
                             </div>
                         </a>
@@ -479,15 +482,7 @@
                 storeInfo: decryptObject(localStorage.storeInfo),
                 allStore: decryptObject(localStorage.allStore),
 
-                Order_data: [
-                    {
-                        userName: '',
-                        orderid: '',
-                        status: 0,//1:訂單成立;2:訂單取消
-                        takeNum: '',
-                        price: '',
-                    }
-                ],
+                Order_data: [],
 
                 showOrderInfo: {
                     storeInfo: {
@@ -532,17 +527,19 @@
 
             var vue = this
             apiWeb('/api/store/order/list/' + storeId, 'POST', null, '取得訂單列表', function (v) {
-                if (v.success == true) {
+                // console.log(v);
 
-                    vue.Order_data = []
+                // if (v.success == true) {
 
-                    // vue.Order_data = v.data.waitingList
+                // vue.Order_data = []
 
-                    vue.Order_data = v.orders
+                // vue.Order_data = v.data.waitingList
 
-                    loadingOff()
-                    // console.log(vue.Order_data);
-                }
+                vue.Order_data = v.orders
+
+                loadingOff()
+                // console.log(vue.Order_data);
+                // }
 
 
             })

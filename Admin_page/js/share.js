@@ -26,7 +26,7 @@ const userFunction = [
         url: "",
         item: [
             {
-                icon: "fas fa-store",
+                icon: "fas fa-info-circle",
                 name: "店家管理",
                 status: "",
                 url: "StoreMaintain.html?sid=" + storeId,
@@ -69,14 +69,14 @@ const userFunction = [
         status: "",
         url: "BanList.html?sid=" + storeId,
     },
-    // {
-    //     icon: "fas fa-user-clock",
-    //     name: "帳號登入記錄",
-    //     status: "",
-    //     url: "LogInlog.html?sid=" + storeId,
-    // },
     {
         icon: "fas fa-user-clock",
+        name: "帳號登入記錄",
+        status: "",
+        url: "LogInlog.html?sid=" + storeId,
+    },
+    {
+        icon: "fas fa-hamburger",
         name: "快速設定",
         status: "",
         url: "QuickSetup.html?sid=" + storeId,
@@ -212,7 +212,7 @@ function checkUserInfo() {
 
         localStorage.storeInfo = encryptObject(v);
 
-        console.log(v.status.isOpen);
+        // console.log(v.status.isOpen);
 
         if (v.status.isOpen == true) {
             $("#OpenStatus").addClass("text-success");

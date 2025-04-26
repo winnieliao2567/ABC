@@ -169,42 +169,54 @@
 
             <div class="col-12 col-md-6">
               <div class="p-3 itemOnlyHover">
-                <h6 class="m-0">
-                  <span class="text-primary mr-2">
-                    <i class="fas fa-clock"></i>
-                  </span>
-                  <label for="IsTableware" class="m-0">取餐時間</label>
-                </h6>
-                <div class="row m-0 pl-4">
-                  <select v-model="takeTime.type" class="form-control form-control-sm col-4 mr-3">
+                <div class="d-flex justify-content-between align-items-center">
+                  <h6 class="m-0">
+                    <span class="text-primary">
+                      <i class="fas fa-clock"></i>
+                    </span>
+                    <label for="IsTableware" class="m-0">取餐時間</label>
+                  </h6>
+                  <select v-model="takeTime.type" class="form-control form-control-sm col-4">
                     <option value="0">現在</option>
                     <option value="1">預定</option>
                   </select>
-                  <!-- <input type="date" class="form-control col" v-show="takeTime.type==1">
-                <input type="time" class="form-control col" v-show="takeTime.type==1"> -->
-                  <input class="form-control datetimelocal form-control-sm col" :disabled="takeTime.type != 1"
-                    :value="takeTime.datetime" placeholder="YYYY-MM-DD HH:mm">
                 </div>
-
+                <div class="d-flex justify-content-between align-items-center">
+                  <select class="form-control form-control-sm" v-model="toPayData.appointmentDate"
+                    :disabled="takeTime.type != 1">
+                    <option v-for="(date,index) in dateList">{{date}}</option>
+                  </select>
+                  <select class="form-control form-control-sm" v-model="toPayData.appointmentTime"
+                    :disabled="takeTime.type != 1">
+                    <option v-for="(time,index) in timeList">{{time}}</option>
+                  </select>
+                </div>
+                <!-- <input class="form-control datetimelocal form-control-sm col" :disabled="takeTime.type != 1"
+                    :value="takeTime.datetime" placeholder="YYYY-MM-DD HH:mm"> -->
               </div>
 
               <div class="p-3 itemOnlyHover">
-                <h6 class="m-0">
-                  <span class="text-primary mr-2"><i class="fas fa-user-circle"></i></span>
-                  <label for="UserInfo" class="m-0">訂購人資訊</label>
-                  <input type="checkbox" class="float-right" id="UserInfo" v-model="userInfoSync">
-                  <span class="float-right text-muted text-sm mr-2">同此帳號資料</span>
-                </h6>
+                <div class="d-flex justify-content-between align-items-center">
+                  <h6 class="m-0">
+                    <span class="text-primary mr-2"><i class="fas fa-user-circle"></i></span>
+                    <label for="UserInfo" class="m-0">訂購人資訊</label>
+
+                  </h6>
+                  <div>
+                    <input type="checkbox" id="UserInfo" v-model="userInfoSync">
+                    <span class="text-muted text-sm mr-2">同此帳號資料</span>
+                  </div>
+                </div>
                 <div class="m-0 pl-4">
                   <div class="form-group p-0">
                     <label class="text-muted text-sm">名稱</label>
-                    <input class="form-control form-control-sm" :disabled="userInfoSync" v-model="toPayData.UserName
+                    <input class="form-control form-control-sm" :disabled="userInfoSync" v-model="toPayData.SubscriberName
                   ">
                   </div>
                   <div class="form-group p-0">
                     <label class="text-muted text-sm">手機號碼</label>
                     <input class="form-control form-control-sm" :disabled="userInfoSync"
-                      v-model="toPayData.UserPhoneNum">
+                      v-model="toPayData.SubscriberNumber">
                   </div>
                 </div>
               </div>
@@ -219,7 +231,7 @@
                     aria-expanded="false" aria-controls="MealsCollapse">
                     <span>共{{cartCount}}項，總金額</span>
                     <i class="fas fa-chevron-down float-right text-muted" aria-hidden="true"></i>
-                    <span class="float-right mr-2 text-primary">${{getTotalPrice}}</span>
+                    <span class="float-right mr-2 text-primary">${{getTotalPrice()}}</span>
                   </h6>
                   <div class="collapse" id="MealsCollapse">
                     <div class="p-3" v-for="(item,index) in cartList">
@@ -252,7 +264,7 @@
               </div> -->
               </div>
             </div>
-            <div class="col-12 col-md-6 sticky-top" style="height: max-content;background-color: var(--primary_bg);">
+            <div class="col-12 col-md-6 sticky-top" style="height: max-content">
               <div class="p-3">
                 <h6 class="m-0">
                   <span class="text-primary mr-2"><i class="fas fa-money-check-alt"></i></span>
@@ -272,27 +284,39 @@
                   備註
                 </h6>
                 <div class="p-3">
-                  <textarea class="form-control" maxlength="50"></textarea>
+                  <textarea class="form-control" v-model="toPayData.Remark" maxlength="50"></textarea>
                 </div>
               </div>
 
               <div class="p-3 itemOnlyHover">
-                <h6 class="m-0">
-                  <span class="text-primary mr-2"><i class="fas fa-utensils"></i></span>
-                  <label for="IsTableware" class="m-0">需要餐具</label>
-                  <input type="checkbox" class="float-right" id="IsTableware" v-model="toPayData.IsTableware">
-                  <span class="float-right text-muted text-xs mr-2"
-                    v-show="toPayData.IsTableware">為了地球環保請盡量使用環保餐具</span>
-                </h6>
+                <div class="d-flex justify-content-between align-items-center">
+                  <h6 class="m-0">
+                    <span class="text-primary mr-2"><i class="fas fa-utensils"></i></span>
+                    <label for="IsTableware" class="m-0">需要餐具</label>
+                  </h6>
+                  <div>
+                    <span class="text-muted text-xs mr-2" v-show="toPayData.IsTableware">為了地球環保請盡量使用環保餐具</span>
+                    <input type="checkbox" id="IsTableware" v-model="toPayData.IsTableware">
+                  </div>
+                </div>
               </div>
 
               <div class="p-3 itemOnlyHover">
-                <h6 class="m-0">
-                  <span class="text-primary mr-2"><i class="fas fa-shopping-bag"></i></span>
-                  <label for="IsPlacetic" class="m-0">需要塑膠袋</label>
-                  <input type="checkbox" class="float-right" id="IsPlacetic" v-model="toPayData.IsPlacetic">
-                  <span class="float-right text-muted text-sm mr-2" v-show="toPayData.IsPlacetic">+ $2</span>
-                </h6>
+                <div class="d-flex justify-content-between align-items-center">
+                  <h6 class="m-0">
+                    <span class="text-primary mr-2"><i class="fas fa-shopping-bag"></i></span>
+                    <label for="IsPlacetic" class="m-0">塑膠袋</label>
+                  </h6>
+                  <select v-model="toPayData.Bag" class="form-control form-control-sm" style="width: max-content;">
+                    <option value="0" selected>無需塑膠袋</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                  </select>
+                  <!-- <input type="checkbox" class="float-right" id="IsPlacetic" v-model="toPayData.Bag"> -->
+                  <!-- <span class="float-right text-muted text-sm mr-2" v-show="toPayData.Bag">+ $2</span> -->
+                </div>
+
               </div>
 
               <div class="py-5 row m-0">
@@ -405,24 +429,29 @@
         toPayData: {
           "MemberId": '',
           "StoreId": '',
-          // "Price": 100,
-          // "Discount": 0,
-          UserName: '',
-          UserPhoneNum: '',
-          "Menu": "",
+          "Price": 0,
+          "Discount": 0,
+          'SubscriberName': '',
+          'SubscriberNumber': '',
+          "Menu": { meal: [] },
           "IsTableware": false,
           "IsOnlyPrice": false, //只想要取得目前訂單價格
           "PaymentMethods": "cash",
-          "appointmentDate": "", //日期
-          "appointmentTime": "" //時間
+          "appointmentDate": '', //日期
+          "appointmentTime": '', //時間
+          'Remark': '',
+          'Bag': '0'
         },
 
-        takeTime: {
-          type: 0, //0現在，1預定
-          datetime: moment().format('YYYY-MM-DD HH:mm:ss')
-        },
 
         userInfoSync: true,
+
+        takeTime: {
+          type: 0
+        },
+        availableSlots: [],
+        dateList: [],
+        timeList: [],
 
         PaymentMethodsList: [
           {
@@ -450,69 +479,45 @@
 
       let vue = this
       apiWeb('/api/Store/detail/' + this.cartList[0].storeId, 'GET', null, '店家資訊', function (v) {
+        // console.log(v);
 
         vue.PageTitle = v.store.storeName
         vue.storeInfo = v
 
-        vue.toPayData.UserName = vue.userInfo.name
-        vue.toPayData.UserPhoneNum = vue.userInfo.phoneNum
+        vue.toPayData.SubscriberName = vue.userInfo.name
+        vue.toPayData.SubscriberNumber = vue.userInfo.phoneNum
+
+        vue.toPayData.appointmentDate = moment().format('YYYY-MM-DD')
 
         // console.log(vue.toPayData);
 
 
-        loadingOff()
+        apiWeb('/api/TimeSlot/GetAvailableSlots?storeId=' + storeId + '&date=' + vue.toPayData.appointmentDate + '&daysCount=' + v.storeInfo.maxReservationDays + '&onluAvailable=true', 'GET', null, '獲得可預定時間', function (v) {
 
+          // console.log(v);
+          vue.availableSlots = v.availableSlots
+
+
+          vue.dateList = vue.availableSlots
+            .map(item => item.date);
+
+          vue.getTimeList(vue.toPayData.appointmentDate)
+
+
+          loadingOff()
+        });
       });
 
 
     },
     watch: {
-      'takeTime.type'(val) {
-        if (val == 0) {
-          // 如果選擇「現在」，就自動填入現在時間
-          this.takeTime.datetime = moment().format('YYYY-MM-DD HH:mm:ss');
-        } else if (val == 1) {
-          // 如果是預約，保留目前 datetime（或清空）
-          // this.takeTime.datetime = '';
-        }
-
-        // 只有在預約時初始化日期選擇器
-        if (val == 1) {
-          loadingOn()
-          this.$nextTick(() => {
-            const $input = $('.datetimelocal');
-
-            // 移除先前已經初始化的 daterangepicker，避免重複綁定
-            if ($input.data('daterangepicker')) {
-              $input.data('daterangepicker').remove();
-            }
-
-            // 初始化日期時間選擇器
-            // $input.daterangepicker({
-            //   singleDatePicker: true,
-            //   timePicker: true,
-            //   timePicker24Hour: true,
-            //   autoApply: true,
-            //   autoUpdateInput: true,
-            //   startDate: moment(this.takeTime.datetime),
-            //   minDate: moment(),
-            //   maxDate: moment().add(this.storeInfo.storeInfo.maxReservationDays, 'days'),
-            //   locale: {
-            //     format: 'YYYY-MM-DD HH:mm:ss',
-            //     firstDay: 0
-            //   }
-            // }).on('apply.daterangepicker', (ev, picker) => {
-            //   this.takeTime.datetime = picker.startDate.format('YYYY-MM-DD HH:mm:ss');
-            // });
-            apiWeb('/api/TimeSlot/' + this.cartList[0].storeId + '?hideExpired=true', 'GET', null, '獲得可預定時間', function (v) {
-
-              console.log(v);
-
-
-              loadingOff()
-
-            });
-          });
+      'toPayData.appointmentDate'(newVal) {
+        this.getTimeList(newVal)
+      },
+      'takeTime.type'(newVal) {
+        if (newVal == 0) {
+          this.toPayData.appointmentDate = moment().format('YYYY-MM-DD')
+          this.getTimeList(this.toPayData.appointmentDate)
         }
       }
     },
@@ -520,27 +525,79 @@
     methods: {
       Pay() {
         loadingOn()
-        const m = moment(this.takeTime.datetime, "YYYY-MM-DD HH:mm:ss");
-        const datePart = m.format("YYYY-MM-DD");
-        const timePart = m.format("HH:mm:ss");
+        // const datePart = m.format("YYYY-MM-DD");
+        // const timePart = m.format("HH:mm:ss");
+
+
+
 
         this.toPayData.MemberId = this.userInfo.id
         this.toPayData.StoreId = this.cartList[0].storeId
-        this.toPayData.Menu = JSON.stringify(this.cartList)
+        this.toPayData.Menu.meal = this.cartList
+        this.toPayData.Menu = JSON.stringify(this.toPayData.Menu)
         this.toPayData.IsOnlyPrice = false //只想要取得目前訂單價格
         this.toPayData.PaymentMethods = "cash"
-        this.toPayData.appointmentDate = datePart //日期
-        this.toPayData.appointmentTime = timePart //時間
+        this.toPayData.Price = this.getTotalPrice()
 
-        console.log(this.toPayData);
-        // apiWeb('/api/store/send/order', 'POST', JSON.stringify(this.toPayData), '送出訂單',
-        //   function () {
-        window.location.href = "succes.html"
-        // })
+        let data = JSON.parse(this.toPayData.Menu)
+        data.meal.forEach(meal => {
+          // 移除指定欄位
+          delete meal.Price;
+          delete meal.mealName;
+          delete meal.storeId;
+          delete meal.totalPrice;
 
-      }
-    },
-    computed: {
+          // mealId 轉字串
+          // meal.mealId = String(meal.mealId);
+
+          // mealConfig.options 裡的 price 移除
+          if (meal.mealConfig?.options) {
+            meal.mealConfig.options.forEach(option => {
+              delete option.price;
+            });
+          }
+
+          // customConfig.options 處理 TemplateID 和 extra
+          if (meal.customConfig) {
+            meal.customConfig.forEach(config => {
+              if (config.options) {
+                config.options.forEach(option => {
+                  // 確保TemplateID存在且轉字串
+                  if (option.TemplateID !== undefined && option.TemplateID !== null) {
+                    option.TemplateID = option.TemplateID.toString();
+                  }
+
+                  if (option.content) {
+                    option.content.forEach(contentItem => {
+                      if (contentItem.extra !== undefined && contentItem.extra !== null) {
+                        contentItem.extra = contentItem.extra.toString();
+                      }
+                    });
+                  }
+                });
+              }
+            });
+          }
+
+        });
+
+        // console.log('data---------', data);
+        this.toPayData.Menu = JSON.stringify(data)
+
+
+        // console.log(this.toPayData.Menu == JSON.stringify(data));
+        // console.log(this.toPayData)
+        // console.log(JSON.stringify(data));
+
+
+        apiWeb('/api/store/send/order', 'POST', JSON.stringify(this.toPayData), '送出訂單',
+          function (v) {
+            localStorage.removeItem('cart');
+            window.location.href = "succes.html?order=" + v.no
+          })
+
+      },
+
       getTotalPrice() {
         let vue = this
         let totalPrice = total = vue.cartList.reduce((sum, meal) => {
@@ -551,7 +608,24 @@
         } else {
           return totalPrice
         }
+      },
+
+      getTimeList(date) {
+        // console.log(date);
+
+        this.timeList = this.availableSlots.find(item => item.date == date)
+          ?.slots.map(slot => slot.time) || []
+        this.toPayData.appointmentTime = this.timeList[0]
+
+        // console.log(this.timeList);
+        // console.log(this.toPayData.appointmentTime);
+
+
       }
+
+    },
+    computed: {
+
     }
   });
   app.mount("#app");

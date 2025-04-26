@@ -86,8 +86,7 @@
             <h5 id="minimumOrderModalContent"></h5>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-primary" data-dismiss="modal">取消</button>
-            <button type="button" class="btn btn-default" @click="deleteFunc()" data-dismiss="modal">確定</button>
+            <button type="button" class="btn btn-primary" data-dismiss="modal" @click="backToStore">繼續點餐</button>
           </div>
         </div>
       </div>
@@ -248,8 +247,7 @@
                 <textarea class="form-control" maxlength="50"></textarea>
               </div>
             </div> -->
-            <div class="col-12 col-md-4 py-3 sticky-top"
-              style="height: max-content;background-color: var(--primary_bg);" v-if="cartList.length>0">
+            <div class="col-12 col-md-4 py-3 sticky-top" style="height: max-content" v-if="cartList.length>0">
               <div class="row m-0">
                 <div class="p-3 col-12" v-if="cartList.length>0">
                   <h6>總金額<span class="text-primary float-right">${{getTotalPrice()}}</span></h6>
@@ -332,7 +330,7 @@
 
           if (v.storeInfo.minimumOrderEnabled == true) {
             if (vue.getTotalPrice() >= v.storeInfo.minimumOrderAmount) {
-              window.location.href = "pay.html?sid=" + this.cartList[0].storeId
+              window.location.href = "pay.html?sid=" + vue.cartList[0].storeId
             } else {
               $('#minimumOrderModalContent').html(v.storeInfo.minimumOrderText)
               $('#minimumOrderModal').modal('show')

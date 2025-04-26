@@ -172,20 +172,55 @@
                                 <thead class="table-primary">
                                     <tr>
                                         <th>
-                                            帳號
+                                            #
+                                        </th>
+                                        <th>
+                                            管理員帳號
+                                        </th>
+                                        <th>
+                                            操作
+                                        </th>
+                                        <th>
+                                            裝置
                                         </th>
                                         <th>
                                             時間
                                         </th>
                                     </tr>
                                 </thead>
-                                <tbody>
-                                    <tr v-for="(item,index) in Login_data">
-                                        <td class="longText">{{item.account}}</td>
-                                        <td>{{item.date}} {{item.time}}</td>
+                                <tbody v-if="Login_data.length>0">
+                                    <tr v-for="(item,index) in paginatedOrders">
+                                        <td>{{ (currentPage - 1) * pageSize + index + 1 }}</td>
+                                        <!-- <td>用戶名稱</td> -->
+                                        <td class="longText">{{item.operatorEmail}} </td>
+                                        <td>{{item.actionType}}</td>
+                                        <td>{{item.deviceInfo}}</td>
+                                        <td>{{item.time}}</td>
                                     </tr>
                                 </tbody>
+                                <!-- <tbody v-if="Login_data.length==0">
+                                    <tr>
+                                        <td class="longText text-center" colspan="4">沒有管理員操作</td>
+                                    </tr>
+                                </tbody> -->
                             </table>
+                        </div>
+
+                        <div v-if="Login_data.length>0" class="col-12">
+                            <ul class="pagination pagination-sm justify-content-center mt-3">
+                                <li class="page-item" :class="{ disabled: currentPage === 1 }">
+                                    <a href="#" class="page-link" @click.prevent="prevPage">&laquo;</a>
+                                </li>
+
+                                <li v-for="page in totalPages" :key="page" class="page-item"
+                                    :class="{ active: currentPage === page }">
+                                    <a href="#" class="page-link" @click.prevent="goToPage(page)">{{ page }}</a>
+                                </li>
+
+                                <li class="page-item" :class="{ disabled: currentPage === totalPages }">
+                                    <a href="#" class="page-link" @click.prevent="nextPage">&raquo;</a>
+                                </li>
+                            </ul>
                         </div>
                     </div>
                     <!-- /.row -->
@@ -224,21 +259,58 @@
                 storeInfo: decryptObject(localStorage.storeInfo),
                 allStore: decryptObject(localStorage.allStore),
 
-                Login_data: [{ account: 'winnie2567@gmail.com', date: '2024-12-31', time: '18:30:55', }]
+                Login_data: [],
+
+                currentPage: currentPage, // 當前頁面
+                pageSize: pageSize, // 每頁顯示筆數
             }
         },
         computed: {
             checkBtn() {
                 return this.check.oldPassword === true && this.check.newPassword === true && this.check.confirmPassword === true
+            },
+            // 計算總頁數
+            totalPages() {
+                return Math.ceil(this.Login_data.length / this.pageSize);
+            },
+            // 計算當前頁要顯示的訂單
+            paginatedOrders() {
+                const start = (this.currentPage - 1) * this.pageSize;
+                return this.Login_data.slice(start, start + this.pageSize);
             }
         },
         mounted() {
-            loadingOff()
+            this.getAccountLog()
         },
         watch: {
         },
         methods: {
+            getAccountLog() {
+                let vue = this
+                apiWeb('/api/Login/audit-logs?storeId=' + storeId, 'GET', null, '編輯記錄', function (v) {
+                    // console.log(v);
+                    vue.Login_data = v.logs
+                    // console.log(vue.Login_data);
+                    loadingOff()
+                })
+            },
 
+            // 切換到上一頁
+            prevPage() {
+                if (this.currentPage > 1) {
+                    this.currentPage--;
+                }
+            },
+            // 切換到下一頁
+            nextPage() {
+                if (this.currentPage < this.totalPages) {
+                    this.currentPage++;
+                }
+            },
+            // 跳轉到指定頁數
+            goToPage(page) {
+                this.currentPage = page;
+            },
 
         },
     });

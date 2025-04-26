@@ -119,7 +119,7 @@ function apiWeb(_url, _type, _data, TimelogTag, _fun) {
                         console.timeEnd("● API-" + TimelogTag + "(" + _url + ")");
                         // toastr.success(TimelogTag + "成功");
 
-                        console.log("● Reques-" + TimelogTag + " : " + JSON.stringify(v));
+                        console.log("● Reques-" + TimelogTag + " : ", v);
                     }
                     if (_fun) _fun(v);
                 },

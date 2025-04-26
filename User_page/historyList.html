@@ -275,7 +275,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
         methods: {
             getHistoryList() {
-                // console.log(this.userInfo);
+                console.log(this.userInfo);
                 let vue = this
                 apiWeb('/api/store/user/order/list/' + this.userInfo.id, 'GET', null, '取得歷史資料', function (v) {
                     vue.HistoryList = v.orders

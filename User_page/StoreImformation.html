@@ -336,7 +336,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
                             <div class="p-3 pt-0" v-if="productorData.length>0">
                                 <div class="Myinput-group">
                                     <input type="search" class="" placeholder="搜尋料理" v-model="searchKeyword">
-                                    <button type="button" class="btn" :disabled="searchKeyword.length==0">
+                                    <button type="button" class="btn" :disabled="searchKeyword.length==0"
+                                        @click="searchProductors">
                                         <i class="fa fa-search"></i>
                                     </button>
                                 </div>
@@ -345,7 +346,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
                         <!-- 餐點 -->
                         <div class="col-12 p-0">
-                            <div class="col-12" v-if="productorData.length==0">
+                            <div class="col-12" v-if="productorData.length==0&&disabledType=='List'">
                                 <div class="emptyImage emptyImage1"></div>
                                 <p class="text-center">沒有上架餐點，
                                     <button class="ml-2 btn btn-primary toIndex" type="button">
@@ -353,7 +354,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                     </button>
                                 </p>
                             </div>
-                            <nav v-if="productorData.length>0" id="scrollProductor"
+                            <nav v-if="productorData.length>0&&disabledType=='List'" id="scrollProductor"
                                 class="navbar navbar-light sticky-top">
                                 <ul class="nav nav-pills">
                                     <template v-for="(group,index) in productorData" :key="group.categoryId">
@@ -364,9 +365,10 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                     </template>
                                 </ul>
                             </nav>
-                            <div v-if="productorData.length>0" id="scrollProductor-content" class="p-3 mb-5">
+                            <div v-if="productorData.length>0&&disabledType=='List'" id="scrollProductor-content"
+                                class="p-3 mb-5">
                                 <template v-for="(group,index) in productorData">
-                                    <div class="mb-3" :id="'scroll'+group.categoryId">
+                                    <div class="mb-3" :id="'scroll'+group.categoryId" v-if="group.productors.length>0">
                                         <h4>{{group.categoryName}}</h4>
                                         <div class="row m-0">
                                             <template v-for="(item,itemIndex) in group.productors">
@@ -399,6 +401,47 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                         </div>
                                     </div>
                                 </template>
+                            </div>
+
+                            <div v-if="disabledType=='Search'&&searchList.length>0">
+                                <button class="btn btn-default btn-sm">返回</button>
+                                <h5> 共有 {{searchCount}} 項餐點：</h5>
+
+                                <template v-for="(group,index) in searchList">
+                                    <div class="mb-3" :id="'scroll'+group.categoryId" v-if="group.productors.length>0">
+                                        <h4>{{group.categoryName}}</h4>
+                                        <div class="row m-0">
+                                            <template v-for="(item,itemIndex) in group.productors">
+                                                <div class="col-12 col-md-6 col-lg-4">
+                                                    <div class="card" @click="showAddCartModal(group.categoryId,item.mealId
+                                                    )">
+                                                        <!-- <img :src="'img/unknowIMG.png'" class="card-img-top"> -->
+                                                        <div class="card-body p-2 row m-0">
+                                                            <div class="col-3 p-0">
+                                                                <div class="d-flex justify-content-center embed-responsive embed-responsive-1by1"
+                                                                    style="overflow: hidden;"
+                                                                    :class="{ 'unknowIMG': !item.image }">
+                                                                    <img class="border w-100" :src="item.image">
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-9 pt-2">
+                                                                <h6 class="m-0">{{item.name}}
+                                                                    <span class="float-right text-primary text-bold">$
+                                                                        {{item.price}}
+                                                                    </span>
+                                                                </h6>
+                                                                <p class="text-muted text-sm m-0">
+                                                                    {{item.remark}}
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </template>
+                                        </div>
+                                    </div>
+                                </template>
+
                             </div>
                         </div>
                     </div>
@@ -577,6 +620,11 @@ scratch. This page gets rid of all links and provides the needed markup only.
                     this.addToCart.totalPrice = total + newVal.mealConfig.options[0].price;
                 },
                 deep: true
+            },
+            searchKeyword(newVal) {
+                if (newVal.length == 0) [
+                    this.disabledType = 'List'
+                ]
             }
         },
 
@@ -653,11 +701,20 @@ scratch. This page gets rid of all links and provides the needed markup only.
                     vue.disabledType = 'Search'
                     vue.searchCount = v.meals.length
                     if (vue.searchCount != 0) {
+                        // vue.searchList = vue.ClassList.map(category => ({
+                        //     categoryId: category.categoryId,
+                        //     categoryName: category.categoryName,
+                        //     productors: v.meals.filter(product => product.categoryId === category.categoryId)
+                        // }));
+                        vue.searchList = v.meals;
                         vue.searchList = vue.ClassList.map(category => ({
                             categoryId: category.categoryId,
                             categoryName: category.categoryName,
-                            productors: v.meals.filter(product => product.categoryId === category.categoryId)
+                            productors: vue.searchList.filter(product => product.categoryId === category.categoryId)
                         }));
+
+                        console.log(vue.searchList);
+
                     } else {
                         vue.searchList = []
                     }
@@ -691,7 +748,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 // console.log('meal----------', meal);
                 this.addData = JSON.parse(JSON.stringify(meal))
 
-                console.log(JSON.stringify(this.addData));
+                // console.log(JSON.stringify(this.addData));
 
                 this.addToCart.mealId = this.addData.mealId
                 this.addToCart.mealConfig.options[0].value = ''

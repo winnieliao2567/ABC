@@ -164,6 +164,35 @@
             </div>
         </div>
 
+        <!-- 鎖定區間 -->
+        <div class="modal fade" id="lockModal" tabindex="-1" aria-labelledby="lockModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-scrollable">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="lockModalLabel">鎖定區間</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <select v-model="blockedSlots" class="form-control">
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                        </select>
+
+                    </div>
+
+                    <div class="modal-footer">
+                        <!-- <button type="button" class="btn btn-secondary" data-dismiss="modal">取消設定</button> -->
+                        <button type="button" class="btn btn-primary" v-on:click="lockSots()"
+                            data-dismiss="modal">儲存</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Navbar -->
         <nav class="main-header navbar navbar-expand navbar-white navbar-light">
             <!-- Left navbar links -->
@@ -524,6 +553,8 @@
                 EarlyClosure: {
                     enabled: '', time: '', data: moment().format("YYYY-MM-DD")
                 },
+
+                blockedSlots: 1
             }
         },
         mounted() {
@@ -552,17 +583,7 @@
             })
 
             $('#lock').click(function () {
-                loadingOn()
-                apiWeb(
-                    '/api/TimeSlot/Block',
-                    'POST',
-                    JSON.stringify({ "storeId": storeId, "blockedSlots": 2 }),
-                    '鎖定區間',
-                    function () {
-                        loadingOff()
-                        toastr.success('已鎖定區間');
-                    }
-                )
+                $('#lockModal').modal('show')
             })
 
             $('#unlock').click(function () {
@@ -573,7 +594,7 @@
                     '',
                     '取消鎖定區間',
                     function () {
-                        loadingOff()
+                        vue.getActiveBlocks()
                         toastr.success('已取消鎖定區間');
                     }
                 )
@@ -630,6 +651,7 @@
                         vue.menuList[6].enabled = false
                         vue.menuList[5].enabled = false
                     }
+                    loadingOff()
                 })
             },
 
@@ -655,6 +677,7 @@
                 }
                 return numbers;
             },
+
             //基礎等待時間
             BasicWaitingTimeSave() {
                 var waitingTimeData = { 'BasicwaitingTime': this.storeInfoEdit.storeInfo.basicwaitingTime }
@@ -687,6 +710,7 @@
                     }
                 })
             },
+
             //增加營業時間
             addStoreClosed() {
                 this.storeInfoEdit.openTime.specialCloseDays.push(
@@ -696,10 +720,27 @@
                     }
                 )
             },
+
             //刪除營業時間
             delStoreClosed(index) {
                 this.storeInfoEdit.openTime.specialCloseDays.splice(index, 1);
             },
+
+            lockSots() {
+                loadingOn()
+                console.log({ "storeId": storeId, "blockedSlots": this.blockedSlots });
+                let vue = this
+                apiWeb(
+                    '/api/TimeSlot/Block',
+                    'POST',
+                    JSON.stringify({ "storeId": storeId, "blockedSlots": this.blockedSlots }),
+                    '鎖定區間',
+                    function () {
+                        vue.getActiveBlocks()
+                        toastr.success('已鎖定區間');
+                    }
+                )
+            }
 
         },
         computed: {

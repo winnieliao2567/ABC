@@ -292,6 +292,11 @@
 
         // toPayData: {}
 
+        lowAmount: {
+          enabled: true,
+          minimumOrderAmount: '',
+          minimumOrderText: ''
+        }
       }
     },
     mounted() {
@@ -300,6 +305,14 @@
       // console.log(this.userInfo);
 
       this.cartCount = this.cartList.length
+
+      let veu = this
+      apiWeb('/api/Store/detail/' + this.cartList[0].storeId, 'GET', null, '取得店家低消', function (v) {
+        // console.log(v);
+        veu.lowAmount.enabled = v.storeInfo.minimumOrderEnabled
+        veu.lowAmount.minimumOrderAmount = v.storeInfo.minimumOrderAmount
+        veu.lowAmount.minimumOrderText = v.storeInfo.minimumOrderText
+      })
     },
     watch: {
 
@@ -322,36 +335,19 @@
         window.location.href = "StoreImformation.html?sid=" + this.cartList[0].storeId
       },
       toPay() {
-        loadingOn()
+        // loadingOn()
         let vue = this
-
-        apiWeb('/api/Store/detail/' + this.cartList[0].storeId, 'GET', null, '確認店家低消', function (v) {
-          // console.log(v);
-
-          if (v.storeInfo.minimumOrderEnabled == true) {
-            if (vue.getTotalPrice() >= v.storeInfo.minimumOrderAmount) {
-              window.location.href = "pay.html?sid=" + vue.cartList[0].storeId
-            } else {
-              $('#minimumOrderModalContent').html(v.storeInfo.minimumOrderText)
-              $('#minimumOrderModal').modal('show')
-              loadingOff()
-            }
-
+        if (lowAmount.minimumOrderEnabled == true) {
+          if (vue.getTotalPrice() >= lowAmount.minimumOrderAmount) {
+            window.location.href = "pay.html?sid=" + vue.cartList[0].storeId
+          } else {
+            $('#minimumOrderModalContent').html(lowAmount.minimumOrderText)
+            $('#minimumOrderModal').modal('show')
+            loadingOff()
           }
-        })
-
-        // this.toPayData = {
-        //   "MemberId": this.userInfo.id,
-        //   "StoreId": storeId,
-        //   // "Price": 100,
-        //   // "Discount": 0,
-        //   "Menu": this.cartList,
-        //   "IsTableware": false,
-        //   "IsOnlyPrice": false, //只想要取得目前訂單價格
-        //   "PaymentMethods": "cash",
-        //   "appointmentDate": "2025-03-31", //日期
-        //   "appointmentTime": "12:00:00" //時間
-        // }
+        } else {
+          window.location.href = "pay.html?sid=" + vue.cartList[0].storeId
+        }
       },
       getTotalPrice() {
         let vue = this

@@ -62,7 +62,7 @@
                     </div>
                     <div class="modal-body">
                         <h6>是否將 <span
-                                class="text-primary">{{showOrderInfo.takerInfo.name}}({{showOrderInfo.takerInfo.phoneNum}})</span>
+                                class="text-primary">{{showOrderInfo.name}}({{showOrderInfo.subscriberNumber}})</span>
                             加入黑名單，他將無法下單該商店，直到移出黑名單
                         </h6>
                     </div>
@@ -80,7 +80,7 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="reloginModalLabel">
-                            訂單資訊 #{{showOrderInfo.orderNum}}
+                            訂單資訊 #{{showOrderInfo.no}}
                         </h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
@@ -92,7 +92,7 @@
                                 <h5>訂購人資訊</h5>
                                 <div class="mb-3">
                                     <h3 class="text-primary">
-                                        {{showOrderInfo.takerInfo.name}}
+                                        {{showOrderInfo.name}}
                                         <button class="btn btn-sm btn-default" data-toggle="tooltip"
                                             v-on:click="showBanWIn" data-placement="top" title="封鎖訂購人">
                                             <!-- <i class="fas fa-user-slash"></i> -->
@@ -102,13 +102,14 @@
                                     <p>
                                         <span class="text-muted">
                                             <!-- <i class="fas fa-mobile-alt"></i>： -->
-                                            {{showOrderInfo.takerInfo.phoneNum}}
+                                            {{showOrderInfo.subscriberNumber}}
                                         </span>
                                     </p>
                                 </div>
                             </div>
                             <div class="col-12 col-md-12 col-lg-8 p-3 mb-2 bg-light">
-                                <h5>訂單資訊<span class="text-sm">({{showOrderInfo.orderTime}})</span></h5>
+                                <h5>訂單資訊<span class="text-sm">({{showOrderInfo.createDate}}
+                                        {{showOrderInfo.createTime}})</span></h5>
                                 <div class="row m-0">
                                     <div class="col-12 col-md-6 col-xl-6">
                                         <div class="form-group mb-3">
@@ -116,7 +117,7 @@
                                                 <i class="fas fa-store" id=""></i>
                                                 店家
                                             </div>
-                                            <h6 class="">{{showOrderInfo.storeInfo.storeName}}</h6>
+                                            <h6 class="">{{showOrderInfo.storeName}}</h6>
                                         </div>
                                         <!-- <div class="form-group mb-3">
                                             <div class="text-muted text-sm">
@@ -130,7 +131,7 @@
                                                 <i class="fas fa-coins"></i>
                                                 付款方式
                                             </div>
-                                            <h6 v-if="showOrderInfo.payType==1">
+                                            <h6 v-if="showOrderInfo.paymentMethods=='cash'">
                                                 現金
                                             </h6>
                                         </div>
@@ -140,7 +141,7 @@
                                                 <i class="fas fa-clipboard-list"></i>
                                                 取餐號
                                             </div>
-                                            <h6 class="">#{{showOrderInfo.takeNum}}</h6>
+                                            <h6 class="">#{{showOrderInfo.pickupNumber}}</h6>
                                         </div>
                                     </div>
                                     <div class="col-12 col-md-6 col-xl-6">
@@ -162,14 +163,15 @@
                                                 <i class="fas fa-clock"></i>
                                                 取餐時間
                                             </div>
-                                            <h6 class="">{{showOrderInfo.takeTime}}</h6>
+                                            <h6 class="">{{showOrderInfo.appointmentDate}}
+                                                {{showOrderInfo.appointmentTime}}</h6>
                                         </div>
                                         <div class="form-group mb-3">
                                             <div class="text-muted text-sm">
                                                 <i class="fas fa-shopping-bag"></i>
                                                 取餐方式
                                             </div>
-                                            <h6 class="" v-if="showOrderInfo.takeType==1">
+                                            <h6>
                                                 自取
                                             </h6>
                                         </div>
@@ -384,7 +386,7 @@
                                             #
                                         </th>
                                         <th class="longText">
-                                            訂單號碼
+                                            訂單碼
                                         </th>
                                         <th class="longText">
                                             訂餐人
@@ -393,7 +395,7 @@
                                             狀態
                                         </th>
                                         <th class="longText">
-                                            金額(NTD)
+                                            總金額(NTD)
                                         </th>
                                     </tr>
                                 </thead>
@@ -404,12 +406,14 @@
                                         </td>
                                     </tr>
                                     <tr v-for="(Orders, OrderIndex) in paginatedOrders" :key="Orders.id"
-                                        @click="showOrderInfoWin(Orders.orderId)">
+                                        @click="showOrderInfoWin((currentPage - 1) * pageSize + OrderIndex)">
                                         <td class="longText">
                                             {{ (currentPage - 1) * pageSize + OrderIndex + 1 }}
                                         </td>
-                                        <td class="longText">{{Orders.orderDisableId}}</td>
-                                        <td class="longText">{{Orders.userName}}</td>
+                                        <td class="longText text-sm">{{getEnd(Orders.no)}}
+                                            <span class="text-primary text-bold">#{{Orders.pickupNumber}}</span>
+                                        </td>
+                                        <td class="longText">{{Orders.name}}</td>
                                         <td class="longText">
                                             <div data-toggle="tooltip" data-placement="top" title="訂單成立"
                                                 v-if="Orders.status==1"
@@ -485,26 +489,36 @@
                 Order_data: [],
 
                 showOrderInfo: {
-                    storeInfo: {
-                        name: ''
-                    },
-                    takerInfo: {
-                        phoneNum: '',
-                        name: '',
-                    },
-                    orderid: '',
-                    orderTime: '',
-                    orderNum: '',
-
-                    status: 1,
-
-                    takeNum: '',
-                    takeTime: '',
-                    takeType: 1,//1:自取;
-                    payType: 1,//1:現金;
-                    price: '',
-                    memo: '',
-                    mealItem: []
+                    "no": "",
+                    "name": "",
+                    "status": "",
+                    "price": 0,
+                    "storeName": "",
+                    "paymentMethods": "",
+                    "pickupNumber": "",
+                    "storeId": "",
+                    "memberId": "",
+                    "memberName": "",
+                    "statusName": "",
+                    "createDate": "",
+                    "createTime": "",
+                    "orderTime": "",
+                    "appointmentDate": "",
+                    "appointmentTime": "",
+                    "discount": 0,
+                    "menu": "}",
+                    "isTableware": true,
+                    "remark": "",
+                    "bag": 0,
+                    "subscriberName": "",
+                    "subscriberNumber": "",
+                    "storePhone": "",
+                    "orderInterval": 0,
+                    "storeEnable": true,
+                    "storeDeleted": false,
+                    "slotLimit": 0,
+                    "minimumOrderAmount": "",
+                    "minimumOrderText": ""
                 },
 
                 currentPage: currentPage, // 當前頁面
@@ -526,7 +540,18 @@
             $('[data-toggle="tooltip"]').tooltip();
 
             var vue = this
-            apiWeb('/api/store/order/list/' + storeId, 'POST', null, '取得訂單列表', function (v) {
+            let apiData = {
+                "storeid": storeId, //必填 商家ID
+                "memberid": "", //會員ID
+                "No": "", //單號
+                "subscribername": "", // 訂購人姓名
+                "subscribernumber": "", // 訂購人電話
+                "membername": "", //會員姓名
+                "membernumber": "", //會員電話
+                "startdatetime": "", //開始時間
+                "enddatetime": "" //結束時間
+            }
+            apiWeb('/api/store/order/list', 'POST', JSON.stringify(apiData), '取得訂單列表', function (v) {
                 // console.log(v);
 
                 // if (v.success == true) {
@@ -548,6 +573,7 @@
         },
         methods: {
             showOrderInfoWin(index) {
+                console.log(index);
                 this.showOrderInfo = this.Order_data[index]
                 console.log(this.showOrderInfo);
                 $('#OrderInfo').modal('show')
@@ -557,9 +583,18 @@
                 $('#AddBanWin').modal('show')
             },
             AddBan() {
-                console.log(this.showOrderInfo.takerInfo.phoneNum);
+                console.log(this.showOrderInfo.subscriberNumber);
 
-                apiWeb('api/Store/add/blacklist/' + this.showOrderInfo.takerInfo.phoneNum, 'POST', '', '新增黑名單', function () {
+                apiWeb('api/Store/blacklist/' + storeId + '/' + this.showOrderInfo.subscriberNumber, 'POST', '', '新增黑名單', function (v) {
+                    if (v.status == 0) {
+                        $('#AddBanWin').modal('hide')
+                        window.location.href = 'BanList.html?sid=' + storeId
+                    } else if (v.status == 1) {
+                        $('#AddBanWin').modal('hide')
+                        toastr.error("該用戶不存在");
+                    } else {
+                        GetDataError('新增黑名單')
+                    }
                     $('#OrderInfo').modal('show')
                     $('#AddBanWin').modal('hide')
                 })
@@ -581,6 +616,9 @@
             goToPage(page) {
                 this.currentPage = page;
             },
+            getEnd(str) {
+                return str.slice(-5);
+            }
         },
     });
 

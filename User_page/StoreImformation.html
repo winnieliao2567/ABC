@@ -276,6 +276,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                     aria-controls="collapseExample">
                                     <i class="fas fa-clock mr-2 text-secondary"></i> <span
                                         class="text-danger">休息中</span>
+                                    <span class="text-muted text-sm">，下次可訂餐時間為
+                                        <b>{{nextAvailabletime}}</b>分鐘</span>
                                     <i class="fas fa-chevron-down float-right text-muted"></i>
                                 </h6>
                                 <div class="collapse" id="opentimeCollapse">
@@ -404,7 +406,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                             </div>
 
                             <div v-if="disabledType=='Search'&&searchList.length>0">
-                                <button class="btn btn-default btn-sm">返回</button>
+                                <!-- <button class="btn btn-default btn-sm">返回</button> -->
                                 <h5> 共有 {{searchCount}} 項餐點：</h5>
 
                                 <template v-for="(group,index) in searchList">
@@ -920,6 +922,18 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 let a = min + '-' + max
                 return a
             },
+
+            nextAvailabletime() {
+                let nextAvailableDate = moment(this.storeInfo.nextAvailable.timeFormatted).format('YYYY-MM-DD')
+                let nextAvailableTime = moment(this.storeInfo.nextAvailable.timeFormatted).format('HH:mm')
+
+                if (moment().format('YYYY-MM-DD') == nextAvailableDate) {
+                    return '今天' + nextAvailableTime
+                } else {
+                    return nextAvailableDate
+                }
+
+            }
         }
     });
     app.mount("#app");

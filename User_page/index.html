@@ -166,9 +166,9 @@ scratch. This page gets rid of all links and provides the needed markup only.
             </div>
             <div class="content">
                 <div class="container">
+                    <h3 v-if="fromStore.store.storeId.length>0">猜你想看</h3>
                     <div class="row">
-                        <!-- 猜你想看 -->
-                        <div class="col-12 col-md-3 mb-3" v-if="fromStore.store.storeId.length>0">
+                        <div class="col-8 col-md-3 mb-3" v-if="fromStore.store.storeId.length>0">
                             <a class="card border shadow-none mb-2 swiper-slide"
                                 :href="'StoreImformation.html?sid='+fromStore.store.storeId">
                                 <img class="card-img-top" :src="fromStore.store.image || 'img/unknowIMG.png'" />
@@ -477,16 +477,6 @@ scratch. This page gets rid of all links and provides the needed markup only.
             });
 
             // console.log(storeId);
-            if (storeId) {
-
-                apiWeb('/api/Store/detail/' + storeId, 'GET', null, '透過鏈結進入首頁', function (v) {
-                    // console.log(v);
-                    vue.fromStore = v
-                    // console.log('透過鏈結進入首頁--------', vue.fromStore);
-                })
-            }
-
-
         },
         watch: {
         },
@@ -599,7 +589,18 @@ scratch. This page gets rid of all links and provides the needed markup only.
             // 獲得店家
             fetchNearbyStores() {
                 var vue = this
-                this.getTheTags(function () { vue.getOpeningStore(function () { loadingOff() }) })
+                if (storeId) {
+                    apiWeb('/api/Store/detail/' + storeId, 'GET', null, '透過鏈結進入首頁', function (v) {
+                        // console.log(v);
+                        vue.fromStore = v
+                        // console.log('透過鏈結進入首頁--------', vue.fromStore);
+
+                        vue.getTheTags(function () { vue.getOpeningStore(function () { loadingOff() }) })
+                    })
+                } else {
+                    vue.getTheTags(function () { vue.getOpeningStore(function () { loadingOff() }) })
+
+                }
             },
 
             //附近營業店家
@@ -619,9 +620,9 @@ scratch. This page gets rid of all links and provides the needed markup only.
             //可用標籤
             getTheTags(_func) {
                 var vue = this
-                apiWeb('/api/tags', 'GET', null, '獲得所有標籤', function (v) {
+                apiWeb('/api/tags/nearby?latitude=' + localStorage.latitude + '&longitude=' + localStorage.longitude + '&&radius=' + radius, 'GET', null, '獲得所有標籤', function (v) {
                     if (v.success == true) {
-                        // console.log(v.data);
+                        // console.log('v.data----------', v.data);
 
                         let tags = v.data
 

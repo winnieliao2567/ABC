@@ -8,7 +8,7 @@ const pageSize = 10; // 每頁顯示筆數
 const queryString = window.location.search;
 const urlParams = new URLSearchParams(queryString);
 // console.log(urlParams);
-const radius = 8000; //距離半徑
+const radius = 120000; //距離半徑
 const redirect = urlParams.get("redirect");
 
 const classId = urlParams.get("cid");
@@ -18,6 +18,7 @@ const keyWord = urlParams.get("kw");
 
 const userId = urlParams.get("uid");
 const storeId = urlParams.get("sid");
+const orderId = urlParams.get("order");
 
 const mode = "";
 
@@ -96,9 +97,9 @@ function apiWeb(_url, _type, _data, TimelogTag, _fun) {
                     400: function (xhr) {
                         // console.log();
                         toastr.error(xhr.responseJSON.message);
-                        setTimeout(() => {
-                            location.reload();
-                        }, 1500);
+                        // setTimeout(() => {
+                        //     location.reload();
+                        // }, 1500);
                     },
                     403: function (xhr) {
                         console.log("Forbidden (403):", xhr);

@@ -169,18 +169,23 @@ scratch. This page gets rid of all links and provides the needed markup only.
             <div class="content">
                 <div class="container">
                     <div class="row">
-                        <template v-for="(item, index) in visibleStores" :key="item.storeId">
+                        <template v-for="(item, index) in storeList" :key="item.storeId">
                             <div class="col-6 col-md-4 col-xl-3">
                                 <a class="card sotreCard" :href="'StoreImformation.html?sid='+item.storeId">
-                                    <span class='badge text-bold text-success navbar-badge text-sm'>
+                                    <span class='badge text-bold text-success navbar-badge text-sm' v-if="item.isOpen">
                                         <i class="fas fa-circle"></i> <!-- 營業中 -->
+                                    </span>
+                                    <span class='badge text-bold text-danger navbar-badge text-sm' v-if="!item.isOpen">
+                                        <i class="fas fa-circle"></i> <!-- 休息中 -->
                                     </span>
                                     <img src="img/unknowIMG.png" class="card-img-top">
                                     <div class="card-body">
                                         <h6 class="text-dark m-0">{{ item.storeName }}</h6>
+                                        <p class="text-muted text-sm m-0" v-if="item.isOpen">
+                                            <i class=" far fa-clock mr-2"></i>
+                                            {{getWaitingTimeString(item.waitingTimeDisplay)}} 分鐘
+                                        </p>
                                         <p class="text-muted text-sm m-0">
-                                            <i class="far fa-clock mr-2"></i>
-                                            {{getWaitingTimeString(item.waitingTimeDisplay)}} 分鐘</br>
                                             <i class="fas fa-map-pin ml-1 mr-2 "></i>
                                             {{formatDistance(item.distanceInKM)}}
                                         </p>
@@ -188,16 +193,16 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                 </a>
                             </div>
                         </template>
-                        <div class="col-12" v-if="visibleStores.length==0">
+                        <div class="text-center pb-3 col-12" v-if="filteredStoreList.length > visibleStores.length">
+                            <button class="btn btn-outline-secondary" @click="loadMore">顯示更多結果</button>
+                        </div>
+                        <div class="col-12" v-if="storeList.length==0">
                             <div class="emptyImage emptyImage2"></div>
                             <p class="text-center">沒有符合條件的店家，
                                 <button class="ml-2 btn btn-primary toIndex" type="button">
                                     返回首頁
                                 </button>
                             </p>
-                        </div>
-                        <div class="text-center pb-3 col-12" v-if="filteredStoreList.length > visibleStores.length">
-                            <button class="btn btn-outline-secondary" @click="loadMore">顯示更多結果</button>
                         </div>
                     </div>
                 </div>
@@ -443,7 +448,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
             getStoreList() {
                 var vue = this
                 if (keyWord == null) {
-                    apiWeb('/api/stores?latitude=' + localStorage.latitude + '&longitude=' + localStorage.longitude + '&radius=' + radius + '&tagIds="' + classId + '"&requireAllTags=false', 'GET', null, '取得標籤商店', function (v) {
+                    apiWeb('/api/stores?latitude=' + localStorage.latitude + '&longitude=' + localStorage.longitude + '&radius=' + radius + '&tagIds=' + classId + '&requireAllTags=false', 'GET', null, '取得標籤商店', function (v) {
                         // console.log(v);
                         vue.ClassGroup.name = className
                         vue.ClassGroup.class = classType
@@ -452,10 +457,13 @@ scratch. This page gets rid of all links and provides the needed markup only.
                         loadingOff()
                     })
                 } else {
-                    apiWeb('/api/Search?keyword=' + keyWord + '&latitude=' + localStorage.latitude + '&longitude=' + localStorage.longitude, 'GET', null, '關鍵字搜尋', function (v) {
+                    apiWeb('/api/Search?keyword=' + keyWord + '&latitude=' + localStorage.latitude + '&longitude=' + localStorage.longitude + '&radius=' + radius, 'GET', null, '關鍵字搜尋', function (v) {
                         vue.ClassGroup.name = className
                         vue.ClassGroup.class = classType
                         vue.storeList = v.data
+
+                        // console.log(vue.storeList);
+
                         vue.PageTitle = '共有 ' + vue.storeList.length + ' 間符合條件的結果'
                         loadingOff()
                     })

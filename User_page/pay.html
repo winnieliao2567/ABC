@@ -593,7 +593,7 @@
         apiWeb('/api/store/send/order', 'POST', JSON.stringify(this.toPayData), '送出訂單',
           function (v) {
             localStorage.removeItem('cart');
-            window.location.href = "succes.html?order=" + v.no
+            window.location.href = "orderInfo.html?order=" + v.no
           })
 
       },

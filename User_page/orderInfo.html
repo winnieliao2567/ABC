@@ -145,10 +145,10 @@
       <div class="content-header">
         <div class="container">
           <div class="row mb-2">
-            <div class="col-12 text-center">
+            <div class="col-12 text-center" v-if="IsNewOrder">
               <h1>{{PageTitle}} <span class="text-primary ml-2">#{{order.pickupNumber}}</span></h1>
               <img class="my-3" src="img/startup-outline 1.svg" />
-              <p class="text-muted">下單時間：{{order.createDate}} {{order.createTime}}</p>
+              <!-- <p class="text-muted">下單時間：{{order.createDate}} {{order.createTime}}</p> -->
               <!-- <p class="text-muted">取餐時間：{{order.appointmentDate}} {{order.appointmentDate}}</p> -->
             </div>
             <div class="col-12">
@@ -160,7 +160,21 @@
                 {{storeInfo.storeInfo.shortAddress}}
               </p> -->
             </div>
-            <div class="col-12">
+            <div class="col-12 col-md-8">
+
+              <div class="p-3 itemOnlyHover">
+                <div class="d-flex justify-content-between align-items-center">
+                  <h6 class="m-0">
+                    <span class="text-primary mr-2">
+                      <i class="fas fa-clock"></i>
+                    </span>
+                    <label for="IsTableware" class="m-0">下單時間</label>
+                  </h6>
+                  <div class="">
+                    {{order.createDate}} {{order.createTime}}
+                  </div>
+                </div>
+              </div>
 
               <div class="p-3 itemOnlyHover">
                 <div class="d-flex justify-content-between align-items-center">
@@ -324,7 +338,7 @@
     },
     mounted() {
       this.getOrderInfo()
-      loadingOff()
+
 
     },
     watch: {
@@ -334,19 +348,40 @@
     methods: {
       getOrderInfo() {
 
-        let data = {
-          "No": orderId
-        }
-        let vue = this
-        apiWeb('/api/store/order/list', 'POST', JSON.stringify(data), '訂單資訊', function (v) {
-          vue.order = v.orders[0]
-          console.log(vue.order);
-        })
+        if (orderId) {
 
-      }
+          let data = {
+            "No": orderId
+          }
+          let vue = this
+          apiWeb('/api/store/order/list', 'POST', JSON.stringify(data), '訂單資訊', function (v) {
+            if (v.orders.length > 0) {
+              vue.order = v.orders[0]
+              // console.log(vue.order);
+              loadingOff()
+            }
+            else {
+              toastr.error('照不到訂單資訊');
+            }
+          })
+        } else {
+          toastr.error('照不到訂單資訊');
+        }
+      },
+
+
     },
     computed: {
-
+      IsNewOrder() {
+        //完成訂單
+        if (pageStatus == 1) {
+          return true
+        }
+        //歷史訂單
+        else {
+          return false
+        }
+      }
     }
   });
   app.mount("#app");

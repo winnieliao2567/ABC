@@ -202,27 +202,12 @@
         },
         mounted() {
 
-            loadingOff()
-
-            // console.log(this.userInfoEdit);
-
-
-            let userdata = {
-                "lineId": this.userInfo.id,
-                "name": this.userInfoEdit.username,
-                "mobileNumber": this.userInfoEdit.phoneNum
+            if (pageStatus == 1) {
+                this.PageTitle = '新會員請先完成基本資料'
+                loadingOff()
+            } else {
+                loadingOff()
             }
-
-            apiWeb('/api/Login/update-profile', 'POST', JSON.stringify(userdata), '更新會員資料', function (v) {
-                let userInfo = {
-                    name: v.data.name,
-                    id: v.data.userId,
-                    phoneNum: v.data.mobileNumber,
-                    linekey: v.data.lineid,
-                }
-                localStorage.userInfo = encryptObject(userInfo);
-            })
-
 
         },
         watch: {
@@ -234,7 +219,21 @@
         },
         computed: {
             editAccount() {
+                let userdata = {
+                    "lineId": this.userInfo.id,
+                    "name": this.userInfoEdit.username,
+                    "mobileNumber": this.userInfoEdit.phoneNum
+                }
 
+                apiWeb('/api/Login/update-profile', 'POST', JSON.stringify(userdata), '更新會員資料', function (v) {
+                    let userInfo = {
+                        name: v.data.name,
+                        id: v.data.userId,
+                        phoneNum: v.data.mobileNumber,
+                        linekey: v.data.lineid,
+                    }
+                    localStorage.userInfo = encryptObject(userInfo);
+                })
 
             },
             saveCheck() {

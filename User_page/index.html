@@ -332,7 +332,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 PageTitle: '首頁',
 
                 //原始資料
-                userInfo: decryptObject(localStorage.userInfo),
+                userInfo: localStorage.userInfo ? decryptObject(localStorage.userInfo) : {},
                 cartCount: localStorage.cart ? JSON.parse(localStorage.cart).length : '',
 
                 currentCoords: null, // 用戶當前座標
@@ -452,6 +452,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                     linekey: v.lineid,
                                 }
                                 localStorage.userInfo = encryptObject(userInfo);
+
+                                vue.userInfo = userInfo
 
                                 //沒有手機號碼自動跳轉到編輯資訊頁
                                 if (userInfo.phoneNum.length == 0) {

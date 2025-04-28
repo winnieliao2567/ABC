@@ -209,7 +209,7 @@ $(function () {
     $("#suerToCart").click(function () {
         BtnLoading($(this));
         setTimeout(() => {
-            window.location = "succes.html";
+            window.location = "orderInfo.html";
         }, 3000);
     });
 });

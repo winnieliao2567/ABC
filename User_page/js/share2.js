@@ -19,6 +19,7 @@ const keyWord = urlParams.get("kw");
 const userId = urlParams.get("uid");
 const storeId = urlParams.get("sid");
 const orderId = urlParams.get("order");
+const pageStatus = urlParams.get("status");
 
 const mode = "";
 

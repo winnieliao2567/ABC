@@ -448,7 +448,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                 let userInfo = {
                                     name: v.username,
                                     id: v.lineid,
-                                    phoneNum: v.MobileNumber,
+                                    phoneNum: v.mobileNumber,
                                     linekey: v.lineid,
                                 }
                                 localStorage.userInfo = encryptObject(userInfo);
@@ -458,7 +458,6 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                 //沒有手機號碼自動跳轉到編輯資訊頁
                                 if (userInfo.phoneNum.length == 0) {
                                     window.location.href = 'userInfomationEdit.html'
-
                                 } else {
                                     //資料初始化
                                     this.getLocation();

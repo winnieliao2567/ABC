@@ -225,8 +225,10 @@
             // },
             saveCheck() {
                 const phoneRegex = /^09\d{8}$/;
+                // console.log(this.userInfoEdit.name)
+                // console.log(phoneRegex.test(this.userInfoEdit.phoneNum));
                 return (
-                    this.userInfoEdit.username &&
+                    this.userInfoEdit.username != '' &&
                     phoneRegex.test(this.userInfoEdit.phoneNum)
                 );
             }

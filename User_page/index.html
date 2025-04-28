@@ -47,6 +47,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/11.0.5/swiper-bundle.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/11.0.5/swiper-bundle.min.js"></script>
 
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
     <style>
 
@@ -422,61 +423,102 @@ scratch. This page gets rid of all links and provides the needed markup only.
         mounted() {
             let vue = this
 
-            // 頁面載入時自動請求位置
-            this.getLocation();
+            initializeLiff("2006327628-8x1g1rAv")
 
-            new Swiper(".swiper-container", {
-                loop: false, // 無限輪播
-                slidesPerView: 4, // 預設桌機 4 個
-                spaceBetween: 10, // 間距
-                navigation: {
-                    nextEl: ".custom-next-btn",
-                    prevEl: ".custom-prev-btn",
-                },
-                breakpoints: {
-                    1024: { slidesPerView: 5.5 },  // 桌機
-                    768: { slidesPerView: 4.3 },   // 平板
-                    480: { slidesPerView: 2.5 }, // 一般手機
-                    375: { slidesPerView: 2.5 }, // iPhone SE
-                    320: { slidesPerView: 2.2 }  // 超小手機
-                },
-            });
+            async function initializeLiff(liffId) {
+                try {
+                    await liff.init({ liffId });
 
-            new Swiper(".swiper-container-store", {
-                loop: false, // 無限輪播
-                slidesPerView: 1.5, // 預設桌機 4 個
-                spaceBetween: 10, // 間距
-                navigation: {
-                    nextEl: ".custom-next-btn",
-                    prevEl: ".custom-prev-btn",
-                },
-                breakpoints: {
-                    1024: { slidesPerView: 5.5 },  // 桌機
-                    768: { slidesPerView: 4.3 },   // 平板
-                    480: { slidesPerView: 2.5 }, // 一般手機
-                    375: { slidesPerView: 2.5 }, // iPhone SE
-                    320: { slidesPerView: 1.5 }  // 超小手機
-                },
-            });
+                    // 如果未登入，執行登入
+                    if (!liff.isLoggedIn()) {
+                        // console.log("未登入，重新導向登入...");
+                        liff.login();
+                        return;
+                    }
 
-            new Swiper(".swiper-container-foodtype", {
-                loop: false, // 無限輪播
-                slidesPerView: 12, // 預設桌機 4 個
-                spaceBetween: 10, // 間距
-                navigation: {
-                    nextEl: ".custom-next-btn",
-                    prevEl: ".custom-prev-btn",
-                },
-                breakpoints: {
-                    1024: { slidesPerView: 10.5 },  // 桌機
-                    768: { slidesPerView: 10.2 },   // 平板
-                    480: { slidesPerView: 4.5 }, // 一般手機
-                    375: { slidesPerView: 4.5 }, // iPhone SE
-                    320: { slidesPerView: 5.2 }  // 超小手機
-                },
-            });
+                    // 取得 LINE Profile（在登入後立即取得）
+                    const profile = await liff.getProfile();
+                    console.log("取得使用者資料：", profile);
 
-            // console.log(storeId);
+                    apiWeb("/api/auth/keylogin",
+                        "POST",
+                        JSON.stringify({ lineid: profile.userId, username: profile.displayName }),
+                        '驗證管理員資訊', function (v) {
+                            if (v.message == "Login successful") {
+                                let userInfo = {
+                                    name: v.username,
+                                    id: v.lineid,
+                                    phoneNum: v.MobileNumber,
+                                    linekey: v.lineid,
+                                }
+                                localStorage.userInfo = encryptObject(userInfo);
+
+                                //沒有手機號碼自動跳轉到編輯資訊頁
+                                if (userInfo.phoneNum.length == 0) {
+                                    window.location.href = 'userInfomationEdit.html'
+
+                                } else {
+                                    //資料初始化
+                                    this.getLocation();
+
+
+                                    //畫面初始化
+                                    new Swiper(".swiper-container", {
+                                        loop: false, // 無限輪播
+                                        slidesPerView: 4, // 預設桌機 4 個
+                                        spaceBetween: 10, // 間距
+                                        navigation: {
+                                            nextEl: ".custom-next-btn",
+                                            prevEl: ".custom-prev-btn",
+                                        },
+                                        breakpoints: {
+                                            1024: { slidesPerView: 5.5 },  // 桌機
+                                            768: { slidesPerView: 4.3 },   // 平板
+                                            480: { slidesPerView: 2.5 }, // 一般手機
+                                            375: { slidesPerView: 2.5 }, // iPhone SE
+                                            320: { slidesPerView: 2.2 }  // 超小手機
+                                        },
+                                    });
+                                    new Swiper(".swiper-container-store", {
+                                        loop: false, // 無限輪播
+                                        slidesPerView: 1.5, // 預設桌機 4 個
+                                        spaceBetween: 10, // 間距
+                                        navigation: {
+                                            nextEl: ".custom-next-btn",
+                                            prevEl: ".custom-prev-btn",
+                                        },
+                                        breakpoints: {
+                                            1024: { slidesPerView: 5.5 },  // 桌機
+                                            768: { slidesPerView: 4.3 },   // 平板
+                                            480: { slidesPerView: 2.5 }, // 一般手機
+                                            375: { slidesPerView: 2.5 }, // iPhone SE
+                                            320: { slidesPerView: 1.5 }  // 超小手機
+                                        },
+                                    });
+                                    new Swiper(".swiper-container-foodtype", {
+                                        loop: false, // 無限輪播
+                                        slidesPerView: 12, // 預設桌機 4 個
+                                        spaceBetween: 10, // 間距
+                                        navigation: {
+                                            nextEl: ".custom-next-btn",
+                                            prevEl: ".custom-prev-btn",
+                                        },
+                                        breakpoints: {
+                                            1024: { slidesPerView: 10.5 },  // 桌機
+                                            768: { slidesPerView: 10.2 },   // 平板
+                                            480: { slidesPerView: 4.5 }, // 一般手機
+                                            375: { slidesPerView: 4.5 }, // iPhone SE
+                                            320: { slidesPerView: 5.2 }  // 超小手機
+                                        },
+                                    });
+                                }
+                            }
+                        })
+                } catch (e) {
+                    console.error("LIFF 初始化錯誤：", e);
+                    alert("LIFF 初始化錯誤：" + JSON.stringify(e));
+                }
+            }
         },
         watch: {
         },

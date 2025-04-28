@@ -46,6 +46,9 @@
 </head>
 
 <body class="login-page iframe-mode layout-footer-fixed" style="height: 100%;">
+  <div class="preloader flex-column justify-content-center align-items-center">
+    <img class="animation__shake" src="img/logo.svg" style="height: 15vh;">
+  </div>
   <div class="login-box" id="app">
     <div class="login-logo">
       <img src="img/logo2.svg" style="width: 75%;">
@@ -55,7 +58,7 @@
         <form>
           <p class="text-center">歡迎使用共饗SHARING，請登入帳號</p>
           <div class="text-center">
-            <button class="btn btn-xl" @click="login" type="button"><img src="img/line.png"
+            <button class="btn btn-xl" id="login-btn" type="button"><img src="img/line.png"
                 style="height: 50px;"></button>
           </div>
         </form>
@@ -70,98 +73,23 @@
   </div>
 </body>
 <script>
-
-  async function initializeLiff(liffId) {
-    try {
-      await liff.init({ liffId });
-
-      // 如果未登入，執行登入
-      if (!liff.isLoggedIn()) {
-        console.log("未登入，重新導向登入...");
-        liff.login();
-        return;
-      }
-
-      // 取得 LINE Profile（在登入後立即取得）
-      const profile = await liff.getProfile();
-      console.log("取得使用者資料：", profile);
-
-      // 顯示資料
-      $("#userinfo1").html(`歡迎，${profile.displayName}`);
-      $("#myImg").attr("src", profile.pictureUrl);
-
-
-      let ApiAuto = "";
-
-      $.ajax({
-        type: "POST",
-        headers: {
-          "Content-Type": "application/json; charset=utf-8",
-        },
-        url: host + "/api/auth/keylogin",
-        data: JSON.stringify({
-          key: AutoKey,
-        }),
-        success: function (v) {
-          ApiAuto = "Bearer " + v.token;
-
-          // 發送給後端
-          $.ajax({
-            type: 'POST',
-            url: '/api/login/line/login',
-            contentType: 'application/json',
-            headers: {
-              Authorization: ApiAuto, // 需要的話可以加上授權標頭
-            },
-            data: JSON.stringify({ lineid: profile.userId, username: profile.displayName }),
-            success: function (res) {
-              console.log("✅ 成功登入後端:", res);
-              $("#ajax-status").html("✅ 登入成功：" + JSON.stringify(res));
-              localStorage.userInfo = encryptObject({
-                name: res.username,
-                id: res.lineid,
-                phoneNum: res.MobileNumber,
-                linekey: res.lineid,
-              });
-              console.log(localStorage.userInfo);
-
-              if (res.MobileNumber == '') {
-                window.location.href = 'userInfomationEdit.html'
-              } else {
-                window.location.href = 'index.html'
-              }
-            },
-            error: function (err) {
-              console.error("❌ 後端錯誤：", err);
-              $("#ajax-status").html("❌ 錯誤：" + err.responseText);
-            }
-          });
-        },
-      });
-    } catch (e) {
-      console.error("LIFF 初始化錯誤：", e);
-      alert("LIFF 初始化錯誤：" + JSON.stringify(e));
-    }
-  }
-
   $(function () {
-
-    // localStorage.userInfo = encryptObject({
-    //   id: "0886defb-2177-4861-888e-e29bfb73ea3e",
-    //   name: "瑜",
-    //   phoneNum: "0912345678",
-    //   linekey: "0886defb-2177-4861-888e-e29bfb73ea3e",
-    // });
-
-
-    // window.location.href = 'userInfomationEdit.html'
-    // setTimeout(() => {
-    //   window.location.href = 'index.html'
-    // }, 5000);
-
-    initializeLiff("2006327628-8x1g1rAv");
+    loadingOff()
+    $('#login-btn').click(function () {
+      loadingOn()
+      liff.init({ liffId: "2006327628-8x1g1rAv" })
+        .then(() => {
+          if (!liff.isLoggedIn()) {
+            liff.login(); // 這裡才真正去登入
+          } else {
+            window.location.href = "index.html"; // 已登入的直接過
+          }
+        })
+        .catch((err) => {
+          console.error("LIFF 初始化失敗", err);
+        });
+    });
   });
-
 </script>
 
 

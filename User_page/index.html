@@ -440,7 +440,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                     const profile = await liff.getProfile();
                     console.log("取得使用者資料：", profile);
 
-                    apiWeb("/api/auth/keylogin",
+                    apiWeb("/api/login/line/login",
                         "POST",
                         JSON.stringify({ lineid: profile.userId, username: profile.displayName }),
                         '驗證管理員資訊', function (v) {

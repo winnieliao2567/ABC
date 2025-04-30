@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>購物車</title>
+  <title>共響 SHARING</title>
 
   <!-- jquery -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
@@ -145,22 +145,32 @@
       <div class="content-header">
         <div class="container">
           <div class="row mb-2">
-            <div class="col-12 text-center" v-if="IsNewOrder">
+            <div class="col-12 text-center mb-3" v-if="IsNewOrder">
               <h1>{{PageTitle}} <span class="text-primary ml-2">#{{order.pickupNumber}}</span></h1>
               <img class="my-3" src="img/startup-outline 1.svg" />
               <!-- <p class="text-muted">下單時間：{{order.createDate}} {{order.createTime}}</p> -->
               <!-- <p class="text-muted">取餐時間：{{order.appointmentDate}} {{order.appointmentDate}}</p> -->
             </div>
-            <div class="col-12">
+            <div class="col-12 col-md-6 col-xl-5 mx-auto">
               <h1 class="m-0">{{order.storeName}}</h1>
-              <!-- <p class="m-0 text-muted">
-                <i class="fas fa-map-marker-alt mr-2 text-secondary"></i>
-                {{storeInfo.storeInfo.city}}
-                {{storeInfo.storeInfo.districts}}
-                {{storeInfo.storeInfo.shortAddress}}
-              </p> -->
-            </div>
-            <div class="col-12 col-md-8">
+              <div class="p-3">
+                <p class="m-0 text-muted">
+                  <i class="fas fa-map-marker-alt mr-2 text-secondary"></i>
+                  {{order.storeaddress}}
+                </p>
+                <p class="m-0 text-muted">
+                  <i class="fas fa-phone mr-2 text-secondary"></i>
+                  {{order.storePhone}}
+                </p>
+              </div>
+
+              <div class="px-3 py-2 disabled" :class="{
+                'bg-success': order.status == 1,
+                'bg-danger': order.status == 2
+              }">
+                <i class="fas fa-file-invoice-dollar mr-2"></i>
+                {{order.statusName}}
+              </div>
 
               <div class="p-3 itemOnlyHover">
                 <div class="d-flex justify-content-between align-items-center">
@@ -244,7 +254,7 @@
               <div class="p-3 itemOnlyHover">
                 <div class="d-flex justify-content-between align-items-center">
                   <h6 class="m-0">
-                    <span class="text-primary mr-2"><i class="fas fa-utensils"></i></span>
+                    <span class="text-primary mr-2"><i class="fas fa-shopping-bag"></i></span>
                     <label for="IsTableware" class="m-0">塑膠袋數量</label>
                   </h6>
                   <div>
@@ -253,7 +263,26 @@
                 </div>
               </div>
 
-
+              <div class="p-3 itemOnlyHover" data-toggle="collapse" href="#orderCollapse" role="button"
+                aria-expanded="false" aria-controls="collapseExample">
+                <div class="d-flex justify-content-between align-items-center">
+                  <h6 class="m-0">
+                    <span class="text-primary mr-2"><i class="fas fa-pizza-slice"></i></span>
+                    <label for="IsTableware" class="m-0">訂單內容({{order.totalItems}})</label>
+                  </h6>
+                  <div>
+                    <b class="mr-2">${{order.price}}</b>
+                    <i class="fas fa-chevron-down float-right text-muted"></i>
+                  </div>
+                </div>
+              </div>
+              <div class="collapse" id="orderCollapse">
+                <div class="itemOnlyHover p-3 border-bottom" v-for="(item,index) in order.orderModel" :key="index">
+                  <h6>{{item.mealname}}<span class="float-right">${{item.price}}</span></h6>
+                  <p class="text-muted text-sm m-0"><span
+                      v-for="(option,opIndex) in item.options">{{option.title}}(${{option.extra}}),</span></p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -337,6 +366,8 @@
       }
     },
     mounted() {
+
+
       this.getOrderInfo()
 
 
@@ -354,18 +385,15 @@
             "No": orderId
           }
           let vue = this
-          apiWeb('/api/store/order/list', 'POST', JSON.stringify(data), '訂單資訊', function (v) {
-            if (v.orders.length > 0) {
-              vue.order = v.orders[0]
-              // console.log(vue.order);
-              loadingOff()
-            }
-            else {
-              toastr.error('照不到訂單資訊');
-            }
+          apiWeb('/api/store/order/detail/' + orderId, 'POST', null, '訂單資訊', function (v) {
+
+            vue.order = v.orderDetail
+            // console.log(vue.order);
+            loadingOff()
+
           })
         } else {
-          toastr.error('照不到訂單資訊');
+          toastr.error('找不到訂單資訊');
         }
       },
 

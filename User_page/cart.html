@@ -301,7 +301,7 @@
     },
     mounted() {
 
-      loadingOff()
+
       // console.log(this.userInfo);
 
       this.cartCount = this.cartList.length
@@ -312,6 +312,7 @@
         veu.lowAmount.enabled = v.storeInfo.minimumOrderEnabled
         veu.lowAmount.minimumOrderAmount = v.storeInfo.minimumOrderAmount
         veu.lowAmount.minimumOrderText = v.storeInfo.minimumOrderText
+        loadingOff()
       })
     },
     watch: {
@@ -337,11 +338,16 @@
       toPay() {
         // loadingOn()
         let vue = this
-        if (lowAmount.minimumOrderEnabled == true) {
-          if (vue.getTotalPrice() >= lowAmount.minimumOrderAmount) {
+        console.log(JSON.stringify(vue.lowAmount));
+
+        if (vue.lowAmount.enabled == true) {
+          console.log(vue.getTotalPrice());
+
+
+          if (vue.getTotalPrice() >= vue.lowAmount.minimumOrderAmount) {
             window.location.href = "pay.html?sid=" + vue.cartList[0].storeId
           } else {
-            $('#minimumOrderModalContent').html(lowAmount.minimumOrderText)
+            $('#minimumOrderModalContent').html(vue.lowAmount.minimumOrderText)
             $('#minimumOrderModal').modal('show')
             loadingOff()
           }

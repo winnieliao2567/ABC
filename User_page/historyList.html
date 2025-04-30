@@ -54,9 +54,9 @@ scratch. This page gets rid of all links and provides the needed markup only.
 </head>
 
 <body class="hold-transition sidebar-collapse layout-top-nav layout-footer-fixed">
-    <!-- <div class="preloader flex-column justify-content-center align-items-center">
+    <div class="preloader flex-column justify-content-center align-items-center">
         <img class="animation__shake" src="img/logo.svg" style="height: 15vh;">
-    </div> -->
+    </div>
     <div class="wrapper" id="app">
         <nav class="main-header navbar navbar-expand-md navbar-light navbar-white">
             <div class="container">
@@ -166,70 +166,64 @@ scratch. This page gets rid of all links and provides the needed markup only.
             </div>
             <div class="content">
                 <div class="container">
+                    <div class="p-3 border-bottom itemOnlyHover" v-for="(item,index) in paginatedOrders" :key="item.no"
+                        @click="toOrderInfo(item.no)">
+                        <h5>
+                            <!-- <i class="fas fa-store mr-2"></i> -->
+                            {{item.storeName}}
 
-                    <div class="accordion" id="accordionExample">
-                        <template v-for="(item,index) in paginatedOrders" :key="item.no">
-                            <div class="card m-0">
-                                <div class="card-header" id="headingOne">
-                                    <div class="row m-0" data-toggle="collapse" :data-target="'#collapse'+item.no"
-                                        aria-expanded="true" :aria-controls="'collapse'+item.no">
-                                        <!-- <div class="col-4 col-md-4 col-xl-2 p-0">
-                                            <img :src="item.storeInfo.image" style="width: 100%;">
-                                        </div> -->
-                                        <div class="col">
-                                            <h5>{{item.storeName}}
-                                                <span class="text-dark text-bold float-right">
-                                                    ${{ formatCurrency(item.price)}}
-                                                </span>
-                                            </h5>
-                                            <p class="text-muted text-sm m-0">下單時間：{{item.createDate}}
-                                                {{item.createTime}}</p>
-                                            <p class="text-muted text-sm m-0">取餐時間：{{item.appointmentDate}}
-                                                {{item.appointmentTime}}</p>
-                                        </div>
-                                    </div>
-                                </div>
+                            <span class="text-xs float-right" :class="{
+                                'text-success': item.status == 1,
+                                'text-danger': item.status == 2
+                              }">
+                                <!-- <i class="fas fa-circle mr-1"></i> -->
+                                {{item.statusName}}
+                                <i class="fas fa-check" v-if="item.status == 1"></i>
+                                <i class="fas fa-times" v-if="item.status == 2"></i>
+                            </span>
+                        </h5>
+                        <p class="m-0 d-flex justify-content-between">
+                            <span class="text-muted text-xs ">
+                                {{item.appointmentDate}}
+                                {{item.appointmentTime}}</span>
 
-                                <div :id="'collapse'+item.no" class="collapse" aria-labelledby="headingOne"
-                                    data-parent="#accordionExample">
-                                    <div class="card-body">
-                                        <template v-for="(meal,mealIndex) in item.menu">
-                                            <p class="m-0">{{meal.mealName}}</p>
-                                        </template>
-                                    </div>
-                                </div>
-                            </div>
-                        </template>
-
-                    </div>
-                    <div v-if="HistoryList.length==0" class="col-12">
-                        <div class="emptyImage emptyImage2"></div>
-                        <p class="text-center">還沒有點餐紀錄喔，
-                            <button class="ml-2 btn btn-primary" type="button" href="index.html">
-                                前往點餐
-                            </button>
+                            <span class="text-dark text-bold float-right">
+                                ${{ formatCurrency(item.price)}}
+                            </span>
                         </p>
+                        <!-- <p class="text-muted text-sm m-0">下單時間：{{item.createDate}}
+                            {{item.createTime}}</p> -->
+
                     </div>
+                </div>
+                <div v-if="HistoryList.length==0" class="col-12">
+                    <div class="emptyImage emptyImage2"></div>
+                    <p class="text-center">還沒有點餐紀錄喔，
+                        <button class="ml-2 btn btn-primary" type="button" href="index.html">
+                            前往點餐
+                        </button>
+                    </p>
+                </div>
 
-                    <div v-if="HistoryList.length>0" class="col-12">
-                        <ul class="pagination pagination-sm justify-content-center mt-3">
-                            <li class="page-item" :class="{ disabled: currentPage === 1 }">
-                                <a href="#" class="page-link" @click.prevent="prevPage">&laquo;</a>
-                            </li>
+                <div v-if="HistoryList.length>0" class="col-12">
+                    <ul class="pagination pagination-sm justify-content-center mt-3">
+                        <li class="page-item" :class="{ disabled: currentPage === 1 }">
+                            <a href="#" class="page-link" @click.prevent="prevPage">&laquo;</a>
+                        </li>
 
-                            <li v-for="page in totalPages" :key="page" class="page-item"
-                                :class="{ active: currentPage === page }">
-                                <a href="#" class="page-link" @click.prevent="goToPage(page)">{{ page }}</a>
-                            </li>
+                        <li v-for="page in totalPages" :key="page" class="page-item"
+                            :class="{ active: currentPage === page }">
+                            <a href="#" class="page-link" @click.prevent="goToPage(page)">{{ page }}</a>
+                        </li>
 
-                            <li class="page-item" :class="{ disabled: currentPage === totalPages }">
-                                <a href="#" class="page-link" @click.prevent="nextPage">&raquo;</a>
-                            </li>
-                        </ul>
-                    </div>
+                        <li class="page-item" :class="{ disabled: currentPage === totalPages }">
+                            <a href="#" class="page-link" @click.prevent="nextPage">&raquo;</a>
+                        </li>
+                    </ul>
                 </div>
             </div>
         </div>
+    </div>
     </div>
 
     <footer class="main-footer">
@@ -267,7 +261,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
             }
         },
         mounted() {
-
+            console.log(this.userInfo);
             this.getHistoryList()
         },
         watch: {
@@ -275,19 +269,25 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
         methods: {
             getHistoryList() {
-                console.log(this.userInfo);
+                console.log(this.userInfo.id);
                 let vue = this
-                apiWeb('/api/store/user/order/list/' + this.userInfo.id, 'GET', null, '取得歷史資料', function (v) {
+                let memberdata = {
+                    "memberid": vue.userInfo.id
+                }
+                apiWeb('/api/store/user/order/list/' + vue.userInfo.id, 'GET', null, '取得歷史資料', function (v) {
                     vue.HistoryList = v.orders
-                    console.log(vue.HistoryList);
-
+                    // console.log(vue.HistoryList);
+                    loadingOff()
                 })
             },
             formatCurrency(amount) {
                 var k = new Intl.NumberFormat("en-US").format(amount);
-                console.log(k);
+                // console.log(k);
 
                 return k
+            },
+            toOrderInfo(id) {
+                window.location.href = 'orderInfo.html?order=' + id
             },
 
             // 切換到上一頁

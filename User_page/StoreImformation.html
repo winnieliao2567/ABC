@@ -248,15 +248,11 @@ scratch. This page gets rid of all links and provides the needed markup only.
                     <div class="row">
                         <div class="col-12 p-0">
                             <h1 class="m-0">{{ PageTitle }}
-                                <p class="text-muted text-sm">
-                                    <template v-for="(tag, index) in storeInfo.storeInfo.tags" :key="index">
-                                        <span>{{ tag }}</span>
-                                        <span
-                                            v-if="storeInfo.storeInfo.tags.length !== 1 && index < storeInfo.storeInfo.tags.length - 1">
-                                            ,
-                                        </span>
-                                    </template>
-                                </p>
+                                <span class="btn-xs btn btn-default mr-2"
+                                    v-for="(tag, index) in storeInfo.storeInfo.tags" :key="index">
+                                    <i class="fas fa-tags"></i>
+                                    {{ tag }}
+                                </span>
                             </h1>
                         </div>
                         <div class="col-12 p-0">
@@ -890,9 +886,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
             },
             // 加入購物s車
             AddCart() {
-
                 let cart = []
-
                 if (localStorage.cart) {
                     try {
                         cart = JSON.parse(localStorage.cart)
@@ -903,15 +897,22 @@ scratch. This page gets rid of all links and provides the needed markup only.
                         cart = []
                     }
                 }
-                // console.log("原本的 cart", cart)
+                if (cart.length > 0 && cart[0].storeId != this.addToCart.storeId) {
+                    localStorage.cart = ''
+                    cart = []
+                    toastr.success("購物車內餐店並非該店家，已清空並新增進購物車");
+                } else {
+                    toastr.success("加入購物車成功");
+
+                }
 
                 // 加入當前品項
                 cart.push(this.addToCart)
-                // console.log("新增後的 cart", cart)
-                // 儲存回 localStorage
                 localStorage.cart = JSON.stringify(cart)
                 this.cartCount = JSON.parse(localStorage.cart).length
                 $('#FoodModal').modal('hide')
+
+
 
             }
         },

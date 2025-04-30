@@ -9,12 +9,11 @@ const queryString = window.location.search;
 const urlParams = new URLSearchParams(queryString);
 // console.log(urlParams);
 const radius = 120000; //距離半徑
-const redirect = urlParams.get("redirect");
 
-const classId = urlParams.get("cid");
-const classType = urlParams.get("ctype");
-const className = urlParams.get("cname");
-const keyWord = urlParams.get("kw");
+const classId = urlParams.get("cid"); //tagId
+const classType = urlParams.get("ctype"); //tag type
+const className = urlParams.get("cname"); //tag name
+const keyWord = urlParams.get("kw"); //關鍵字
 
 const userId = urlParams.get("uid");
 const storeId = urlParams.get("sid");

@@ -51,6 +51,26 @@
     <img class="animation__shake" src="img/logo.svg" style="height: 15vh;">
   </div>
   <div class="wrapper" id="app">
+
+    <div class="modal fade" id="payWindow" tabindex="-1" role="dialog" aria-labelledby="" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-md" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="">
+              確認訂單
+            </h5>
+          </div>
+          <div class="modal-body">
+            確定取餐時間為<b>{{toPayData.appointmentDate}} {{toPayData.appointmentTime}}</b>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">修改訂單</button>
+            <button type="button" class="btn btn-primary" @click="Pay()">確定下單</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <nav class="main-header navbar navbar-expand-md navbar-light navbar-white">
       <div class="container">
         <a class="toIndex navbar-brand">
@@ -176,17 +196,17 @@
                     </span>
                     <label for="IsTableware" class="m-0">取餐時間</label>
                   </h6>
-                  <select v-model="takeTime.type" class="form-control form-control-sm col-4">
-                    <option value="0">現在</option>
+                </div>
+                <div class="d-flex justify-content-between align-items-center m-0 pl-4">
+                  <select v-model="takeTime.type" class="form-control form-control-sm w-auto mr-1">
+                    <option value="0" id="nowOption">現在</option>
                     <option value="1">預定</option>
                   </select>
-                </div>
-                <div class="d-flex justify-content-between align-items-center">
-                  <select class="form-control form-control-sm" v-model="toPayData.appointmentDate"
+                  <select class="form-control form-control-sm mr-1" v-model="toPayData.appointmentDate"
                     :disabled="takeTime.type != 1">
                     <option v-for="(date,index) in dateList">{{date}}</option>
                   </select>
-                  <select class="form-control form-control-sm" v-model="toPayData.appointmentTime"
+                  <select class="form-control form-control-sm mr-1" v-model="toPayData.appointmentTime"
                     :disabled="takeTime.type != 1">
                     <option v-for="(time,index) in timeList">{{time}}</option>
                   </select>
@@ -209,12 +229,12 @@
                 </div>
                 <div class="m-0 pl-4">
                   <div class="form-group p-0">
-                    <label class="text-muted text-sm">名稱</label>
+                    <label class="text-muted text-sm m-0">名稱</label>
                     <input class="form-control form-control-sm" :disabled="userInfoSync" v-model="toPayData.SubscriberName
                   ">
                   </div>
                   <div class="form-group p-0">
-                    <label class="text-muted text-sm">手機號碼</label>
+                    <label class="text-muted text-sm m-0">手機號碼</label>
                     <input class="form-control form-control-sm" :disabled="userInfoSync"
                       v-model="toPayData.SubscriberNumber">
                   </div>
@@ -229,7 +249,7 @@
                 <div class="">
                   <h6 class="m-0 p-3 item" data-toggle="collapse" href="#MealsCollapse" role="button"
                     aria-expanded="false" aria-controls="MealsCollapse">
-                    <span>共{{cartCount}}項，總金額</span>
+                    <span>共{{cartCount}}項</span>
                     <i class="fas fa-chevron-down float-right text-muted" aria-hidden="true"></i>
                     <span class="float-right mr-2 text-primary">${{getTotalPrice()}}</span>
                   </h6>
@@ -324,7 +344,7 @@
                   <div class="btn btn-block btn-secondary toCart">返回購物車</div>
                 </div>
                 <div class="col-6">
-                  <div class="btn btn-block btn-primary" @click="Pay">確認送出</div>
+                  <div class="btn btn-block btn-primary" @click="ShowPayWindow">確認送出</div>
                 </div>
               </div>
             </div>
@@ -489,6 +509,11 @@
 
         vue.toPayData.appointmentDate = moment().format('YYYY-MM-DD')
 
+        if (vue.storeInfo.status.isOpen == false) {
+          vue.takeTime.type = 1
+          $('#nowOption').remove()
+        }
+
         // console.log(vue.toPayData);
 
 
@@ -523,6 +548,11 @@
     },
 
     methods: {
+
+      ShowPayWindow() {
+        $('#payWindow').modal('show')
+      },
+
       Pay() {
         loadingOn()
         // const datePart = m.format("YYYY-MM-DD");
@@ -593,7 +623,7 @@
         apiWeb('/api/store/send/order', 'POST', JSON.stringify(this.toPayData), '送出訂單',
           function (v) {
             localStorage.removeItem('cart');
-            window.location.href = "orderInfo.html?order=" + v.no
+            window.location.href = "orderInfo.html?order=" + v.no + '&status=1'
           })
 
       },

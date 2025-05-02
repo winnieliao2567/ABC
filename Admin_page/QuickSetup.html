@@ -175,12 +175,13 @@
                         </button>
                     </div>
                     <div class="modal-body">
-                        <select v-model="blockedSlots" class="form-control">
+                        鎖定
+                        <select v-model="blockedSlots" class="d-inline-block form-control w-auto mx-2">
                             <option value="1">1</option>
                             <option value="2">2</option>
                             <option value="3">3</option>
                             <option value="4">4</option>
-                        </select>
+                        </select>個區間段，下次可下單時間為<span class="text-primary text-bold">{{nextOrderTime}}</span>
 
                     </div>
 
@@ -554,7 +555,10 @@
                     enabled: '', time: '', data: moment().format("YYYY-MM-DD")
                 },
 
-                blockedSlots: 1
+                blockedSlots: 1,
+                nextOrderTime: '',
+                nextOrderTimeList: [],
+
             }
         },
         mounted() {
@@ -583,7 +587,13 @@
             })
 
             $('#lock').click(function () {
-                $('#lockModal').modal('show')
+                apiWeb('/api/TimeSlot/GetAvailableSlots?storeId=' + storeId + '&onlyAvailable=false', 'GET', null, '可預定區間斷', function (v) {
+                    vue.nextOrderTimeList = v.availableSlots[0].slots
+                    vue.nextOrderTime = v.availableSlots[0].slots[1].time
+                    // console.log(vue.nextOrderTime);
+
+                    $('#lockModal').modal('show')
+                })
             })
 
             $('#unlock').click(function () {
@@ -622,6 +632,9 @@
                     this.BasicWaitingTimeSave();
                 }
             },
+            blockedSlots(newVal) {
+                this.nextOrderTime = this.nextOrderTimeList[newVal].time
+            }
         },
         methods: {
             GetStoreInfo() {

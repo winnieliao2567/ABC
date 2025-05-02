@@ -461,14 +461,13 @@
                 <div class="container-fluid">
                     <div class="row">
                         <div class="col-12 col-md-8 col-xl-7 mb-3">
-                            <div class="Myinput-group">
+                            <form class="Myinput-group" @submit.prevent="searchProductors">
                                 <input type="search" class="" placeholder="搜尋品項名稱" v-model="searchKeyword">
 
-                                <button type="button" class="btn" :disabled="searchKeyword.length==0"
-                                    @click="searchProductors()">
+                                <button type="submit" class="btn" :disabled="searchKeyword.length==0">
                                     <i class="fa fa-search"></i>
                                 </button>
-                            </div>
+                            </form>
                         </div>
                         <div class="col-12 col-md-8 col-xl-7 text-right mb-3"
                             v-if="productorData.length>0&&disabledType=='List'">

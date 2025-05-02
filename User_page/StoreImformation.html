@@ -332,13 +332,12 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
                             <!-- 搜尋 -->
                             <div class="p-3 pt-0" v-if="productorData.length>0">
-                                <div class="Myinput-group">
+                                <form class="Myinput-group" @submit.prevent="searchProductors">
                                     <input type="search" class="" placeholder="搜尋料理" v-model="searchKeyword">
-                                    <button type="button" class="btn" :disabled="searchKeyword.length==0"
-                                        @click="searchProductors">
+                                    <button type="submit" class="btn" :disabled="searchKeyword.length==0">
                                         <i class="fa fa-search"></i>
                                     </button>
-                                </div>
+                                </form>
                             </div>
                         </div>
 

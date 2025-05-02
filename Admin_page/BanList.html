@@ -201,13 +201,13 @@
                 <div class="container-fluid">
                     <div class="row">
                         <div class="col-12 col-md-8 col-xl-7 mb-3">
-                            <div class="Myinput-group">
+                            <form class="Myinput-group" @submit.prevent="searchPhoneNum">
                                 <input type="search" class="" placeholder="搜尋手機號碼" v-model="searchKeyword">
 
-                                <button type="button" class="btn" @click="searchPhoneNum()">
+                                <button type="submit" class="btn">
                                     <i class="fa fa-search"></i>
                                 </button>
-                            </div>
+                            </form>
                         </div>
                         <div class="col-12 col-md-8 col-xl-7  mb-3">
                             <button class="btn btn-primary float-right" type="button" v-on:click="showAddBanWin">

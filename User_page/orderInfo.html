@@ -146,7 +146,7 @@
         <div class="container">
           <div class="row mb-2">
             <div class="col-12 text-center mb-3" v-if="IsNewOrder">
-              <h1>{{PageTitle}} <span class="text-primary ml-2">#{{order.pickupNumber}}</span></h1>
+              <h1>{{PageTitle}} <span class="text-primary ml-2">#{{order.pickupnumber}}</span></h1>
               <img class="my-3" src="img/startup-outline 1.svg" />
               <!-- <p class="text-muted">下單時間：{{order.createDate}} {{order.createTime}}</p> -->
               <!-- <p class="text-muted">取餐時間：{{order.appointmentDate}} {{order.appointmentDate}}</p> -->
@@ -169,7 +169,8 @@
                 'bg-danger': order.status == 2
               }">
                 <i class="fas fa-file-invoice-dollar mr-2"></i>
-                {{order.statusName}}
+                <span v-if="order.status == 1">訂單成立</span>
+                <span v-if="order.status == 2">訂單取消</span>
               </div>
 
               <div class="p-3 itemOnlyHover">
@@ -255,10 +256,16 @@
                 <div class="d-flex justify-content-between align-items-center">
                   <h6 class="m-0">
                     <span class="text-primary mr-2"><i class="fas fa-shopping-bag"></i></span>
-                    <label for="IsTableware" class="m-0">塑膠袋數量</label>
+                    <label for="IsTableware" class="m-0">塑膠袋</label>
                   </h6>
                   <div>
-                    {{order.bag}}
+                    <span v-if="order.bag">
+                      <i class="fas fa-check-circle"></i>
+                    </span>
+                    <span v-if="!order.bag">
+                      <i class="fas fa-times"></i>
+                    </span>
+                    <!-- {{order.bag}} -->
                   </div>
                 </div>
               </div>

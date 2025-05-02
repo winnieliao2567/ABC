@@ -423,7 +423,65 @@ scratch. This page gets rid of all links and provides the needed markup only.
         mounted() {
             let vue = this
 
-            initializeLiff("2006327628-8x1g1rAv")
+            localStorage.userInfo = 'U2FsdGVkX1/+Q1DgNVu7fe0UUAMjzNxkoKuptU9VRG6Qm2gs8Sd3dn8hJHlsOVH+Tr/prPCETqRgQuVaBZVcEI+OKfSAby2WRqEbfSzJp5Jlq4mYkWhkZRpdkv0QSKs8Livgog1MzoHWT78qG6tGWvO+k/iayufpCeDpNiNnOJKJLVc8k59EawtLjFvf+Aagm/DhEPXpdX0ad7Ff4RomHw=='
+
+            //資料初始化
+            vue.getLocation();
+
+            //畫面初始化
+            new Swiper(".swiper-container", {
+                loop: false, // 無限輪播
+                slidesPerView: 4, // 預設桌機 4 個
+                spaceBetween: 10, // 間距
+                navigation: {
+                    nextEl: ".custom-next-btn",
+                    prevEl: ".custom-prev-btn",
+                },
+                breakpoints: {
+                    1024: { slidesPerView: 5.5 },  // 桌機
+                    768: { slidesPerView: 4.3 },   // 平板
+                    480: { slidesPerView: 2.5 }, // 一般手機
+                    375: { slidesPerView: 2.5 }, // iPhone SE
+                    320: { slidesPerView: 2.2 }  // 超小手機
+                },
+            });
+            new Swiper(".swiper-container-store", {
+                loop: false, // 無限輪播
+                slidesPerView: 1.5, // 預設桌機 4 個
+                spaceBetween: 10, // 間距
+                navigation: {
+                    nextEl: ".custom-next-btn",
+                    prevEl: ".custom-prev-btn",
+                },
+                breakpoints: {
+                    1024: { slidesPerView: 5.5 },  // 桌機
+                    768: { slidesPerView: 4.3 },   // 平板
+                    480: { slidesPerView: 2.5 }, // 一般手機
+                    375: { slidesPerView: 2.5 }, // iPhone SE
+                    320: { slidesPerView: 1.5 }  // 超小手機
+                },
+            });
+            new Swiper(".swiper-container-foodtype", {
+                loop: false, // 無限輪播
+                slidesPerView: 12, // 預設桌機 4 個
+                spaceBetween: 10, // 間距
+                navigation: {
+                    nextEl: ".custom-next-btn",
+                    prevEl: ".custom-prev-btn",
+                },
+                breakpoints: {
+                    1024: { slidesPerView: 10.5 },  // 桌機
+                    768: { slidesPerView: 10.2 },   // 平板
+                    480: { slidesPerView: 4.5 }, // 一般手機
+                    375: { slidesPerView: 4.5 }, // iPhone SE
+                    320: { slidesPerView: 5.2 }  // 超小手機
+                },
+            });
+
+            // initializeLiff("2006327628-8x1g1rAv")
+
+
+
 
             async function initializeLiff(liffId) {
                 try {

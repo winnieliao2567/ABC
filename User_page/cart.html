@@ -307,13 +307,17 @@
       this.cartCount = this.cartList.length
 
       let veu = this
-      apiWeb('/api/Store/detail/' + this.cartList[0].storeId, 'GET', null, '取得店家低消', function (v) {
-        // console.log(v);
-        veu.lowAmount.enabled = v.storeInfo.minimumOrderEnabled
-        veu.lowAmount.minimumOrderAmount = v.storeInfo.minimumOrderAmount
-        veu.lowAmount.minimumOrderText = v.storeInfo.minimumOrderText
+      if (this.cartList.length > 0) {
+        apiWeb('/api/Store/detail/' + this.cartList[0].storeId, 'GET', null, '取得店家低消', function (v) {
+          // console.log(v);
+          veu.lowAmount.enabled = v.storeInfo.minimumOrderEnabled
+          veu.lowAmount.minimumOrderAmount = v.storeInfo.minimumOrderAmount
+          veu.lowAmount.minimumOrderText = v.storeInfo.minimumOrderText
+          loadingOff()
+        })
+      } else {
         loadingOff()
-      })
+      }
     },
     watch: {
 

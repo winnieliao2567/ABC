@@ -196,19 +196,19 @@
                     </span>
                     <label for="IsTableware" class="m-0">取餐時間</label>
                   </h6>
-                </div>
-                <div class="d-flex justify-content-between align-items-center m-0 pl-4">
                   <select v-model="takeTime.type" class="form-control form-control-sm w-auto mr-1">
-                    <option value="0" id="nowOption">現在</option>
+                    <option value="0" id="nowOption">立即</option>
                     <option value="1">預定</option>
                   </select>
+                </div>
+                <div class="d-flex justify-content-between align-items-center m-0 pl-4">
                   <select class="form-control form-control-sm mr-1" v-model="toPayData.appointmentDate"
                     :disabled="takeTime.type != 1">
                     <option v-for="(date,index) in dateList">{{date}}</option>
                   </select>
-                  <select class="form-control form-control-sm mr-1" v-model="toPayData.appointmentTime"
+                  <select class="form-control form-control-sm mr-1" v-model="formatTo12Hour"
                     :disabled="takeTime.type != 1">
-                    <option v-for="(time,index) in timeList">{{time}}</option>
+                    <option v-for="(time,index) in timeList">{{formatTo12HourFunc(time)}}</option>
                   </select>
                 </div>
                 <!-- <input class="form-control datetimelocal form-control-sm col" :disabled="takeTime.type != 1"
@@ -327,14 +327,16 @@
                     <span class="text-primary mr-2"><i class="fas fa-shopping-bag"></i></span>
                     <label for="IsPlacetic" class="m-0">塑膠袋</label>
                   </h6>
-                  <select v-model="toPayData.Bag" class="form-control form-control-sm" style="width: max-content;">
+                  <!-- <select v-model="toPayData.Bag" class="form-control form-control-sm" style="width: max-content;">
                     <option value="0" selected>無需塑膠袋</option>
                     <option value="1">1</option>
                     <option value="2">2</option>
                     <option value="3">3</option>
-                  </select>
-                  <!-- <input type="checkbox" class="float-right" id="IsPlacetic" v-model="toPayData.Bag"> -->
-                  <!-- <span class="float-right text-muted text-sm mr-2" v-show="toPayData.Bag">+ $2</span> -->
+                  </select> -->
+                  <div>
+                    <span class="text-muted text-sm mr-2" v-show="toPayData.Bag">+ $2</span>
+                    <input type="checkbox" class="" id="IsPlacetic" v-model="toPayData.Bag">
+                  </div>
                 </div>
 
               </div>
@@ -460,7 +462,7 @@
           "appointmentDate": '', //日期
           "appointmentTime": '', //時間
           'Remark': '',
-          'Bag': '0'
+          'Bag': false
         },
 
 
@@ -472,6 +474,8 @@
         availableSlots: [],
         dateList: [],
         timeList: [],
+
+        formatTo12Hour: '00:00:00',
 
         PaymentMethodsList: [
           {
@@ -537,6 +541,7 @@
     },
     watch: {
       'toPayData.appointmentDate'(newVal) {
+        // console.log(newVal);
         this.getTimeList(newVal)
       },
       'takeTime.type'(newVal) {
@@ -558,9 +563,6 @@
         // const datePart = m.format("YYYY-MM-DD");
         // const timePart = m.format("HH:mm:ss");
 
-
-
-
         this.toPayData.MemberId = this.userInfo.id
         this.toPayData.StoreId = this.cartList[0].storeId
         this.toPayData.Menu.meal = this.cartList
@@ -568,6 +570,7 @@
         this.toPayData.IsOnlyPrice = false //只想要取得目前訂單價格
         this.toPayData.PaymentMethods = "cash"
         this.toPayData.Price = this.getTotalPrice()
+        this.toPayData.appointmentTime = this.to24HourFormat(this.formatTo12Hour)
 
         let data = JSON.parse(this.toPayData.Menu)
         data.meal.forEach(meal => {
@@ -641,16 +644,37 @@
       },
 
       getTimeList(date) {
-        // console.log(date);
+        // console.log(this.availableSlots);
+        if (this.availableSlots.length > 0) {
+          this.timeList = this.availableSlots.find(item => item.date == date)
+            ?.slots.map(slot => slot.time) || []
+          // this.toPayData.appointmentTime = this.timeList[0]
+          // console.log('this.timeList[0])------', date, this.timeList);
 
-        this.timeList = this.availableSlots.find(item => item.date == date)
-          ?.slots.map(slot => slot.time) || []
-        this.toPayData.appointmentTime = this.timeList[0]
+          this.formatTo12Hour = this.formatTo12HourFunc(this.timeList[0])
+          // console.log(this.timeList);
+          // console.log(this.toPayData.appointmentTime);
+        }
+      },
 
-        // console.log(this.timeList);
-        // console.log(this.toPayData.appointmentTime);
+      formatTo12HourFunc(timeStr) {
+        // console.log('timeStr------', timeStr);
 
+        const [hour, minute, second] = timeStr.split(":");
+        const h = parseInt(hour);
+        const ampm = h >= 12 ? "PM" : "AM";
+        const hour12 = h % 12 === 0 ? 12 : h % 12;
+        return `${String(hour12).padStart(2, "0")}:${minute} ${ampm}`;
+      },
 
+      to24HourFormat(time12) {
+        const [time, ampm] = time12.trim().split(" ");
+        let [hour, minute] = time.split(":").map(s => parseInt(s, 10));
+
+        if (ampm.toUpperCase() === "PM" && hour !== 12) hour += 12;
+        if (ampm.toUpperCase() === "AM" && hour === 12) hour = 0;
+
+        return `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}:00`;
       }
 
     },

@@ -62,7 +62,7 @@
                     </div>
                     <div class="modal-body">
                         <h6>是否將 <span
-                                class="text-primary">{{showOrderInfo.name}}({{showOrderInfo.subscriberNumber}})</span>
+                                class="text-primary">{{showOrderInfo.memberName}}({{showOrderInfo.memberNumber}})</span>
                             加入黑名單，他將無法下單該商店，直到移出黑名單
                         </h6>
                     </div>
@@ -74,64 +74,82 @@
                 </div>
             </div>
         </div>
+
         <div class="modal fade" id="OrderInfo" tabindex="-1" role="dialog" aria-labelledby="reloginModalLabel"
             aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="reloginModalLabel">
-                            訂單資訊 #{{showOrderInfo.no}}
-                        </h5>
+                        <div>
+                            <p class="text-muted text-sm m-0">{{showOrderInfo.no}}</p>
+                            <h5 class="modal-title m-0" id="reloginModalLabel">
+                                訂單資訊 <span class="text-primary">#{{showOrderInfo.pickupNumber}}</span>
+                            </h5>
+                        </div>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
                     <div class="modal-body">
                         <div class="row m-0">
-                            <div class="col-12 col-md-12 col-lg-4 p-3 mb-2">
-                                <h5>訂購人資訊</h5>
+                            <div class="col-6 col-md-6 col-lg-6 p-3 mb-2">
+                                <h6>訂購人資訊</h6>
                                 <div class="mb-3">
-                                    <h3 class="text-primary">
-                                        {{showOrderInfo.name}}
+                                    <p class="m-0">
+                                        <span class="text-muted">
+                                            {{showOrderInfo.subscriberNumber}}
+                                        </span>
+                                    </p>
+                                    <h3 class="m-0">
+                                        {{showOrderInfo.subscriberName}}
+                                    </h3>
+
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-6 col-lg-6 p-3 mb-2">
+                                <h6>帳號資訊</h6>
+                                <div class="mb-3">
+                                    <p class="m-0">
+                                        <span class="text-muted">
+                                            <!-- <i class="fas fa-mobile-alt"></i>： -->
+                                            {{showOrderInfo.memberNumber}}
+                                        </span>
+                                    </p>
+                                    <h3 class="m-0">
+                                        {{showOrderInfo.memberName}}
                                         <button class="btn btn-sm btn-default" data-toggle="tooltip"
-                                            v-on:click="showBanWIn" data-placement="top" title="封鎖訂購人">
+                                            v-on:click="showBanWIn" data-placement="top" title="封鎖該帳號">
                                             <!-- <i class="fas fa-user-slash"></i> -->
                                             <i class="fas fa-ban"></i>
                                         </button>
                                     </h3>
-                                    <p>
-                                        <span class="text-muted">
-                                            <!-- <i class="fas fa-mobile-alt"></i>： -->
-                                            {{showOrderInfo.subscriberNumber}}
-                                        </span>
-                                    </p>
+
                                 </div>
                             </div>
-                            <div class="col-12 col-md-12 col-lg-8 p-3 mb-2 bg-light">
-                                <h5>訂單資訊<span class="text-sm">({{showOrderInfo.createDate}}
-                                        {{showOrderInfo.createTime}})</span></h5>
-                                <div class="row m-0">
+                            <div class="col-12 col-md-12 col-lg-12 p-3 mb-2 bg-light">
+
+                                <h5>
+                                    訂單資訊
+                                    <span class="text-sm text-muted m-0">
+                                        ({{showOrderInfo.createDate}}
+                                        {{showOrderInfo.createTime}})
+                                    </span>
+                                </h5>
+                                <div class="row m-0 py-3">
                                     <div class="col-12 col-md-6 col-xl-6">
                                         <div class="form-group mb-3">
                                             <div class="text-muted text-sm">
                                                 <i class="fas fa-store" id=""></i>
                                                 店家
                                             </div>
-                                            <h6 class="">{{showOrderInfo.storeName}}</h6>
+                                            <h6 class="ml-3">{{showOrderInfo.storeName}}</h6>
                                         </div>
-                                        <!-- <div class="form-group mb-3">
-                                            <div class="text-muted text-sm">
-                                                <i class="fas fa-clock"></i>
-                                                下單時間
-                                            </div>
-                                            <h6 class="">{{showOrderInfo.orderTime}}</h6>
-                                        </div> -->
                                         <div class="form-group mb-3">
                                             <div class="text-muted text-sm">
                                                 <i class="fas fa-coins"></i>
                                                 付款方式
                                             </div>
-                                            <h6 v-if="showOrderInfo.paymentMethods=='cash'">
+                                            <h6 class="ml-3" v-if="showOrderInfo.paymentMethods=='cash'">
                                                 現金
                                             </h6>
                                         </div>
@@ -141,13 +159,16 @@
                                                 <i class="fas fa-clipboard-list"></i>
                                                 取餐號
                                             </div>
-                                            <h6 class="">#{{showOrderInfo.pickupNumber}}</h6>
+                                            <h6 class="ml-3">#{{showOrderInfo.pickupNumber}}</h6>
                                         </div>
                                     </div>
                                     <div class="col-12 col-md-6 col-xl-6">
                                         <div class="form-group mb-3">
-                                            <div class="text-muted text-sm">訂單狀態</div>
-                                            <h6 class="">
+                                            <div class="text-muted text-sm">
+                                                <i class="fas fa-file-invoice"></i>
+                                                訂單狀態
+                                            </div>
+                                            <h6 class="ml-3">
                                                 <span v-if="showOrderInfo.status==1" class="text-success">
                                                     <i class="fas fa-check-square mr-1"></i>
                                                     訂單成立
@@ -163,7 +184,7 @@
                                                 <i class="fas fa-clock"></i>
                                                 取餐時間
                                             </div>
-                                            <h6 class="">{{showOrderInfo.appointmentDate}}
+                                            <h6 class="ml-3">{{showOrderInfo.appointmentDate}}
                                                 {{showOrderInfo.appointmentTime}}</h6>
                                         </div>
                                         <div class="form-group mb-3">
@@ -171,21 +192,24 @@
                                                 <i class="fas fa-shopping-bag"></i>
                                                 取餐方式
                                             </div>
-                                            <h6>
+                                            <h6 class="ml-3">
                                                 自取
                                             </h6>
                                         </div>
-                                        <div class="form-group mb-3">
+                                        <!-- <div class="form-group mb-3">
                                             <div class="text-muted text-sm">
                                                 <i class="fas fa-dollar-sign"></i>
                                                 訂單金額
                                             </div>
-                                            <h6 class="">${{showOrderInfo.price}}</h6>
-                                        </div>
+                                            <h6 class="ml-3">${{showOrderInfo.price}}</h6>
+                                        </div> -->
+                                    </div>
+                                    <div class="col-12 py-3" v-if="showOrderInfo.status==1">
+                                        <button class="btn btn-danger float-right"
+                                            @click="showCancelOrder">取消訂單</button>
                                     </div>
                                 </div>
                             </div>
-
                             <div class="col-12 p-3 mb-2 bg-light">
                                 <h5>訂單內容</h5>
                                 <table class="table table-bordered table-hover">
@@ -197,67 +221,66 @@
                                             <th>
                                                 品項
                                             </th>
-                                            <th class="hide-on-mobile">
-
-                                            </th>
                                             <th>
-                                                數量
-                                            </th>
-                                            <th class="hide-on-mobile">
-                                                單價
-                                            </th>
-                                            <th class="hide-on-mobile">
                                                 小記
                                             </th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr v-for="(productor,proIndex) in showOrderInfo.mealItem">
+                                        <tr v-for="(productor,proIndex) in showOrderInfo.orderModel">
                                             <td>
                                                 {{proIndex+1}}
                                             </td>
                                             <td>
-                                                <h5>
-                                                    {{productor.productors.name}}
-                                                </h5>
-                                                <span class="mb-1">
-                                                    <span class="text-sm text-muted">份量</span>
-                                                    <div>
-                                                        {{productor.productors.size.name}}(+{{productor.productors.size.price}})
-                                                    </div>
-                                                </span>
-                                                <div class="mb-1 d-md-none"
-                                                    v-for="(custom,cusIndex) in productor.productors.customClass">
-                                                    <span class="text-sm text-muted">{{custom.name}}</span>
-                                                    <div v-for="(oprion,optIndex) in custom.options">
-                                                        {{oprion.name}}(+{{oprion.price}})
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td class="hide-on-mobile">
-                                                <div class="mb-1"
-                                                    v-for="(custom,cusIndex) in productor.productors.customClass">
-                                                    <span class="text-sm text-muted">{{custom.name}}</span>
-
-                                                    <div v-for="(oprion,optIndex) in custom.options">
-                                                        {{oprion.name}}(+{{oprion.price}})
-                                                    </div>
+                                                <h6>
+                                                    {{productor.mealname}}
+                                                </h6>
+                                                <div class="text-sm">
+                                                    <span v-for="(custom,cusIndex) in productor.options">
+                                                        {{custom.title}}(${{custom.extra}}), </span>
                                                 </div>
                                             </td>
                                             <td>
-                                                {{ productor.count}}
-                                            </td>
-                                            <td class="hide-on-mobile">
-                                                {{productor.productors.price}}
-                                            </td>
-                                            <td class="hide-on-mobile">
                                                 {{productor.price}}
                                             </td>
                                         </tr>
                                     </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <td colspan="10">
+                                                <span>
+                                                    <!-- <i class="fas fa-dollar-sign"></i> -->
+                                                    總金額（共{{showOrderInfo.totalItems}}項）
+                                                </span>
+                                                <span class="text-bold float-right">${{showOrderInfo.price}}</span>
+                                            </td>
+                                        </tr>
+                                    </tfoot>
                                 </table>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="CancelOrder" tabindex="-1" role="dialog" aria-labelledby="reloginModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-sm" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="reloginModalLabel">取消訂單</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        是否取消訂單
+                    </div>
+                    <div class="modal-footer">
+                        <!-- <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button> -->
+
+                        <button type="button" class="btn btn-danger" @click="cancelOrder">確認取消</button>
                     </div>
                 </div>
             </div>
@@ -378,7 +401,25 @@
             <div class="content">
                 <div class="container-fluid">
                     <div class="row">
-                        <div class="col-12">
+                        <form class="col-12 p-3 border mb-3 bg-white" @submit.prevent="getList">
+                            <h5><i class="fas fa-search mr-2"></i>搜尋條件</h5>
+                            <div class="row">
+                                <div class="form-group col-12 col-md-12 col-lg-4">
+                                    <label>訂單日期範圍</label>
+                                    <input id="daterange" class="form-control">
+                                </div>
+                                <div class="form-group col-12 col-md-12 col-lg-4">
+                                    <label>訂購人姓名</label>
+                                    <input v-model="searchData.subscribername" class="form-control">
+                                </div>
+                                <div class="form-group col-12 col-md-12 col-lg-4">
+                                    <label>訂購人電話</label>
+                                    <input v-model="searchData.subscribernumber" class="form-control">
+                                </div>
+                            </div>
+                            <button type="submit" style="display:none;"></button>
+                        </form>
+                        <div class="col-12 p-0">
                             <table class="table table-bordered table-hover">
                                 <thead class="table-primary">
                                     <tr>
@@ -410,10 +451,16 @@
                                         <td class="longText">
                                             {{ (currentPage - 1) * pageSize + OrderIndex + 1 }}
                                         </td>
-                                        <td class="longText text-sm">{{getEnd(Orders.no)}}
-                                            <span class="text-primary text-bold">#{{Orders.pickupNumber}}</span>
+                                        <td class="longText text-sm">
+                                            <p class="text-primary text-bold m-0">#{{Orders.pickupNumber}}</p>
+                                            {{getEnd(Orders.no)}}
                                         </td>
-                                        <td class="longText">{{Orders.name}}</td>
+                                        <td class="longText">
+                                            <p class="text-sm text-muted m-0">
+                                                {{Orders.subscriberNumber}}
+                                            </p>
+                                            {{Orders.subscriberName}}
+                                        </td>
                                         <td class="longText">
                                             <div data-toggle="tooltip" data-placement="top" title="訂單成立"
                                                 v-if="Orders.status==1"
@@ -521,6 +568,18 @@
                     "minimumOrderText": ""
                 },
 
+                searchData: {
+                    "storeid": storeId, //必填 商家ID
+                    "memberid": "", //會員ID
+                    "No": "", //單號
+                    "subscribername": "", // 訂購人姓名
+                    "subscribernumber": "", // 訂購人電話
+                    "membername": "", //會員姓名
+                    "membernumber": "", //會員電話
+                    startdatetime: moment().subtract(6, 'days').format('YYYY-MM-DD') + ' 00:00:00', // 開始日期 00:00:00
+                    enddatetime: moment().format('YYYY-MM-DD') + ' 23:59:59' // 結束日期 23:59:59
+                },
+
                 currentPage: currentPage, // 當前頁面
                 pageSize: pageSize, // 每頁顯示筆數
             }
@@ -540,58 +599,88 @@
             $('[data-toggle="tooltip"]').tooltip();
 
             var vue = this
-            let apiData = {
-                "storeid": storeId, //必填 商家ID
-                "memberid": "", //會員ID
-                "No": "", //單號
-                "subscribername": "", // 訂購人姓名
-                "subscribernumber": "", // 訂購人電話
-                "membername": "", //會員姓名
-                "membernumber": "", //會員電話
-                "startdatetime": "", //開始時間
-                "enddatetime": "" //結束時間
-            }
-            apiWeb('/api/store/order/list', 'POST', JSON.stringify(apiData), '取得訂單列表', function (v) {
-                // console.log(v);
 
-                // if (v.success == true) {
+            $("#daterange").daterangepicker({
+                locale: {
+                    format: 'YYYY-MM-DD',
+                    applyLabel: '確定',
+                    cancelLabel: '取消',
+                    customRangeLabel: '自訂區間',
+                    daysOfWeek: ['日', '一', '二', '三', '四', '五', '六'],
+                    monthNames: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],
+                    firstDay: 1
+                },
+                ranges: {
+                    '今日': [moment(), moment()],
+                    '昨日': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                    '近七天': [moment().subtract(6, 'days'), moment()],
+                    '當月': [moment().startOf('month'), moment().endOf('month')],
+                    '當季': [
+                        moment().startOf('quarter'),
+                        moment().endOf('quarter')
+                    ],
+                    '當年': [moment().startOf('year'), moment().endOf('year')]
+                },
+                opens: 'left',  // 設置日期選擇框的位置
+                // timePicker: true,  // 啟用時間選擇
+                // timePicker24Hour: true,  // 使用 24 小時制
+                timePickerIncrement: 30,  // 時間步長
+                alwaysShowCalendars: true,  // 顯示日曆（即使在沒有選擇日期的情況下）
+                showCustomRangeLabel: false,  // 隱藏 "自訂範圍" 標籤
+                startDate: moment(),  // 預設開始日期
+                endDate: moment(),  // 預設結束日期
+                autoApply: true,  // 選擇日期後自動應用
+                maxDate: moment(),  // 最大日期設為當前日期
+                singleDatePicker: false,  // 設置為範圍選擇器
 
-                // vue.Order_data = []
-
-                // vue.Order_data = v.data.waitingList
-
-                vue.Order_data = v.orders
-
-                loadingOff()
-                // console.log(vue.Order_data);
-                // }
-
-
+            }, function (start, end) {
+                vue.searchData.startdatetime = start.format('YYYY-MM-DD') + ' 00:00:00'
+                vue.searchData.enddatetime = end.format('YYYY-MM-DD') + ' 23:59:59'
+                vue.getList()
             })
+
+            this.getList()
         },
         watch: {
         },
         methods: {
             showOrderInfoWin(index) {
-                console.log(index);
+                // console.log(index);
                 this.showOrderInfo = this.Order_data[index]
-                console.log(this.showOrderInfo);
-                $('#OrderInfo').modal('show')
+                let vue = this
+                apiWeb('api/store/order/detail/' + this.Order_data[index].no, 'POST', null, '獲得詳細資訊', function (v) {
+                    vue.showOrderInfo.orderModel = v.orderDetail.orderModel
+                    $('#OrderInfo').modal('show')
+                })
+                // console.log(this.showOrderInfo);
+
             },
             showBanWIn() {
                 $('#OrderInfo').modal('hide')
                 $('#AddBanWin').modal('show')
             },
-            AddBan() {
-                console.log(this.showOrderInfo.subscriberNumber);
+            getList() {
+                loadingOn()
+                let vue = this
+                console.log(vue.searchData);
 
-                apiWeb('api/Store/blacklist/' + storeId + '/' + this.showOrderInfo.subscriberNumber, 'POST', '', '新增黑名單', function (v) {
+                apiWeb('/api/store/order/list', 'POST', JSON.stringify(vue.searchData), '取得訂單列表', function (v) {
+                    vue.Order_data = v.orders
+                    loadingOff()
+                })
+            },
+            AddBan() {
+                // console.log(this.showOrderInfo.memberNumber);
+
+                apiWeb('api/Store/blacklist/' + storeId + '/' + this.showOrderInfo.memberNumber, 'POST', '', '新增黑名單', function (v) {
                     if (v.status == 0) {
                         $('#AddBanWin').modal('hide')
-                        window.location.href = 'BanList.html?sid=' + storeId
+                        // window.location.href = 'BanList.html?sid=' + storeId
+                        toastr.success("新增黑名單成功");
+                        loadingOff()
                     } else if (v.status == 1) {
                         $('#AddBanWin').modal('hide')
-                        toastr.error("該用戶不存在");
+                        toastr.error("該用戶不存在或已加入黑名單");
                     } else {
                         GetDataError('新增黑名單')
                     }
@@ -618,6 +707,25 @@
             },
             getEnd(str) {
                 return str.slice(-5);
+            },
+
+            //取消訂單
+            showCancelOrder() {
+                $('#OrderInfo').modal('hide')
+                $('#CancelOrder').modal('show')
+            },
+            cancelOrder() {
+                loadingOn()
+                let vue = this
+                apiWeb('/api/store/order/cancel/' + this.showOrderInfo.no, 'POST', null, '取消訂單', function (v) {
+                    if (v.message == 'cancel successful') {
+                        toastr.success("訂單取消成功");
+                        $('#CancelOrder').modal('hide')
+                        vue.getList()
+                    } else {
+                        toastr.error("訂單取消失敗");
+                    }
+                })
             }
         },
     });

@@ -264,7 +264,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                     <i class="fas fa-clock mr-2 text-secondary"></i>
                                     <span class="text-success">營業中</span>
                                     <span>，預計等待時間
-                                        <b>{{getMaxWaitingTime}}</b>分鐘</span>
+                                        <b>{{getMaxWaitingTime}}</b></span>
                                     <i class="fas fa-chevron-down float-right text-muted"></i>
                                 </h6>
                                 <h6 class="m-0" v-if="!storeInfo.status.isOpen" data-toggle="collapse"
@@ -273,7 +273,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                     <i class="fas fa-clock mr-2 text-secondary"></i> <span
                                         class="text-danger">休息中</span>
                                     <span class="text-muted text-sm">，下次可訂餐時間為
-                                        <b>{{nextAvailabletime}}</b>分鐘</span>
+                                        <b>{{nextAvailabletime}}</b></span>
                                     <i class="fas fa-chevron-down float-right text-muted"></i>
                                 </h6>
                                 <div class="collapse" id="opentimeCollapse">
@@ -917,10 +917,14 @@ scratch. This page gets rid of all links and provides the needed markup only.
         },
         computed: {
             getMaxWaitingTime() {
-                let min = Number(this.storeInfo.nextAvailable.waitingTimeDisplay)
-                let max = min + 10
-                let a = min + '-' + max
-                return a
+                if (this.storeInfo.nextAvailable.waitingTimeDisplay == "over 60 min") {
+                    return '超過一小時'
+                } else {
+                    let min = Number(this.storeInfo.nextAvailable.waitingTimeDisplay)
+                    let max = min + 10
+                    let a = min + '-' + max
+                    return a + '分鐘'
+                }
             },
 
             nextAvailabletime() {

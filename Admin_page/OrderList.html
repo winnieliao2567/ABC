@@ -222,12 +222,15 @@
                                                 品項
                                             </th>
                                             <th>
+                                                數量
+                                            </th>
+                                            <th>
                                                 小記
                                             </th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr v-for="(productor,proIndex) in showOrderInfo.orderModel">
+                                        <tr v-for="(productor,proIndex) in showOrderInfo.mealSummary">
                                             <td>
                                                 {{proIndex+1}}
                                             </td>
@@ -236,12 +239,18 @@
                                                     {{productor.mealname}}
                                                 </h6>
                                                 <div class="text-sm">
-                                                    <span v-for="(custom,cusIndex) in productor.options">
-                                                        {{custom.title}}(${{custom.extra}}), </span>
+                                                    <!-- <span v-for="(custom,cusIndex) in productor.options">
+                                                        {{custom.title}}(${{custom.extra}}), </span> -->
+                                                    <span>
+                                                        {{productor.description }}
+                                                    </span>
                                                 </div>
                                             </td>
                                             <td>
-                                                {{productor.price}}
+                                                {{productor.count}}
+                                            </td>
+                                            <td>
+                                                {{productor.totalPrice}}
                                             </td>
                                         </tr>
                                     </tbody>
@@ -627,7 +636,7 @@
                 timePickerIncrement: 30,  // 時間步長
                 alwaysShowCalendars: true,  // 顯示日曆（即使在沒有選擇日期的情況下）
                 showCustomRangeLabel: false,  // 隱藏 "自訂範圍" 標籤
-                startDate: moment(),  // 預設開始日期
+                startDate: moment().subtract(6, 'days'),  // 預設開始日期
                 endDate: moment(),  // 預設結束日期
                 autoApply: true,  // 選擇日期後自動應用
                 maxDate: moment(),  // 最大日期設為當前日期
@@ -649,7 +658,8 @@
                 this.showOrderInfo = this.Order_data[index]
                 let vue = this
                 apiWeb('api/store/order/detail/' + this.Order_data[index].no, 'POST', null, '獲得詳細資訊', function (v) {
-                    vue.showOrderInfo.orderModel = v.orderDetail.orderModel
+                    vue.showOrderInfo.mealSummary = v.orderDetail.mealSummary
+
                     $('#OrderInfo').modal('show')
                 })
                 // console.log(this.showOrderInfo);
@@ -662,7 +672,7 @@
             getList() {
                 loadingOn()
                 let vue = this
-                console.log(vue.searchData);
+                // console.log(vue.searchData);
 
                 apiWeb('/api/store/order/list', 'POST', JSON.stringify(vue.searchData), '取得訂單列表', function (v) {
                     vue.Order_data = v.orders

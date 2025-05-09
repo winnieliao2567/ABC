@@ -777,7 +777,7 @@
                                     categoryName: category.categoryName,
                                     productors: vue.ProductList.filter(product => product.categoryId === category.categoryId)
                                 }));
-                                console.log(vue.productorData);
+                                // console.log(vue.productorData);
 
                                 apiWeb('api/MealPriority/titles/' + storeId, 'GET', null, '取得排序列表', function (v) {
                                     if (v.success == true) {
@@ -813,7 +813,7 @@
                     action: '新增',
                     data: { categoryName: '' }
                 }
-                console.log(this.ProductorClass_Data.data);
+                // console.log(this.ProductorClass_Data.data);
                 $('#createProductorClass').modal('show')
             },
             addClass() {
@@ -822,7 +822,7 @@
                     "StoreId": storeId,
                     "CategoryName": this.ProductorClass_Data.data.categoryName
                 }
-                console.log(data);
+                // console.log(data);
 
                 apiWeb('api/Meal/category/' + storeId + '/add', 'POST', JSON.stringify(data), '新增分類', function (v) {
                     if (v.success == true) {
@@ -849,7 +849,7 @@
             },
             saveClass() {
                 loadingOn()
-                console.log(this.ProductorClass_Data.data);
+                // console.log(this.ProductorClass_Data.data);
                 var s = this.ProductorClass_Data.data
                 var data = {
                     "storeId": storeId,
@@ -864,7 +864,7 @@
 
             //＊顯示刪除分類視窗
             DeleteProductorGroup(index) {
-                console.log(this.ClassList, index)
+                // console.log(this.ClassList, index)
 
                 var k = this.ClassList[index]
                 // console.log(k);

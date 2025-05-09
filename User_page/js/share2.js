@@ -8,7 +8,7 @@ const pageSize = 10; // 每頁顯示筆數
 const queryString = window.location.search;
 const urlParams = new URLSearchParams(queryString);
 // console.log(urlParams);
-const radius = 120000; //距離半徑
+const radius = 8000; //距離半徑
 
 const classId = urlParams.get("cid"); //tagId
 const classType = urlParams.get("ctype"); //tag type
@@ -47,14 +47,14 @@ const userFunction = [
 ];
 
 function loadingOff() {
-    console.log("移除遮罩");
+    // console.log("移除遮罩");
     $(".preloader").css("height", 0);
     setTimeout(function () {
         $(".preloader").children().hide();
     }, 0);
 }
 function loadingOn() {
-    console.log("顯示遮罩");
+    // console.log("顯示遮罩");
     $(".preloader").css("height", "100%");
     setTimeout(function () {
         $(".preloader").children().show();
@@ -62,8 +62,8 @@ function loadingOn() {
 }
 function apiWeb(_url, _type, _data, TimelogTag, _fun) {
     if (mode != "test") {
-        console.time("● API-" + TimelogTag + "(" + _url + ")");
-        console.log("● data-" + TimelogTag + ":", _data);
+        // console.time("● API-" + TimelogTag + "(" + _url + ")");
+        // console.log("● data-" + TimelogTag + ":", _data);
     }
 
     let ApiAuto = "";
@@ -81,7 +81,7 @@ function apiWeb(_url, _type, _data, TimelogTag, _fun) {
             ApiAuto = "Bearer " + v.token;
 
             if (mode != "test") {
-                console.log("● auto-" + TimelogTag + ":", ApiAuto);
+                // console.log("● auto-" + TimelogTag + ":", ApiAuto);
             }
 
             $.ajax({
@@ -101,15 +101,15 @@ function apiWeb(_url, _type, _data, TimelogTag, _fun) {
                         //     location.reload();
                         // }, 1500);
                     },
-                    403: function (xhr) {
-                        console.log("Forbidden (403):", xhr);
-                    },
-                    404: function (xhr) {
-                        console.log("Not Found (404):", xhr);
-                    },
-                    500: function (xhr) {
-                        console.log("Server Error (500):", xhr);
-                    },
+                    // 403: function (xhr) {
+                    //     console.log("Forbidden (403):", xhr);
+                    // },
+                    // 404: function (xhr) {
+                    //     console.log("Not Found (404):", xhr);
+                    // },
+                    // 500: function (xhr) {
+                    //     console.log("Server Error (500):", xhr);
+                    // },
                     default: function (xhr) {
                         // 捕捉所有其他狀態碼
                         toastr.error(TimelogTag + "系統問題導致失敗");
@@ -117,17 +117,16 @@ function apiWeb(_url, _type, _data, TimelogTag, _fun) {
                 },
                 success: function (v) {
                     if (mode != "test") {
-                        console.timeEnd("● API-" + TimelogTag + "(" + _url + ")");
+                        // console.timeEnd("● API-" + TimelogTag + "(" + _url + ")");
                         // toastr.success(TimelogTag + "成功");
-
-                        console.log("● Reques-" + TimelogTag + " : ", v);
+                        // console.log("● Reques-" + TimelogTag + " : ", v);
                     }
                     if (_fun) _fun(v);
                 },
                 error: function (v) {
-                    console.timeEnd("● API-" + TimelogTag + "(" + _url + ")");
+                    // console.timeEnd("● API-" + TimelogTag + "(" + _url + ")");
                     // toastr.error(TimelogTag + "系統問題導致失敗");
-                    console.log("Error:", JSON.stringify(v));
+                    // console.log("Error:", JSON.stringify(v));
                 },
             });
         },

@@ -84,14 +84,14 @@ const userFunction = [
 ];
 
 function loadingOff() {
-    console.log("移除遮罩");
+    // console.log("移除遮罩");
     $(".preloader").css("height", 0);
     // setTimeout(function () {
     $(".preloader").children().hide();
     // }, 0);
 }
 function loadingOn() {
-    console.log("顯示遮罩");
+    // console.log("顯示遮罩");
     $(".preloader").css("height", "100%");
     // setTimeout(function () {
     $(".preloader").children().show();
@@ -118,7 +118,7 @@ function apiWeb(_url, _type, _data, TimelogTag, _fun) {
         success: function (v) {
             ApiAuto = "Bearer " + v.token;
 
-            console.log("● auto-" + TimelogTag + ":", ApiAuto);
+            // console.log("● auto-" + TimelogTag + ":", ApiAuto);
 
             if (_url == "_url") {
                 if (_fun) _fun();
@@ -133,14 +133,14 @@ function apiWeb(_url, _type, _data, TimelogTag, _fun) {
                     data: _data,
                     statusCode: {
                         400: function (xhr) {
-                            console.log(xhr);
+                            // console.log(xhr);
                             toastr.error(xhr.responseText);
                             setTimeout(() => {
                                 location.reload();
                             }, 1500);
                         },
                         401: function (xhr) {
-                            console.log("Forbidden (401):", xhr);
+                            // console.log("Forbidden (401):", xhr);
 
                             if (TimelogTag == "管理員登入") {
                                 toastr.error("登入失敗");
@@ -153,33 +153,24 @@ function apiWeb(_url, _type, _data, TimelogTag, _fun) {
                                 }, 3000);
                             }
                         },
-                        403: function (xhr) {
-                            console.log("Forbidden (403):", xhr);
-                        },
-                        404: function (xhr) {
-                            console.log("Not Found (404):", xhr);
-                        },
-                        500: function (xhr) {
-                            console.log("Server Error (500):", xhr);
-                        },
                         default: function (xhr) {
                             // 捕捉所有其他狀態碼
                             toastr.error(TimelogTag + "系統問題導致失敗");
                         },
                     },
                     success: function (v) {
-                        console.log("● API-" + TimelogTag + "(" + _url + ")");
+                        // console.log("● API-" + TimelogTag + "(" + _url + ")");
 
                         // toastr.success(TimelogTag + "成功");
 
-                        console.log("● Reques-" + TimelogTag + " : ", v);
+                        // console.log("● Reques-" + TimelogTag + " : ", v);
 
                         if (_fun) _fun(v);
                     },
                     error: function (v) {
-                        console.timeEnd("● API-" + TimelogTag + "(" + _url + ")");
+                        // console.timeEnd("● API-" + TimelogTag + "(" + _url + ")");
                         // toastr.error(TimelogTag + "系統問題導致失敗");
-                        console.log("Error:", JSON.stringify(v));
+                        // console.log("Error:", JSON.stringify(v));
                     },
                 });
             }
@@ -238,7 +229,7 @@ function itemClick(obj) {
     selectStore(obj.attr("id"));
 }
 function selectStore(Id) {
-    console.log("selectid: " + Id);
+    // console.log("selectid: " + Id);
     // loadingOn();
     apiWeb("/api/Store/basic-info/" + Id, "GET", null, "更換店家，取得資訊", function (v) {
         // 存入 localStorage
@@ -316,7 +307,7 @@ $(function () {
     $("body").on("click", ".password-undisabled", function () {
         // $(".password-undisabled").click(function () {
         var id = $(this).attr("data-for");
-        console.log(id);
+        // console.log(id);
         $(this)
             .addClass("password-disabled")
             .removeClass("password-undisabled")
@@ -326,7 +317,7 @@ $(function () {
     $("body").on("click", ".password-disabled", function () {
         // $(".password-disabled").click(function () {
         var id = $(this).attr("data-for");
-        console.log(id);
+        // console.log(id);
         $(this)
             .addClass("password-undisabled")
             .removeClass("password-disabled")

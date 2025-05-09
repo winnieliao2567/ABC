@@ -261,7 +261,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
             }
         },
         mounted() {
-            console.log(this.userInfo);
+            // console.log(this.userInfo);
             this.getHistoryList()
         },
         watch: {
@@ -269,7 +269,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
         methods: {
             getHistoryList() {
-                console.log(this.userInfo.id);
+                // console.log(this.userInfo.id);
                 let vue = this
                 let memberdata = {
                     "memberid": vue.userInfo.id

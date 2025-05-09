@@ -496,7 +496,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
                     // 取得 LINE Profile（在登入後立即取得）
                     const profile = await liff.getProfile();
-                    console.log("取得使用者資料：", profile);
+                    // console.log("取得使用者資料：", profile);
 
                     apiWeb("/api/login/line/login",
                         "POST",
@@ -517,6 +517,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                 if (userInfo.phoneNum.length == 0) {
                                     window.location.href = 'userInfomationEdit.html?status=1'
                                 } else {
+                                    // console.log('vue.getLocation();');
+
                                     //資料初始化
                                     vue.getLocation();
 
@@ -602,9 +604,12 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 this.loading = true;
                 this.error = null;
                 this.stores = [];
+                var vue = this
 
                 // 檢查瀏覽器是否支持地理定位
                 if (navigator.geolocation) {
+                    // console.log(navigator.geolocation);
+
                     navigator.geolocation.getCurrentPosition(
                         // 成功獲取位置
                         (position) => {
@@ -616,7 +621,9 @@ scratch. This page gets rid of all links and provides the needed markup only.
                             localStorage.latitude = this.currentCoords.latitude
                             localStorage.longitude = this.currentCoords.longitude
 
-                            this.fetchNearbyStores();
+                            // console.log('vue.fetchNearbyStores();');
+
+                            vue.fetchNearbyStores();
                         },
                         // 獲取位置失敗
                         (error) => {

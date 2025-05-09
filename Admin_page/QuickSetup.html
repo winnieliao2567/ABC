@@ -550,7 +550,15 @@
                         src: '<i class="fas fa-unlock"></i>',
                         discrition: '取消當前區間鎖定',
                         enabled: true
-                    }],
+                    },
+                    {
+                        name: 'print',
+                        title: '綁定出單機',
+                        src: '<i class="fas fa-print"></i>',
+                        discrition: '',
+                        enabled: true
+                    },
+                ],
                 EarlyClosure: {
                     enabled: '', time: '', data: moment().format("YYYY-MM-DD")
                 },
@@ -674,7 +682,7 @@
                     "closeImmediately": false,
                     "closeTime": this.EarlyClosure.time
                 }
-                console.log(closeData);
+                // console.log(closeData);
 
                 // apiWeb('api/StoreStatus/early-close/' + storeId, 'POST', null, '設定提前休息', function (v) {
                 //     $('#EarlyClosureModal').modal('hide')
@@ -709,10 +717,10 @@
             //儲存特殊店休
             specialCloseDaysSave() {
                 var EditData = this.storeInfoEdit.openTime.specialCloseDays
-                console.log(EditData);
+                // console.log(EditData);
 
                 var closeDate = { StoreId: storeId, SpecialCloseDays: EditData }
-                console.log(JSON.stringify(closeDate));
+                // console.log(JSON.stringify(closeDate));
 
                 apiWeb('api/Store/open/time', 'POST', JSON.stringify(closeDate), '新增特定店休', function (v) {
                     if (v.message == 'Store open time updated successfully') {
@@ -741,7 +749,7 @@
 
             lockSots() {
                 loadingOn()
-                console.log({ "storeId": storeId, "blockedSlots": this.blockedSlots });
+                // console.log({ "storeId": storeId, "blockedSlots": this.blockedSlots });
                 let vue = this
                 apiWeb(
                     '/api/TimeSlot/Block',
@@ -754,6 +762,7 @@
                     }
                 )
             }
+
 
         },
         computed: {

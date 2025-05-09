@@ -291,7 +291,7 @@
                     "currentPassword": this.Key.oldPassword,
                     "newPassword": this.Key.newPassword
                 }
-                console.log(editData)
+                // console.log(editData)
 
                 apiWeb('api/Login/change-password', 'POST', JSON.stringify(editData), '更換密碼', function (v) {
                     if (v.success == true) {

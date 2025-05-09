@@ -350,7 +350,7 @@
                         priorities: result
                     }
 
-                    console.log(EditData);
+                    // console.log(EditData);
 
 
                     // loadingOn()
@@ -387,7 +387,7 @@
                         title: ''
                     }
                 }
-                console.log(this.editSortClass_Data.Data);
+                // console.log(this.editSortClass_Data.Data);
                 $('#createProductorClass').modal('show')
             },
 
@@ -436,12 +436,12 @@
                 var editData = {
                     title: JSON.parse(JSON.stringify(this.editSortClass_Data.Data.title))
                 }
-                console.log(editData);
+                // console.log(editData);
 
                 var vue = this
                 apiWeb('/api/MealPriority/titles/' + storeId + '/' + this.editSortClass_Data.Data.priorityId
                     , 'PUT', JSON.stringify(editData), '新增排序', function (v) {
-                        console.log(vue.SortClass_Data[0].title, vue.editSortClass_Data.Data.title);
+                        // console.log(vue.SortClass_Data[0].title, vue.editSortClass_Data.Data.title);
                         if (v.success == true) {
                             location.reload()
                         } else {
@@ -455,7 +455,7 @@
                 var addData = {
                     title: this.editSortClass_Data.Data.title
                 }
-                console.log(addData);
+                // console.log(addData);
                 var vue = this
                 apiWeb('/api/MealPriority/titles/' + storeId, 'POST', JSON.stringify(addData), '新增排序', function (v) {
                     if (v.success == true) {

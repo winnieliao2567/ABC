@@ -347,7 +347,7 @@
             AddBan() {
                 var vue = this
                 // console.log(vue.storeInfo.store);
-                console.log(storeId + '/' + vue.AddBan_data.mobileNumber);
+                // console.log(storeId + '/' + vue.AddBan_data.mobileNumber);
                 apiWeb('api/Store/blacklist/' + storeId + '/' + vue.AddBan_data.mobileNumber, 'POST', null, '新增黑名單', function (v) {
                     if (v.status == 0) {
                         $('#AddBanWin').modal('hide')
@@ -365,7 +365,7 @@
             },
             deletBan(num) {
                 var vue = this
-                console.log(storeId + '/' + num);
+                // console.log(storeId + '/' + num);
 
                 apiWeb('api/Store/blacklist/' + storeId + '/' + num, 'DELETE', null, '新增黑名單', function (v) {
                     if (v.message == "已成功將用戶從黑名單中移除") {
@@ -392,7 +392,7 @@
             },
             searchPhoneNum() {
                 apiWeb('api/Store/blacklist/search/' + storeId + '?keyword=' + this.searchKeyword, 'GET', null, '搜尋黑名單', function (v) {
-                    console.log(v);
+                    // console.log(v);
 
                     if (v.success == true) {
 

@@ -411,7 +411,7 @@
             showDeletModal(id) {
                 this.DeletMenuDate.menuId = $('#del-' + id).attr('data-id')
                 this.DeletMenuDate.menuName = $('#del-' + id).attr('data-name')
-                console.log(this.DeletMenuDate);
+                // console.log(this.DeletMenuDate);
 
                 $('#deletMenuModal').modal('show')
             },
@@ -419,7 +419,7 @@
                 this.ActiveMenuDate.menuId = id
                 this.ActiveMenuDate.menuName = name
                 // this.ActiveMenuDate.enabled = status
-                console.log(this.ActiveMenuDate);
+                // console.log(this.ActiveMenuDate);
                 $('#ActiveMenuModal').modal('show')
             },
             ActiveMenu() {

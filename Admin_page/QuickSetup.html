@@ -595,12 +595,13 @@
             })
 
             $('#lock').click(function () {
-                apiWeb('/api/TimeSlot/GetAvailableSlots?storeId=' + storeId + '&onlyAvailable=false', 'GET', null, '可預定區間斷', function (v) {
+                loadingOn()
+                apiWeb('/api/TimeSlot/GetAvailableSlots?storeId=' + storeId + '&onlyAvailable=false', 'GET', null, '可預定區間段', function (v) {
                     vue.nextOrderTimeList = v.availableSlots[0].slots
                     vue.nextOrderTime = v.availableSlots[0].slots[1].time
                     // console.log(vue.nextOrderTime);
-
                     $('#lockModal').modal('show')
+                    loadingOff()
                 })
             })
 
@@ -614,13 +615,13 @@
                     function () {
                         vue.getActiveBlocks()
                         toastr.success('已取消鎖定區間');
+                        loadingOff()
                     }
                 )
             })
 
             this.EarlyClosure.data = moment().format("YYYY-MM-DD")
 
-            this.getActiveBlocks()
         },
         watch: {
             'EarlyClosure.enabled'(newValue, oldValue) {
@@ -650,18 +651,26 @@
                 apiWeb("api/Store/detail/" + storeId, "GET", null, "取得店家編輯資料", function (v) {
                     // console.log(v);
                     vue.storeInfoEdit = v;
+                    // console.log('取得店家編輯資料======', vue.storeInfoEdit);
+
                     if (vue.storeInfoEdit.activeMenu != null) {
                         vue.thismenuId = vue.storeInfoEdit.activeMenu.menuId
                     } else {
                         $('#MenuAdjustment').addClass('disabled')
                     }
+
+                    vue.getActiveBlocks()
+
                     loadingOff()
                 });
             },
 
             getActiveBlocks() {
+
                 let vue = this
                 apiWeb('/api/TimeSlot/ActiveBlocks/' + storeId, 'GET', null, '檢查當前是否有封鎖時間段', function (v) {
+                    // console.log('isOpen========', vue.storeInfoEdit.status.isOpen);
+
                     if (vue.storeInfoEdit.status.isOpen && v.hasActiveBlocks == false) {
                         vue.menuList[5].enabled = true
                         vue.menuList[6].enabled = false
@@ -672,6 +681,8 @@
                         vue.menuList[6].enabled = false
                         vue.menuList[5].enabled = false
                     }
+                    // console.log(vue.menuList);
+
                     loadingOff()
                 })
             },

@@ -348,11 +348,11 @@
                                                 </div>
 
                                                 <!-- 標籤 -->
-                                                <div class="col-12 my-1"
+                                                <div class="col-12 my-1" data-toggle="tooltip" data-placement="top"
+                                                    title="若需調整請與官方聯絡"
                                                     v-if="settingItem.groupitem.type === 'KeyWord Tag'">
                                                     <input class="form-control" id="input-tags" autocomplete="off"
                                                         :placeholder="settingItem.groupitem.placeholder"
-                                                        v-model="storeInfoEdit.storeInfo.tags"
                                                         :disabled="!settingItem.groupitem.enabled">
                                                 </div>
 
@@ -1030,13 +1030,6 @@
 
             this.GetStoreInfo()
 
-            //tag標籤
-            new TomSelect("#input-tags", {
-                persist: false,
-                createOnBlur: true,
-                create: true,
-                items: this.storeInfoEdit.storeInfo.tags,
-            });
 
             // console.log(this.storeInfoEdit);
 
@@ -1218,6 +1211,21 @@
                         // 或者如果需要純文字：
                         // this.storeInfoEdit.introduction = quill.getText();  // 存儲純文字
                     });
+
+                    //tag標籤
+                    // console.log('標籤------', vue.storeInfoEdit.storeInfo.tags);
+
+                    new TomSelect("#input-tags", {
+                        options: vue.storeInfoEdit.storeInfo.tags.map(tag => ({ value: tag, text: tag })),
+                        items: vue.storeInfoEdit.storeInfo.tags, // 要讓它顯示
+                        create: false,
+                        controlInput: false, // 隱藏輸入框
+                        render: {
+                            option: () => null // 不顯示 dropdown 選單
+                        }
+                    });
+                    $('[data-toggle="tooltip"]').tooltip();
+
                     loadingOff()
                 });
             },

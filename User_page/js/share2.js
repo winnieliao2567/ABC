@@ -3,6 +3,8 @@ const version = "1.0.1";
 const host = "https://sharings.com.tw/";
 const AutoKey = "sharings-api-r^rz-jofw-ccwf";
 
+const TestModel = true; //test
+
 const currentPage = 1; // 當前頁面
 const pageSize = 10; // 每頁顯示筆數
 const queryString = window.location.search;
@@ -19,8 +21,6 @@ const userId = urlParams.get("uid");
 const storeId = urlParams.get("sid");
 const orderId = urlParams.get("order");
 const pageStatus = urlParams.get("status");
-
-const mode = "";
 
 // console.log("menuId-------------" + redirect);
 // console.log("storeId-------------" + storeId);
@@ -61,9 +61,9 @@ function loadingOn() {
     }, 0);
 }
 function apiWeb(_url, _type, _data, TimelogTag, _fun) {
-    if (mode != "test") {
-        // console.time("● API-" + TimelogTag + "(" + _url + ")");
-        // console.log("● data-" + TimelogTag + ":", _data);
+    if (TestModel) {
+        console.time("● API-" + TimelogTag + "(" + _url + ")");
+        console.log("● data-" + TimelogTag + ":", _data);
     }
 
     let ApiAuto = "";
@@ -79,9 +79,8 @@ function apiWeb(_url, _type, _data, TimelogTag, _fun) {
         // sync: true,
         success: function (v) {
             ApiAuto = "Bearer " + v.token;
-
-            if (mode != "test") {
-                // console.log("● auto-" + TimelogTag + ":", ApiAuto);
+            if (TestModel) {
+                console.log("● auto-" + TimelogTag + ":", ApiAuto);
             }
 
             $.ajax({
@@ -95,7 +94,9 @@ function apiWeb(_url, _type, _data, TimelogTag, _fun) {
                 // sync: true,
                 statusCode: {
                     400: function (xhr) {
-                        // console.log();
+                        if (TestModel) {
+                            console.log();
+                        }
                         toastr.error(xhr.responseJSON.message);
                         // setTimeout(() => {
                         //     location.reload();
@@ -116,17 +117,21 @@ function apiWeb(_url, _type, _data, TimelogTag, _fun) {
                     },
                 },
                 success: function (v) {
-                    if (mode != "test") {
-                        // console.timeEnd("● API-" + TimelogTag + "(" + _url + ")");
+                    if (TestModel) {
+                        console.timeEnd("● API-" + TimelogTag + "(" + _url + ")");
                         // toastr.success(TimelogTag + "成功");
-                        // console.log("● Reques-" + TimelogTag + " : ", v);
+                    }
+                    if (TestModel) {
+                        console.log("● Reques-" + TimelogTag + " : ", v);
                     }
                     if (_fun) _fun(v);
                 },
                 error: function (v) {
-                    // console.timeEnd("● API-" + TimelogTag + "(" + _url + ")");
-                    // toastr.error(TimelogTag + "系統問題導致失敗");
-                    // console.log("Error:", JSON.stringify(v));
+                    if (TestModel) {
+                        console.timeEnd("● API-" + TimelogTag + "(" + _url + ")");
+                        toastr.error(TimelogTag + "系統問題導致失敗");
+                        console.log("Error:", JSON.stringify(v));
+                    }
                 },
             });
         },

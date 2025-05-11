@@ -118,7 +118,9 @@ function apiWeb(_url, _type, _data, TimelogTag, _fun) {
         success: function (v) {
             ApiAuto = "Bearer " + v.token;
 
-            // console.log("● auto-" + TimelogTag + ":", ApiAuto);
+            if (TestModel) {
+                console.log("● auto-" + TimelogTag + ":", ApiAuto);
+            }
 
             if (_url == "_url") {
                 if (_fun) _fun();
@@ -133,14 +135,18 @@ function apiWeb(_url, _type, _data, TimelogTag, _fun) {
                     data: _data,
                     statusCode: {
                         400: function (xhr) {
-                            // console.log(xhr);
+                            if (TestModel) {
+                                console.log(xhr);
+                            }
                             toastr.error(xhr.responseText);
                             setTimeout(() => {
                                 location.reload();
                             }, 1500);
                         },
                         401: function (xhr) {
-                            // console.log("Forbidden (401):", xhr);
+                            if (TestModel) {
+                                console.log("Forbidden (401):", xhr);
+                            }
 
                             if (TimelogTag == "管理員登入") {
                                 toastr.error("登入失敗");
@@ -159,18 +165,21 @@ function apiWeb(_url, _type, _data, TimelogTag, _fun) {
                         },
                     },
                     success: function (v) {
-                        // console.log("● API-" + TimelogTag + "(" + _url + ")");
+                        if (TestModel) {
+                            console.log("● API-" + TimelogTag + "(" + _url + ")");
+                            console.log("● Reques-" + TimelogTag + " : ", v);
+                        }
 
                         // toastr.success(TimelogTag + "成功");
-
-                        // console.log("● Reques-" + TimelogTag + " : ", v);
 
                         if (_fun) _fun(v);
                     },
                     error: function (v) {
-                        // console.timeEnd("● API-" + TimelogTag + "(" + _url + ")");
-                        // toastr.error(TimelogTag + "系統問題導致失敗");
-                        // console.log("Error:", JSON.stringify(v));
+                        if (TestModel) {
+                            console.timeEnd("● API-" + TimelogTag + "(" + _url + ")");
+                            toastr.error(TimelogTag + "系統問題導致失敗");
+                            console.log("Error:", JSON.stringify(v));
+                        }
                     },
                 });
             }

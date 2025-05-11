@@ -51,12 +51,33 @@
             <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-md" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="reloginModalLabel">更改菜單名稱
+                        <h5 class="modal-title" id="reloginModalLabel">
                         </h5>
                     </div>
                     <div class="modal-body">
-                        <input class="form-control" v-model="menuName">
-                        <p class="text-danger" v-if="menuName.length>10">* 不能超過10個字</p>
+                        <div class="form-group">
+                            <label>更改菜單名稱</label>
+                            <input class="form-control" v-model="menuName">
+                            <p class="text-danger" v-if="menuName.length>10">* 不能超過10個字</p>
+                        </div>
+                        <div class="form-group">
+                            <label>調整類別在菜單中的順序</label>
+                            <div class="list-group btnHover" ref="sortableListGroup">
+                                <div class="list-group-item" v-for="(group,index) in profuct_Data"
+                                    :key="group.categoryId" :data-id="group.categoryId">
+                                    <div class="row m-0">
+                                        <div class="handle col-2 col-md-1">
+                                            <i class="fas fa-ellipsis-v"></i>
+                                            <i class="fas fa-ellipsis-v"></i>
+                                        </div>
+                                        <div class="col">
+                                            {{ group.sortOrder + 1 }}. {{ group.categoryName }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-primary" v-on:click="save()"
@@ -67,8 +88,42 @@
             </div>
         </div>
 
+        <div class="modal fade" id="GroupSort" tabindex="-1" role="dialog" aria-labelledby="reloginModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-md" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="reloginModalLabel">
+                            餐點順序設定
+                        </h5>
+                    </div>
+                    <div class="modal-body">
+                        <!-- <p class="text-muted">調整類別在菜單中的順序</p> -->
+                        <div class="list-group btnHover" ref="sortableListProductor">
+                            <div class="list-group-item" v-for="(item,index) in editPDSortList" :key="item.mealId"
+                                :data-id="item.mealId">
+                                <div class="row m-0">
+                                    <div class="handle col-2 col-md-1">
+                                        <i class="fas fa-ellipsis-v"></i>
+                                        <i class="fas fa-ellipsis-v"></i>
+                                    </div>
+                                    <div class="col">
+                                        {{ item.sortOrder+1 }}. {{ item.name }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" @click="saveSortList">
+                            儲存</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Navbar -->
-        <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+        <nav class=" main-header navbar navbar-expand navbar-white navbar-light">
             <!-- Left navbar links -->
             <ul class="navbar-nav d-md-none">
                 <li class="nav-item">
@@ -92,7 +147,8 @@
                                         :class="store.storeStatus.isOpen ? 'text-success' : 'text-danger'">
                                         <i class="fas fa-dot-circle"></i>
                                     </span>{{ store.storeName }}</strong>
-                                <p class="text-muted">{{ store.city }}{{ store.districts }}{{ store.shortAddress }}</p>
+                                <p class="text-muted">{{ store.city }}{{ store.districts }}{{
+                                    store.shortAddress }}</p>
                             </div>
                         </a>
                     </div>
@@ -168,7 +224,8 @@
                         <div class="col-sm-6">
                             <h1 class="m-0">
                                 {{PageTitle}}
-                                <button type="button" class="btn btn-sm btn-primary" v-on:click="showEditTitleModal">
+                                <button type="button" class="btn btn-sm btn-primary mr-2"
+                                    v-on:click="showEditTitleModal">
                                     <i class="fas fa-pen"></i>
                                 </button>
                             </h1>
@@ -189,31 +246,6 @@
             <div class="content">
                 <div class="container-fluid">
                     <div class="row">
-                        <div class="col-12 py-3 d-none">
-                            <h6>編輯項目</h6>
-                            <div class="row m-0">
-                                <div class=" col-12 col-md-4 col-xl-3 item mb-1" @click="showSortClassWin()"
-                                    data-widget="control-sidebar">
-                                    <div class="border rounded-lg p-3">
-                                        <h5>
-                                            <i class="fas fa-sort-amount-up-alt mr-2"></i>
-                                            排序類別
-                                        </h5>
-                                        <p class="text-muted m-0 ml-4 pl-2">訂單排序設定</p>
-                                    </div>
-                                </div>
-                                <div class="col-12 col-md-4 col-xl-3 item mb-1" @click="showProductorWin()"
-                                    data-widget="control-sidebar">
-                                    <div class="border rounded-lg p-3">
-                                        <h5>
-                                            <i class="fas fa-utensils mr-2"></i>
-                                            類別及品項管理
-                                        </h5>
-                                        <p class="text-muted m-0 ml-4 pl-2">編輯菜單內容</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
                         <div class="col-12">
                             <div v-if="profuct_Data.length==0">
                                 <div class="emptyImage emptyImage2"></div>
@@ -241,6 +273,12 @@
                                         <div v-for="(className,index) in profuct_Data" class="tab-pane fade show"
                                             :class="{ 'active': index == 0 }" :id="'tab-content-'+className.categoryId"
                                             role="tabpanel" aria-labelledby="custom-tabs-four-home-tab">
+                                            <div class="text-right mb-2">
+                                                <button class="btn btn-default btn-sm" @click="showSortClassWin(index)">
+                                                    <i class="fas fa-sort-amount-down-alt"></i>
+                                                    排序設定
+                                                </button>
+                                            </div>
                                             <div class="list-group">
                                                 <div class="d-flex align-items-center py-2 list-group-item"
                                                     v-for="(prod,pindex) in className.meals">
@@ -322,7 +360,10 @@
                     "categories": []
                 },
                 menuName: '',
-                profuct_Data: []
+                profuct_Data: [],
+
+                editSortList: [],
+                editPDSortList: {}
 
             }
         },
@@ -330,6 +371,34 @@
         },
         mounted() {
             this.getMenuInfo()
+
+            let vue = this
+
+            const GS = this.$refs.sortableListGroup
+            Sortable.create(GS, {
+                handle: ".handle", // 指定拖曳的手柄
+                animation: 150,
+                onEnd: () => {
+                    const items = this.$refs.sortableListGroup.querySelectorAll('[data-id]');
+                    items.forEach((item, index) => {
+                        const id = Number(item.getAttribute('data-id'));
+                        const target = this.profuct_Data.find(group => group.categoryId === id);
+                        if (target) {
+                            target.sortOrder = index;
+                        }
+                    });
+
+                    // 送出 CategoryId 與 SortOrder（注意大小寫）
+                    vue.editSortList = this.profuct_Data.map(group => ({
+                        CategoryId: group.categoryId,
+                        SortOrder: group.sortOrder
+                    }));
+
+                    // console.log(vue.editSortList);
+
+                }
+            });
+
         },
         watch: {
         },
@@ -346,6 +415,18 @@
                 })
             },
             save() {
+                loadingOff()
+                const data = {
+                    "Categories": this.editSortList
+                }
+                apiWeb('/api/Menu/menu/' + storeId + '/' + menuId + '/categories/order', 'PUT', JSON.stringify(data), '變更菜單分類順序', function (v) {
+                    if (v.success == true) {
+                        vue.getMenuInfo()
+                        toastr.success("已經更新類別排序");
+                    } else {
+                        toastr.error("餐點狀態變更失敗");
+                    }
+                })
                 apiWeb('api/Menu/menu/' + storeId + '/' + menuId, 'PUT', JSON.stringify({ MenuName: this.menuName }), '菜單改名', function (v) {
                     if (v.success == true) {
                         $('#EditTitleModal').modal('hide')
@@ -378,6 +459,51 @@
             },
             toAddProductors() {
                 window.location.href = "Productor.html?sid=" + storeId
+            },
+            showSortClassWin(index) {
+                // console.log(index);
+                // console.log(this.profuct_Data[index].meals);
+
+                const PDS = this.$refs.sortableListProductor
+                this.editPDSortList = this.profuct_Data[index].meals
+                Sortable.create(PDS, {
+                    handle: ".handle", // 指定拖曳的手柄
+                    animation: 150,
+                    onEnd: () => {
+                        const items = this.$refs.sortableListProductor.querySelectorAll('[data-id]');
+                        items.forEach((item, index) => {
+                            const id = Number(item.getAttribute('data-id'));
+                            const meal = this.editPDSortList.find(m => m.mealId === id);
+                            if (meal) {
+                                meal.sortOrder = index; // 如果你想從 1 開始排序
+                            }
+                        });
+
+                    }
+                });
+                $('#GroupSort').modal('show')
+            },
+            saveSortList() {
+                loadingOn()
+                const payload = this.editPDSortList.map(m => ({
+                    MealId: m.mealId,
+                    SortOrder: m.sortOrder
+                }));
+                const data = {
+                    "Meals": payload
+                }
+                console.log(JSON.stringify(data));
+
+                let vue = this
+
+                apiWeb('/api/Menu/menu/' + storeId + '/' + menuId + '/meals/order', 'PUT', JSON.stringify(data), '變更餐點順序', function (v) {
+                    if (v.success == true) {
+                        vue.getMenuInfo()
+                        // toastr.success("已經更新類別排序");
+                    } else {
+                        toastr.error("餐點狀態變更失敗");
+                    }
+                })
             }
         },
     });

@@ -382,14 +382,18 @@
                 })
             },
             addMenu() {
-                // console.log(this.createMenuDate);
+                loadingOff()
+                console.log(this.createMenuDate);
                 if (this.menuList.length == 0) {
                     this.createMenuDate.isActive = true
                 }
 
+                console.log(this.createMenuDate);
+
+
                 apiWeb('/api/Menu/menu/' + storeId + '/add', "POST", JSON.stringify(this.createMenuDate), '新增菜單', function (v) {
                     if (v.success == true) {
-                        window.location.href = "Menulist.html?sid=" + storeId
+                        location.reload();
                     } else {
                         toastr.error(TimelogTag + "新增失敗");
                     }
@@ -404,6 +408,7 @@
                 window.location.href = 'MenuPage.html?sid=' + storeId + '&mid=' + id;
             },
             delettMenu(id) {
+                loadingOff()
                 apiWeb('/api/Menu/menu/' + storeId + '/' + this.DeletMenuDate.menuId, 'DELETE', null, '刪除菜單', function (v) {
                     location.reload();
                 })
@@ -423,6 +428,7 @@
                 $('#ActiveMenuModal').modal('show')
             },
             ActiveMenu() {
+                loadingOff()
                 apiWeb('api/Menu/menu/' + storeId + '/activate/' + this.ActiveMenuDate.menuId, 'POST', null, '啟用菜單', function (v) {
                     location.reload();
                 })

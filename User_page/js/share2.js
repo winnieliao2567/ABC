@@ -3,7 +3,7 @@ const version = "1.0.1";
 const host = "https://sharings.com.tw/";
 const AutoKey = "sharings-api-r^rz-jofw-ccwf";
 
-const TestModel = true; //test
+const TestModel = false; //test
 
 const currentPage = 1; // 當前頁面
 const pageSize = 10; // 每頁顯示筆數

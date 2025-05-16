@@ -373,9 +373,11 @@
                 var vue = this
                 apiWeb('api/MealPriority/titles/' + storeId, 'GET', null, '取得排序列表', function (v) {
                     // console.log(v);
-                    vue.SortClass_Data = v.titles
-                    // console.log(vue.SortClass_Data);
-                    loadingOff()
+                    if (v.success == true) {
+                        vue.SortClass_Data = v.titles
+                        // console.log(vue.SortClass_Data);
+                        loadingOff()
+                    }
                 })
             },
 

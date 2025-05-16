@@ -1,6 +1,6 @@
 const copyRight = " 共饗有限公司. All Rights Reserved.";
 
-const TestModel = false; //test
+const TestModel = true; //test
 
 const version = "1.0.1";
 const host = "https://sharings.com.tw/";
@@ -223,9 +223,10 @@ function checkUserInfo() {
                 "取得所有店家",
                 function (v) {
                     // console.log(v.stores);
-                    selectedStore(v.stores);
+                    selectedStore(v.stores, "local");
                 }
             );
+            return;
         }
         // sid != NULL，userinfo = NULL
         else if (storeId && localStorage.userInfo == null) {
@@ -237,7 +238,7 @@ function checkUserInfo() {
         window.location.href = "login.html";
     }
 }
-function selectedStore(List) {
+function selectedStore(List, place) {
     // console.log(List);
 
     $("body").append(
@@ -254,7 +255,7 @@ function selectedStore(List) {
     $("#reloginModal").modal("show");
 
     $("#checkStore").click(function () {
-        selectStore($("#selectStore").val());
+        selectStore($("#selectStore").val(), place);
     });
 }
 
@@ -269,17 +270,24 @@ function userError() {
 function itemClick(obj) {
     // console.log(obj.attr("id"));
     loadingOn();
-    selectStore(obj.attr("id"));
+    selectStore(obj.attr("id"), "index");
 }
-function selectStore(Id) {
+function selectStore(Id, place) {
     // console.log("selectid: " + Id);
     // loadingOn();
     apiWeb("/api/Store/basic-info/" + Id, "GET", null, "更換店家，取得資訊", function (v) {
         // 存入 localStorage
         // console.log("選擇的商店:", foundStore);
         localStorage.storeInfo = encryptObject(v);
+        console.log(place);
+
         // 跳轉頁面
-        window.location.href = "index.html?sid=" + Id;
+        if (place == "index") {
+            window.location.href = "index.html?sid=" + Id;
+        } else if (place == "local") {
+            let a = window.location.href + "?sid=" + Id;
+            window.location.href = a;
+        }
     });
 }
 //加密

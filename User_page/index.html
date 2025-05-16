@@ -177,7 +177,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                     <h6 class="text-dark">{{ fromStore.store.storeName }}</h6>
                                     <p class="text-muted text-xs card-text">
                                         <i class="far fa-clock mr-2"></i>
-                                        {{getWaitingTimeString(fromStore.nextAvailable.waitingTimeDisplay)}}分鐘
+                                        {{getWaitingTimeString(fromStore.nextAvailable.waitingTimeDisplay)}}
                                     </p>
                                 </div>
                             </a>
@@ -242,7 +242,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                                 <h6 class="text-dark">{{ item.storeName }}</h6>
                                                 <p class="text-muted text-xs card-text">
                                                     <i class="far fa-clock mr-2"></i>
-                                                    {{getWaitingTimeString(item.waitingTimeDisplay)}}分鐘</br>
+                                                    {{getWaitingTimeString(item.waitingTimeDisplay)}}</br>
                                                     <i class="fas fa-map-pin ml-1 mr-2 "></i>
                                                     {{formatDistance(item.distanceInKM)}}
                                                 </p>
@@ -422,63 +422,73 @@ scratch. This page gets rid of all links and provides the needed markup only.
         },
         mounted() {
             let vue = this
+            if (TestModel) {
 
-            // localStorage.userInfo = 'U2FsdGVkX1/+Q1DgNVu7fe0UUAMjzNxkoKuptU9VRG6Qm2gs8Sd3dn8hJHlsOVH+Tr/prPCETqRgQuVaBZVcEI+OKfSAby2WRqEbfSzJp5Jlq4mYkWhkZRpdkv0QSKs8Livgog1MzoHWT78qG6tGWvO+k/iayufpCeDpNiNnOJKJLVc8k59EawtLjFvf+Aagm/DhEPXpdX0ad7Ff4RomHw=='
+                localStorage.userInfo = "U2FsdGVkX18zOYtC+DgwHmz4boHeq6br20Mo/9wjInOApWgzKP4WRsbdslxalM2UClLHZYpzOv5MyaKLcwtxzMh4N7138Vg+iVg8faUvqYhJKIsPCcmt3py18pOoUjreAXTSgL0QaX1xtuI4483Wuna02s6v3V66f0mS/1djKtP4hplQZdX95cdSwP2aorbZ";
 
-            // //資料初始化
-            // vue.getLocation();
+                // vark = {
+                //     "name": "卉羚Winnie",
+                //     "id": "U959f4acc220175fa4b232356b5999d23",
+                //     "phoneNum": "",
+                //     "linekey": "U959f4acc220175fa4b232356b5999d23"
+                // }
+                // console.log(encryptObject(vark));
 
-            // //畫面初始化
-            // new Swiper(".swiper-container", {
-            //     loop: false, // 無限輪播
-            //     slidesPerView: 4, // 預設桌機 4 個
-            //     spaceBetween: 10, // 間距
-            //     navigation: {
-            //         nextEl: ".custom-next-btn",
-            //         prevEl: ".custom-prev-btn",
-            //     },
-            //     breakpoints: {
-            //         1024: { slidesPerView: 5.5 },  // 桌機
-            //         768: { slidesPerView: 4.3 },   // 平板
-            //         480: { slidesPerView: 2.5 }, // 一般手機
-            //         375: { slidesPerView: 2.5 }, // iPhone SE
-            //         320: { slidesPerView: 2.2 }  // 超小手機
-            //     },
-            // });
-            // new Swiper(".swiper-container-store", {
-            //     loop: false, // 無限輪播
-            //     slidesPerView: 1.5, // 預設桌機 4 個
-            //     spaceBetween: 10, // 間距
-            //     navigation: {
-            //         nextEl: ".custom-next-btn",
-            //         prevEl: ".custom-prev-btn",
-            //     },
-            //     breakpoints: {
-            //         1024: { slidesPerView: 5.5 },  // 桌機
-            //         768: { slidesPerView: 4.3 },   // 平板
-            //         480: { slidesPerView: 2.5 }, // 一般手機
-            //         375: { slidesPerView: 2.5 }, // iPhone SE
-            //         320: { slidesPerView: 1.5 }  // 超小手機
-            //     },
-            // });
-            // new Swiper(".swiper-container-foodtype", {
-            //     loop: false, // 無限輪播
-            //     slidesPerView: 12, // 預設桌機 4 個
-            //     spaceBetween: 10, // 間距
-            //     navigation: {
-            //         nextEl: ".custom-next-btn",
-            //         prevEl: ".custom-prev-btn",
-            //     },
-            //     breakpoints: {
-            //         1024: { slidesPerView: 10.5 },  // 桌機
-            //         768: { slidesPerView: 10.2 },   // 平板
-            //         480: { slidesPerView: 4.5 }, // 一般手機
-            //         375: { slidesPerView: 4.5 }, // iPhone SE
-            //         320: { slidesPerView: 5.2 }  // 超小手機
-            //     },
-            // });
+                //資料初始化
+                vue.getLocation();
 
-            initializeLiff("2006327628-8x1g1rAv")
+                //畫面初始化
+                new Swiper(".swiper-container", {
+                    loop: false, // 無限輪播
+                    slidesPerView: 4, // 預設桌機 4 個
+                    spaceBetween: 10, // 間距
+                    navigation: {
+                        nextEl: ".custom-next-btn",
+                        prevEl: ".custom-prev-btn",
+                    },
+                    breakpoints: {
+                        1024: { slidesPerView: 5.5 },  // 桌機
+                        768: { slidesPerView: 4.3 },   // 平板
+                        480: { slidesPerView: 2.5 }, // 一般手機
+                        375: { slidesPerView: 2.5 }, // iPhone SE
+                        320: { slidesPerView: 2.2 }  // 超小手機
+                    },
+                });
+                new Swiper(".swiper-container-store", {
+                    loop: false, // 無限輪播
+                    slidesPerView: 1.5, // 預設桌機 4 個
+                    spaceBetween: 10, // 間距
+                    navigation: {
+                        nextEl: ".custom-next-btn",
+                        prevEl: ".custom-prev-btn",
+                    },
+                    breakpoints: {
+                        1024: { slidesPerView: 5.5 },  // 桌機
+                        768: { slidesPerView: 4.3 },   // 平板
+                        480: { slidesPerView: 2.5 }, // 一般手機
+                        375: { slidesPerView: 2.5 }, // iPhone SE
+                        320: { slidesPerView: 1.5 }  // 超小手機
+                    },
+                });
+                new Swiper(".swiper-container-foodtype", {
+                    loop: false, // 無限輪播
+                    slidesPerView: 12, // 預設桌機 4 個
+                    spaceBetween: 10, // 間距
+                    navigation: {
+                        nextEl: ".custom-next-btn",
+                        prevEl: ".custom-prev-btn",
+                    },
+                    breakpoints: {
+                        1024: { slidesPerView: 10.5 },  // 桌機
+                        768: { slidesPerView: 10.2 },   // 平板
+                        480: { slidesPerView: 4.5 }, // 一般手機
+                        375: { slidesPerView: 4.5 }, // iPhone SE
+                        320: { slidesPerView: 5.2 }  // 超小手機
+                    },
+                });
+            } else {
+                initializeLiff("2006327628-8x1g1rAv")
+            }
 
 
 
@@ -513,66 +523,58 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
                                 vue.userInfo = userInfo
 
-                                //沒有手機號碼自動跳轉到編輯資訊頁
-                                if (userInfo.phoneNum.length == 0) {
-                                    window.location.href = 'userInfomationEdit.html?status=1'
-                                } else {
-                                    // console.log('vue.getLocation();');
+                                //資料初始化
+                                vue.getLocation();
 
-                                    //資料初始化
-                                    vue.getLocation();
-
-
-                                    //畫面初始化
-                                    new Swiper(".swiper-container", {
-                                        loop: false, // 無限輪播
-                                        slidesPerView: 4, // 預設桌機 4 個
-                                        spaceBetween: 10, // 間距
-                                        navigation: {
-                                            nextEl: ".custom-next-btn",
-                                            prevEl: ".custom-prev-btn",
-                                        },
-                                        breakpoints: {
-                                            1024: { slidesPerView: 5.5 },  // 桌機
-                                            768: { slidesPerView: 4.3 },   // 平板
-                                            480: { slidesPerView: 2.5 }, // 一般手機
-                                            375: { slidesPerView: 2.5 }, // iPhone SE
-                                            320: { slidesPerView: 2.2 }  // 超小手機
-                                        },
-                                    });
-                                    new Swiper(".swiper-container-store", {
-                                        loop: false, // 無限輪播
-                                        slidesPerView: 1.5, // 預設桌機 4 個
-                                        spaceBetween: 10, // 間距
-                                        navigation: {
-                                            nextEl: ".custom-next-btn",
-                                            prevEl: ".custom-prev-btn",
-                                        },
-                                        breakpoints: {
-                                            1024: { slidesPerView: 5.5 },  // 桌機
-                                            768: { slidesPerView: 4.3 },   // 平板
-                                            480: { slidesPerView: 2.5 }, // 一般手機
-                                            375: { slidesPerView: 2.5 }, // iPhone SE
-                                            320: { slidesPerView: 1.5 }  // 超小手機
-                                        },
-                                    });
-                                    new Swiper(".swiper-container-foodtype", {
-                                        loop: false, // 無限輪播
-                                        slidesPerView: 12, // 預設桌機 4 個
-                                        spaceBetween: 10, // 間距
-                                        navigation: {
-                                            nextEl: ".custom-next-btn",
-                                            prevEl: ".custom-prev-btn",
-                                        },
-                                        breakpoints: {
-                                            1024: { slidesPerView: 10.5 },  // 桌機
-                                            768: { slidesPerView: 10.2 },   // 平板
-                                            480: { slidesPerView: 4.5 }, // 一般手機
-                                            375: { slidesPerView: 4.5 }, // iPhone SE
-                                            320: { slidesPerView: 5.2 }  // 超小手機
-                                        },
-                                    });
-                                }
+                                //畫面初始化
+                                new Swiper(".swiper-container", {
+                                    loop: false, // 無限輪播
+                                    slidesPerView: 4, // 預設桌機 4 個
+                                    spaceBetween: 10, // 間距
+                                    navigation: {
+                                        nextEl: ".custom-next-btn",
+                                        prevEl: ".custom-prev-btn",
+                                    },
+                                    breakpoints: {
+                                        1024: { slidesPerView: 5.5 },  // 桌機
+                                        768: { slidesPerView: 4.3 },   // 平板
+                                        480: { slidesPerView: 2.5 }, // 一般手機
+                                        375: { slidesPerView: 2.5 }, // iPhone SE
+                                        320: { slidesPerView: 2.2 }  // 超小手機
+                                    },
+                                });
+                                new Swiper(".swiper-container-store", {
+                                    loop: false, // 無限輪播
+                                    slidesPerView: 1.5, // 預設桌機 4 個
+                                    spaceBetween: 10, // 間距
+                                    navigation: {
+                                        nextEl: ".custom-next-btn",
+                                        prevEl: ".custom-prev-btn",
+                                    },
+                                    breakpoints: {
+                                        1024: { slidesPerView: 5.5 },  // 桌機
+                                        768: { slidesPerView: 4.3 },   // 平板
+                                        480: { slidesPerView: 2.5 }, // 一般手機
+                                        375: { slidesPerView: 2.5 }, // iPhone SE
+                                        320: { slidesPerView: 1.5 }  // 超小手機
+                                    },
+                                });
+                                new Swiper(".swiper-container-foodtype", {
+                                    loop: false, // 無限輪播
+                                    slidesPerView: 12, // 預設桌機 4 個
+                                    spaceBetween: 10, // 間距
+                                    navigation: {
+                                        nextEl: ".custom-next-btn",
+                                        prevEl: ".custom-prev-btn",
+                                    },
+                                    breakpoints: {
+                                        1024: { slidesPerView: 10.5 },  // 桌機
+                                        768: { slidesPerView: 10.2 },   // 平板
+                                        480: { slidesPerView: 4.5 }, // 一般手機
+                                        375: { slidesPerView: 4.5 }, // iPhone SE
+                                        320: { slidesPerView: 5.2 }  // 超小手機
+                                    },
+                                });
                             }
                         })
                 } catch (e) {
@@ -775,7 +777,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                     }
 
                     if (timeint < 60) {
-                        return timeint + '-' + (timeint + 10)
+                        return timeint + '-' + (timeint + 10) + '分鐘'
                     } else {
                         return "60 分鐘以上"
                     }

@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>共響 SHARING</title>
+    <title>共響 SHARING｜後台管理系統</title>
 
     <!-- jquery -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
@@ -298,15 +298,47 @@
                                                         v-model="storeInfoEdit.storeInfo.email"
                                                         :class="{'is-invalid': !validateEmail(storeInfoEdit.storeInfo.email)}"
                                                         :placeholder="settingItem.groupitem.placeholder">
+                                                    <!-- <input class="form-control" type="email" autocomplete="off"
+                                                        :disabled="!settingItem.groupitem.enabled"
+                                                        v-model="storeInfoEdit.storeInfo.email"
+                                                        :class="{'is-invalid': !validateEmail(storeInfoEdit.storeInfo.email)}"
+                                                        :placeholder="settingItem.groupitem.placeholder">
                                                     <div class="text-memo text-danger"
                                                         v-if="!validateEmail(storeInfoEdit.storeInfo.email)">
                                                         *請輸入正確的Email格式
-                                                    </div>
+                                                    </div> -->
                                                 </div>
 
                                                 <!-- 店家電話 -->
-                                                <div class="col-12 my-1" v-if="settingItem.groupitem.type === 'tel'">
-                                                    <input class="form-control" type="tel" autocomplete="off"
+                                                <div class="col-12 row m-0 my-1"
+                                                    v-if="settingItem.groupitem.type === 'tel'">
+                                                    <!-- <div
+                                                        class="px-2 w-auto d-flex justify-content-center align-items-center">
+                                                        (
+                                                    </div>
+                                                    <input class="form-control" style="width: 10%;" type="text"
+                                                        autocomplete="off" :disabled="!settingItem.groupitem.enabled"
+                                                        v-modal="tel.f" :placeholder="'02'">
+                                                    <div
+                                                        class="px-2 w-auto d-flex justify-content-center align-items-center">
+                                                        )
+                                                    </div>
+                                                    <input class="form-control w-auto" type="text" autocomplete="off"
+                                                        :disabled="!settingItem.groupitem.enabled" v-modal="tel.s"
+                                                        :placeholder="'2212'">
+                                                    <div
+                                                        class="px-2 w-auto d-flex justify-content-center align-items-center">
+                                                        -
+                                                    </div>
+                                                    <input class="form-control w-auto" type="text" autocomplete="off"
+                                                        :disabled="!settingItem.groupitem.enabled" v-modal="tel.t"
+                                                        :placeholder="'1234'"> -->
+
+                                                    <input class="form-control" type="text" autocomplete="off"
+                                                        :disabled="!settingItem.groupitem.enabled"
+                                                        v-model="storeInfoEdit.storeInfo.tel"
+                                                        :placeholder="settingItem.groupitem.placeholder">
+                                                    <!-- <input class="form-control" type="tel" autocomplete="off"
                                                         :disabled="!settingItem.groupitem.enabled"
                                                         v-model="storeInfoEdit.storeInfo.tel"
                                                         :class="{'is-invalid': !validateTalAndPhone(this.storeInfoEdit.storeInfo.tel)}"
@@ -314,7 +346,7 @@
                                                     <div class="text-memo text-danger"
                                                         v-if="!validateTalAndPhone(storeInfoEdit.storeInfo.tel)">
                                                         *請輸入正確的市話或手機格式
-                                                    </div>
+                                                    </div> -->
                                                 </div>
 
                                                 <!-- 店家簡介 -->
@@ -336,7 +368,11 @@
                                                 <!-- 統一編號 -->
                                                 <div class="col-12 my-1"
                                                     v-if="settingItem.groupitem.type === 'businessNum'">
-                                                    <input class="form-control" type="tel" autocomplete="off"
+                                                    <input class="form-control" type="text" autocomplete="off"
+                                                        :disabled="!settingItem.groupitem.enabled"
+                                                        v-model="storeInfoEdit.storeInfo.businessNum"
+                                                        :placeholder="settingItem.groupitem.placeholder">
+                                                    <!-- <input class="form-control" type="tel" autocomplete="off"
                                                         :disabled="!settingItem.groupitem.enabled"
                                                         v-model="storeInfoEdit.storeInfo.businessNum"
                                                         :class="{'is-invalid': storeInfoEdit.storeInfo.businessNum.length!=8}"
@@ -344,7 +380,7 @@
                                                     <div class="text-memo text-danger"
                                                         v-if="storeInfoEdit.storeInfo.businessNum.length!=8">
                                                         *統一編號格式須為8碼數字
-                                                    </div>
+                                                    </div> -->
                                                 </div>
 
                                                 <!-- 標籤 -->
@@ -595,50 +631,6 @@
                 storeInfo: decryptObject(localStorage.storeInfo),
                 allStore: decryptObject(localStorage.allStore),
 
-                //編輯資料
-                // storeInfoEdit: {
-                //     "store": {
-                //         "storeId": "",
-                //         "storeName": "",
-                //         "storePhone": "",
-                //         "minOrderAmount": 0,
-                //         "orderInterval": 0,
-                //         "createdDate": "",
-                //         "enable": true,
-                //         "deleted": false,
-                //         "id": 0,
-                //         "slotLimit": 0,
-                //         "amountLimit": 0
-                //     },
-                //     "storeInfo": {
-                //         "storeId": "",
-                //         "city": "",
-                //         "districts": "",
-                //         "shortAddress": "",
-                //         "email": "",
-                //         "tel": "",
-                //         "businessNum": "",
-                //         "introduction": "",
-                //         "tags": [
-                //             "中式料理",
-                //             "家常菜",
-                //             "快速出餐"
-                //         ],
-                //         "basicwaitingTime": "",
-                //         "minimumOrderAmount": "",
-                //         "minimumOrderText": "",
-                //         "minimumOrderEnabled": true,
-                //         "maxReservationDays": 0
-                //     },
-                //     "openTime": {
-                //         "businessDays": [
-
-                //         ],
-                //         "specialCloseDays": [
-
-                //         ]
-                //     }
-                // },
                 storeInfoEdit:
                 {
                     "store": {
@@ -837,7 +829,7 @@
                                 {
                                     type: 'tel',
                                     enabled: true,
-                                    placeholder: ""
+                                    placeholder: "(02)1234-5678"
                                 }
 
                             },
@@ -911,7 +903,7 @@
 
                             },
                             {
-                                name: '最低區間數量',
+                                name: '最高區間數量',
                                 groupitem:
                                 {
                                     type: 'minOrderAmount',
@@ -1048,29 +1040,12 @@
             // this.CanSave('default-')
         },
         watch: {
-            // //編輯資料時檢查資料並disabled/enabled SaveBtn
-            // storeInfoEdit: {
-            //     handler(newVal, oldVal) {
-            //         //取得各大區塊檢查結果
-            //         const isStoreInfoValid = this.StoreInfoCheck();
-            //         const isBusinessTimeValid = this.BusinessTime();
-            //         const isWaitingTimeValid = this.WaitingTime();
-            //         const isMinimumOrderReminderValid = this.minimumOrderReminder();
-            //         const isStoreClosedValid = this.storeClosed();
-            //         const isAdvanceReservationValid = this.advanceReservation();
-
-            //         this.CanSave('handler-')
-            //     },
-            //     deep: true // 深度監控物件的內部屬性
-            // },
             'storeInfoEdit.storeInfo.city'(newVal) {
                 this.setDistricts()
             },
             'storeInfoEdit.openTime.businessDays'(newVal, oldVal) {
-
             },
-            'storeInfoEdit.store.minOrderAmount'(newVal, oldVal) { if (newVal > 10) { newVal = 10 } }
-
+            'storeInfoEdit.store.minOrderAmount'(newVal, oldVal) { if (newVal > 10) { newVal = 10 } },
         },
         methods: {
             //比對信箱格式
@@ -1186,6 +1161,8 @@
                 apiWeb("api/Store/detail/" + storeId, "GET", null, "取得店家編輯資料", function (v) {
                     // console.log(v);
                     vue.storeInfoEdit = v;
+
+                    vue.tel = vue.storeInfoEdit.storeInfo.tel
 
                     //文字編輯器
                     var quill = new Quill('#storeIntroduction', {
@@ -1332,186 +1309,6 @@
                 });
             },
 
-            //**判斷資料是否被編輯（有其中一個項目被編輯：true）
-            //=================
-            //-------大區塊：店家資訊-------
-            StoreInfoCheck() {
-                const CheckItem = this.StoreEditItem.find(item => item.id === 'StoreInfo');
-                if (!CheckItem) return false; // 確保 CheckItem 存在，否則回傳 false
-
-                // 檢查錯誤條件
-                const checksError = [
-                    this.validateEmail(this.storeInfoEdit.email),
-                    this.validateTalAndPhone(this.storeInfoEdit.storeInfo.tel),
-                    this.storeInfoEdit.businessNum.length === 8
-                ];
-                CheckItem.editError = checksError.some(check => check === false);
-
-                // 檢查是否有變動
-                const checksEdit = [
-                    this.StoreInfoCheck_address(),
-                    this.StoreInfoCheck_email(),
-                    this.StoreInfoCheck_tel(),
-                    this.StoreInfoCheck_introduction(),
-                    this.StoreInfoCheck_businessNum()
-                ];
-                CheckItem.editDone = checksEdit.some(check => check === true);
-
-                return CheckItem.editDone; // 確保回傳布林值
-            },
-
-            //-------大區塊：營業時間-------
-            BusinessTime() {
-                const CheckItem = this.StoreEditItem.find(item => item.id === 'BusinessTime');
-
-                //是否有完成編輯
-                const checksEdit = [this.BussinessTime_check()]
-                CheckItem.editDone = checksEdit.some(check => check === true);
-                return CheckItem.editDone
-            },
-
-            //-------大區塊：營業等待時間-------
-            WaitingTime() {
-                const CheckItem = this.StoreEditItem.find(item => item.id === 'WaitingTime');
-
-                //未錯誤條件
-                const checksError = [this.validateIntervalTime(this.storeInfoEdit.intervalwaitingTime, 5)]
-                CheckItem.editError = checksError.some(check => check === false)
-
-                //是否有完成編輯
-                const checksEdit = [this.WaitingTime_basic(), this.WaitingTime_interval()]
-                CheckItem.editDone = checksEdit.some(check => check === true);
-
-                return CheckItem.editDone
-            },
-
-            //-------大區塊：低消提醒-------
-            minimumOrderReminder() {
-                const CheckItem = this.StoreEditItem.find(item => item.id === 'ReminderToggle');
-
-                //是否有完成編輯
-                const checksEdit = [this.minimumOrderReminder_check()]
-                CheckItem.editDone = checksEdit.some(check => check === true);
-                return CheckItem.editDone
-            },
-
-            //-------大區塊：特定店休-------
-            storeClosed() {
-                const CheckItem = this.StoreEditItem.find(item => item.id === 'StoreClosed');
-
-                //是否有完成編輯
-                const checksEdit = [this.storeClosed_check()]
-                CheckItem.editDone = checksEdit.some(check => check === true);
-
-                return CheckItem.editDone
-            },
-
-            //-------大區塊：可預訂天數-------
-            advanceReservation() {
-                const CheckItem = this.StoreEditItem.find(item => item.id === 'AdvanceReservation');
-                //是否有完成編輯
-                const checksEdit = [this.advanceReservation_check()]
-                CheckItem.editDone = checksEdit.some(check => check === true);
-                return CheckItem.editDone
-            },
-
-
-            //其他單筆資訊是否完成編輯（可不可為空值 / 是否有被編輯 / 是否符合格式）：完成：true/不算完成：false
-            //店家資訊：店家地址
-            StoreInfoCheck_address() {
-                return JSON.stringify(this.storeInfoEdit.address) !== JSON.stringify(this.storeInfo.address);
-            },
-
-            //店家資訊：店家信箱
-            StoreInfoCheck_email() {
-                //非空值且有被編輯後才去比對格式
-                if (this.storeInfoEdit.email != '' && this.storeInfoEdit.email !== this.storeInfo.email && this.validateEmail(this.storeInfoEdit.email)) {
-                    return true//符合:false
-                } else {
-                    return false
-                }
-            },
-
-            //店家資訊：店家電話
-            StoreInfoCheck_tel() {
-                //非空值且有被編輯後才去比對格式
-                if (this.storeInfoEdit.storeInfo.tel != '' && this.storeInfoEdit.storeInfo.tel !== this.storeInfoEdit.storeInfo.tel && this.validateTalAndPhone(this.storeInfoEdit.storeInfo.tel)) {
-                    return true//符合:false
-                } else {
-                    return false
-                }
-            },
-
-            //店家資訊：店家簡介
-            StoreInfoCheck_introduction() {
-                return this.storeInfoEdit.introduction !== this.storeInfo.introduction;
-            },
-
-            //店家資訊：店家統編
-            StoreInfoCheck_businessNum() {
-                if (this.storeInfoEdit.businessNum != '' && this.storeInfoEdit.businessNum !== this.storeInfo.businessNum && this.storeInfoEdit.businessNum.length == 8) {
-                    return true//符合:false
-                } else {
-                    return false
-                }
-            },
-
-            //營業時間整體
-            BussinessTime_check() {
-                if (JSON.stringify(this.storeInfoEdit.businessDays) !== JSON.stringify(this.storeInfo.businessDays)) {
-                    return true//符合:false
-                } else {
-                    return false
-                }
-            },
-
-            //營業等待時間：基礎時間
-            WaitingTime_basic() {
-                if (JSON.stringify(this.storeInfoEdit.basicwaitingTime) !== JSON.stringify(this.storeInfo.basicwaitingTime)) {
-                    return true//符合:false
-                } else {
-                    return false
-                }
-            },
-
-            //營業等待時間：間隔時間
-            WaitingTime_interval() {
-                if (this.storeInfoEdit.intervalwaitingTime != '' &&
-                    this.storeInfoEdit.intervalwaitingTime != this.storeInfo.intervalwaitingTime &&
-                    this.storeInfoEdit.intervalwaitingTime % 5 === 0) {
-                    return true//符合:false
-                } else {
-                    return false
-                }
-            },
-
-            // 低消提醒整體
-            minimumOrderReminder_check() {
-                if (JSON.stringify(this.storeInfoEdit.minimumOrderReminder) !== JSON.stringify(this.storeInfo.minimumOrderReminder)) {
-                    return true//符合:false
-                } else {
-                    return false
-                }
-            },
-
-            // 特定店休整體
-            storeClosed_check() {
-                if (JSON.stringify(this.storeInfoEdit.openTime.specialCloseDays) !== JSON.stringify(this.storeInfoEdit.openTime.specialCloseDays)) {
-                    return true//符合:false
-                } else {
-                    return false
-                }
-            },
-
-            // 可預訂天數整體
-            advanceReservation_check() {
-                if (JSON.stringify(this.storeInfoEdit.advanceReservation) !== JSON.stringify(this.storeInfo.advanceReservation)) {
-                    return true//符合:false
-                } else {
-                    return false
-                }
-            },
-
             // 處理圖片上傳
             handleFileUpload_banner(event) {
                 this.imageAction = 'banner'
@@ -1580,8 +1377,6 @@
                     $("#ProductorEdit").modal("show");
                 }
             },
-
-
 
             // 處理圖片上傳
             handleFileUpload_logo(event) {

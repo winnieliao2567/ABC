@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>共響 SHARING</title>
+    <title>共響 SHARING｜後台管理系統</title>
 
     <!-- jquery -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
@@ -165,15 +165,15 @@
                                         </div>
                                         <div class="form-group mb-3">
                                             <label class="m-0">
-                                                排序類別<span class="text-danger">*</span>
+                                                出單機排序<span class="text-danger">*</span>
                                                 <span class="text-primary" data-toggle="tooltip" data-placement="right"
                                                     title="顯示於訂單記錄的順序">
                                                     <i class="fas fa-question-circle"></i>
                                                 </span>
                                             </label>
                                             <select class="form-control" v-model="AddProductor_data.data.priority">
-                                                <option value="" disabled v-if="AddProductor_data.userAction==='新增'">
-                                                    -- 請選擇 --
+                                                <option value="999">
+                                                    -- 尚未設定 --
                                                 </option>
                                                 <option v-for="(sort,classIndex) in SortClass_Data"
                                                     :value="sort.priorityId">
@@ -258,31 +258,7 @@
             </div>
         </div>
 
-        <!-- <div class="modal fade" id="TailoringImgWin" tabindex="-1" data-backdrop="static" data-keyboard="false"
-            style="z-index: 100000;" role="dialog" aria-labelledby="reloginModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="reloginModalLabel">
-                            編輯圖片
-                        </h5>
-                    </div>
-                    <div class="modal-body">
-                        <div class="img-container">
-                            <img id="image" ref="image" class="img-fluid">
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal"
-                            aria-label="Close">取消上傳</button>
-                        <button type="button" id="sureCut" @click="cropImage" class="btn btn-primary">確認裁切並上傳</button>
-                    </div>
-                </div>
-            </div>
-        </div> -->
-
-
-        <div class="modal fade" id="cropModal" tabindex="-1" role="dialog">
+        <div class="modal fade" id="cropModal" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false">
             <div class="modal-dialog modal-xl modal-dialog-scrollable modal-dialog-centered" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -295,7 +271,7 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button class="btn btn-primary" @click="cropImage">確定裁剪</button>
+                        <button class="btn btn-primary" @click="cropImage()">確定裁剪</button>
                     </div>
                 </div>
             </div>
@@ -629,7 +605,7 @@
                 userInfo: localStorage.userInfo ? decryptObject(localStorage.userInfo) : {},
                 storeInfo: decryptObject(localStorage.storeInfo),
 
-                allStore: localStorage.allStore ? decryptObject(localStorage.allStore) : {},
+                allStore: decryptObject(localStorage.allStore),
 
                 searchKeyword: '',
 
@@ -669,7 +645,7 @@
                         "image": "",
                         "categoryId": 0,
                         "categoryName": "",
-                        "priority": 0,
+                        "priority": '',
                         "priorityTitle": "",
                         "enabled": true,
                         "createTime": "",
@@ -793,7 +769,7 @@
                                             }
                                         })
                                     } else {
-                                        GetDataError('獲得排序資料')
+                                        GetDataError('獲得出單排序資料')
                                     }
                                 })
 
@@ -905,7 +881,7 @@
                         "price": 0,
                         "image": "",
                         "categoryId": index != null ? this.productorData[index].categoryId : '',
-                        "priority": 5,
+                        "priority": 999,
                         // "enabled": true,
                         "customConfig": [],
                         "mealConfig": {
@@ -1114,20 +1090,17 @@
             },
             // 裁剪圖片並轉 Base64
             cropImage() {
-                var vue = this
+                var vue = this;
                 if (this.cropper) {
                     const canvas = this.cropper.getCroppedCanvas({
                         width: vue.imageSize.w,
                         height: vue.imageSize.h
                     });
                     this.croppedImage = canvas.toDataURL("image/png");
-
-                    // console.log(this.croppedImage);
-                    this.AddProductor_data.data.image = this.croppedImage
-
-
+                    this.AddProductor_data.data.image = this.croppedImage;
                     $("#cropModal").modal("hide");
                     $("#ProductorEdit").modal("show");
+
                 }
             }
         },

@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>共響 SHARING</title>
+  <title>共響 SHARING｜後台管理系統</title>
 
   <!-- jquery -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
@@ -179,19 +179,13 @@
                 // accountKey: vue.loginVal.key,
               }
               // console.log('adminInfo----------' + JSON.stringify(adminInfo));
-
               localStorage.userInfo = encryptObject(adminInfo)
-
-
-
               vue.allStore = v.stores
               localStorage.allStore = encryptObject(vue.allStore)
 
-              selectStore(v.stores[0].storeId)
-
-
+              selectedStore(vue.allStore = v.stores)
+              // selectStore(v.stores[0].storeId)
             }
-
           })
 
         }

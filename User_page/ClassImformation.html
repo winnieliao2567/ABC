@@ -170,7 +170,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 <div class="container">
                     <div class="row">
                         <template v-for="(item, index) in storeList" :key="item.storeId">
-                            <div class="col-6 col-md-4 col-xl-3">
+                            <div class="col-12 col-md-4 col-xl-3">
                                 <a class="card sotreCard" :href="'StoreImformation.html?sid='+item.storeId">
                                     <span class='badge text-bold text-success navbar-badge text-sm' v-if="item.isOpen">
                                         <i class="fas fa-circle"></i> <!-- 營業中 -->

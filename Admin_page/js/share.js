@@ -45,7 +45,7 @@ const userFunction = [
             },
             {
                 icon: "fas fa-sort-amount-up",
-                name: "排序管理",
+                name: "出單排序管理",
                 status: "",
                 url: "SortClass.html?sid=" + storeId,
             },
@@ -189,48 +189,76 @@ function apiWeb(_url, _type, _data, TimelogTag, _fun) {
 
 //確認登入資料
 function checkUserInfo() {
-    var errorInfo = "";
-    if (storeId == "") {
-        // window.location.href = "login.html";
-        errorInfo = "找不到店家資訊";
-        console.error(errorInfo);
+    // sid = NULL，userinfo = NULL
+    if (!storeId && localStorage.userInfo == null) {
+        // 跳登入頁
         userError();
         return;
     }
-    if (
-        localStorage.userInfo == null ||
-        localStorage.allStore == null ||
-        localStorage.userInfo == "" ||
-        localStorage.allStore == ""
-    ) {
-        errorInfo = "找不到管理員資訊";
-        console.error(errorInfo);
-        userError();
+    // sid != NULL，userinfo != NULL
+    else if (storeId && localStorage.userInfo != null) {
+        // 保留現店家
+        apiWeb("/api/Store/basic-info/" + storeId, "GET", null, "更新店家資訊", function (v) {
+            localStorage.storeInfo = encryptObject(v);
+            if (v.status.isOpen == true) {
+                $("#OpenStatus").addClass("text-success");
+            } else {
+                $("#OpenStatus").addClass("text-danger");
+            }
+        });
     }
-    apiWeb("/api/Store/basic-info/" + storeId, "GET", null, "更新店家資訊", function (v) {
-        // console.log(v);
-
-        localStorage.storeInfo = encryptObject(v);
-
-        // console.log(v.status.isOpen);
-
-        if (v.status.isOpen == true) {
-            $("#OpenStatus").addClass("text-success");
-        } else {
-            $("#OpenStatus").addClass("text-danger");
-        }
-    });
-
-    function userError() {
-        $("body").append(
-            '<div class="modal fade" id="reloginModal" tabindex="-1" data-backdrop="static" data-keyboard="false" ole="dialog" aria-labelledby="reloginModalLabel" aria-hidden="true"><div class="modal-dialog" role="document"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="reloginModalLabel">錯誤</h5></div><div class="modal-body">' +
-                errorInfo +
-                '，請重新登入以繼續使用系統。</div><div class="modal-footer"><button type="button" class="btn btn-primary" onclick="window.location.href=' +
-                "'login.html'" +
-                '">重新登入</button></div></div></div></div>'
+    // sid = NULL，userinfo != NULL
+    else if (!storeId && localStorage.userInfo != null) {
+        // 選擇店家
+        let data = {
+            encryptedId: decryptObject(localStorage.userInfo).id,
+        };
+        apiWeb(
+            "/api/Login/quick-admin-login",
+            "POST",
+            JSON.stringify(data),
+            "取得所有店家",
+            function (v) {
+                // console.log(v.stores);
+                selectedStore(v.stores);
+            }
         );
-        $("#reloginModal").modal("show");
     }
+    // sid != NULL，userinfo = NULL
+    else if (storeId && localStorage.userInfo == null) {
+        // 跳登入頁
+        userError();
+        return;
+    }
+}
+function selectedStore(List) {
+    // console.log(List);
+
+    $("body").append(
+        '<div class="modal fade" id="reloginModal" tabindex="-1" data-backdrop="static" data-keyboard="false" ole="dialog" aria-labelledby="reloginModalLabel" aria-hidden="true"><div class="modal-dialog" role="document"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="reloginModalLabel">選擇管理店家</h5></div><div class="modal-body"><select class="form-control" id="selectStore"><option>-- 請選擇店家 --</option></select></div><div class="modal-footer"><button type="button" class="btn btn-primary" id="checkStore">開始管理店家</button></div></div></div></div>'
+    );
+
+    for (var i = 0; i < List.length; i++) {
+        // console.log(List[i]);
+        $("#selectStore").append(
+            '<option value="' + List[i].storeId + '">' + List[i].storeName + "</option>"
+        );
+    }
+
+    $("#reloginModal").modal("show");
+
+    $("#checkStore").click(function () {
+        selectStore($("#selectStore").val());
+    });
+}
+
+function userError() {
+    $("body").append(
+        '<div class="modal fade" id="reloginModal" tabindex="-1" data-backdrop="static" data-keyboard="false" ole="dialog" aria-labelledby="reloginModalLabel" aria-hidden="true"><div class="modal-dialog" role="document"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="reloginModalLabel">錯誤</h5></div><div class="modal-body">資料載入發生錯誤，請重新登入以繼續使用系統。</div><div class="modal-footer"><button type="button" class="btn btn-primary" onclick="window.location.href=' +
+            "'login.html'" +
+            '">重新登入</button></div></div></div></div>'
+    );
+    $("#reloginModal").modal("show");
 }
 function itemClick(obj) {
     // console.log(obj.attr("id"));
@@ -253,7 +281,8 @@ const secretKey = "your-secure-key"; // 建議存入環境變數
 // 加密函數
 function encryptObject(data) {
     if (!data || typeof data !== "object") {
-        throw new Error("加密失敗：資料必須是物件-" + data);
+        // throw new Error("加密失敗：資料必須是物件-" + data);
+        return false;
     }
     const jsonString = JSON.stringify(data);
     return CryptoJS.AES.encrypt(jsonString, secretKey).toString();
@@ -261,7 +290,8 @@ function encryptObject(data) {
 // 解密函數
 function decryptObject(encryptedData) {
     if (!encryptedData || typeof encryptedData !== "string") {
-        throw new Error("解密失敗：加密資料必須是字串-" + encryptedData);
+        // throw new Error("解密失敗：加密資料必須是字串-" + encryptedData);
+        return false;
     }
     try {
         const bytes = CryptoJS.AES.decrypt(encryptedData, secretKey);

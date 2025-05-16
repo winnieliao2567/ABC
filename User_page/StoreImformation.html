@@ -355,7 +355,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                 class="navbar navbar-light sticky-top">
                                 <ul class="nav nav-pills">
                                     <template v-for="(group,index) in productorData" :key="group.categoryId">
-                                        <li class="nav-item">
+                                        <li class="nav-item" v-if="group.productors.length>0">
                                             <a class="nav-link"
                                                 :href="'#scroll'+group.categoryId">{{group.categoryName}}</a>
                                         </li>
@@ -930,11 +930,12 @@ scratch. This page gets rid of all links and provides the needed markup only.
             nextAvailabletime() {
                 let nextAvailableDate = moment(this.storeInfo.nextAvailable.timeFormatted).format('YYYY-MM-DD')
                 let nextAvailableTime = moment(this.storeInfo.nextAvailable.timeFormatted).format('HH:mm')
+                // console.log(nextAvailableDate + ' ' + nextAvailableTime);
 
                 if (moment().format('YYYY-MM-DD') == nextAvailableDate) {
                     return '今天' + nextAvailableTime
                 } else {
-                    return nextAvailableDate
+                    return nextAvailableDate + ' ' + nextAvailableTime
                 }
 
             }

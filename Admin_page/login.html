@@ -162,11 +162,11 @@
         sessionStorage.keepLogIn = false
         // console.log(this.loginVal.keepLogIn);
         if (this.loginVal.keepLogIn) {
-          localStorage.keepLogIn = this.loginVal.keepLogIn
-          sessionStorage.keepLogIn = false
+          localStorage.keepLogIn = true
+          // sessionStorage.keepLogIn = false
         } else {
-          localStorage.keepLogIn = false
-          sessionStorage.keepLogIn = this.loginVal.keepLogIn
+          // localStorage.keepLogIn = false
+          sessionStorage.keepLogIn = true
         }
         if (this.loginVal.account == '') { this.check.account = true; loadingOff(); }
         else if (this.loginVal.key == '') { this.check.key = true; loadingOff(); }

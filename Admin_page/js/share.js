@@ -189,46 +189,50 @@ function apiWeb(_url, _type, _data, TimelogTag, _fun) {
 
 //確認登入資料
 function checkUserInfo() {
-    // sid = NULL，userinfo = NULL
-    if (!storeId && localStorage.userInfo == null) {
-        // 跳登入頁
-        userError();
-        return;
-    }
-    // sid != NULL，userinfo != NULL
-    else if (storeId && localStorage.userInfo != null) {
-        // 保留現店家
-        apiWeb("/api/Store/basic-info/" + storeId, "GET", null, "更新店家資訊", function (v) {
-            localStorage.storeInfo = encryptObject(v);
-            if (v.status.isOpen == true) {
-                $("#OpenStatus").addClass("text-success");
-            } else {
-                $("#OpenStatus").addClass("text-danger");
-            }
-        });
-    }
-    // sid = NULL，userinfo != NULL
-    else if (!storeId && localStorage.userInfo != null) {
-        // 選擇店家
-        let data = {
-            encryptedId: decryptObject(localStorage.userInfo).id,
-        };
-        apiWeb(
-            "/api/Login/quick-admin-login",
-            "POST",
-            JSON.stringify(data),
-            "取得所有店家",
-            function (v) {
-                // console.log(v.stores);
-                selectedStore(v.stores);
-            }
-        );
-    }
-    // sid != NULL，userinfo = NULL
-    else if (storeId && localStorage.userInfo == null) {
-        // 跳登入頁
-        userError();
-        return;
+    if (localStorage.keepLogIn || localStorage.keepLogIn) {
+        // sid = NULL，userinfo = NULL
+        if (!storeId && localStorage.userInfo == null) {
+            // 跳登入頁
+            userError();
+            return;
+        }
+        // sid != NULL，userinfo != NULL
+        else if (storeId && localStorage.userInfo != null) {
+            // 保留現店家
+            apiWeb("/api/Store/basic-info/" + storeId, "GET", null, "更新店家資訊", function (v) {
+                localStorage.storeInfo = encryptObject(v);
+                if (v.status.isOpen == true) {
+                    $("#OpenStatus").addClass("text-success");
+                } else {
+                    $("#OpenStatus").addClass("text-danger");
+                }
+            });
+        }
+        // sid = NULL，userinfo != NULL
+        else if (!storeId && localStorage.userInfo != null) {
+            // 選擇店家
+            let data = {
+                encryptedId: decryptObject(localStorage.userInfo).id,
+            };
+            apiWeb(
+                "/api/Login/quick-admin-login",
+                "POST",
+                JSON.stringify(data),
+                "取得所有店家",
+                function (v) {
+                    // console.log(v.stores);
+                    selectedStore(v.stores);
+                }
+            );
+        }
+        // sid != NULL，userinfo = NULL
+        else if (storeId && localStorage.userInfo == null) {
+            // 跳登入頁
+            userError();
+            return;
+        }
+    } else {
+        window.location.href = "login.html";
     }
 }
 function selectedStore(List) {

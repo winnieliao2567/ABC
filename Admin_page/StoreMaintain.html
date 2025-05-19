@@ -76,9 +76,9 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button class="btn btn-primary" @click="cropImage_logo"
+                        <button class="btn btn-primary" @click="cropImage_logo('blob')"
                             v-if="imageAction=='logo'">確定裁剪爲Logo</button>
-                        <button class="btn btn-primary" @click="cropImage_banner"
+                        <button class="btn btn-primary" @click="cropImage_banner('blob')"
                             v-if="imageAction=='banner'">確定裁剪爲橫幅</button>
                     </div>
                 </div>
@@ -1360,21 +1360,73 @@
                 });
             },
             // 裁剪圖片並轉 Base64
-            cropImage_banner() {
-                var vue = this
-                if (this.cropper) {
-                    const canvas = this.cropper.getCroppedCanvas({
-                        width: vue.BannerImageSize.w,
-                        height: vue.BannerImageSize.h
-                    });
-                    this.croppedImage = canvas.toDataURL("image/png");
+            cropImage_banner(type) {
+                loadingOn()
+                const vue = this;
 
+                if (!this.cropper) return;
 
-                    this.storeInfoEdit.store.bannerimage = this.croppedImage
-                    // console.log(this.storeInfoEdit.storeInfo.bannerimage);
+                const canvas = this.cropper.getCroppedCanvas({
+                    width: vue.BannerImageSize.w,
+                    height: vue.BannerImageSize.h
+                });
+
+                if (type === "base") {
+                    vue.croppedImage = canvas.toDataURL("image/png");
+                    vue.storeInfoEdit.store.bannerimage = vue.croppedImage;
 
                     $("#cropModal").modal("hide");
                     $("#ProductorEdit").modal("show");
+                } else if (type === "blob") {
+                    canvas.toBlob((blob) => {
+                        vue.croppedImage = blob;
+
+                        const formData = new FormData();
+                        formData.append('file', vue.croppedImage, 'cropped-image.jpg');
+
+                        $.ajax({
+                            type: "POST",
+                            headers: {
+                                "Content-Type": "application/json; charset=utf-8",
+                            },
+                            url: host + "/api/auth/keylogin",
+                            data: JSON.stringify({ key: AutoKey }),
+                            success: function (res) {
+                                const token = "Bearer " + res.token;
+                                // 第二次請求：上傳圖片
+                                $.ajax({
+                                    url: 'https://sharings.com.tw/api/Image/upload',
+                                    type: 'POST',
+                                    headers: {
+                                        Authorization: token
+                                    },
+                                    data: formData,
+                                    processData: false,
+                                    contentType: false,
+                                    success: function (v) {
+                                        if (v.success == true) {// console.log('上傳成功', uploadRes);
+                                            vue.storeInfoEdit.store.bannerimage = v.url
+                                            toastr.success("圖片上傳成功");
+                                            $("#cropModal").modal("hide");
+                                            $("#ProductorEdit").modal("show");
+                                            loadingOff()
+                                        }
+                                    },
+                                    error: function (xhr, status, error) {
+                                        // console.error('上傳失敗', error);
+                                        // alert("圖片上傳失敗，請稍後再試。");
+                                        toastr.error("圖片上傳失敗");
+                                        $("#cropModal").modal("hide");
+                                        $("#ProductorEdit").modal("show");
+                                        loadingOff()
+                                    }
+                                });
+                            },
+                            error: function (xhr, status, error) {
+                                reject(error);
+                            },
+                        });
+                    }, "image/png");
                 }
             },
 
@@ -1429,21 +1481,73 @@
                 });
             },
             // 裁剪圖片並轉 Base64
-            cropImage_logo() {
-                var vue = this
-                if (this.cropper) {
-                    const canvas = this.cropper.getCroppedCanvas({
-                        width: vue.LogoImageSize.w,
-                        height: vue.LogoImageSize.h
-                    });
-                    this.croppedImage = canvas.toDataURL("image/png");
+            cropImage_logo(type) {
+                loadingOn()
+                const vue = this;
 
-                    // console.log(this.croppedImage);
-                    this.storeInfoEdit.store.image = this.croppedImage
+                if (!this.cropper) return;
 
+                const canvas = this.cropper.getCroppedCanvas({
+                    width: vue.LogoImageSize.w,
+                    height: vue.LogoImageSize.h
+                });
+
+                if (type === "base") {
+                    vue.croppedImage = canvas.toDataURL("image/png");
+                    vue.storeInfoEdit.store.image = vue.croppedImage;
 
                     $("#cropModal").modal("hide");
                     $("#ProductorEdit").modal("show");
+                } else if (type === "blob") {
+                    canvas.toBlob((blob) => {
+                        vue.croppedImage = blob;
+
+                        const formData = new FormData();
+                        formData.append('file', vue.croppedImage, 'cropped-image.jpg');
+
+                        $.ajax({
+                            type: "POST",
+                            headers: {
+                                "Content-Type": "application/json; charset=utf-8",
+                            },
+                            url: host + "/api/auth/keylogin",
+                            data: JSON.stringify({ key: AutoKey }),
+                            success: function (res) {
+                                const token = "Bearer " + res.token;
+                                // 第二次請求：上傳圖片
+                                $.ajax({
+                                    url: 'https://sharings.com.tw/api/Image/upload',
+                                    type: 'POST',
+                                    headers: {
+                                        Authorization: token
+                                    },
+                                    data: formData,
+                                    processData: false,
+                                    contentType: false,
+                                    success: function (v) {
+                                        if (v.success == true) {// console.log('上傳成功', uploadRes);
+                                            vue.storeInfoEdit.store.image = v.url
+                                            toastr.success("圖片上傳成功");
+                                            $("#cropModal").modal("hide");
+                                            $("#ProductorEdit").modal("show");
+                                            loadingOff()
+                                        }
+                                    },
+                                    error: function (xhr, status, error) {
+                                        // console.error('上傳失敗', error);
+                                        // alert("圖片上傳失敗，請稍後再試。");
+                                        toastr.error("圖片上傳失敗");
+                                        $("#cropModal").modal("hide");
+                                        $("#ProductorEdit").modal("show");
+                                        loadingOff()
+                                    }
+                                });
+                            },
+                            error: function (xhr, status, error) {
+                                reject(error);
+                            },
+                        });
+                    }, "image/png");
                 }
             }
 

@@ -1,6 +1,6 @@
 const copyRight = " 共饗有限公司. All Rights Reserved.";
 
-const TestModel = true; //test
+const TestModel = false; //test
 
 const version = "1.0.1";
 const host = "https://sharings.com.tw/";
@@ -108,7 +108,7 @@ function apiWeb(_url, _type, _data, TimelogTag, _fun) {
         type: "POST",
         headers: {
             "Content-Type": "application/json; charset=utf-8",
-            Authorization: ApiAuto, // 需要的話可以加上授權標頭
+            //Authorization: ApiAuto, // 需要的話可以加上授權標頭
         },
         url: host + "/api/auth/keylogin",
         data: JSON.stringify({

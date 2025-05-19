@@ -321,7 +321,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                             </div>
 
                             <!-- 電話 -->
-                            <div class="p-3 item">
+                            <div class="p-3 item" v-if="storeInfo.storeInfo.tel">
                                 <a :href="'tel:' + storeInfo.storeInfo.tel">
                                     <h6 class="m-0">
                                         <i class="fas fa-phone mr-2 text-secondary"></i>
@@ -372,12 +372,11 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                                 <div class="col-12 col-md-6 col-lg-4">
                                                     <div class="card" @click="showAddCartModal(group.categoryId,item.mealId
                                                     )">
-                                                        <!-- <img :src="'img/unknowIMG.png'" class="card-img-top"> -->
                                                         <div class="card-body p-2 row m-0">
                                                             <div class="col-3 p-0">
-                                                                <div class="d-flex justify-content-center embed-responsive embed-responsive-1by1"
+                                                                <div class="d-flex justify-content-center embed-responsive embed-responsive-1by1 unknowIMG"
                                                                     style="overflow: hidden;"
-                                                                    :class="{ 'unknowIMG': !item.image }">
+                                                                    :class="{ 'unknowIMGMeal': !item.image }">
                                                                     <img class="border w-100" :src="item.image">
                                                                 </div>
                                                             </div>
@@ -412,12 +411,11 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                                 <div class="col-12 col-md-6 col-lg-4">
                                                     <div class="card" @click="showAddCartModal(group.categoryId,item.mealId
                                                     )">
-                                                        <!-- <img :src="'img/unknowIMG.png'" class="card-img-top"> -->
                                                         <div class="card-body p-2 row m-0">
                                                             <div class="col-3 p-0">
                                                                 <div class="d-flex justify-content-center embed-responsive embed-responsive-1by1"
                                                                     style="overflow: hidden;"
-                                                                    :class="{ 'unknowIMG': !item.image }">
+                                                                    :class="{ 'unknowIMGMeal': !item.image }">
                                                                     <img class="border w-100" :src="item.image">
                                                                 </div>
                                                             </div>
@@ -595,14 +593,11 @@ scratch. This page gets rid of all links and provides the needed markup only.
         },
         mounted() {
             this.getStoreInfo()
-
-            // console.log('Data----------', JSON.parse("{\"meal\":[{\"mealId\":26,\"mealConfig\":{\"options\":[{\"key\":\"尺寸\",\"value\":\"大\"},{\"key\":\"甜度\",\"value\":\"半糖\"}]},\"customConfig\":[{\"options\":[{\"TemplateID\":\"10\",\"content\":[{\"title\":\"去冰\",\"extra\":\"0\"}]},{\"TemplateID\":\"64\",\"content\":[{\"title\":\"珍珠\",\"extra\":\"0\"},{\"title\":\"布丁\",\"extra\":\"0\"}]}]}]}]}"));
-
         },
         watch: {
             addToCart: {
                 handler(newVal) {
-                    // console.log(newVal);
+                    console.log(newVal);
 
                     let total = newVal.price;
 
@@ -748,7 +743,13 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 // console.log(JSON.stringify(this.addData));
 
                 this.addToCart.mealId = this.addData.mealId
-                this.addToCart.mealConfig.options[0].value = ''
+                this.addToCart.mealConfig.options = [
+                    {
+                        "key": "尺寸",
+                        "value": "",
+                        "price": 0
+                    }
+                ]
                 this.addToCart.customConfig[0].options = []
                 this.addToCart.price = this.addData.price
                 this.addToCart.totalPrice = this.addData.price

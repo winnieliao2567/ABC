@@ -87,7 +87,7 @@
                     </div>
                     <div class="modal-footer" v-if="EarlyClosure.enabled!=false">
                         <!-- <button type="button" class="btn btn-secondary" data-dismiss="modal">取消設定</button> -->
-                        <button :disabled="EarlyClosure.time!=''" type="button" class="btn btn-primary"
+                        <button :disabled="EarlyClosure.time==''" type="button" class="btn btn-primary"
                             v-on:click="EarlyClosureSave()">儲存</button>
                     </div>
                 </div>
@@ -551,13 +551,13 @@
                         discrition: '取消當前區間鎖定',
                         enabled: true
                     },
-                    {
-                        name: 'print',
-                        title: '綁定出單機',
-                        src: '<i class="fas fa-print"></i>',
-                        discrition: '',
-                        enabled: true
-                    },
+                    // {
+                    //     name: 'print',
+                    //     title: '綁定出單機',
+                    //     src: '<i class="fas fa-print"></i>',
+                    //     discrition: '',
+                    //     enabled: true
+                    // },
                 ],
                 EarlyClosure: {
                     enabled: '', time: '', data: moment().format("YYYY-MM-DD")
@@ -572,7 +572,7 @@
         mounted() {
             var vue = this
             this.GetStoreInfo()
-
+            vue.getActiveBlocks()
 
             $('#OrderList').click(function () {
                 window.location.href = 'OrderList.html?sid=' + storeId
@@ -658,8 +658,6 @@
                     } else {
                         $('#MenuAdjustment').addClass('disabled')
                     }
-
-                    vue.getActiveBlocks()
 
                     loadingOff()
                 });

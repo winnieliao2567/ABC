@@ -343,11 +343,17 @@ input:focus-visible {
     color: var(--light);
 }
 .unknowIMG {
-    opacity: 0.3;
-    background-image: url(../img/unknowIMG.png);
     background-repeat: no-repeat;
     background-position: center;
     background-size: auto 100%;
+}
+.unknowIMGMeal {
+    opacity: 0.5;
+    background-image: url(../img/unknowIMGMeal.png);
+}
+.unknowIMGStore {
+    opacity: 0.5;
+    background-image: url(../img/unknowIMGStore.png);
 }
 .card-img-overlay {
     background-color: #00000030;

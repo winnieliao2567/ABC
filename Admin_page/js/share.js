@@ -189,7 +189,7 @@ function apiWeb(_url, _type, _data, TimelogTag, _fun) {
 
 //確認登入資料
 function checkUserInfo() {
-    console.log(localStorage.keepLogIn, sessionStorage.keepLogIn);
+    // console.log(localStorage.keepLogIn, sessionStorage.keepLogIn);
 
     if (localStorage.keepLogIn == "true" || sessionStorage.keepLogIn == "true") {
         // sid = NULL，userinfo = NULL

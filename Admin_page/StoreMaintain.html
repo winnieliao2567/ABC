@@ -409,7 +409,7 @@
                                                                 v-if="day.operation" :for="'operation'+day.id">
                                                                 營業
                                                             </label>
-                                                            <label class="custom-control-label text-danger m-0 ml-2"
+                                                            <label class="custom-control-label text-muted m-0 ml-2"
                                                                 v-if="!day.operation" :for="'operation'+day.id">
                                                                 休息
                                                             </label>
@@ -417,7 +417,7 @@
                                                         <div v-if="day.operation" class="col-12 m-0">
                                                             <div class="row">
                                                                 <div class="col-12 mt-3">
-                                                                    <div class="input-group mb-2"
+                                                                    <div class="input-group py-1"
                                                                         v-for="(time,index) in day.time">
                                                                         <input class="form-control" v-model="time.open"
                                                                             type="time" :data-for="'open-'+day.id">
@@ -428,12 +428,18 @@
                                                                             <button
                                                                                 v-on:click="deletOperationTime(day.id,index)"
                                                                                 class="btn btn-outline-secondary">
-                                                                                <i class="fas fa-trash-alt"></i>
+                                                                                <i class="fas fa-times"></i>
                                                                             </button>
                                                                         </div>
                                                                     </div>
+                                                                    <p class="text-sm text-bold text-danger"
+                                                                        v-show="CheckBusinessDays[index]==false">
+                                                                        <i class="fas fa-exclamation-circle mr-2"></i>
+                                                                        每區間段的開始營業時間需小於結束時間
+                                                                    </p>
                                                                 </div>
-                                                                <div class="col-12">
+                                                                <div class="col-12"
+                                                                    v-show="CheckBusinessDays[index]==true">
                                                                     <button class="btn-link btn btn-sm"
                                                                         v-show="3>day.time.length" :data-for="index"
                                                                         v-on:click="addOperationTime(index)">
@@ -455,11 +461,12 @@
                                                         :disabled="!settingItem.groupitem.enabled" type="number"
                                                         v-model="storeInfoEdit.store.orderInterval" min="0" max="60"
                                                         step="5">
-                                                    <p class="pl-3 w-25 d-inline-block m-0 mr-5">分鐘</p>
-                                                    <div class="text-memo text-danger"
+                                                    <p class="pl-3 d-inline-block m-0">分鐘</p>
+                                                    <p class="text-danger text-bold text-sm pl-3 m-0 d-inline-block"
                                                         v-if="!validateIntervalTime(storeInfoEdit.store.orderInterval, 5)">
-                                                        *間隔時間須為5的倍數
-                                                    </div>
+                                                        <i class="fas fa-exclamation-circle mr-2"></i>
+                                                        間隔時間須為5的倍數
+                                                    </p>
                                                 </div>
 
                                                 <!-- 每單基礎等待時間 -->
@@ -481,16 +488,28 @@
                                                     v-if="settingItem.groupitem.type === 'minOrderAmount'">
                                                     <input class="form-control w-25 d-inline-block" autocomplete="off"
                                                         :disabled="!settingItem.groupitem.enabled" type="number" min="0"
+                                                        :class="{'is-invalid':!storeInfoEdit.store.minOrderAmount}"
                                                         max="10" step="1" v-model="storeInfoEdit.store.minOrderAmount">
-                                                    <p class="pl-3 w-25 d-inline-block m-0 mr-5">單</p>
+                                                    <p class="pl-3 d-inline-block m-0">單</p>
+                                                    <p class="text-danger text-bold text-sm pl-3 m-0 d-inline-block"
+                                                        v-if="!storeInfoEdit.store.minOrderAmount">
+                                                        <i class="fas fa-exclamation-circle mr-2"></i>
+                                                        請輸入最低區間數量
+                                                    </p>
                                                 </div>
 
                                                 <!-- 最低金額 -->
                                                 <div class="col-12 my-1"
                                                     v-if="settingItem.groupitem.type === 'minPrice'">
                                                     <input class="form-control w-25 d-inline-block" type="number"
-                                                        min="0" v-model="storeInfoEdit.store.amountLimit">
-                                                    <p class="pl-3 w-25 d-inline-block m-0 mr-5">元</p>
+                                                        :class="{'is-invalid':!storeInfoEdit.store.amountLimit}" min="0"
+                                                        v-model="storeInfoEdit.store.amountLimit">
+                                                    <p class="pl-3 d-inline-block m-0 ">元</p>
+                                                    <p class="text-danger text-bold text-sm pl-3 m-0 d-inline-block"
+                                                        v-if="!storeInfoEdit.store.amountLimit">
+                                                        <i class="fas fa-exclamation-circle mr-2"></i>
+                                                        請輸入最低金額
+                                                    </p>
                                                 </div>
 
                                                 <!-- 最高金額 -->
@@ -498,8 +517,14 @@
                                                     v-if="settingItem.groupitem.type === 'maxPrice'">
                                                     <p class="text-muted m-0">若有訂單超過該金額，後續訂單全部推至下一區間</p>
                                                     <input class="form-control w-25 d-inline-block" type="number"
-                                                        min="0" v-model="storeInfoEdit.store.slotLimit" ref="inputs">
-                                                    <p class="pl-3 w-25 d-inline-block m-0 mr-5">元</p>
+                                                        :class="{'is-invalid':!storeInfoEdit.store.slotLimit}" min="0"
+                                                        v-model="storeInfoEdit.store.slotLimit" ref="inputs">
+                                                    <p class="pl-3 d-inline-block m-0">元</p>
+                                                    <p class="text-danger text-bold text-sm pl-3 m-0 d-inline-block"
+                                                        v-if="!storeInfoEdit.store.slotLimit">
+                                                        <i class="fas fa-exclamation-circle mr-2"></i>
+                                                        請輸入最高金額
+                                                    </p>
                                                 </div>
 
                                                 <!-- 低消金額 -->
@@ -507,8 +532,14 @@
                                                     v-if="settingItem.groupitem.type === 'LowSpendingAmount'">
                                                     <p class="text-muted text-sm">若消費者下單總金額低於設定值，該訂單不成立並跳出警告訊息</p>
                                                     <input class="form-control w-25 d-inline-block" type="number"
-                                                        min="0" v-model="storeInfoEdit.storeInfo.minimumOrderAmount"
+                                                        :class="{'is-invalid':CheckLowSpending[0]==false}" min="0"
+                                                        v-model="storeInfoEdit.storeInfo.minimumOrderAmount"
                                                         ref="inputs">
+                                                    <p class="text-danger text-bold text-sm w-75 d-inline-block pl-3 m-0"
+                                                        v-if="CheckLowSpending[0]==false">
+                                                        <i class="fas fa-exclamation-circle mr-2"></i>
+                                                        請輸入低消金額
+                                                    </p>
                                                 </div>
 
                                                 <!-- 低消提示 -->
@@ -523,7 +554,7 @@
                                                             v-if="storeInfoEdit.storeInfo.minimumOrderEnabled">
                                                             開啟
                                                         </label>
-                                                        <label class="custom-control-label text-danger m-0 ml-2"
+                                                        <label class="custom-control-label text-muted m-0 ml-2"
                                                             for="minimumOrderReminder"
                                                             v-if="!storeInfoEdit.storeInfo.minimumOrderEnabled">
                                                             關閉
@@ -532,8 +563,15 @@
 
                                                     <!-- 提示內容 -->
                                                     <div class="p-3">
-                                                        <h6>警告提示</h6>
+                                                        <h6>警告提示
+                                                            <span class="text-danger text-sm"
+                                                                v-show="CheckLowSpending[1]==false">
+                                                                <i class="fas fa-exclamation-circle mr-2"></i>
+                                                                請輸入低消警告提示
+                                                            </span>
+                                                        </h6>
                                                         <textarea class="form-control" placeholder='提示內容文字，EX:未達最低消費金額'
+                                                            :class="{'is-invalid':CheckLowSpending[1]==false}"
                                                             v-model="storeInfoEdit.storeInfo.minimumOrderText"></textarea>
                                                     </div>
                                                 </div>
@@ -556,12 +594,16 @@
                                                                 <div class="input-group-append">
                                                                     <button class="btn btn-outline-secondary"
                                                                         @click="delStoreClosed(index)" type="button">
-                                                                        <i class="fas fa-trash-alt"
-                                                                            aria-hidden="true"></i>
+                                                                        <i class="fas fa-times" aria-hidden="true"></i>
                                                                     </button>
                                                                 </div>
                                                             </div>
                                                         </div>
+                                                        <p class="text-sm text-bold text-danger"
+                                                            v-show="StoreClosed_FoolProof">
+                                                            <i class="fas fa-exclamation-circle mr-2"></i>
+                                                            請輸入店休名稱
+                                                        </p>
                                                         <button class="btn-link btn btn-sm" @click="addStoreClosed">
                                                             + 特殊店休日期
                                                         </button>
@@ -573,9 +615,15 @@
                                                     v-if="settingItem.groupitem.type === 'maxReservationDays'">
                                                     <input class="form-control w-25 d-inline-block" type="number"
                                                         autocomplete="off" :disabled="!settingItem.groupitem.enabled"
+                                                        :class="{'is-invalid':!storeInfoEdit.storeInfo.maxReservationDays}"
                                                         v-model="storeInfoEdit.storeInfo.maxReservationDays" min="0"
                                                         :placeholder="settingItem.groupitem.placeholder">
-                                                    <p class="pl-3 w-25 d-inline-block m-0 mr-5">天</p>
+                                                    <p class="pl-3  d-inline-block m-0 ">天</p>
+                                                    <p class="text-danger text-bold text-sm d-inline-block pl-3 m-0"
+                                                        v-if="!storeInfoEdit.storeInfo.maxReservationDays">
+                                                        <i class="fas fa-exclamation-circle mr-2"></i>
+                                                        請輸入最多可預定天數
+                                                    </p>
                                                 </div>
                                             </div>
                                         </div>
@@ -588,7 +636,7 @@
                                 <i class="fas fa-save mr-2"></i>恢復原資料
                             </button>
 
-                            <button class="btn btn-primary" v-on:click="save">
+                            <button class="btn btn-primary" v-on:click="save" :disabled="!CheckSave">
                                 <i class="fas fa-save mr-2"></i>保存
                             </button>
                         </div>
@@ -885,7 +933,6 @@
                         ],
                         editDone: false,
                         editError: false,
-                        checkUndone: false
                     },
                     {
                         id: 'WaitingTime',
@@ -954,7 +1001,6 @@
                         ],
                         editDone: false,
                         editError: false,
-                        checkUndone: false
                     },
                     {
                         id: 'ReminderToggle',
@@ -985,7 +1031,6 @@
                         ],
                         editDone: false,
                         editError: false,
-                        checkUndone: false
                     },
                     {
                         id: 'StoreClosed',
@@ -998,20 +1043,26 @@
                                 {
                                     type: 'StoreClosed',
                                     enabled: true,
-                                    placeholder: "店休名稱，EX:端午節",
+                                    placeholder: "EX:端午節",
                                 }
 
                             }
                         ],
                         editDone: false,
                         editError: false,
-                        checkUndone: false
                     }
                 ],
 
                 LogoImageSize: { w: 300, h: 300 },
                 BannerImageSize: { w: 1920, h: 1080 },
                 imageAction: '',
+
+                // 防呆參數
+                // 營業時間
+                CheckBusinessDays: [true, true, true, true, true, true, true],
+
+                // 低消
+                CheckLowSpending: [true, true], // 金額,提示內容
             }
         },
         mounted() {
@@ -1042,8 +1093,6 @@
         watch: {
             'storeInfoEdit.storeInfo.city'(newVal) {
                 this.setDistricts()
-            },
-            'storeInfoEdit.openTime.businessDays'(newVal, oldVal) {
             },
             'storeInfoEdit.store.minOrderAmount'(newVal, oldVal) { if (newVal > 10) { newVal = 10 } },
         },
@@ -1099,7 +1148,7 @@
             addOperationTime(k) {
 
                 this.storeInfoEdit.openTime.businessDays[k].time.push(
-                    { open: '00:00', close: '00:00' }
+                    { open: '00:00', close: '00:01' }
                 )
                 // console.log(this.storeInfoEdit.openTime.businessDays[k].time)
             },
@@ -1139,7 +1188,7 @@
                 if (newValue) {
                     // 如果改為 true，並且 time 為空，加入一筆默認時間
                     if (targetDay.time.length === 0) {
-                        targetDay.time.push({ open: '00:00', close: '00:00' });
+                        targetDay.time.push({ open: '00:00', close: '00:01' });
                     }
                 } else {
                     // 如果改為 false，清空 time
@@ -1555,7 +1604,128 @@
         computed: {
             today() {
                 return moment().format('YYYY-MM-DD');
+            },
+
+            // 營業時間防呆
+            BusinessDays_FoolProof() {
+                this.CheckBusinessDays = [true, true, true, true, true, true, true]
+                const days = this.storeInfoEdit.openTime.businessDays;
+                let vue = this
+                for (let dayIndex = 0; dayIndex < days.length; dayIndex++) {
+                    const day = days[dayIndex];
+                    for (let timeIndex = 0; timeIndex < day.time.length; timeIndex++) {
+                        const slot = day.time[timeIndex];
+                        const open = slot.open;
+                        const close = slot.close;
+                        // console.log(open, close)
+                        const BusinessTime = vue.StoreEditItem.find(item => item.id === 'BusinessTime');
+                        BusinessTime.editError = false
+                        if (open === close) {
+                            // console.log(`第 ${dayIndex + 1} 天，第 ${timeIndex + 1} 項不符合：open 與 close 相同`);
+                            vue.CheckBusinessDays[dayIndex] = false
+                            BusinessTime.editError = true
+                            return false;
+                        }
+
+                        if (open >= close) {
+                            vue.CheckBusinessDays[dayIndex] = false
+                            // console.log(`第 ${dayIndex + 1} 天，第 ${timeIndex + 1} 項不符合：open 必須小於 close`);
+                            BusinessTime.editError = true
+                            return false;
+                        }
+
+                    }
+                }
+
+                return true;
+            },
+
+            // 取餐等待時間防呆
+            WaitingTime_FoolProof() {
+                let vue = this
+                // 時間區隔
+
+                // console.log('時間區隔-----', this.validateIntervalTime(vue.storeInfoEdit.store.orderInterval, 5));
+
+                const WaitingTime = vue.StoreEditItem.find(item => item.id === 'WaitingTime');
+
+                if (vue.validateIntervalTime(vue.storeInfoEdit.store.orderInterval, 5) && vue.storeInfoEdit.store.amountLimit && vue.storeInfoEdit.store.slotLimit && vue.storeInfoEdit.storeInfo.maxReservationDays && vue.storeInfoEdit.store.minOrderAmount) {
+                    WaitingTime.editError = false
+                    return true
+                } else {
+                    WaitingTime.editError = true
+                    return false
+                }
+
+            },
+
+            // 低消金額防呆
+            LowSpending_FoolProof() {
+                this.CheckLowSpending = [true, true]
+                let vue = this
+
+                // if (vue.storeInfoEdit.storeInfo.minimumOrderAmount && vue.storeInfoEdit.storeInfo.minimumOrderText) {
+                // console.log(vue.storeInfoEdit.storeInfo.minimumOrderAmount);
+                // console.log(vue.storeInfoEdit.storeInfo.minimumOrderText)
+
+
+                let Amount
+                if (vue.storeInfoEdit.storeInfo.minimumOrderAmount != '' && vue.storeInfoEdit.storeInfo.minimumOrderAmount != 0) {
+                    Amount = true
+
+                } else {
+                    Amount = false
+                }
+
+                if (!Amount) {
+                    vue.CheckLowSpending[0] = false
+                }
+                let Text = vue.storeInfoEdit.storeInfo.minimumOrderText ? true : false
+                if (!Text) {
+                    vue.CheckLowSpending[1] = false
+                }
+
+                // console.log(vue.CheckLowSpending);
+                const ReminderToggle = vue.StoreEditItem.find(item => item.id === 'ReminderToggle');
+                ReminderToggle.editError = false
+                // console.log(ReminderToggle.editError);
+
+                if (Amount && Text) {
+                    ReminderToggle.editError = false
+                    return true
+                } else {
+                    ReminderToggle.editError = true
+                    return false
+                }
+                // }
+            },
+
+            // 特定店休
+            StoreClosed_FoolProof() {
+                let vue = this
+                // console.log(this.storeInfoEdit.openTime.specialCloseDays);
+                const hasEmptyTitle = this.storeInfoEdit.openTime.specialCloseDays.some(day => day.title === "");
+                // console.log(hasEmptyTitle);
+                const StoreClosed = vue.StoreEditItem.find(item => item.id === 'StoreClosed');
+
+                if (hasEmptyTitle) {
+                    StoreClosed.editError = true
+                    return false
+                } else {
+                    StoreClosed.editError = false
+                    return true
+                }
+            },
+
+            // 儲存防呆
+            CheckSave() {
+                if (this.BusinessDays_FoolProof && this.LowSpending_FoolProof && this.WaitingTime_FoolProof && this.StoreClosed_FoolProof) {
+                    return true
+                } else {
+                    return false
+                }
             }
+
         }
     });
     app.mount("#app");

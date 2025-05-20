@@ -119,10 +119,15 @@
                                     <div class="col-12 col-lg-8 p-1">
                                         <div class="form-group mb-3">
                                             <label class="m-0">
-                                                品項名稱<span class="text-danger">*</span>
+                                                品項名稱
                                             </label>
                                             <input class="form-control" placeholder="品項名稱"
+                                                :class="{'is-invalid':!CheckProductorName}"
                                                 v-model="AddProductor_data.data.name">
+                                            <p class="text-sm text-bold text-danger" v-show="!CheckProductorName">
+                                                <i class="fas fa-exclamation-circle mr-2"></i>
+                                                請輸入品項名稱
+                                            </p>
                                         </div>
                                         <div class="form-group mb-3">
                                             <label class="m-0">
@@ -133,9 +138,10 @@
                                         </div>
                                         <div class="form-group mb-3">
                                             <label class="m-0">
-                                                品項分類<span class="text-danger">*</span>
+                                                品項分類
                                             </label>
-                                            <select v-model="AddProductor_data.data.categoryId" class="form-control">
+                                            <select v-model="AddProductor_data.data.categoryId" class="form-control"
+                                                :class="{'is-invalid':!CheckProductorClass}">
                                                 <option value="" disabled v-if="AddProductor_data.userAction==='新增'">
                                                     --請選擇 --
                                                 </option>
@@ -144,6 +150,10 @@
                                                     {{classList.categoryName}}
                                                 </option>
                                             </select>
+                                            <p class="text-sm text-bold text-danger" v-show="!CheckProductorClass">
+                                                <i class="fas fa-exclamation-circle mr-2"></i>
+                                                請輸入品項分類
+                                            </p>
                                         </div>
                                         <div class="form-group mb-3">
                                             <label class="m-0">
@@ -159,13 +169,18 @@
                                                         NT$
                                                     </span>
                                                 </div>
-                                                <input class="form-control" placeholder="價格" type="number" v-model="AddProductor_data.data.
-                                                    price" step="1">
+                                                <input class="form-control" placeholder="價格" type="number"
+                                                    v-model="AddProductor_data.data.price"
+                                                    :class="{'is-invalid':!CheckProductorPrice}" step="1">
                                             </div>
+                                            <p class="text-sm text-bold text-danger" v-show="!CheckProductorPrice">
+                                                <i class="fas fa-exclamation-circle mr-2"></i>
+                                                請輸入品項價格
+                                            </p>
                                         </div>
                                         <div class="form-group mb-3">
                                             <label class="m-0">
-                                                出單機排序<span class="text-danger">*</span>
+                                                出單機排序
                                                 <span class="text-primary" data-toggle="tooltip" data-placement="right"
                                                     title="顯示於訂單記錄的順序">
                                                     <i class="fas fa-question-circle"></i>
@@ -250,9 +265,9 @@
                         <!-- <button type="button" class="btn btn-secondary" @click="deletProductor"
                             v-if="AddProductor_data.action=='編輯'">刪除</button> -->
                         <button type="button" class="btn btn-primary" @click="SaveProductor"
-                            v-if="AddProductor_data.userAction==='編輯'">確認儲存</button>
+                            :disabled="!checkProductorForm" v-if="AddProductor_data.userAction==='編輯'">確認儲存</button>
                         <button type="button" class="btn btn-primary" @click="AddProductor"
-                            v-if="AddProductor_data.userAction==='新增'">確認新增</button>
+                            :disabled="!checkProductorForm" v-if="AddProductor_data.userAction==='新增'">確認新增</button>
                     </div>
                 </div>
             </div>
@@ -708,21 +723,46 @@
                 return (this.AddProductor_data.data.mealConfig && this.AddProductor_data.data.mealConfig.options) || [];
             },
 
+            //產品名稱
+            CheckProductorName() {
+                // console.log(this.AddProductor_data.data.name);
+                if (!this.AddProductor_data.data.name) {
+                    return false
+                } else {
+                    return true
+                }
+            },
+            //產品分類
+            CheckProductorClass() {
+                // console.log(this.AddProductor_data.data.categoryId);
+                if (!this.AddProductor_data.data.categoryId) {
+                    return false
+                } else {
+                    return true
+                }
+            },
+            //產品定價
+            CheckProductorPrice() {
+                // console.log(this.AddProductor_data.data.price);
+                // if (this.AddProductor_data.data.price == '') {
+                //     return false
+                // } else {
+                return true
+                // }
+            },
+
             // 新增/儲存 品項按鈕檢查
             checkProductorForm() {
-                // console.log(this.AddProductor_data.data);
-                // if (this.AddProductor_data.data !== '' && this.AddProductor_data.data.sortClass !== '' && this.AddProductor_data.data.productorsClass.id !== '') {
-                //     return true
-                // } else {
-                //     return false
-                // }
+                // console.log(this.CheckProductorName && this.CheckProductorClass && this.CheckProductorPrice);
+                if (this.CheckProductorName && this.CheckProductorClass && this.CheckProductorPrice) {
+                    return true
+                } else {
+                    return false
+                }
             },
             // 新增/儲存 品項分類按鈕檢查
             checkProductorClassForm() {
-                // console.log(this.AddProductor_data.data);
-                // console.log(this.ProductorClass_Data.data);
-
-                if (this.ProductorClass_Data.data !== '') {
+                if (this.ProductorClass_Data.data.categoryName != '') {
                     return true
                 } else {
                     return false

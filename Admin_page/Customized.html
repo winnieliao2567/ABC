@@ -66,7 +66,12 @@
                             <div class="col-12">
                                 <div class="form-group">
                                     <label for="">客製化名稱</label>
-                                    <input v-model="customizedEdit_Data.Data.templateName" class="form-control">
+                                    <input v-model="customizedEdit_Data.Data.templateName" class="form-control"
+                                        :class="{'is-invalid':!CheckName}">
+                                    <p class="text-sm text-bold text-danger" v-show="!CheckName">
+                                        <i class="fas fa-exclamation-circle mr-2"></i>
+                                        請填寫完整
+                                    </p>
                                 </div>
                                 <div class="form-group">
                                     <label for="">選擇種類</label>
@@ -122,9 +127,9 @@
                                 <div class="form-group">
                                     <label for="">選擇項目</label>
                                     <p class="text-muted">可以在此增加客製化選項，EX：加珍珠、去冰...，提供給客人客製化餐點</p>
-                                    <div class="input-group mb-1"
+                                    <div class="input-group mb-1" :class="{'is-invalid':!CheckOptions}"
                                         v-for="(Options,optIndex) in customizedEdit_Data.Data.options">
-                                        <input class="form-control" placeholder="名稱" v-model="Options.title">
+                                        <input class="form-control" placeholder="選項名稱" v-model="Options.title">
                                         <div class="input-group-prepend input-group-append">
                                             <span class="input-group-text">
                                                 NT $
@@ -136,11 +141,16 @@
                                         <div class="input-group-append"
                                             v-if="customizedEdit_Data.Data.options.length > 1">
                                             <button v-on:click="deleOpeion(optIndex)" class="btn btn-outline-secondary">
-                                                <i class="fas fa-minus"></i>
+                                                <i class="fas fa-times"></i>
                                             </button>
                                         </div>
                                     </div>
-                                    <div class="form-group mb-3">
+                                    <p class="text-sm text-bold text-danger" v-show="!CheckOptions">
+                                        <i class="fas fa-exclamation-circle mr-2"></i>
+                                        請輸入選項名稱
+                                    </p>
+
+                                    <div class="form-group mb-3" v-show="CheckOptions">
                                         <a href="#" @click="addOptions">+ 新增一個選項</a>
                                     </div>
                                 </div>
@@ -151,10 +161,10 @@
                         <!-- <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button> -->
                         <!-- <button type="button" class="btn btn-secondary" @click="delet"
                             v-if="customizedEdit_Data.action=='編輯'">刪除</button> -->
-                        <button type="button" class="btn btn-primary" @click="add"
+                        <button type="button" class="btn btn-primary" @click="add" :disabled="CheckSave"
                             v-if="customizedEdit_Data.action=='新增'">確認新增</button>
                         <button type="button" class="btn btn-primary" v-if="customizedEdit_Data.action=='編輯'"
-                            @click="save">儲存</button>
+                            :disabled="CheckSave" @click="save">儲存</button>
                     </div>
                 </div>
             </div>
@@ -460,6 +470,28 @@
             paginatedOrders() {
                 const start = (this.currentPage - 1) * this.pageSize;
                 return this.customizedData.slice(start, start + this.pageSize);
+            },
+            CheckName() {
+                if (!this.customizedEdit_Data.Data.templateName) {
+                    return false
+                } else {
+                    return true
+                }
+            },
+            CheckOptions() {
+                const items = this.customizedEdit_Data.Data.options;
+
+                return items.every(item =>
+                    typeof item.title === 'string' && item.title.trim() !== '' &&
+                    item.extra !== null && item.extra !== undefined && item.extra !== ''
+                );
+            },
+            CheckSave() {
+                if (this.CheckName && this.CheckOptions) {
+                    return true
+                } else {
+                    return false
+                }
             }
         },
         mounted() {

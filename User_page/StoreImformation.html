@@ -104,7 +104,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                         <label :for="'mealConfig-' + index" class="w-100 m-0 py-2 px-3">
                                             {{ item.Name }}
                                             <span class="text-primary text-bold float-right">
-                                                $ {{ item.Price }}
+                                                {{ returnPrice(item.Price) }}
                                             </span>
                                         </label>
                                     </div>
@@ -125,7 +125,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                             <label :for="'CustmonConfig-'+opIndex" class="w-100 m-0 py-2 px-3">
                                                 {{ options.title }}
                                                 <span class="text-primary text-bold float-right">
-                                                    $ {{ options.extra }}
+                                                    {{ returnPrice(options.extra) }}
                                                 </span>
                                             </label>
                                         </div>
@@ -621,6 +621,12 @@ scratch. This page gets rid of all links and provides the needed markup only.
         },
 
         methods: {
+            //價格格式
+            returnPrice(amount) {
+                const prefix = amount >= 0 ? '+' : '-';
+                return `${prefix}$${Math.abs(amount)}`;
+            },
+
             //取得產品清單
             getProductorList() {
                 var vue = this;

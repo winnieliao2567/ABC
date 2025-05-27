@@ -161,10 +161,10 @@
                         <!-- <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button> -->
                         <!-- <button type="button" class="btn btn-secondary" @click="delet"
                             v-if="customizedEdit_Data.action=='編輯'">刪除</button> -->
-                        <button type="button" class="btn btn-primary" @click="add" :disabled="CheckSave"
+                        <button type="button" class="btn btn-primary" @click="add" :disabled="!CheckSave"
                             v-if="customizedEdit_Data.action=='新增'">確認新增</button>
                         <button type="button" class="btn btn-primary" v-if="customizedEdit_Data.action=='編輯'"
-                            :disabled="CheckSave" @click="save">儲存</button>
+                            :disabled="!CheckSave" @click="save">儲存</button>
                     </div>
                 </div>
             </div>
@@ -352,7 +352,7 @@
                                             <span v-for="(option, optionIndex) in customzed.options" :key="optionIndex"
                                                 class="me-2">
                                                 {{ option.title }}<span
-                                                    class="d-sm-none d-md-inline">(+{{option.extra}})</span>,
+                                                    class="d-sm-none d-md-inline">({{returnPrice(option.extra)}})</span>,
                                             </span>
                                             <div class="table-btn-div float-right">
                                                 <button class="btn btn-outline-secondary btn-sm mr-2 "
@@ -487,6 +487,9 @@
                 );
             },
             CheckSave() {
+                console.log(this.CheckName)
+                console.log(this.CheckOptions);
+
                 if (this.CheckName && this.CheckOptions) {
                     return true
                 } else {
@@ -507,6 +510,11 @@
             }
         },
         methods: {
+            //價格格式
+            returnPrice(amount) {
+                const prefix = amount >= 0 ? '+' : '-';
+                return `${prefix}$${Math.abs(amount)}`;
+            },
             getCustmizedList() {
                 var vue = this
                 apiWeb('api/Menu/attributes/list/' + storeId, 'GET', null, '獲得客製化選項', function (v) {

@@ -10,7 +10,7 @@ const pageSize = 10; // 每頁顯示筆數
 const queryString = window.location.search;
 const urlParams = new URLSearchParams(queryString);
 // console.log(urlParams);
-const radius = 120000; //距離半徑
+const radius = 200000; //距離半徑
 
 const classId = urlParams.get("cid"); //tagId
 const classType = urlParams.get("ctype"); //tag type

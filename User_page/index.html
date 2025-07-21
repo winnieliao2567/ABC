@@ -8,8 +8,19 @@ scratch. This page gets rid of all links and provides the needed markup only.
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>共響 SHARING</title>
+    <title>立即訂餐｜共饗 SHARING 附近美食平台，免註冊支援 Line Pay，優惠多</title>
+    <!-- description -->
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <meta name="description" content="共饗是一個為消費者打造的智慧訂餐平台，讓你快速找到附近優質店家、清楚比較菜單與價格，免註冊、免下載  App，隨時隨地手機輕鬆訂餐，省時又安心。" />
+    <meta name="robots" content="index, follow" />
+    <!-- Open Graph (OG) tags for social media preview (optional but recommended) -->
+    <meta property="og:site_name" content="共饗 SHARING" />
+    <meta property="og:title" content="共饗 SHARING 智慧訂餐平台" />
+    <meta property="og:description" content="共饗是一個為消費者打造的智慧訂餐平台，讓你快速找到附近優質店家、清楚比較菜單與價格，免註冊、免下載 App，隨時隨地手機輕鬆訂餐，省時又安心。" />
+    <meta property="og:url" content="https://sharings.com.tw" />
+    <meta property="og:image" content="https://sharings.com.tw/img/logo.svg" /> <!-- replace with your preview image -->
 
+    
     <!-- jquery -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
@@ -246,6 +257,12 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                                     <i class="fas fa-map-pin ml-1 mr-2 "></i>
                                                     {{formatDistance(item.distanceInKM)}}
                                                 </p>
+                                                <p class="text-muted text-xs card-text">
+                                                    <i class="fas fa-tags mr-2"></i>
+                                                    <span class="" v-for="(tag,index) in item.tags" :key="index">
+                                                        {{tag.title}}<span v-if="index < item.tags.length - 1">,</span>
+                                                    </span>
+                                                </p>
                                             </div>
                                         </a>
                                     </template>
@@ -368,6 +385,14 @@ scratch. This page gets rid of all links and provides the needed markup only.
             }
         },
         mounted() {
+          // Detect if current user is a known crawler to skip LIFF login
+          const userAgent = navigator.userAgent.toLowerCase();
+          const isCrawler = /googlebot|bingbot|slurp|duckduckbot|baiduspider|yandexbot|sogou/.test(userAgent);
+      
+          if (isCrawler) {
+              console.log("Detected crawler: skipping LINE login to avoid 4xx error.");
+              return; // Stop here for crawlers (no LIFF redirect)
+          }
             let vue = this
             if (TestModel) {
 
@@ -718,16 +743,17 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 if (timeint) {
                     // console.log('getWaitingTimeString--------', timeint);
 
-
                     if (typeof timeint !== 'number') {
                         timeint = Number(timeint)
                     }
 
                     if (timeint < 60) {
-                        return timeint + '-' + (timeint + 10) + '分鐘'
+                        return timeint + '-' + (timeint + 10) + ' 分鐘'
                     } else {
                         return "60 分鐘以上"
                     }
+                } else {
+                    return "營業中"
                 }
             }
 

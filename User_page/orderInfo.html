@@ -275,7 +275,7 @@
                 <div class="d-flex justify-content-between align-items-center">
                   <h6 class="m-0">
                     <span class="text-primary mr-2"><i class="fas fa-pizza-slice"></i></span>
-                    <label for="IsTableware" class="m-0">訂單內容({{order.totalItems}})</label>
+                    <label for="IsTableware" class="m-0">訂單內容({{getTotalQuantity()}})</label>
                   </h6>
                   <div>
                     <b class="mr-2">${{order.price}}</b>
@@ -284,10 +284,13 @@
                 </div>
               </div>
               <div class="collapse" id="orderCollapse">
-                <div class="itemOnlyHover p-3 border-bottom" v-for="(item,index) in order.orderModel" :key="index">
-                  <h6>{{item.mealname}}<span class="float-right">${{item.price}}</span></h6>
+                <div class="itemOnlyHover p-3 border-bottom" v-for="(item,index) in order.orderModel" :key="index" v-if="order.orderModel && Array.isArray(order.orderModel)">
+                  <h6>{{item.mealname}} ×{{item.quantity || 1}}<span class="float-right">${{item.price}}</span></h6>
                   <p class="text-muted text-sm m-0"><span
                       v-for="(option,opIndex) in item.options">{{option.title}}(${{option.extra}}),</span></p>
+                </div>
+                <div v-if="!order.orderModel || !Array.isArray(order.orderModel)" class="p-3 text-center text-muted">
+                  載入訂單內容中...
                 </div>
               </div>
             </div>
@@ -355,7 +358,8 @@
           "storeDeleted": false,
           "slotLimit": 0,
           "minimumOrderAmount": "",
-          "minimumOrderText": ""
+          "minimumOrderText": "",
+          "orderModel": []
         },
 
         PaymentMethodsList: [
@@ -395,7 +399,9 @@
           apiWeb('/api/store/order/detail/' + orderId, 'POST', null, '訂單資訊', function (v) {
 
             vue.order = v.orderDetail
-            // console.log(vue.order);
+            console.log('訂單資料:', v.orderDetail);
+            console.log('orderModel 類型:', typeof v.orderDetail.orderModel);
+            console.log('orderModel 是否為數組:', Array.isArray(v.orderDetail.orderModel));
             loadingOff()
 
           })
@@ -404,7 +410,16 @@
         }
       },
 
-
+      getTotalQuantity() {
+        let totalQuantity = 0;
+        // 確保 order 存在，orderModel 存在且是數組
+        if (this.order && this.order.orderModel && Array.isArray(this.order.orderModel)) {
+          for (let item of this.order.orderModel) {
+            totalQuantity += item.quantity || 1;
+          }
+        }
+        return totalQuantity;
+      }
     },
     computed: {
       IsNewOrder() {

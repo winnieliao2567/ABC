@@ -95,35 +95,18 @@ scratch. This page gets rid of all links and provides the needed markup only.
                         <img :src="addData.image" v-if="addData.image">
                         <h3 class="m-0">{{addData.name}}</h3>
                         <p class="m-0">{{addData.remark}} </p>
-                        
-                        <!-- 數量選擇器 -->
-                        <div class="py-3">
-                            <h5>數量</h5>
-                            <div class="d-flex align-items-center">
-                                <button type="button" class="btn btn-outline-secondary btn-sm" 
-                                        @click="decreaseQuantity" :disabled="addToCart.quantity <= 1">
-                                    <i class="fas fa-minus"></i>
-                                </button>
-                                <span class="mx-3 text-lg font-weight-bold">{{addToCart.quantity}}</span>
-                                <button type="button" class="btn btn-outline-secondary btn-sm" 
-                                        @click="increaseQuantity" :disabled="addToCart.quantity >= 10">
-                                    <i class="fas fa-plus"></i>
-                                </button>
-                            </div>
-                        </div>
-                        
                         <div class="row m-0">
                             <div class="col-12">
                                 <!-- <h5>份量</h5> -->
                                 <div class=" py-3">
                                     <div class="item" @click="clickMealConfig(item)"
-                                        v-for="(item, index) in addData.mealConfig?.options" :key="index"
-                                        :class="{'selected-item':isMealConfigSelected(item.title)}">
+                                        v-for="(item, index) in addData.mealConfig?.options?.[0]?.Items" :key="index"
+                                        :class="{'selected-item':isMealConfigSelected(item.Name)}">
 
                                         <label :for="'mealConfig-' + index" class="w-100 m-0 py-2 px-3">
-                                            {{ item.title }}
+                                            {{ item.Name }}
                                             <span class="text-primary text-bold float-right">
-                                                {{ returnPrice(item.extraPrice) }}
+                                                {{ returnPrice(item.Price) }}
                                             </span>
                                         </label>
                                     </div>
@@ -489,14 +472,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
                 //原始資料
                 userInfo: decryptObject(localStorage.userInfo),
-                cartCount: localStorage.cart ? (() => {
-                    try {
-                        const cart = JSON.parse(localStorage.cart);
-                        return Array.isArray(cart) ? cart.reduce((total, item) => total + (item.quantity || 1), 0) : 0;
-                    } catch (e) {
-                        return 0;
-                    }
-                })() : 0,
+                cartCount: localStorage.cart ? JSON.parse(localStorage.cart).length : '',
 
                 date: {
                     day: 0
@@ -581,8 +557,9 @@ scratch. This page gets rid of all links and provides the needed markup only.
                     "mealConfig": {
                         "options": [
                             {
-                                "title": "",
-                                "extraPrice": 0
+                                "key": "尺寸",
+                                "value": "",
+                                price: ''
                             }
                         ]
                     },
@@ -602,16 +579,12 @@ scratch. This page gets rid of all links and provides the needed markup only.
                         }
                     ],
                     price: 0,
-                    basePrice: 0, // 儲存原始基礎價格
                     totalPrice: 0,
                     storeId: '',
-                    mealName: '',
-                    quantity: 1
+                    mealName: ''
                 },
 
                 productorData: [],
-                ClassList: [],
-                ProductList: [],
                 searchKeyword: '',
 
                 disabledType: 'List',//現在顯示的區塊（List / Search）
@@ -621,7 +594,6 @@ scratch. This page gets rid of all links and provides the needed markup only.
             }
         },
         mounted() {
-            this.updateCartCount(); // 確保頁面載入時購物車數量正確
             this.getStoreInfo()
         },
         watch: {
@@ -629,29 +601,17 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 handler(newVal) {
                     console.log(newVal);
 
-                    let basePrice = newVal.basePrice || newVal.price || 0; // 使用儲存的基礎價格
-                    let extraPrice = 0; // 額外費用
+                    let total = newVal.price;
 
-                    // 計算客製化配置的額外費用
                     newVal.customConfig.forEach(config => {
                         config.options.forEach(option => {
                             option.content.forEach(item => {
-                                extraPrice += parseFloat(item.extra || 0);
+                                total += parseFloat(item.extra || 0);
                             });
                         });
                     });
 
-                    // 計算餐點配置的額外費用
-                    extraPrice += (newVal.mealConfig.options[0].extraPrice || 0);
-
-                    // 計算包含所有額外費用的單價
-                    const singleItemPrice = basePrice + extraPrice;
-                    
-                    // 更新 addToCart 的 price 欄位為單份含所有額外費用的價格
-                    this.addToCart.price = singleItemPrice;
-                    
-                    // 計算總價：單價 × 數量
-                    this.addToCart.totalPrice = singleItemPrice * (newVal.quantity || 1);
+                    this.addToCart.totalPrice = total + newVal.mealConfig.options[0].price;
                 },
                 deep: true
             },
@@ -672,85 +632,30 @@ scratch. This page gets rid of all links and provides the needed markup only.
             //取得產品清單
             getProductorList() {
                 var vue = this;
-                apiWeb('/api/Meal/user/' + storeId, 'GET', null, '獲得品項', function (v) {
+                apiWeb('/api/Meal/category/' + storeId, 'GET', null, '獲得分類', function (v) {
                     if (v.success == true) {
-                        console.log('/api/Meal/user/-----', v);
+                        vue.ClassList = v.categories;
+                        apiWeb('/api/Meal/user/' + storeId, 'GET', null, '獲得品項', function (v) {
+                            if (v.success == true) {
+                                // console.log('/api/Meal/user/-----', v);
 
-                        // 根據後端API結構，資料在v.data中
-                        if (v.data && v.data.categories) {
-                            // 直接使用API回傳的categories結構，按sortOrder排序
-                            const sortedCategories = v.data.categories
-                                .sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
-                            
-                            vue.productorData = sortedCategories.map(category => {
-                                // 對該分類下的餐點按sortOrder排序並過濾啟用狀態
-                                const enabledMeals = (category.meals || [])
-                                    .filter(product => {
-                                        console.log('Checking product:', product.name, 'enabled:', product.enabled, 'mealEnabled:', product.mealEnabled);
-                                        const isEnabled = product.enabled === true;
-                                        const isMealEnabled = product.mealEnabled !== false;
-                                        console.log('Filter result:', product.name, 'isEnabled:', isEnabled, 'isMealEnabled:', isMealEnabled);
-                                        return isEnabled && isMealEnabled;
-                                    })
-                                    .sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
-                                
-                                return {
+                                vue.ProductList = v.meals;
+                                vue.productorData = vue.ClassList.map(category => ({
                                     categoryId: category.categoryId,
                                     categoryName: category.categoryName,
-                                    sortOrder: category.sortOrder || 0,
-                                    productors: enabledMeals
-                                };
-                            });
-                            
-                            // 同時保存ClassList和ProductList供其他功能使用
-                            vue.ClassList = sortedCategories.map(cat => ({
-                                categoryId: cat.categoryId,
-                                categoryName: cat.categoryName,
-                                sortOrder: cat.sortOrder || 0
-                            }));
-                            
-                            vue.ProductList = [];
-                            sortedCategories.forEach(category => {
-                                if (category.meals && Array.isArray(category.meals)) {
-                                    category.meals.forEach(meal => {
-                                        vue.ProductList.push({
-                                            ...meal,
-                                            categoryId: category.categoryId,
-                                            categoryName: category.categoryName
-                                        });
-                                    });
-                                }
-                            });
-                        } else {
-                            // 使用舊的API結構作為備用
-                            vue.ProductList = v.meals || [];
-                            
-                            const sortedClassList = (vue.ClassList || []).sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
-                            const sortedProductList = (vue.ProductList || []).sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
-                            
-                            vue.productorData = sortedClassList.map(category => ({
-                                categoryId: category.categoryId,
-                                categoryName: category.categoryName,
-                                sortOrder: category.sortOrder || 0,
-                                productors: sortedProductList
-                                    .filter(product => product.categoryId === category.categoryId)
-                                    .filter(product => {
-                                        const isEnabled = product.enabled === true;
-                                        const isMealEnabled = product.mealEnabled !== false;
-                                        return isEnabled && isMealEnabled;
-                                    })
-                            }));
-                        }
-                        
-                        console.log('ClassList:', vue.ClassList);
-                        console.log('ProductList:', vue.ProductList);
-                        console.log('Final productorData:', vue.productorData);
-                        setTimeout(() => {
-                            vue.adjustHeight()
-                            loadingOff()
-                        }, 1000);
+                                    productors: vue.ProductList.filter(product => product.categoryId === category.categoryId)
+                                }));
+                                // console.log(vue.productorData);
+                                setTimeout(() => {
+                                    vue.adjustHeight()
+                                    loadingOff()
+                                }, 1000);
+                            } else {
+                                GetDataError('獲得品項資料')
+                            }
+                        });
                     } else {
-                        GetDataError('獲得品項資料')
+                        GetDataError('獲得分類資料')
                     }
                 });
             },
@@ -794,42 +699,28 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 var vue = this
                 apiWeb('api/Meal/' + storeId + '/search?keyword=' + this.searchKeyword, 'GET', null, '搜尋品項：' + this.searchKeyword, function (v) {
                     vue.disabledType = 'Search'
-                    
-                    // 過濾啟用的餐點後再計算數量
-                    const enabledMeals = (v.meals || []).filter(product => {
-                        console.log('Search - Checking product:', product.name, 'enabled:', product.enabled, 'mealEnabled:', product.mealEnabled);
-                        const isEnabled = product.enabled === true; // 餐點本身必須是true
-                        const isMealEnabled = product.mealEnabled !== false; // 菜單中的啟用狀態（允許undefined）
-                        console.log('Search - Filter result:', product.name, 'isEnabled:', isEnabled, 'isMealEnabled:', isMealEnabled);
-                        return isEnabled && isMealEnabled;
-                    });
-                    
-                    vue.searchCount = enabledMeals.length
+                    vue.searchCount = v.meals.length
                     if (vue.searchCount != 0) {
-                        vue.searchList = enabledMeals;
-                        
-                        // 按照 sortOrder 排序分類和搜尋結果
-                        const sortedClassList = (vue.ClassList || []).sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
-                        const sortedSearchList = (vue.searchList || []).sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
-                        
-                        vue.searchList = sortedClassList.map(category => ({
+                        // vue.searchList = vue.ClassList.map(category => ({
+                        //     categoryId: category.categoryId,
+                        //     categoryName: category.categoryName,
+                        //     productors: v.meals.filter(product => product.categoryId === category.categoryId)
+                        // }));
+                        vue.searchList = v.meals;
+                        vue.searchList = vue.ClassList.map(category => ({
                             categoryId: category.categoryId,
                             categoryName: category.categoryName,
-                            sortOrder: category.sortOrder || 0,
-                            productors: sortedSearchList
-                                .filter(product => product.categoryId === category.categoryId)
-                                .filter(product => {
-                                    // 過濾啟用的餐點：檢查 enabled 和 mealEnabled 狀態
-                                    const isEnabled = product.enabled === true; // 餐點本身必須是true
-                                    const isMealEnabled = product.mealEnabled !== false; // 菜單中的啟用狀態（允許undefined）
-                                    return isEnabled && isMealEnabled;
-                                })
+                            productors: vue.searchList.filter(product => product.categoryId === category.categoryId)
                         }));
+
+                        // console.log(vue.searchList);
 
                     } else {
                         vue.searchList = []
                     }
                     loadingOff()
+
+                    // console.log(vue.searchList.length);
                 })
             },
 
@@ -860,18 +751,16 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 // console.log(JSON.stringify(this.addData));
 
                 this.addToCart.mealId = this.addData.mealId
-                this.addToCart.quantity = 1 // 重置數量為1
                 this.addToCart.mealConfig.options = [
                     {
-                        "title": "",
-                        "extraPrice": 0
+                        "key": "尺寸",
+                        "value": "",
+                        "price": 0
                     }
                 ]
                 this.addToCart.customConfig[0].options = []
-                // 儲存基礎價格和計算價格
-                this.addToCart.basePrice = this.addData.price // 儲存原始基礎價格
                 this.addToCart.price = this.addData.price
-                this.addToCart.totalPrice = this.addData.price // 初始化 totalPrice
+                this.addToCart.totalPrice = this.addData.price
                 this.addToCart.storeId = storeId
                 this.addToCart.mealName = this.addData.name
 
@@ -890,13 +779,13 @@ scratch. This page gets rid of all links and provides the needed markup only.
             //選擇尺寸
             clickMealConfig(data) {
                 // console.log(data);
-                this.addToCart.mealConfig.options[0].title = data.title
-                this.addToCart.mealConfig.options[0].extraPrice = data.extraPrice
+                this.addToCart.mealConfig.options[0].value = data.Name
+                this.addToCart.mealConfig.options[0].price = data.Price
                 // console.log(this.addToCart);
             },
             //確認尺寸
-            isMealConfigSelected(title) {
-                return this.addToCart.mealConfig.options[0].title === title;
+            isMealConfigSelected(Name) {
+                return this.addToCart.mealConfig.options[0].value === Name;
             },
 
             //選擇客製化選項
@@ -973,12 +862,10 @@ scratch. This page gets rid of all links and provides the needed markup only.
                     // console.log(this.addData);
                     if (this.addData.mealConfig.options) {
                         // console.log(this.productorData);
-                        return this.addToCart.mealConfig.options[0].title ? true : false
+                        return this.addToCart.mealConfig.options[0].value ? true : false
                     } else {
                         return true
                     }
-                } else {
-                    return true
                 }
             },
             validateCustomConfig() {
@@ -1005,7 +892,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                     }
                 }
             },
-            // 加入購物車
+            // 加入購物s車
             AddCart() {
                 let cart = []
                 if (localStorage.cart) {
@@ -1023,56 +910,18 @@ scratch. This page gets rid of all links and provides the needed markup only.
                     cart = []
                     toastr.success("購物車內餐店並非該店家，已清空並新增進購物車");
                 } else {
-                    // 檢查是否有相同配置的餐點
-                    const existingIndex = this.findSameMealIndex(cart, this.addToCart);
-                    
-                    if (existingIndex !== -1) {
-                        // 如果找到相同配置的餐點，增加數量
-                        cart[existingIndex].quantity += this.addToCart.quantity;
-                        // 重新計算總價：使用基礎價格 × 新的總數量
-                        cart[existingIndex].totalPrice = cart[existingIndex].price * cart[existingIndex].quantity;
-                        toastr.success(`已增加 ${this.addToCart.quantity} 個 ${this.addToCart.mealName} 到購物車`);
-                    } else {
-                        // 沒有找到相同配置，新增到購物車
-                        // 確保 totalPrice 是正確的（單價已經包含所有額外費用）
-                        const itemToAdd = JSON.parse(JSON.stringify(this.addToCart));
-                        // totalPrice 已經在 watch 中計算好了，直接使用
-                        cart.push(itemToAdd);
-                        toastr.success("加入購物車成功");
-                    }
+                    toastr.success("加入購物車成功");
+
                 }
 
+                // 加入當前品項
+                cart.push(this.addToCart)
                 localStorage.cart = JSON.stringify(cart)
-                // 修復：計算總數量（所有商品的 quantity 總和）而不是項目數
-                this.cartCount = cart.reduce((total, item) => {
-                    return total + (item.quantity || 1);
-                }, 0);
+                this.cartCount = JSON.parse(localStorage.cart).length
                 $('#FoodModal').modal('hide')
-            },
 
-            // 檢查是否有相同配置的餐點
-            findSameMealIndex(cart, newMeal) {
-                return cart.findIndex(meal => 
-                    meal.mealId === newMeal.mealId &&
-                    JSON.stringify(meal.mealConfig) === JSON.stringify(newMeal.mealConfig) &&
-                    JSON.stringify(meal.customConfig) === JSON.stringify(newMeal.customConfig)
-                );
-            },
-            decreaseQuantity() {
-                this.addToCart.quantity -= 1;
-            },
-            increaseQuantity() {
-                this.addToCart.quantity += 1;
-            },
-            updateCartCount() {
-                this.cartCount = localStorage.cart ? (() => {
-                    try {
-                        const cart = JSON.parse(localStorage.cart);
-                        return Array.isArray(cart) ? cart.reduce((total, item) => total + (item.quantity || 1), 0) : 0;
-                    } catch (e) {
-                        return 0;
-                    }
-                })() : 0;
+
+
             }
         },
         computed: {

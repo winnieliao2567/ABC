@@ -213,10 +213,28 @@
                   <i class="fas fa-times"></i>
                 </button>
 
-                <p class="text-bold mb-2">{{item.mealName}} <span
-                    class="float-right text-primary">${{item.totalPrice}}</span></p>
+                <p class="text-bold mb-2">{{item.mealName}} 
+                    <!-- 數量顯示和調整 -->
+                    <span class="d-inline-flex align-items-center ml-2">
+                        <button type="button" class="btn btn-outline-secondary btn-xs" 
+                                @click="decreaseCartQuantity(index)" :disabled="item.quantity <= 1">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                        <span class="mx-2 text-sm">×{{item.quantity || 1}}</span>
+                        <button type="button" class="btn btn-outline-secondary btn-xs" 
+                                @click="increaseCartQuantity(index)" :disabled="item.quantity >= 10">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </span>
+                    <span class="float-right text-primary">${{item.totalPrice}}</span>
+                </p>
                 <p class="text-muted m-0 text-xs">
-                  <span v-if="item.mealConfig.options[0].value.length>0">{{item.mealConfig.options[0].value}},</span>
+                  <template v-if="item.mealConfig && item.mealConfig.options && item.mealConfig.options.length > 0">
+                    <span v-for="(option, optionIndex) in item.mealConfig.options" :key="optionIndex">
+                      {{option.title}}({{option.extraPrice >= 0 ? '+' : ''}}{{option.extraPrice}})<span v-if="optionIndex < item.mealConfig.options.length - 1">,</span>
+                    </span>
+                    <span v-if="item.customConfig && item.customConfig[0] && item.customConfig[0].options">,</span>
+                  </template>
                   <template v-for="(option,opIndex) in item.customConfig[0].options">
                     <span v-for="(select,selectIndex) in option.content">{{select.title}}(+{{select.extra}}),</span>
                   </template>
@@ -304,7 +322,7 @@
 
       // console.log(this.userInfo);
 
-      this.cartCount = this.cartList.length
+      this.updateCartCount();
 
       let veu = this
       if (this.cartList.length > 0) {
@@ -334,7 +352,7 @@
       deleteFunc() {
         this.cartList.splice(this.deleteData.index, 1);
         localStorage.cart = JSON.stringify(this.cartList)
-        this.cartCount = this.cartList.length
+        this.updateCartCount();
       },
       backToStore() {
         window.location.href = "StoreImformation.html?sid=" + this.cartList[0].storeId
@@ -365,6 +383,30 @@
           return sum + Number(meal.totalPrice);
         }, 0);
         return totalPrice
+      },
+      decreaseCartQuantity(index) {
+        if (this.cartList[index].quantity > 1) {
+          this.cartList[index].quantity--;
+          // 直接使用 price 欄位（包含所有額外費用的單價）
+          this.cartList[index].totalPrice = this.cartList[index].price * this.cartList[index].quantity;
+          localStorage.cart = JSON.stringify(this.cartList);
+          this.updateCartCount();
+        }
+      },
+      increaseCartQuantity(index) {
+        if (this.cartList[index].quantity < 10) {
+          this.cartList[index].quantity++;
+          // 直接使用 price 欄位（包含所有額外費用的單價）
+          this.cartList[index].totalPrice = this.cartList[index].price * this.cartList[index].quantity;
+          localStorage.cart = JSON.stringify(this.cartList);
+          this.updateCartCount();
+        }
+      },
+      updateCartCount() {
+        // 計算總數量（所有商品的 quantity 總和）
+        this.cartCount = this.cartList.reduce((total, item) => {
+          return total + (item.quantity || 1);
+        }, 0);
       }
     },
     computed: {

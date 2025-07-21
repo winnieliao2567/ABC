@@ -262,12 +262,16 @@
                   </h6>
                   <div class="collapse" id="MealsCollapse">
                     <div class="p-3" v-for="(item,index) in cartList">
-                      <p class="text-bold text-sm m-0">{{item.mealName}}
+                      <p class="text-bold text-sm m-0">{{item.mealName}} ×{{item.quantity || 1}}
                         <span class="text-primary float-right">${{item.totalPrice}}</span>
                       </p>
                       <p class="text-muted m-0 text-xs">
-                        <span
-                          v-if="item.mealConfig.options[0].value.length>0">{{item.mealConfig.options[0].value}},</span>
+                        <template v-if="item.mealConfig && item.mealConfig.options && item.mealConfig.options.length > 0">
+                          <span v-for="(option, optionIndex) in item.mealConfig.options" :key="optionIndex">
+                            {{option.title}}({{option.extraPrice >= 0 ? '+' : ''}}{{option.extraPrice}})<span v-if="optionIndex < item.mealConfig.options.length - 1">,</span>
+                          </span>
+                          <span v-if="item.customConfig && item.customConfig[0] && item.customConfig[0].options">,</span>
+                        </template>
                         <template v-for="(option,opIndex) in item.customConfig[0].options">
                           <span
                             v-for="(select,selectIndex) in option.content">{{select.title}}(+{{select.extra}}),</span>
@@ -280,7 +284,7 @@
                 <p class="text-bold m-0">{{item.mealName}} <span
                     class="float-right text-primary">${{item.totalPrice}}</span></p>
                 <p class="text-muted m-0 text-xs">
-                  <span v-if="item.mealConfig.options[0].value.length>0">{{item.mealConfig.options[0].value}},</span>
+                  <span v-if="item.mealConfig.options[0].title && item.mealConfig.options[0].title.length>0">{{item.mealConfig.options[0].title}},</span>
                   <template v-for="(option,opIndex) in item.customConfig[0].options">
                     <span v-for="(select,selectIndex) in option.content">{{select.title}}(+{{select.extra}}),</span>
                   </template>
@@ -341,7 +345,6 @@
                     <option value="3">3</option>
                   </select> -->
                   <div>
-                    <span class="text-muted text-sm mr-2" v-show="toPayData.Bag">+ $2</span>
                     <input type="checkbox" class="" id="IsPlacetic" v-model="toPayData.Bag">
                   </div>
                 </div>
@@ -506,7 +509,10 @@
       // console.log(this.userInfo);
 
 
-      this.cartCount = this.cartList.length
+      // 計算總數量（所有商品的 quantity 總和）
+      this.cartCount = this.cartList.reduce((total, item) => {
+        return total + (item.quantity || 1);
+      }, 0);
 
       let vue = this
       apiWeb('/api/Store/detail/' + this.cartList[0].storeId, 'GET', null, '店家資訊', function (v) {
@@ -592,6 +598,11 @@
 
         let data = JSON.parse(this.toPayData.Menu)
         data.meal.forEach(meal => {
+          // 確保 quantity 欄位存在，預設為 1
+          if (!meal.quantity || meal.quantity < 1) {
+            meal.quantity = 1;
+          }
+
           // 移除指定欄位
           delete meal.Price;
           delete meal.mealName;
@@ -601,10 +612,11 @@
           // mealId 轉字串
           // meal.mealId = String(meal.mealId);
 
-          // mealConfig.options 裡的 price 移除
+          // mealConfig.options 裡的 extraPrice 移除
           if (meal.mealConfig?.options) {
             meal.mealConfig.options.forEach(option => {
-              delete option.price;
+              // 不再刪除 extraPrice，因為後端需要這個欄位來計算價格
+              // delete option.extraPrice;
             });
           }
 
@@ -654,11 +666,12 @@
         let totalPrice = total = vue.cartList.reduce((sum, meal) => {
           return sum + Number(meal.totalPrice);
         }, 0);
-        if (vue.toPayData.IsPlacetic == true) {
-          return totalPrice + 2
-        } else {
+        // 暫時移除購物袋費用計算，直到定義好收費標準
+        // if (vue.toPayData.Bag == true) {
+        //   return totalPrice + 2
+        // } else {
           return totalPrice
-        }
+        // }
       },
 
       getTimeList(date) {

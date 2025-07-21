@@ -203,17 +203,17 @@
                                 <h5>份量</h5>
                                 <p class="text-muted">若您的餐點有不同份量，可以新增份量並設定差價。</p>
                                 <template
-                                    v-if="AddProductor_data.data.mealConfig && AddProductor_data.data.mealConfig.Options">
+                                    v-if="AddProductor_data.data.mealConfig && AddProductor_data.data.mealConfig.options">
                                     <template
-                                        v-for="(size, sizeIndex) in AddProductor_data.data.mealConfig.Options[0].Items"
+                                        v-for="(size, sizeIndex) in AddProductor_data.data.mealConfig.options"
                                         :key="sizeIndex">
                                         <div class="input-group mb-1">
-                                            <input class="form-control" placeholder="份量名稱，EX：大杯" v-model="size.Name">
+                                            <input class="form-control" placeholder="份量名稱，EX：大杯" v-model="size.title">
                                             <div class="input-group-prepend input-group-append">
                                                 <span class="input-group-text">NT $</span>
                                             </div>
                                             <input class="form-control" placeholder="EX:20或-50" type="number"
-                                                v-model="size.Price" step="1">
+                                                v-model="size.extraPrice" step="1">
                                             <div class="input-group-append">
                                                 <button v-on:click="deletSize(sizeIndex)"
                                                     class="btn btn-outline-secondary">
@@ -674,12 +674,7 @@
                             ]
                         },
                         "mealConfig": {
-                            "options": [
-                                {
-                                    "title": "",
-                                    "extraPrice": 0
-                                }
-                            ]
+                            "options": []
                         }
                     },
                 },
@@ -1023,38 +1018,25 @@
             addProdutorSize() {
                 // 確保 mealConfig 存在
                 if (!this.AddProductor_data.data.mealConfig) {
-                    this.AddProductor_data.data.mealConfig = { Options: [] };
+                    this.AddProductor_data.data.mealConfig = { options: [] };
                 }
 
-                let s = this.AddProductor_data.data.mealConfig.Options;
-
-                // 確保 Options 陣列存在
-                if (!Array.isArray(s)) {
-                    this.AddProductor_data.data.mealConfig.Options = [];
-                    s = this.AddProductor_data.data.mealConfig.Options;
-                }
-
-                // 確保 s[0] 存在
-                if (!s[0]) {
-                    s[0] = { Items: [] };
-                }
-
-                // 確保 Items 陣列存在
-                if (!Array.isArray(s[0].Items)) {
-                    s[0].Items = [];
+                // 確保 options 陣列存在
+                if (!Array.isArray(this.AddProductor_data.data.mealConfig.options)) {
+                    this.AddProductor_data.data.mealConfig.options = [];
                 }
 
                 // 新增項目
-                s[0].Items.push({
-                    "Name": "",
-                    "Price": null
+                this.AddProductor_data.data.mealConfig.options.push({
+                    "title": "",
+                    "extraPrice": 0
                 });
 
-                // console.log(s);
+                // console.log(this.AddProductor_data.data.mealConfig.options);
             },
             //刪除品項份量
             deletSize(sizeIndex) {
-                this.AddProductor_data.data.mealConfig.Options[0].Items.splice(sizeIndex, 1);
+                this.AddProductor_data.data.mealConfig.options.splice(sizeIndex, 1);
             },
 
             //搜尋餐點

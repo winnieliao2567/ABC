@@ -126,39 +126,42 @@
             </div>
         </div>
 
-        <!-- 搜尋視窗 -->
-        <div class="modal fade" id="SearchModal" tabindex="-1" role="dialog" aria-labelledby="SearchModallLabel"
+        <!-- EditModal -->
+        <div class="modal fade" id="EditModal" tabindex="-1" role="dialog" aria-labelledby="EditModalLabel"
             aria-hidden="true">
             <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-md" role="document">
                 <form class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="SearchModalLabel">
-                            條件搜尋
+                        <h5 class="modal-title" id="EditModalLabel">
+                            權限功能編輯
                         </h5>
                     </div>
                     <div class="modal-body">
-                        <div class="form-group">
-                            <lable>
-                                帳號(email)
-                            </lable>
-                            <input class="form-control" autocomplete="off">
-                        </div>
-                        <div class="form-group">
-                            <lable>
-                                店家名稱
-                            </lable>
-                            <input class="form-control" autocomplete="off">
-                        </div>
-                        <div class="form-group">
-                            <lable>
-                                店家Id(StoreId)
-                            </lable>
-                            <input class="form-control" autocomplete="off">
-                        </div>
+                        <template v-for="(func, index) in roleFunction" :key="index">
+                            <div>
+                                <!-- 父層功能選項 -->
+                                <input class="mr-2" type="checkbox" :id="'func-' + index" v-model="func.checked"
+                                    @change="toggleAll(func)">
+                                <label :for="'func-' + index" class="mr-3">
+                                    {{ func.name }}
+                                </label>
+
+                                <!-- 子功能選項 -->
+                                <div class="pl-3" v-if="func.item && func.item.length">
+                                    <div v-for="(item, indexx) in func.item" :key="indexx">
+                                        <input class="mr-2" type="checkbox" :id="'item-' + index + '-' + indexx"
+                                            v-model="item.checked" @change="checkIfAllSelected(func)">
+                                        <label :for="'item-' + index + '-' + indexx" class="mr-3">
+                                            {{ item.name }}
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
                     </div>
                     <div class="modal-footer">
                         <button class="btn-default btn" data-dismiss="modal">取消</button>
-                        <button class="btn-primary btn" data-dismiss="modal">搜尋</button>
+                        <button class="btn-primary btn" data-dismiss="modal">儲存</button>
                     </div>
                 </form>
             </div>
@@ -261,7 +264,7 @@
                         <div class="col-12 p-5 border mb-3" v-for="(role,index) in role">
                             <h3>{{index+1}}.{{role.name}}
                                 <div class="btn btn-sm btn-default" data-toggle="tooltip" data-placement="top"
-                                    title="編輯權限功能">
+                                    title="編輯權限功能" @click="showEditModal">
                                     <i class="fas fa-edit"></i>
                                 </div>
                             </h3>
@@ -329,6 +332,71 @@
                     }
                 ],
                 ListData: [],
+                roleFunction: [
+                    {
+                        name: "權限管理",
+                        checked: false,
+                    },
+                    {
+                        name: "帳戶管理",
+                        checked: false,
+                        item: [
+                            {
+                                name: "店家端帳戶",
+                                checked: false,
+                            },
+                            {
+                                name: "用戶端帳戶",
+                                checked: false,
+                            },
+                            {
+                                name: "維運端帳戶",
+                                checked: false,
+                            },
+                        ],
+                    },
+                    {
+                        name: "店家管理",
+                        checked: false,
+                    },
+                    {
+                        name: "訂單",
+                        checked: false,
+
+                    },
+                    {
+                        name: "標籤管理",
+                        checked: false,
+                        item: [
+                            {
+                                name: "標籤分類",
+                                checked: false,
+                            },
+                            {
+                                name: "標籤",
+                                checked: false,
+                            },
+                        ],
+                    },
+                    {
+                        name: "出單機管理",
+                        checked: false,
+                        item: [
+                            {
+                                name: "出單紀錄",
+                                checked: false
+                            },
+                            {
+                                name: "登入管理與指派",
+                                checked: false
+                            },
+                        ],
+                    },
+                    {
+                        name: "活動日誌",
+                        checked: false,
+                    },
+                ],
 
                 currentPage: currentPage, // 當前頁面
                 pageSize: pageSize, // 每頁顯示筆數
@@ -359,6 +427,23 @@
                     $('[data-toggle="tooltip"]').tooltip();
                 }, 500);
                 $('#ListModal').modal('show')
+            },
+            showEditModal() {
+                $('#EditModal').modal('show')
+            },
+
+            toggleAll(func) {
+                const newVal = func.checked;
+                if (func.item && func.item.length) {
+                    func.item.forEach(item => {
+                        item.checked = newVal;
+                    });
+                }
+            },
+            checkIfAllSelected(func) {
+                if (func.item && func.item.length) {
+                    func.checked = func.item.every(item => item.checked);
+                }
             },
 
             // 切換到上一頁

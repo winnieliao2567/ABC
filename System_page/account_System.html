@@ -298,12 +298,6 @@
                                         <th class="longText">
                                             權限名稱
                                         </th>
-                                        <th class="longText">
-                                            狀態
-                                        </th>
-                                        <th class="longText">
-                                            關聯店家
-                                        </th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -320,26 +314,13 @@
                                             {{item.username}}
                                         </td>
                                         <td class="longText">
-                                            AdminId
+                                            {{item.userid}}
                                         </td>
                                         <td class="longText">
                                             {{item.email}}
                                         </td>
                                         <td class="longText">
-                                            {{item.role}}
-                                        </td>
-                                        <td class="longText">
-                                            {{item.isAdmin}}
-                                        </td>
-                                        <td class="longText">
-                                            <button type="button" class="btn-default btn mr-2" data-toggle="tooltip"
-                                                data-placement="top" title="店家名稱1(storeID1)">
-                                                <i class="fas fa-store"></i>
-                                            </button>
-                                            <button type="button" class="btn-default btn mr-2" data-toggle="tooltip"
-                                                data-placement="top" title="店家名稱2(storeID2)">
-                                                <i class="fas fa-store"></i>
-                                            </button>
+                                            {{showRole(item.role)}}
                                         </td>
                                     </tr>
                                 </tbody>
@@ -397,12 +378,9 @@
                 ListData: [
                     {
                         "username": "yaya",
-                        "password": 123456,
+                        "userid": 123456,
                         "email": "yaya@gm.com",
-                        //  "gender": "M",
                         "role": 0,
-                        "isAdmin": 1,
-                        "mobileNumber": "0919786424"
                     }
                 ],
 
@@ -419,7 +397,8 @@
             paginatedOrders() {
                 const start = (this.currentPage - 1) * this.pageSize;
                 return this.ListData.slice(start, start + this.pageSize);
-            }
+            },
+
         },
         mounted() {
             var vue = this
@@ -430,6 +409,25 @@
         watch: {
         },
         methods: {
+            showRole(role) {
+                switch (role) {
+                    case 0:
+                        return '最高平台管理員'
+                        break;
+                    case 1:
+                        return '平台管理員'
+                        break;
+                    case 2:
+                        return '營運管理員'
+                        break;
+                    case 3:
+                        return '客服管理員'
+                        break;
+
+                    default:
+                        break;
+                }
+            },
             // 切換到上一頁
             prevPage() {
                 if (this.currentPage > 1) {

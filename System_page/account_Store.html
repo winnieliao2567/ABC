@@ -326,7 +326,7 @@
                                             {{item.email}}
                                         </td>
                                         <td class="longText">
-                                            {{item.role}}
+                                            {{showRole(item.role)}}
                                         </td>
                                         <td class="longText">
                                             {{item.isAdmin}}
@@ -430,6 +430,25 @@
         watch: {
         },
         methods: {
+            showRole(role) {
+                switch (role) {
+                    case 0:
+                        return '店家持有者'
+                        break;
+                    case 1:
+                        return '店家管理員'
+                        break;
+                    case 2:
+                        return '店家營運員'
+                        break;
+                    case 3:
+                        return '店家服務員'
+                        break;
+
+                    default:
+                        break;
+                }
+            },
             // 切換到上一頁
             prevPage() {
                 if (this.currentPage > 1) {

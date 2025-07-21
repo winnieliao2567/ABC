@@ -50,89 +50,78 @@
     </div>
     <!-- control-sidebar-slide-open -->
     <div id="app" class="wrapper">
-        <!-- 新增視窗 -->
-        <div class="modal fade" id="AddModal" tabindex="-1" role="dialog" aria-labelledby="AddModallLabel"
+        <!-- 用戶列表 -->
+        <div class="modal fade" id="ListModal" tabindex="-1" role="dialog" aria-labelledby="ListModallLabel"
             aria-hidden="true">
-            <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-md" role="document">
+            <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-lg" role="document">
                 <form class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="AddModalLabel">
-                            新增
+                        <h5 class="modal-title" id="ListModalLabel">
+                            用戶列表
                         </h5>
                     </div>
                     <div class="modal-body">
-                        <div class="form-group">
-                            <lable>
-                                使用者名稱
-                            </lable>
-                            <input class="form-control" autocomplete="off">
-                        </div>
-                        <div class="form-group">
-                            <lable>
-                                密碼
-                            </lable>
-                            <div class="input-group">
-                                <input type="password" id="PasswordInput" class="form-control" autocomplete="off"
-                                    placeholder="請輸入密碼">
-                                <div class="input-group-append">
-                                    <div class="input-group-text password-undisabled d-flex justify-content-center align-items-center"
-                                        data-for="#PasswordInput">
-                                        <i class="fas fa-eye-slash"></i>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <lable>
-                                確認密碼
-                            </lable>
-                            <div class="input-group">
-                                <input type="password" id="ConfirmPasswordInput" class="form-control" autocomplete="off"
-                                    placeholder="請輸入密碼">
-                                <div class="input-group-append">
-                                    <div class="input-group-text password-undisabled d-flex justify-content-center align-items-center"
-                                        data-for="#ConfirmPasswordInput">
-                                        <i class="fas fa-eye-slash"></i>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <lable>
-                                信箱
-                            </lable>
-                            <input class="form-control" autocomplete="off">
-                        </div>
-                        <div class="form-group">
-                            <lable>
-                                行動電話
-                            </lable>
-                            <input class="form-control" autocomplete="off">
-                        </div>
-                        <div class="form-group">
-                            <lable>
-                                權限
-                            </lable>
-                            <select class="form-control">
-                                <option>
-                                    持有者
-                                </option>
-                                <option>
-                                    管理者
-                                </option>
-                                <option>
-                                    營運者
-                                </option>
-                                <option>
-                                    服務者
-                                </option>
-                            </select>
-                        </div>
+                        <table class="table table-bordered table-hover">
+                            <thead class="table-primary">
+                                <tr>
+                                    <th class="longText">
+                                        #
+                                    </th>
+                                    <th class="longText">
+                                        UserID
+                                    </th>
+                                    <th class="longText">
+                                        名稱
+                                    </th>
+                                    <th class="longText">
+
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-if="ListData.length==0">
+                                    <td colspan="100" class="text-center">
+                                        沒有資料
+                                    </td>
+                                </tr>
+                                <tr v-for="(item,accountindex) in paginatedOrders" class="btnHover">
+                                    <td class="longText">
+                                        {{ (currentPage - 1) * pageSize + accountindex + 1 }}
+                                    </td>
+                                    <td class="longText">
+                                        {{item.userid}}
+                                    </td>
+                                    <td class="longText">
+                                        {{item.name}}
+                                    </td>
+                                    <td class="longText">
+                                        <button type="button" class="btn-default btn mr-2" data-toggle="tooltip"
+                                            data-placement="top" title="移除權限">
+                                            <i class="fas fa-user-times"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <ul class="pagination pagination-sm justify-content-center mt-3">
+                            <li class="page-item" :class="{ disabled: currentPage === 1 }">
+                                <a href="#" class="page-link" @click.prevent="prevPage">&laquo;</a>
+                            </li>
+
+                            <li v-for="page in totalPages" :key="page" class="page-item"
+                                :class="{ active: currentPage === page }">
+                                <a href="#" class="page-link" @click.prevent="goToPage(page)">{{ page }}</a>
+                            </li>
+
+                            <li class="page-item" :class="{ disabled: currentPage === totalPages }">
+                                <a href="#" class="page-link" @click.prevent="nextPage">&raquo;</a>
+                            </li>
+                        </ul>
                     </div>
-                    <div class="modal-footer">
+                    <!-- <div class="modal-footer">
                         <button class="btn-default btn" data-dismiss="modal">取消</button>
                         <button class="btn-primary btn" data-dismiss="modal">新增</button>
-                    </div>
+                    </div> -->
                 </form>
             </div>
         </div>
@@ -269,97 +258,16 @@
             <div class="content">
                 <div class="container-fluid">
                     <div class="row">
-                        <div class="col-12 text-right py-3">
-                            <button class="btn btn-primary mr-3" type="button" data-toggle="modal"
-                                data-target="#AddModal">
-                                新增
-                            </button>
-                            <button class="btn btn-default" type="button" data-toggle="modal"
-                                data-target="#SearchModal">
-                                條件搜尋
-                            </button>
-                        </div>
-                        <div class="col-12">
-                            <table class="table table-bordered table-hover">
-                                <thead class="table-primary">
-                                    <tr>
-                                        <th class="longText">
-                                            #
-                                        </th>
-                                        <th class="longText">
-                                            用戶名稱
-                                        </th>
-                                        <th class="longText">
-                                            AdminId
-                                        </th>
-                                        <th class="longText">
-                                            Email
-                                        </th>
-                                        <th class="longText">
-                                            權限名稱
-                                        </th>
-                                        <th class="longText">
-                                            狀態
-                                        </th>
-                                        <th class="longText">
-                                            關聯店家
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr v-if="ListData.length==0">
-                                        <td colspan="100" class="text-center">
-                                            沒有資料
-                                        </td>
-                                    </tr>
-                                    <tr v-for="(item,index) in paginatedOrders" class="btnHover">
-                                        <td class="longText">
-                                            {{ (currentPage - 1) * pageSize + index + 1 }}
-                                        </td>
-                                        <td class="longText">
-                                            {{item.username}}
-                                        </td>
-                                        <td class="longText">
-                                            AdminId
-                                        </td>
-                                        <td class="longText">
-                                            {{item.email}}
-                                        </td>
-                                        <td class="longText">
-                                            {{item.role}}
-                                        </td>
-                                        <td class="longText">
-                                            {{item.isAdmin}}
-                                        </td>
-                                        <td class="longText">
-                                            <button type="button" class="btn-default btn mr-2" data-toggle="tooltip"
-                                                data-placement="top" title="店家名稱1(storeID1)">
-                                                <i class="fas fa-store"></i>
-                                            </button>
-                                            <button type="button" class="btn-default btn mr-2" data-toggle="tooltip"
-                                                data-placement="top" title="店家名稱2(storeID2)">
-                                                <i class="fas fa-store"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="col-12">
-                            <ul class="pagination pagination-sm justify-content-center mt-3">
-                                <li class="page-item" :class="{ disabled: currentPage === 1 }">
-                                    <a href="#" class="page-link" @click.prevent="prevPage">&laquo;</a>
-                                </li>
-
-                                <li v-for="page in totalPages" :key="page" class="page-item"
-                                    :class="{ active: currentPage === page }">
-                                    <a href="#" class="page-link" @click.prevent="goToPage(page)">{{ page }}</a>
-                                </li>
-
-                                <li class="page-item" :class="{ disabled: currentPage === totalPages }">
-                                    <a href="#" class="page-link" @click.prevent="nextPage">&raquo;</a>
-                                </li>
-                            </ul>
+                        <div class="col-12 p-5 border mb-3" v-for="(role,index) in role">
+                            <h3>{{index+1}}.{{role.name}}
+                                <div class="btn btn-sm btn-default" data-toggle="tooltip" data-placement="top"
+                                    title="編輯權限功能">
+                                    <i class="fas fa-edit"></i>
+                                </div>
+                            </h3>
+                            <div class="btn btn-primary" @click="showAccountList(index)">
+                                <i class="fas fa-users mr-2"></i> 用戶列表
+                            </div>
                         </div>
                     </div>
                     <!-- /.row -->
@@ -389,22 +297,38 @@
             return {
                 userFunction: userFunction,
 
-                PageTitle: '店家端帳戶',
+                PageTitle: '權限管理',
 
                 //原始資料
                 userInfo: decryptObject(localStorage.userInfo),
 
-                ListData: [
+                role: [
                     {
-                        "username": "yaya",
-                        "password": 123456,
-                        "email": "yaya@gm.com",
-                        //  "gender": "M",
-                        "role": 0,
-                        "isAdmin": 1,
-                        "mobileNumber": "0919786424"
+                        "name": "最高權限者",
+                        accounts: [{
+                            userid: 'gae51h5reh',
+                            name: '權限1帳號',
+                        },
+                        ]
+                    },
+                    {
+                        "name": "尚未定義",
+                        accounts: [{
+                            userid: 'waedg54juygh5a',
+                            name: '權限2帳號',
+                        },
+                        ]
+                    },
+                    {
+                        "name": "尚未定義",
+                        accounts: [{
+                            userid: 'fjawnkf651',
+                            name: '權限3帳號',
+                        },
+                        ]
                     }
                 ],
+                ListData: [],
 
                 currentPage: currentPage, // 當前頁面
                 pageSize: pageSize, // 每頁顯示筆數
@@ -425,11 +349,18 @@
             var vue = this
 
             loadingOff()
-            $('[data-toggle="tooltip"]').tooltip();
         },
         watch: {
         },
         methods: {
+            showAccountList(index) {
+                this.ListData = this.role[index].accounts
+                setTimeout(() => {
+                    $('[data-toggle="tooltip"]').tooltip();
+                }, 500);
+                $('#ListModal').modal('show')
+            },
+
             // 切換到上一頁
             prevPage() {
                 if (this.currentPage > 1) {

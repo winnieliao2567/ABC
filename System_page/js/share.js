@@ -20,6 +20,12 @@ const storeId = urlParams.get("sid");
 
 const userFunction = [
     {
+        icon: "fas fa-users-cog",
+        name: "權限管理",
+        status: "",
+        url: "roleSetting.html",
+    },
+    {
         icon: "fas fa-user",
         name: "帳戶管理",
         status: "",
@@ -35,13 +41,13 @@ const userFunction = [
                 icon: "fas fa-circle",
                 name: "用戶端帳戶",
                 status: "",
-                url: "",
+                url: "account_User.html",
             },
             {
                 icon: "fas fa-circle",
                 name: "維運端帳戶",
                 status: "",
-                url: "",
+                url: "account_System.html",
             },
         ],
     },

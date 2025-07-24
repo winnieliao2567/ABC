@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>共響 SHARING｜後台管理系統</title>
+
+  <!-- jquery -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+  <!-- JavaScript Bundle with Popper -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- <link rel="stylesheet" href="css/bootstrap.min.css"> -->
+
+  <!-- fontawesome -->
+  <script src="https://kit.fontawesome.com/4de7eaf6aa.js" crossorigin="anonymous"></script>
+
+  <!-- Theme style -->
+  <link rel="stylesheet" href="AdminLTE3/dist/css/adminlte.min.css">
+  <script src="AdminLTE3/dist/js/adminlte.min.js"></script>
+
+  <!-- Chart.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.bundle.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.css" />
+
+  <!-- toastr -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css" />
+
+  <!-- datepicker -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.30.1/moment.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+
+  <!-- Vue.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.5.13/vue.global.min.js"></script>
+
+  <script src="js/share.js?v101"></script>
+  <link rel="stylesheet" href="css/share.css?v101" />
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+
+</head>
+
+<body class="login-page iframe-mode" style="height: 100%;">
+  <!-- Preloader -->
+  <div class="preloader flex-column justify-content-center align-items-center">
+    <img class="animation__shake" src="img/logo.svg" style="height: 15vh;">
+  </div>
+  <!--  <div class="modal fade" id="storeModal" tabindex="-1" data-backdrop="static" data-keyboard="false" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+      <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <h3></h3>
+        </div>
+       <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary">Save changes</button>
+        </div>
+      </div>
+    </div>
+  </div> -->
+  <div class="login-box" id="app">
+    <div class="login-logo">
+      <img src="img/logo2.svg" style="width: 75%;">
+      <span class="text-xs badge badge-secondary" id="version"></span>
+    </div>
+    <!-- /.login-logo -->
+    <div class="card">
+      <div class="card-body login-card-body">
+        <p class="login-box-msg">維運帳號登入</p>
+        <form>
+          <div class="mb-3">
+            <div class="input-group">
+              <input type="email" class="form-control" placeholder="請輸入信箱" v-model="loginVal.account" type="email"
+                autocomplete="username">
+              <div class="input-group-append">
+                <div class="input-group-text">
+                  <span class="fas fa-envelope"></span>
+                </div>
+              </div>
+            </div>
+            <div class="text-memo text-danger formHint" v-if="loginVal.account!=''&&validateEmail(loginVal.account)">
+              *Email格式錯誤
+            </div>
+          </div>
+          <div class="mb-3">
+            <div class="input-group">
+              <input type="password" v-model="loginVal.key" id="confirmPassword" class="form-control"
+                autocomplete="current-password" placeholder="請輸入密碼">
+              <div class="input-group-append">
+                <div class="input-group-text password-undisabled" data-for="#confirmPassword">
+                  <i class="fas fa-eye-slash"></i>
+                </div>
+                <div class="input-group-text">
+                  <span class="fas fa-lock"></span>
+                </div>
+              </div>
+            </div>
+            <div class="text-memo text-danger formHint" v-if="check.key==true">* 密碼錯誤
+            </div>
+          </div>
+
+          <div class="row">
+
+            <!-- /.col -->
+            <div class="col-4">
+              <button type="button" class="btn btn-primary btn-block" v-on:click="login"
+                :disabled="validateEmail(loginVal.account)">登入</button>
+            </div>
+            <!-- /.col -->
+
+          </div>
+        </form>
+      </div>
+      <!-- /.login-card-body -->
+    </div>
+    <div class="mb-5 mt-2">
+      <p class="text-muted text-xs text-center">
+        <span id="copyRight"></span>
+      </p>
+    </div>
+  </div>
+</body>
+<script>
+  const app = Vue.createApp({
+    data() {
+      return {
+        loginVal: { account: '', key: '', keepLogIn: true },
+        check: { account: false, key: false },
+      }
+    },
+    computed: {
+
+    },
+    mounted() {
+      localStorage.clear()
+      loadingOff();
+    },
+    watch: {
+    },
+    methods: {
+      login() {
+        loadingOn();
+      },
+      validateEmail(par) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return !emailRegex.test(par); // 如果格式不正確，顯示錯誤
+      },
+    },
+  });
+  app.mount("#app");
+</script>
+
+</html>

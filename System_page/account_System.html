@@ -63,7 +63,7 @@
                     <div class="modal-body">
                         <div class="form-group">
                             <lable>
-                                使用者名稱
+                                帳號
                             </lable>
                             <input class="form-control" autocomplete="off">
                         </div>
@@ -99,13 +99,7 @@
                         </div>
                         <div class="form-group">
                             <lable>
-                                信箱
-                            </lable>
-                            <input class="form-control" autocomplete="off">
-                        </div>
-                        <div class="form-group">
-                            <lable>
-                                行動電話
+                                名稱
                             </lable>
                             <input class="form-control" autocomplete="off">
                         </div>
@@ -115,16 +109,16 @@
                             </lable>
                             <select class="form-control">
                                 <option>
-                                    持有者
+                                    {{showRole(0)}}
                                 </option>
                                 <option>
-                                    管理者
+                                    {{showRole(1)}}
                                 </option>
                                 <option>
-                                    營運者
+                                    {{showRole(2)}}
                                 </option>
                                 <option>
-                                    服務者
+                                    {{showRole(3)}}
                                 </option>
                             </select>
                         </div>
@@ -287,16 +281,16 @@
                                             #
                                         </th>
                                         <th class="longText">
-                                            用戶名稱
-                                        </th>
-                                        <th class="longText">
-                                            AdminId
+                                            用戶ID
                                         </th>
                                         <th class="longText">
                                             Email
                                         </th>
                                         <th class="longText">
-                                            權限名稱
+                                            Role
+                                        </th>
+                                        <th class="longText">
+
                                         </th>
                                     </tr>
                                 </thead>
@@ -309,9 +303,6 @@
                                     <tr v-for="(item,index) in paginatedOrders" class="btnHover">
                                         <td class="longText">
                                             {{ (currentPage - 1) * pageSize + index + 1 }}
-                                        </td>
-                                        <td class="longText">
-                                            {{item.username}}
                                         </td>
                                         <td class="longText">
                                             {{item.userid}}
@@ -370,14 +361,13 @@
             return {
                 userFunction: userFunction,
 
-                PageTitle: '店家端帳戶',
+                PageTitle: '維運端帳戶',
 
                 //原始資料
                 userInfo: decryptObject(localStorage.userInfo),
 
                 ListData: [
                     {
-                        "username": "yaya",
                         "userid": 123456,
                         "email": "yaya@gm.com",
                         "role": 0,

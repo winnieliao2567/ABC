@@ -72,16 +72,6 @@
         <div class="card">
             <div class="card-body login-card-body p-4">
                 <h4 class="mb-4">請輸入OTP密碼</h4>
-                <!-- <form @submit.prevent="login">
-                    <div class="d-flex" style="gap: 10px;">
-                        <input class="form-control">
-                        <input class="form-control">
-                        <input class="form-control">
-                        <input class="form-control">
-                        <input class="form-control">
-                        <input class="form-control">
-                    </div>
-                </form> -->
                 <form @submit.prevent="login">
                     <div class="d-flex" style="gap: 10px;">
                         <input v-for="(digit, index) in digits" :key="index" class="form-control text-center"
@@ -90,6 +80,7 @@
                             @keydown.backspace="handleBackspace(index, $event)" />
                     </div>
                 </form>
+                <div class="text-memo text-danger formHint mt-3" v-if="errorMsg">{{ errorMsg }}</div>
             </div>
             <!-- /.login-card-body -->
         </div>
@@ -101,8 +92,7 @@
         data() {
             return {
                 digits: ['', '', '', '', '', ''],
-                loginVal: { account: '', key: '', keepLogIn: true },
-                check: { account: false, key: false },
+                errorMsg: ''
             }
         },
         mounted() {
@@ -126,19 +116,82 @@
                     this.$refs.inputs[index - 1].focus();
                 }
             },
-            login() {
+            async login() {
+                this.errorMsg = '';
                 loadingOn();
                 const code = this.digits.join('');
-                console.log('OTP 驗證碼：', code);
 
-                // 模擬完成後關閉 loading（你可以替換成實際 API call）
-                setTimeout(() => {
+                // 取登入階段的臨時token或userId
+                const tempToken = localStorage.getItem('tempToken') || '';
+                const fallbackUserId = localStorage.getItem('twoFactorUserId') || '';
+                const userIdForVerify = tempToken || fallbackUserId;
+
+                if (!userIdForVerify) {
                     loadingOff();
-                }, 500);
-            },
-            validateEmail(par) {
-                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                return !emailRegex.test(par);
+                    this.errorMsg = '驗證流程已失效，請重新登入';
+                    setTimeout(() => (window.location.href = 'login.html'), 800);
+                    return;
+                }
+
+                try {
+                    // 先以 AutoKey 取得授權 Token
+                    const keyRes = await fetch(`${host}api/auth/keylogin`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ key: AutoKey })
+                    });
+                    const keyData = await keyRes.json().catch(() => ({}));
+                    const authHeader = keyRes.ok && keyData.token ? `Bearer ${keyData.token}` : '';
+
+                    const res = await fetch(`${host}api/twofactor/verify`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', ...(authHeader ? { Authorization: authHeader } : {}) },
+                        body: JSON.stringify({ userId: userIdForVerify, code })
+                    });
+
+                    const data = await res.json().catch(() => ({}));
+
+                    if (!res.ok) {
+                        const attempts = parseInt(localStorage.getItem('verifyAttempts') || '0', 10) + 1;
+                        localStorage.setItem('verifyAttempts', String(attempts));
+
+                        const msg = data.message || data.Message || '驗證失敗，請再試一次';
+                        if (attempts >= 3) {
+                            localStorage.setItem('loginError', '登入失敗');
+                            localStorage.removeItem('tempToken');
+                            localStorage.removeItem('twoFactorUserId');
+                            localStorage.removeItem('verifyAttempts');
+                            window.location.href = 'login.html';
+                            return;
+                        }
+
+                        this.errorMsg = `${msg}（剩餘嘗試次數：${3 - attempts}）`;
+                        loadingOff();
+                        return;
+                    }
+
+                    // 成功：寫入用戶資訊並進入系統
+                    const encryptedId = data.encryptedId ?? data.EncryptedId;
+                    const userData = data.userData ?? data.UserData;
+                    const username = data.username ?? data.Username;
+                    const roles = data.roles ?? data.Roles;
+
+                    if (encryptedId) localStorage.setItem('userToken', encryptedId);
+                    if (userData) localStorage.setItem('userData', JSON.stringify(userData));
+                    if (username) localStorage.setItem('username', username);
+                    if (roles) localStorage.setItem('roles', roles);
+
+                    // 清理臨時狀態
+                    localStorage.removeItem('tempToken');
+                    localStorage.removeItem('twoFactorUserId');
+                    localStorage.removeItem('verifyAttempts');
+
+                    window.location.href = 'account_System.html';
+                } catch (e) {
+                    this.errorMsg = '系統繁忙，請稍後再試';
+                } finally {
+                    loadingOff();
+                }
             },
         },
     });

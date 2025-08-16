@@ -79,7 +79,7 @@
         <form>
           <div class="mb-3">
             <div class="input-group">
-              <input type="email" class="form-control" placeholder="請輸入信箱" v-model="loginVal.account" type="email"
+              <input type="email" class="form-control" placeholder="請輸入信箱" v-model="loginVal.account"
                 autocomplete="username">
               <div class="input-group-append">
                 <div class="input-group-text">
@@ -87,9 +87,7 @@
                 </div>
               </div>
             </div>
-            <div class="text-memo text-danger formHint" v-if="loginVal.account!=''&&validateEmail(loginVal.account)">
-              *Email格式錯誤
-            </div>
+            <div class="text-memo text-danger formHint" v-if="loginVal.account!=''&&validateEmail(loginVal.account)">*Email格式錯誤</div>
           </div>
           <div class="mb-3">
             <div class="input-group">
@@ -104,16 +102,14 @@
                 </div>
               </div>
             </div>
-            <div class="text-memo text-danger formHint" v-if="check.key==true">* 密碼錯誤
-            </div>
+            <div class="text-memo text-danger formHint" v-if="check.key==true">帳號或密碼錯誤!</div>
           </div>
 
           <div class="row">
 
             <!-- /.col -->
             <div class="col-4">
-              <button type="button" class="btn btn-primary btn-block" v-on:click="login"
-                :disabled="validateEmail(loginVal.account)">登入</button>
+              <button type="button" class="btn btn-primary btn-block" v-on:click="login" :disabled="validateEmail(loginVal.account)">登入</button>
             </div>
             <!-- /.col -->
 
@@ -143,16 +139,84 @@
     mounted() {
       localStorage.clear()
       loadingOff();
+      // 從上一頁帶入的登入失敗訊息
+      const loginError = localStorage.getItem('loginError');
+      if (loginError) {
+        toastr.error(loginError);
+        localStorage.removeItem('loginError');
+      }
     },
     watch: {
     },
     methods: {
-      login() {
+      async login() {
+        this.check.key = false;
         loadingOn();
+        try {
+          const payload = {
+            mobileNumber: (this.loginVal.account || '').trim(),
+            email: (this.loginVal.account || '').trim(),
+            password: this.loginVal.key || ''
+          };
+
+          // 先以 AutoKey 取得授權 Token
+          const keyRes = await fetch(`${host}api/auth/keylogin`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ key: AutoKey })
+          });
+          const keyData = await keyRes.json().catch(() => ({}));
+          const authHeader = keyRes.ok && keyData.token ? `Bearer ${keyData.token}` : '';
+
+          const res = await fetch(`${host}api/twofactor/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...(authHeader ? { Authorization: authHeader } : {}) },
+            body: JSON.stringify(payload)
+          });
+
+          const data = await res.json().catch(() => ({}));
+
+          if (!res.ok) {
+            this.check.key = true;
+            toastr.error('帳號或密碼錯誤!');
+            loadingOff();
+            return;
+          }
+
+          const requiresTwoFactor = data.requiresTwoFactor ?? data.RequiresTwoFactor;
+          const tempToken = data.tempToken ?? data.TempToken;
+          const userId = data.userId ?? data.UserId;
+
+          if (requiresTwoFactor) {
+            localStorage.setItem('tempToken', tempToken || '');
+            localStorage.setItem('twoFactorUserId', userId || '');
+            localStorage.removeItem('verifyAttempts');
+            window.location.href = 'Verification.html';
+            return;
+          }
+
+          // 無需二驗，直接登入成功
+          const encryptedId = data.encryptedId ?? data.EncryptedId;
+          const userData = data.userData ?? data.UserData;
+          const username = data.username ?? data.Username;
+          const roles = data.roles ?? data.Roles;
+
+          if (encryptedId) localStorage.setItem('userToken', encryptedId);
+          if (userData) localStorage.setItem('userData', JSON.stringify(userData));
+          if (username) localStorage.setItem('username', username);
+          if (roles) localStorage.setItem('roles', roles);
+
+          window.location.href = 'account_System.html';
+        } catch (err) {
+          this.check.key = true;
+          toastr.error('系統繁忙，請稍後再試');
+        } finally {
+          loadingOff();
+        }
       },
       validateEmail(par) {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        return !emailRegex.test(par); // 如果格式不正確，顯示錯誤
+        return !emailRegex.test(par);
       },
     },
   });

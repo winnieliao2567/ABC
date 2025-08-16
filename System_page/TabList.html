@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>共響 SHARING｜後台管理系統</title>
+
+    <!-- jquery -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+    <!-- JavaScript Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- <link rel="stylesheet" href="css/bootstrap.min.css"> -->
+
+    <!-- fontawesome -->
+    <script src="https://kit.fontawesome.com/4de7eaf6aa.js" crossorigin="anonymous"></script>
+
+    <!-- Theme style -->
+    <link rel="stylesheet" href="AdminLTE3/dist/css/adminlte.min.css">
+    <script src="AdminLTE3/dist/js/adminlte.min.js"></script>
+
+    <!-- Chart.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.bundle.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.css" />
+
+    <!-- toastr -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css" />
+
+    <!-- datepicker -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.30.1/moment.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+
+    <!-- Cropper.js -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cropper/1.0.2/jquery-cropper.min.js"></script>
+
+
+    <!-- Vue.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.5.13/vue.global.min.js"></script>
+
+    <script src="js/share.js?v101"></script>
+    <link rel="stylesheet" href="css/share.css?v101" />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+
+</head>
+
+<body class="sidebar-mini layout-navbar-fixed layout-footer-fixed sidebar-mini-md layout-fixed sidebar-collapse">
+    <!-- Preloader -->
+    <div class="preloader flex-column justify-content-center align-items-center">
+        <img class="animation__shake" src="img/logo.svg" style="height: 15vh;">
+    </div>
+    <!-- control-sidebar-slide-open -->
+    <div id="app" class="wrapper">
+
+        <div class="modal fade" id="cropModal" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">裁切圖片</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span>&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="w-100" style="max-height:60vh; overflow:auto;">
+                            <!-- 關鍵：這裡一定要有 ref="image" -->
+                            <img ref="image" :src="imageUrl" class="img-fluid d-block mx-auto" alt="to-crop">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" type="button" data-dismiss="modal">取消</button>
+                        <button class="btn btn-primary" type="button" @click="cropImage_logo('base')">使用此裁切</button>
+                        <!-- 如果你要直傳檔案就改用 blob -->
+                        <!-- <button class="btn btn-primary" type="button" @click="cropImage_logo('blob')">上傳裁切檔</button> -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="infoModal" tabindex="-1" role="dialog" aria-labelledby="EditModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-lg" role="document">
+                <form class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="EditModalLabel" v-if="EditData.action==1">
+                            新增
+                        </h5>
+                        <h5 class="modal-title" id="EditModalLabel" v-else>
+                            編輯
+                        </h5>
+                    </div>
+                    <div class="modal-body row">
+
+                        <table class="table table-bordered table-hover">
+                            <thead class="table-primary">
+                                <tr>
+                                    <th class="longText">
+                                        #
+                                    </th>
+                                    <th class="longText">
+                                        店家名稱
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-if="ListData.length==0">
+                                    <td colspan="100" class="text-center">
+                                        沒有資料
+                                    </td>
+                                </tr>
+                                <tr v-for="(item,index) in StoreList" class="btnHover">
+                                    <td class="longText">
+                                        {{index+1}}
+                                    </td>
+                                    <td class="longText">
+                                        {{item.storeName}}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn-default btn" type="button" data-dismiss="modal">取消</button>
+                        <button class="btn-primary btn" type="button" data-dismiss="modal"
+                            v-if="EditData.action==1">新增</button>
+                        <button class="btn-primary btn" type="button" data-dismiss="modal" v-else>儲存</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+
+        <!-- 編輯視窗 -->
+        <div class="modal fade" id="EditModal" tabindex="-1" role="dialog" aria-labelledby="EditModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-lg" role="document">
+                <form class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="EditModalLabel" v-if="EditData.action==1">
+                            新增
+                        </h5>
+                        <h5 class="modal-title" id="EditModalLabel" v-else>
+                            編輯
+                        </h5>
+                    </div>
+                    <div class="modal-body row">
+                        <div class="col-sm-12 col-lg-4">
+                            <div class="input-group mb-1 text-center">
+                                <label class="embed-responsive embed-responsive-1by1 d-flex justify-content-center"
+                                    style="overflow: hidden;max-width: 300px;">
+
+                                    <img :src="EditData.image || 'img/unknowIMG.png'" class="border h-100">
+
+                                    <input type="file" class="custom-file-input" id="LogoImage"
+                                        @change="handleFileUpload_logo" accept=".jpg,.jpeg,.png">
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-sm-12 col-lg-8">
+                            <div class="form-group">
+                                <lable>
+                                    標籤類別名稱
+                                </lable>
+                                <input class="form-control" autocomplete="off" :value="EditData.name">
+                            </div>
+                            <div class="form-group">
+                                <lable>
+                                    所屬類別
+                                </lable>
+                                <select class="form-control" autocomplete="off" :value="EditData.class">
+                                    <option value="1">類別001</option>
+                                    <option value="2">類別002</option>
+                                    <option value="3">類別003</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <lable>
+                                    Location X
+                                </lable>
+                                <input class="form-control" autocomplete="off" :value="EditData.locationx">
+                            </div>
+                            <div class="form-group">
+                                <lable>
+                                    Location Y
+                                </lable>
+                                <input class="form-control" autocomplete="off" :value="EditData.locationy">
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn-default btn" type="button" data-dismiss="modal">取消</button>
+                        <button class="btn-primary btn" type="button" data-dismiss="modal"
+                            v-if="EditData.action==1">新增</button>
+                        <button class="btn-primary btn" type="button" data-dismiss="modal" v-else>儲存</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- 刪除視窗 -->
+        <div class="modal fade" id="DeleteModal" tabindex="-1" role="dialog" aria-labelledby="DeleteModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-sm" role="document">
+                <form class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="DeleteModalLabel">
+                            刪除
+                        </h5>
+                    </div>
+                    <div class="modal-body">
+                        是否確定刪除 <span class="fw-bolder">{{DeletData.name}}</span>?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn-default btn">取消</button>
+                        <button type="button" class="btn-danger btn">確定刪除</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Navbar -->
+        <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+            <!-- Left navbar links -->
+            <ul class="navbar-nav d-md-none">
+                <li class="nav-item">
+                    <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+                </li>
+            </ul>
+
+            <!-- Right navbar links -->
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item dropdown">
+                    <a class="nav-link" data-toggle="dropdown" href="#">
+                        <i class="fas fa-user-circle"></i>
+                        使用者名稱
+                        <i class="fas fa-caret-down"></i>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right overflow-auto StoreSelector">
+                        <a class="dropdown-item">
+                            <div class="store">
+                                <p class="text-muted">登出</p>
+                            </div>
+                        </a>
+                    </div>
+                </li>
+            </ul>
+        </nav>
+        <!-- /.navbar -->
+
+        <!-- Main Sidebar Container -->
+        <aside class="main-sidebar elevation-4 sidebar-light-primary">
+            <!-- Brand Logo -->
+            <a class="toIndex brand-link logo-switch">
+                <img src="img/logo.svg" alt="AdminLTE Docs Logo Small" class="brand-image-xl logo-xs">
+                <img src="img/logo2.svg" alt="AdminLTE Docs Logo Large" class="brand-image-xs logo-xl"
+                    style="width: 200px;">
+            </a>
+            <!-- Sidebar -->
+            <div class="sidebar os-theme-dark">
+                <!-- Sidebar Menu -->
+                <nav class="mt-2">
+                    <ul class="nav nav-pills nav-sidebar flex-column nav-child-indent" data-widget="treeview"
+                        role="menu" data-accordion="false">
+                        <!-- Add icons to the links using the .nav-icon class
+                 <br /> with font-awesome or any other icon font library -->
+                        <li class="nav-item" v-for="(fuc,index) in userFunction">
+                            <a :href="fuc.url" class="nav-link" :class="{'active':fuc.status==true}">
+                                <i class="nav-icon" :class="fuc.icon"></i>
+                                <p>
+                                    {{fuc.name}}
+                                    <i class="fas fa-angle-left right" v-if="fuc.item!=null"></i>
+                                </p>
+                            </a>
+                            <ul class="nav nav-treeview" v-if="fuc.item!=null">
+                                <li class="nav-item" v-for="(fucItem,index) in fuc.item" :key="index">
+                                    <a :href="fucItem.url" class="nav-link" :class="{'active':fuc.status==true}">
+                                        <i class="nav-icon" :class="fucItem.icon"></i>
+                                        <p>{{fucItem.name}}</p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+
+                    </ul>
+                </nav>
+                <!-- /.sidebar-menu -->
+            </div>
+            <!-- /.sidebar -->
+        </aside>
+
+        <!-- Content Wrapper. Contains page content -->
+        <div class="content-wrapper">
+            <!-- Content Header (Page header) -->
+            <div class="content-header">
+                <div class="container-fluid">
+                    <div class="row mb-2">
+                        <div class="col-sm-6">
+                            <h1 class="m-0">{{PageTitle}}</h1>
+                        </div><!-- /.col -->
+                        <div class="col-sm-6">
+                            <ol class="breadcrumb float-sm-right">
+                                <li class="breadcrumb-item"><a class="toIndex">SHARING</a></li>
+                                <li class="breadcrumb-item active">{{PageTitle}}</li>
+                            </ol>
+                        </div><!-- /.col -->
+                    </div><!-- /.row -->
+                </div><!-- /.container-fluid -->
+            </div>
+            <!-- /.content-header -->
+
+            <!-- Main content -->
+            <div class="content">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-12 text-right py-3">
+                            <button class="btn btn-primary mr-3" @click="showAddWin">
+                                新增
+                            </button>
+                        </div>
+                        <div class="col-12">
+                            <table class="table table-bordered table-hover">
+                                <thead class="table-primary">
+                                    <tr>
+                                        <th class="longText">
+                                            #
+                                        </th>
+                                        <th class="longText">
+                                            類別名稱
+                                        </th>
+                                        <th class="longText">
+                                            圖片
+                                        </th>
+                                        <th class="longText">
+                                            所屬類別
+                                        </th>
+                                        <th class="longText">
+                                            Location
+                                        </th>
+                                        <th class="longText">
+
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-if="ListData.length==0">
+                                        <td colspan="100" class="text-center">
+                                            沒有資料
+                                        </td>
+                                    </tr>
+                                    <tr v-for="(item,index) in paginatedOrders" class="btnHover">
+                                        <td class="longText">
+                                            {{ (currentPage - 1) * pageSize + index + 1 }}
+                                        </td>
+                                        <td class="longText">
+                                            {{item.name}}
+                                            <div class="btn btn-sm float-right" data-toggle="tooltip"
+                                                data-placement="top" title="查看店家列表" @click="viewInfo(index)">
+                                                <i class="fas fa-list"></i>
+                                            </div>
+                                        </td>
+                                        <th class="longText">
+                                            {{item.image}}
+                                        </th>
+                                        <td class="longText">
+                                            {{item.locationx}}<br>
+                                            {{item.locationy}}
+                                        </td>
+                                        <td class="longText">
+                                            {{item.class}}
+                                        </td>
+                                        <td class="longText">
+                                            <div class="btn-danger btn-sm btn float-right" data-toggle="tooltip"
+                                                data-placement="top" title="刪除" @click="showDeleteWin(index)">
+                                                <i class="fas fa-trash"></i>
+                                            </div>
+                                            <div class="btn-secondary btn-sm btn float-right mr-2" data-toggle="tooltip"
+                                                data-placement="top" title="編輯" @click="showEditWin(index)">
+                                                <i class="fas fa-pen"></i>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="col-12">
+                            <ul class="pagination pagination-sm justify-content-center mt-3">
+                                <li class="page-item" :class="{ disabled: currentPage === 1 }">
+                                    <a href="#" class="page-link" @click.prevent="prevPage">&laquo;</a>
+                                </li>
+
+                                <li v-for="page in totalPages" :key="page" class="page-item"
+                                    :class="{ active: currentPage === page }">
+                                    <a href="#" class="page-link" @click.prevent="goToPage(page)">{{ page }}</a>
+                                </li>
+
+                                <li class="page-item" :class="{ disabled: currentPage === totalPages }">
+                                    <a href="#" class="page-link" @click.prevent="nextPage">&raquo;</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <!-- /.row -->
+                </div><!-- /.container-fluid -->
+            </div>
+            <!-- /.content -->
+        </div>
+        <!-- /.content-wrapper -->
+
+        <!-- Main Footer -->
+        <footer class="main-footer">
+            <!-- To the right -->
+            <div class="float-right d-none d-sm-inline" id="version"></div>
+            <!-- Default to the left -->
+            <strong id="copyRight"></strong>
+        </footer>
+    </div>
+    <!-- ./wrapper -->
+
+    <!-- REQUIRED SCRIPTS -->
+
+
+</body>
+<script>
+    const app = Vue.createApp({
+        data() {
+            return {
+                userFunction: userFunction,
+
+                PageTitle: '標籤管理',
+
+                //原始資料
+                userInfo: decryptObject(localStorage.userInfo),
+
+                ListData: [
+                    {
+                        "name": "標籤001",
+                        "id": '123456',
+                        image: '',
+                        class: 1,
+                        locationx: '',
+                        locationy: '',
+                        StoreList: [
+                            {
+                                storeName: '店家A',
+                                storeId: ''
+                            },
+                            {
+                                storeName: '店家B',
+                                storeId: ''
+                            },
+                            {
+                                storeName: '店家C',
+                                storeId: ''
+                            },
+                        ]
+                    },
+                    {
+                        "name": "標籤002",
+                        "id": '123456',
+                        image: '',
+                        class: 1,
+                        locationx: '',
+                        locationy: '',
+                        StoreList: [{
+                            storeName: '店家AA',
+                            storeId: ''
+                        },
+                        {
+                            storeName: '店家BB',
+                            storeId: ''
+                        },
+                        {
+                            storeName: '店家CC',
+                            storeId: ''
+                        },]
+                    },
+                    {
+                        "name": "標籤003",
+                        "id": '123456',
+                        image: '',
+                        class: 1,
+                        locationx: '',
+                        locationy: '',
+                        StoreList: [{
+                            storeName: '店家AAA',
+                            storeId: ''
+                        },
+                        {
+                            storeName: '店家BBB',
+                            storeId: ''
+                        },
+                        {
+                            storeName: '店家CCC',
+                            storeId: ''
+                        },]
+                    },
+                ],
+
+                EditData: {
+                    name: '',
+                    userid: '',
+                    image: '',
+                    class: '',
+                    locationx: '',
+                    locationy: ''
+                },
+
+                DeletData: {
+                    name: '',
+                    userid: '',
+                    image: '',
+                    class: '',
+                    locationx: '',
+                    locationy: ''
+                },
+
+                AddData: {
+                    name: '',
+                    userid: '',
+                    image: '',
+                    class: '1',
+                    locationx: '',
+                    locationy: '',
+                    action: 1
+                },
+
+                StoreList: [
+
+                ],
+
+
+                currentPage: currentPage, // 當前頁面
+                pageSize: pageSize, // 每頁顯示筆數
+
+                imageUrl: '',          // 上傳後預覽與 Cropper 來源
+                cropper: null,         // Cropper 實例
+                croppedImage: null,    // 裁切結果
+                imageAction: '',       // 依你需求保留
+                LogoImageSize: { w: 300, h: 300 }, // 裁切輸出尺寸（可調）
+            }
+        },
+        computed: {
+            // 計算總頁數
+            totalPages() {
+                return Math.ceil(this.ListData.length / this.pageSize);
+            },
+            // 計算當前頁要顯示的訂單
+            paginatedOrders() {
+                const start = (this.currentPage - 1) * this.pageSize;
+                return this.ListData.slice(start, start + this.pageSize);
+            }
+        },
+        mounted() {
+            var vue = this
+
+            loadingOff()
+            $('[data-toggle="tooltip"]').tooltip();
+
+
+        },
+        watch: {
+        },
+        methods: {
+            // 處理圖片上傳
+            handleFileUpload_logo(event) {
+                this.imageAction = 'logo'
+                var vue = this
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        this.imageUrl = e.target.result;
+
+                        // 確保 Modal 開啟後再初始化 Cropper
+                        $("#EditModal").modal("hide");
+                        setTimeout(() => {
+                            $("#cropModal").modal("show");
+                            setTimeout(() => {
+                                vue.initCropper_logo();
+                            }, 300);
+                        }, 500);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            },
+            // 初始化 Cropper.js
+            initCropper_logo() {
+                // 清理舊的實例
+                if (this.cropper) {
+                    this.cropper.destroy();
+                    this.cropper = null;
+                }
+
+                this.$nextTick(() => {
+                    // 安全取得 ref（避免 v-for 或 ref 放在 wrapper）
+                    let img = this.$refs.image;
+                    if (Array.isArray(img)) img = img[0];
+                    if (img && !(img instanceof HTMLImageElement)) {
+                        img = img.querySelector('img');
+                    }
+                    if (!img) {
+                        console.warn('[initCropper_logo] 找不到 <img ref="image">');
+                        return;
+                    }
+
+                    const init = () => {
+                        this.cropper = new Cropper(img, {
+                            aspectRatio: 1,
+                            viewMode: 2,
+                            autoCropArea: 1,
+                            minCropBoxWidth: this.LogoImageSize.w,
+                            minCropBoxHeight: this.LogoImageSize.h,
+                            ready: () => {
+                                this.cropper.setCropBoxData({
+                                    width: this.LogoImageSize.w,
+                                    height: this.LogoImageSize.h,
+                                });
+                            },
+                            rotatable: false,
+                            scalable: false,
+                            zoomable: false,
+                            movable: false,
+                            checkOrientation: false,
+                        });
+                    };
+
+                    // 已載入（含快取）直接 init；否則掛 onload 後再設 src
+                    const src = this.imageUrl || img.getAttribute('src') || '';
+                    if (img.complete && img.naturalWidth > 0 && img.src === src) {
+                        init();
+                        return;
+                    }
+                    img.onload = () => init();
+                    img.onerror = (e) => console.error('[initCropper_logo] 圖片載入失敗', e);
+
+                    // 強制重載相同 src 以觸發 onload
+                    if (img.src === src) img.src = '';
+                    img.src = src;
+                });
+            },
+            // 裁剪圖片並轉 Base64
+            cropImage_logo(type) {
+                // loadingOn()
+                const vue = this;
+
+                if (!this.cropper) return;
+
+                const canvas = this.cropper.getCroppedCanvas({
+                    width: vue.LogoImageSize.w,
+                    height: vue.LogoImageSize.h
+                });
+
+                if (type === "base") {
+                    vue.croppedImage = canvas.toDataURL("image/png");
+                    vue.EditData.image = vue.croppedImage;
+
+                    $("#cropModal").modal("hide");
+                    $("#EditModal").modal("show");
+                } else if (type === "blob") {
+                    canvas.toBlob((blob) => {
+                        vue.croppedImage = blob;
+
+                        const formData = new FormData();
+                        formData.append('file', vue.croppedImage, 'cropped-image.jpg');
+
+                        $.ajax({
+                            type: "POST",
+                            headers: {
+                                "Content-Type": "application/json; charset=utf-8",
+                            },
+                            url: host + "/api/auth/keylogin",
+                            data: JSON.stringify({ key: AutoKey }),
+                            success: function (res) {
+                                const token = "Bearer " + res.token;
+                                // 第二次請求：上傳圖片
+                                $.ajax({
+                                    url: 'https://sharings.com.tw/api/Image/upload',
+                                    type: 'POST',
+                                    headers: {
+                                        Authorization: token
+                                    },
+                                    data: formData,
+                                    processData: false,
+                                    contentType: false,
+                                    success: function (v) {
+                                        if (v.success == true) {// console.log('上傳成功', uploadRes);
+                                            vue.EditData.image = v.url
+                                            toastr.success("圖片上傳成功");
+                                            $("#cropModal").modal("hide");
+                                            $("#EditModal").modal("show");
+                                            loadingOff()
+                                        }
+                                    },
+                                    error: function (xhr, status, error) {
+                                        // console.error('上傳失敗', error);
+                                        // alert("圖片上傳失敗，請稍後再試。");
+                                        toastr.error("圖片上傳失敗");
+                                        $("#cropModal").modal("hide");
+                                        $("#EditModal").modal("show");
+                                        loadingOff()
+                                    }
+                                });
+                            },
+                            error: function (xhr, status, error) {
+                                reject(error);
+                            },
+                        });
+                    }, "image/png");
+                }
+            },
+
+            viewInfo(i) {
+                this.StoreList = this.ListData[i].StoreList
+
+                $('#infoModal').modal('show')
+            },
+
+            showDeleteWin(i) {
+                this.DeletData = JSON.parse(JSON.stringify(this.ListData[i]))
+                console.log(this.DeletData);
+
+                $('#DeleteModal').modal("show");
+            },
+
+            showEditWin(i) {
+                this.EditData = JSON.parse(JSON.stringify(this.ListData[i]))
+                this.EditData.action = 0
+                $('#EditModal').modal("show");
+            },
+            showAddWin() {
+                this.EditData = this.AddData
+                $('#EditModal').modal("show");
+            },
+
+
+            // 切換到上一頁
+            prevPage() {
+                if (this.currentPage > 1) {
+                    this.currentPage--;
+                }
+            },
+            // 切換到下一頁
+            nextPage() {
+                if (this.currentPage < this.totalPages) {
+                    this.currentPage++;
+                }
+            },
+            // 跳轉到指定頁數
+            goToPage(page) {
+                this.currentPage = page;
+            },
+        },
+    });
+    app.mount("#app");
+</script>
+
+</html>

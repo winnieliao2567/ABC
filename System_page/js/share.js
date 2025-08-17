@@ -55,7 +55,7 @@ const userFunction = [
         icon: "fas fa-store",
         name: "店家管理",
         status: "",
-        url: "StoreMaintain.html",
+        url: "SearchStore.html",
     },
     {
         icon: "fas fa-clipboard-list",
@@ -277,59 +277,70 @@ function GetDataError(data) {
 
 // === Auth Utilities ==================================================
 function saveAuthFromVerifyResponse(resp) {
-	if (!resp || typeof resp !== 'object') return;
-	const encryptedId = resp.encryptedId ?? resp.EncryptedId ?? '';
-	const userData = resp.userData ?? resp.UserData ?? {};
-	const username = resp.username ?? resp.Username ?? userData.username ?? '';
-	const roles = resp.roles ?? resp.Roles ?? userData.roles ?? '';
-	const userId = userData.userId ?? userData.UserId ?? '';
+    if (!resp || typeof resp !== "object") return;
+    const encryptedId = resp.encryptedId ?? resp.EncryptedId ?? "";
+    const userData = resp.userData ?? resp.UserData ?? {};
+    const username = resp.username ?? resp.Username ?? userData.username ?? "";
+    const roles = resp.roles ?? resp.Roles ?? userData.roles ?? "";
+    const userId = userData.userId ?? userData.UserId ?? "";
 
-	if (encryptedId) localStorage.setItem('userToken', encryptedId);
-	if (username) localStorage.setItem('username', username);
-	if (roles !== undefined && roles !== null) localStorage.setItem('roles', String(roles));
-	if (userId) localStorage.setItem('userId', userId);
-	if (Object.keys(userData).length) localStorage.setItem('userData', JSON.stringify(userData));
+    if (encryptedId) localStorage.setItem("userToken", encryptedId);
+    if (username) localStorage.setItem("username", username);
+    if (roles !== undefined && roles !== null) localStorage.setItem("roles", String(roles));
+    if (userId) localStorage.setItem("userId", userId);
+    if (Object.keys(userData).length) localStorage.setItem("userData", JSON.stringify(userData));
 }
 
 function getAuth() {
-	return {
-		token: localStorage.getItem('userToken') || '',
-		username: localStorage.getItem('username') || '',
-		roles: localStorage.getItem('roles') || '',
-		userId: localStorage.getItem('userId') || '',
-		userData: (function(){
-			try { return JSON.parse(localStorage.getItem('userData') || '{}'); } catch { return {}; }
-		})()
-	};
+    return {
+        token: localStorage.getItem("userToken") || "",
+        username: localStorage.getItem("username") || "",
+        roles: localStorage.getItem("roles") || "",
+        userId: localStorage.getItem("userId") || "",
+        userData: (function () {
+            try {
+                return JSON.parse(localStorage.getItem("userData") || "{}");
+            } catch {
+                return {};
+            }
+        })(),
+    };
 }
 
 function clearAuth() {
-	localStorage.removeItem('userToken');
-	localStorage.removeItem('username');
-	localStorage.removeItem('roles');
-	localStorage.removeItem('userId');
-	localStorage.removeItem('userData');
+    localStorage.removeItem("userToken");
+    localStorage.removeItem("username");
+    localStorage.removeItem("roles");
+    localStorage.removeItem("userId");
+    localStorage.removeItem("userData");
 }
 
 function hasRole(required) {
-	const r = (localStorage.getItem('roles') || '').split(',').map(x => x.trim()).filter(Boolean);
-	return r.includes(String(required));
+    const r = (localStorage.getItem("roles") || "")
+        .split(",")
+        .map((x) => x.trim())
+        .filter(Boolean);
+    return r.includes(String(required));
 }
 
 function renderUsername(selector) {
-	const name = localStorage.getItem('username') || '';
-	if (!name) return;
-	const targets = document.querySelectorAll(selector || '.js-username, [data-username]');
-	targets.forEach(el => { el.textContent = name; });
+    const name = localStorage.getItem("username") || "";
+    if (!name) return;
+    const targets = document.querySelectorAll(selector || ".js-username, [data-username]");
+    targets.forEach((el) => {
+        el.textContent = name;
+    });
 }
 
 function requireLogin(redirect) {
-	if (!(localStorage.getItem('userToken') || localStorage.getItem('username'))) {
-		toastr.error('請先登入');
-		setTimeout(() => { window.location.href = redirect || 'login.html'; }, 800);
-		return false;
-	}
-	return true;
+    if (!(localStorage.getItem("userToken") || localStorage.getItem("username"))) {
+        toastr.error("請先登入");
+        setTimeout(() => {
+            window.location.href = redirect || "login.html";
+        }, 800);
+        return false;
+    }
+    return true;
 }
 
 $(function () {
@@ -375,5 +386,5 @@ $(function () {
     });
 
     // 自動渲染頁面上的使用者名稱
-    renderUsername('.js-username, [data-username]');
+    renderUsername(".js-username, [data-username]");
 });

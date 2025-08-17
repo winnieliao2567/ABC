@@ -1,0 +1,1727 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>共響 SHARING｜後台管理系統</title>
+
+    <!-- jquery -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+    <!-- JavaScript Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- <link rel="stylesheet" href="css/bootstrap.min.css"> -->
+
+    <!-- fontawesome -->
+    <script src="https://kit.fontawesome.com/4de7eaf6aa.js" crossorigin="anonymous"></script>
+
+    <!-- Theme style -->
+    <link rel="stylesheet" href="AdminLTE3/dist/css/adminlte.min.css">
+    <script src="AdminLTE3/dist/js/adminlte.min.js"></script>
+
+    <!-- Chart.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.bundle.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.css" />
+
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/tom-select/2.4.1/css/tom-select.bootstrap4.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet" />
+
+    <!-- toastr -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css" />
+
+    <!-- datepicker -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.30.1/moment.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+
+    <!-- Cropper.js -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cropper/1.0.2/jquery-cropper.min.js"></script>
+
+    <!-- Vue.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.5.13/vue.global.min.js"></script>
+
+    <script src="js/share.js?v101"></script>
+    <link rel="stylesheet" href="css/share.css?v101" />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+
+</head>
+
+<body class="sidebar-mini layout-navbar-fixed layout-footer-fixed sidebar-mini-md layout-fixed sidebar-collapse">
+    <!-- Preloader -->
+    <div class="preloader flex-column justify-content-center align-items-center">
+        <img class="animation__shake" src="img/logo.svg" style="height: 15vh;">
+    </div>
+    <!-- control-sidebar-slide-open -->
+    <div id="app" class="wrapper">
+        <div class="modal fade" id="cropModal" tabindex="-1" role="dialog" data-backdrop="static" 和
+            data-keyboard="false">
+            <div class="modal-dialog modal-xl modal-dialog-scrollable modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">裁剪圖片</h5>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                    <div class="modal-body text-center">
+                        <div class="img-container">
+                            <img id="image" ref="image" class="img-fluid">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-primary" @click="cropImage_logo('blob')"
+                            v-if="imageAction=='logo'">確定裁剪爲Logo</button>
+                        <button class="btn btn-primary" @click="cropImage_banner('blob')"
+                            v-if="imageAction=='banner'">確定裁剪爲橫幅</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navbar -->
+        <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+            <!-- Left navbar links -->
+            <ul class="navbar-nav d-md-none">
+                <li class="nav-item">
+                    <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+                </li>
+            </ul>
+
+            <!-- Right navbar links -->
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item dropdown">
+                    <a class="nav-link" data-toggle="dropdown" href="#">
+                        <i class="fas fa-user-circle"></i>
+                        使用者名稱
+                        <i class="fas fa-caret-down"></i>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right overflow-auto StoreSelector">
+                        <a class="dropdown-item">
+                            <div class="store">
+                                <p class="text-muted">登出</p>
+                            </div>
+                        </a>
+                    </div>
+                </li>
+            </ul>
+        </nav>
+        <!-- /.navbar -->
+
+        <!-- Main Sidebar Container -->
+        <aside class="main-sidebar elevation-4 sidebar-light-primary">
+            <!-- Brand Logo -->
+            <a class="toIndex brand-link logo-switch">
+                <img src="img/logo.svg" alt="AdminLTE Docs Logo Small" class="brand-image-xl logo-xs">
+                <img src="img/logo2.svg" alt="AdminLTE Docs Logo Large" class="brand-image-xs logo-xl"
+                    style="width: 200px;">
+            </a>
+            <!-- Sidebar -->
+            <div class="sidebar os-theme-dark">
+                <!-- Sidebar Menu -->
+                <nav class="mt-2">
+                    <ul class="nav nav-pills nav-sidebar flex-column nav-child-indent" data-widget="treeview"
+                        role="menu" data-accordion="false">
+                        <!-- Add icons to the links using the .nav-icon class
+                 <br /> with font-awesome or any other icon font library -->
+                        <li class="nav-item" v-for="(fuc,index) in userFunction">
+                            <a :href="fuc.url" class="nav-link" :class="{'active':fuc.status==true}">
+                                <i class="nav-icon" :class="fuc.icon"></i>
+                                <p>
+                                    {{fuc.name}}
+                                    <i class="fas fa-angle-left right" v-if="fuc.item!=null"></i>
+                                </p>
+                            </a>
+                            <ul class="nav nav-treeview" v-if="fuc.item!=null">
+                                <li class="nav-item" v-for="(fucItem,index) in fuc.item" :key="index">
+                                    <a :href="fucItem.url" class="nav-link" :class="{'active':fuc.status==true}">
+                                        <i class="nav-icon" :class="fucItem.icon"></i>
+                                        <p>{{fucItem.name}}</p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+
+                    </ul>
+                </nav>
+                <!-- /.sidebar-menu -->
+            </div>
+            <!-- /.sidebar -->
+        </aside>
+
+
+
+        <div class="content-wrapper">
+            <!-- Content Header (Page header) -->
+            <div class="content-header">
+                <div class="container-fluid">
+                    <div class="row mb-2">
+                        <div class="col-sm-6">
+                            <h1 class="m-0">{{PageTitle}}</h1>
+                        </div><!-- /.col -->
+                        <div class="col-sm-6">
+                            <ol class="breadcrumb float-sm-right">
+                                <li class="breadcrumb-item"><a class="toIndex">SHARING</a></li>
+                                <li class="breadcrumb-item active">{{PageTitle}}</li>
+                            </ol>
+                        </div><!-- /.col -->
+                    </div><!-- /.row -->
+                </div><!-- /.container-fluid -->
+            </div>
+            <!-- /.content-header -->
+
+            <!-- Main content -->
+            <div class="content">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-12 col-md-8">
+                            <div class="accordion" id="accordion">
+                                <div class="card m-0" v-for="(item, index) in StoreEditItem" :key="item.id">
+                                    <a class="d-block w-100 collapsed" data-toggle="collapse" :href="'#'+item.id"
+                                        aria-expanded="false">
+                                        <div class="card-header">
+                                            <h6 class="w-100 m-0">
+                                                <span v-html="item.name"></span>
+                                                <span class="" v-show="item.editDone">*</span>
+                                                <span class="text-danger ml-2" v-show="item.editError">
+                                                    <i class="fas fa-exclamation-circle"></i></span>
+                                            </h6>
+                                            <!-- <p class="text-muted m-0 ml-4">
+                                                {{item.discriptions}}
+                                            </p> -->
+                                        </div>
+                                    </a>
+                                    <div :id="item.id" class="collapse" data-parent="#accordion" style="">
+                                        <div class="card-body py-2 px-3">
+                                            <div class="mb-3" v-for="(settingItem, index) in item.settingItem"
+                                                :key="index">
+                                                <p class="m-0">
+                                                    {{ settingItem.name }}
+                                                    <span class="text-muted text-sm"
+                                                        v-if="settingItem.groupitem.type === 'BannerImage'||settingItem.groupitem.type === 'LogoImage'">(點擊圖片更換)</span>
+                                                </p>
+                                                <!-- 店家地址 -->
+                                                <div class="col-12 my-1"
+                                                    v-if="settingItem.groupitem.type === 'address'">
+                                                    <div class="input-group mb-1">
+                                                        <select class="form-control"
+                                                            :disabled="!settingItem.groupitem.enabled"
+                                                            v-model="storeInfoEdit.storeInfo.city">
+                                                            <option v-for="(city, index) in allCity" :key="index"
+                                                                :value="city.name">
+                                                                {{ city.name }}
+                                                            </option>
+                                                        </select>
+                                                        <select class="form-control"
+                                                            :disabled="!settingItem.groupitem.enabled"
+                                                            v-model="storeInfoEdit.storeInfo.districts">
+                                                            <option v-for="(district, index) in allDistricts"
+                                                                :key="index" :value="district.name">
+                                                                {{ district.name }}
+                                                            </option>
+                                                        </select>
+                                                    </div>
+                                                    <input class="form-control" autocomplete="off"
+                                                        :disabled="!settingItem.groupitem.enabled"
+                                                        v-model="storeInfoEdit.storeInfo.shortAddress"
+                                                        :placeholder="settingItem.groupitem.placeholder">
+                                                </div>
+
+                                                <!-- logo -->
+                                                <div class="col-12 my-1"
+                                                    v-if="settingItem.groupitem.type === 'LogoImage'">
+                                                    <div class="input-group mb-1">
+                                                        <label
+                                                            class="embed-responsive embed-responsive-1by1 d-flex justify-content-center"
+                                                            style="overflow: hidden;max-width: 300px;">
+
+                                                            <img :src="storeInfoEdit.store.image || 'img/unknowIMG.png'"
+                                                                class="border h-100">
+
+                                                            <input type="file" class="custom-file-input" id="LogoImage"
+                                                                @change="handleFileUpload_logo"
+                                                                accept=".jpg,.jpeg,.png">
+
+                                                        </label>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Banner -->
+                                                <div class="col-12 my-1"
+                                                    v-if="settingItem.groupitem.type === 'BannerImage'">
+                                                    <div class="input-group mb-1">
+                                                        <label
+                                                            class="embed-responsive embed-responsive-16by9 d-flex justify-content-center"
+                                                            style="overflow: hidden">
+
+                                                            <img :src="storeInfoEdit.store.bannerimage || 'img/unknowIMG.png'"
+                                                                class="border w-100">
+
+                                                            <input type="file" class="custom-file-input"
+                                                                id="BannerImage" @change="handleFileUpload_banner"
+                                                                accept=".jpg,.jpeg,.png">
+
+                                                        </label>
+                                                    </div>
+                                                </div>
+
+                                                <!-- 店家信箱 -->
+                                                <div class="col-12 my-1" v-if="settingItem.groupitem.type === 'email'">
+                                                    <input class="form-control" type="email" autocomplete="off"
+                                                        :disabled="!settingItem.groupitem.enabled"
+                                                        v-model="storeInfoEdit.storeInfo.email"
+                                                        :class="{'is-invalid': !validateEmail(storeInfoEdit.storeInfo.email)}"
+                                                        :placeholder="settingItem.groupitem.placeholder">
+                                                    <!-- <input class="form-control" type="email" autocomplete="off"
+                                                        :disabled="!settingItem.groupitem.enabled"
+                                                        v-model="storeInfoEdit.storeInfo.email"
+                                                        :class="{'is-invalid': !validateEmail(storeInfoEdit.storeInfo.email)}"
+                                                        :placeholder="settingItem.groupitem.placeholder">
+                                                    <div class="text-memo text-danger"
+                                                        v-if="!validateEmail(storeInfoEdit.storeInfo.email)">
+                                                        *請輸入正確的Email格式
+                                                    </div> -->
+                                                </div>
+
+                                                <!-- 店家電話 -->
+                                                <div class="col-12 row m-0 my-1"
+                                                    v-if="settingItem.groupitem.type === 'tel'">
+                                                    <!-- <div
+                                                        class="px-2 w-auto d-flex justify-content-center align-items-center">
+                                                        (
+                                                    </div>
+                                                    <input class="form-control" style="width: 10%;" type="text"
+                                                        autocomplete="off" :disabled="!settingItem.groupitem.enabled"
+                                                        v-modal="tel.f" :placeholder="'02'">
+                                                    <div
+                                                        class="px-2 w-auto d-flex justify-content-center align-items-center">
+                                                        )
+                                                    </div>
+                                                    <input class="form-control w-auto" type="text" autocomplete="off"
+                                                        :disabled="!settingItem.groupitem.enabled" v-modal="tel.s"
+                                                        :placeholder="'2212'">
+                                                    <div
+                                                        class="px-2 w-auto d-flex justify-content-center align-items-center">
+                                                        -
+                                                    </div>
+                                                    <input class="form-control w-auto" type="text" autocomplete="off"
+                                                        :disabled="!settingItem.groupitem.enabled" v-modal="tel.t"
+                                                        :placeholder="'1234'"> -->
+
+                                                    <input class="form-control" type="text" autocomplete="off"
+                                                        :disabled="!settingItem.groupitem.enabled"
+                                                        v-model="storeInfoEdit.storeInfo.tel"
+                                                        :placeholder="settingItem.groupitem.placeholder">
+                                                    <!-- <input class="form-control" type="tel" autocomplete="off"
+                                                        :disabled="!settingItem.groupitem.enabled"
+                                                        v-model="storeInfoEdit.storeInfo.tel"
+                                                        :class="{'is-invalid': !validateTalAndPhone(this.storeInfoEdit.storeInfo.tel)}"
+                                                        :placeholder="settingItem.groupitem.placeholder">
+                                                    <div class="text-memo text-danger"
+                                                        v-if="!validateTalAndPhone(storeInfoEdit.storeInfo.tel)">
+                                                        *請輸入正確的市話或手機格式
+                                                    </div> -->
+                                                </div>
+
+                                                <!-- 店家簡介 -->
+                                                <div class="col-12 my-1"
+                                                    v-if="settingItem.groupitem.type === 'text editor'">
+                                                    <div class="form-control" id="storeIntroduction"
+                                                        :disabled="!settingItem.groupitem.enabled"></div>
+                                                </div>
+
+                                                <!-- 店家名稱 -->
+                                                <div class="col-12 my-1"
+                                                    v-if="settingItem.groupitem.type === 'storeName'">
+                                                    <input class="form-control" type="tel" autocomplete="off"
+                                                        :disabled="!settingItem.groupitem.enabled"
+                                                        v-model="storeInfoEdit.store.storeName"
+                                                        :placeholder="settingItem.groupitem.placeholder">
+                                                </div>
+
+                                                <!-- 統一編號 -->
+                                                <div class="col-12 my-1"
+                                                    v-if="settingItem.groupitem.type === 'businessNum'">
+                                                    <input class="form-control" type="text" autocomplete="off"
+                                                        :disabled="!settingItem.groupitem.enabled"
+                                                        v-model="storeInfoEdit.storeInfo.businessNum"
+                                                        :placeholder="settingItem.groupitem.placeholder">
+                                                    <!-- <input class="form-control" type="tel" autocomplete="off"
+                                                        :disabled="!settingItem.groupitem.enabled"
+                                                        v-model="storeInfoEdit.storeInfo.businessNum"
+                                                        :class="{'is-invalid': storeInfoEdit.storeInfo.businessNum.length!=8}"
+                                                        :placeholder="settingItem.groupitem.placeholder">
+                                                    <div class="text-memo text-danger"
+                                                        v-if="storeInfoEdit.storeInfo.businessNum.length!=8">
+                                                        *統一編號格式須為8碼數字
+                                                    </div> -->
+                                                </div>
+
+                                                <!-- 標籤 -->
+                                                <div class="col-12 my-1"
+                                                    v-if="settingItem.groupitem.type === 'KeyWord Tag'">
+                                                    <input class="form-control" id="input-tags" autocomplete="off"
+                                                        :placeholder="settingItem.groupitem.placeholder"
+                                                        :disabled="!settingItem.groupitem.enabled">
+                                                </div>
+
+                                                <!-- 營業時間 -->
+                                                <div class="col-12 my-1"
+                                                    v-if="settingItem.groupitem.type === 'BusinessTime'">
+                                                    <p class="m-0 text-muted">儲存後約15-30分鐘更新生效</p>
+                                                    <div class="row m-0 py-3 border-bottom"
+                                                        v-for="(day,index) in storeInfoEdit.openTime.businessDays">
+                                                        <div class="col m-0">
+                                                            {{day.title}}
+                                                        </div>
+                                                        <div class="custom-control custom-switch">
+                                                            <input type="checkbox" class="custom-control-input"
+                                                                :id="'operation'+day.id" v-model="day.operation"
+                                                                @change="toggleOperation(day.id, day.operation)">
+                                                            <label class="custom-control-label text-success m-0 ml-2"
+                                                                v-if="day.operation" :for="'operation'+day.id">
+                                                                營業
+                                                            </label>
+                                                            <label class="custom-control-label text-muted m-0 ml-2"
+                                                                v-if="!day.operation" :for="'operation'+day.id">
+                                                                休息
+                                                            </label>
+                                                        </div>
+                                                        <div v-if="day.operation" class="col-12 m-0">
+                                                            <div class="row">
+                                                                <div class="col-12 mt-3">
+                                                                    <div class="input-group py-1"
+                                                                        v-for="(time,index) in day.time">
+                                                                        <input class="form-control" v-model="time.open"
+                                                                            type="time" :data-for="'open-'+day.id">
+                                                                        <span class="mx-2">~</span>
+                                                                        <input class="form-control" v-model="time.close"
+                                                                            type="time" :data-for="'close-'+day.id">
+                                                                        <div class="input-group-append">
+                                                                            <button
+                                                                                v-on:click="deletOperationTime(day.id,index)"
+                                                                                class="btn btn-outline-secondary">
+                                                                                <i class="fas fa-times"></i>
+                                                                            </button>
+                                                                        </div>
+                                                                    </div>
+                                                                    <p class="text-sm text-bold text-danger"
+                                                                        v-show="CheckBusinessDays[index]==false">
+                                                                        <i class="fas fa-exclamation-circle mr-2"></i>
+                                                                        每區間段的開始營業時間需小於結束時間
+                                                                    </p>
+                                                                </div>
+                                                                <div class="col-12"
+                                                                    v-show="CheckBusinessDays[index]==true">
+                                                                    <button class="btn-link btn btn-sm"
+                                                                        v-show="3>day.time.length" :data-for="index"
+                                                                        v-on:click="addOperationTime(index)">
+                                                                        + 新增營業區間
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+
+                                                <!-- 間隔等待時間 -->
+                                                <div class="col-12 my-1"
+                                                    v-if="settingItem.groupitem.type === 'IntervalTime'">
+                                                    <input class="form-control w-25 d-inline-block" autocomplete="off"
+                                                        :class="{'is-invalid':!validateIntervalTime(storeInfoEdit.store.orderInterval, 5)}"
+                                                        :disabled="!settingItem.groupitem.enabled" type="number"
+                                                        v-model="storeInfoEdit.store.orderInterval" min="0" max="60"
+                                                        step="5">
+                                                    <p class="pl-3 d-inline-block m-0">分鐘</p>
+                                                    <p class="text-danger text-bold text-sm pl-3 m-0 d-inline-block"
+                                                        v-if="!validateIntervalTime(storeInfoEdit.store.orderInterval, 5)">
+                                                        <i class="fas fa-exclamation-circle mr-2"></i>
+                                                        間隔時間須為5的倍數
+                                                    </p>
+                                                </div>
+
+                                                <!-- 每單基礎等待時間 -->
+                                                <div class="col-12 my-1"
+                                                    v-if="settingItem.groupitem.type === 'BasicTime'">
+                                                    <select class="form-control w-25 d-inline-block" autocomplete="off"
+                                                        :disabled="!settingItem.groupitem.enabled"
+                                                        v-model="storeInfoEdit.storeInfo.basicwaitingTime">
+                                                        <option v-for="num in generateNumbers(0, 60, 5)" :key="num"
+                                                            :value="num">
+                                                            {{ num }}
+                                                        </option>
+                                                    </select>
+                                                    <p class="pl-3 w-25 d-inline-block m-0 mr-5">分鐘</p>
+                                                </div>
+
+                                                <!-- 最低區間數量 -->
+                                                <div class="col-12 my-1"
+                                                    v-if="settingItem.groupitem.type === 'minOrderAmount'">
+                                                    <input class="form-control w-25 d-inline-block" autocomplete="off"
+                                                        :disabled="!settingItem.groupitem.enabled" type="number" min="0"
+                                                        :class="{'is-invalid':!storeInfoEdit.store.minOrderAmount}"
+                                                        max="10" step="1" v-model="storeInfoEdit.store.minOrderAmount">
+                                                    <p class="pl-3 d-inline-block m-0">單</p>
+                                                    <p class="text-danger text-bold text-sm pl-3 m-0 d-inline-block"
+                                                        v-if="!storeInfoEdit.store.minOrderAmount">
+                                                        <i class="fas fa-exclamation-circle mr-2"></i>
+                                                        請輸入最低區間數量
+                                                    </p>
+                                                </div>
+
+                                                <!-- 最低金額 -->
+                                                <div class="col-12 my-1"
+                                                    v-if="settingItem.groupitem.type === 'minPrice'">
+                                                    <input class="form-control w-25 d-inline-block" type="number"
+                                                        :class="{'is-invalid':!storeInfoEdit.store.amountLimit}" min="0"
+                                                        v-model="storeInfoEdit.store.amountLimit">
+                                                    <p class="pl-3 d-inline-block m-0 ">元</p>
+                                                    <p class="text-danger text-bold text-sm pl-3 m-0 d-inline-block"
+                                                        v-if="!storeInfoEdit.store.amountLimit">
+                                                        <i class="fas fa-exclamation-circle mr-2"></i>
+                                                        請輸入最低金額
+                                                    </p>
+                                                </div>
+
+                                                <!-- 最高金額 -->
+                                                <div class="col-12 my-1"
+                                                    v-if="settingItem.groupitem.type === 'maxPrice'">
+                                                    <p class="text-muted m-0">若有訂單超過該金額，後續訂單全部推至下一區間</p>
+                                                    <input class="form-control w-25 d-inline-block" type="number"
+                                                        :class="{'is-invalid':!storeInfoEdit.store.slotLimit}" min="0"
+                                                        v-model="storeInfoEdit.store.slotLimit" ref="inputs">
+                                                    <p class="pl-3 d-inline-block m-0">元</p>
+                                                    <p class="text-danger text-bold text-sm pl-3 m-0 d-inline-block"
+                                                        v-if="!storeInfoEdit.store.slotLimit">
+                                                        <i class="fas fa-exclamation-circle mr-2"></i>
+                                                        請輸入最高金額
+                                                    </p>
+                                                </div>
+
+                                                <!-- 低消金額 -->
+                                                <div class="col-12 my-1"
+                                                    v-if="settingItem.groupitem.type === 'LowSpendingAmount'">
+                                                    <p class="text-muted text-sm">若消費者下單總金額低於設定值，該訂單不成立並跳出警告訊息</p>
+                                                    <input class="form-control w-25 d-inline-block" type="number"
+                                                        :class="{'is-invalid':CheckLowSpending[0]==false}" min="0"
+                                                        v-model="storeInfoEdit.storeInfo.minimumOrderAmount"
+                                                        ref="inputs">
+                                                    <p class="text-danger text-bold text-sm w-75 d-inline-block pl-3 m-0"
+                                                        v-if="CheckLowSpending[0]==false">
+                                                        <i class="fas fa-exclamation-circle mr-2"></i>
+                                                        請輸入低消金額
+                                                    </p>
+                                                </div>
+
+                                                <!-- 低消提示 -->
+                                                <div class="col-12 my-1"
+                                                    v-if="settingItem.groupitem.type === 'Reminder'">
+                                                    <div class="custom-control custom-switch">
+                                                        <input type="checkbox" class="custom-control-input"
+                                                            id="minimumOrderReminder"
+                                                            v-model="storeInfoEdit.storeInfo.minimumOrderEnabled">
+                                                        <label class="custom-control-label text-success m-0 ml-2"
+                                                            for="minimumOrderReminder"
+                                                            v-if="storeInfoEdit.storeInfo.minimumOrderEnabled">
+                                                            開啟
+                                                        </label>
+                                                        <label class="custom-control-label text-muted m-0 ml-2"
+                                                            for="minimumOrderReminder"
+                                                            v-if="!storeInfoEdit.storeInfo.minimumOrderEnabled">
+                                                            關閉
+                                                        </label>
+                                                    </div>
+
+                                                    <!-- 提示內容 -->
+                                                    <div class="p-3">
+                                                        <h6>警告提示
+                                                            <span class="text-danger text-sm"
+                                                                v-show="CheckLowSpending[1]==false">
+                                                                <i class="fas fa-exclamation-circle mr-2"></i>
+                                                                請輸入低消警告提示
+                                                            </span>
+                                                        </h6>
+                                                        <textarea class="form-control" placeholder='提示內容文字，EX:未達最低消費金額'
+                                                            :class="{'is-invalid':CheckLowSpending[1]==false}"
+                                                            v-model="storeInfoEdit.storeInfo.minimumOrderText"></textarea>
+                                                    </div>
+                                                </div>
+
+
+                                                <!-- 店休 -->
+                                                <div class="col-12 my-1"
+                                                    v-if="settingItem.groupitem.type === 'StoreClosed'">
+                                                    <div class="row mt-3">
+                                                        <div class="col-12"
+                                                            v-for="(day,index) in storeInfoEdit.openTime.specialCloseDays">
+                                                            <div class="input-group mb-2" v-if="day.date>today">
+                                                                <!-- <div class="input-group mb-2"> -->
+                                                                <input type="text" class="form-control"
+                                                                    v-model="day.title"
+                                                                    :placeholder="settingItem.groupitem.placeholder">
+                                                                <input type="date" class="form-control"
+                                                                    :class="{'is-invalid': today > day.date}"
+                                                                    v-model="day.date" :min="today">
+                                                                <div class="input-group-append">
+                                                                    <button class="btn btn-outline-secondary"
+                                                                        @click="delStoreClosed(index)" type="button">
+                                                                        <i class="fas fa-times" aria-hidden="true"></i>
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <p class="text-sm text-bold text-danger"
+                                                            v-show="StoreClosed_FoolProof">
+                                                            <i class="fas fa-exclamation-circle mr-2"></i>
+                                                            請輸入店休名稱
+                                                        </p>
+                                                        <button class="btn-link btn btn-sm" @click="addStoreClosed">
+                                                            + 特殊店休日期
+                                                        </button>
+                                                    </div>
+                                                </div>
+
+                                                <!-- 最多可預訂天數 -->
+                                                <div class="col-12 my-1"
+                                                    v-if="settingItem.groupitem.type === 'maxReservationDays'">
+                                                    <input class="form-control w-25 d-inline-block" type="number"
+                                                        autocomplete="off" :disabled="!settingItem.groupitem.enabled"
+                                                        :class="{'is-invalid':!storeInfoEdit.storeInfo.maxReservationDays}"
+                                                        v-model="storeInfoEdit.storeInfo.maxReservationDays" min="0"
+                                                        :placeholder="settingItem.groupitem.placeholder">
+                                                    <p class="pl-3  d-inline-block m-0 ">天</p>
+                                                    <p class="text-danger text-bold text-sm d-inline-block pl-3 m-0"
+                                                        v-if="!storeInfoEdit.storeInfo.maxReservationDays">
+                                                        <i class="fas fa-exclamation-circle mr-2"></i>
+                                                        請輸入最多可預定天數
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-3 text-end col-12 border-top mt-3" id="saveBar">
+                            <button class="btn btn-secondary mr-2" v-on:click="reset">
+                                <i class="fas fa-save mr-2"></i>恢復原資料
+                            </button>
+
+                            <button class="btn btn-primary" v-on:click="save" :disabled="!CheckSave">
+                                <i class="fas fa-save mr-2"></i>保存
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+                <!-- /.row -->
+            </div><!-- /.container-fluid -->
+        </div>
+
+        <footer class="main-footer">
+            <!-- To the right -->
+            <div class="float-right d-none d-sm-inline" id="version"></div>
+            <!-- Default to the left -->
+            <strong id="copyRight"></strong>
+        </footer>
+    </div>
+
+    <script src="js/TwCities.js"></script>
+    <script>
+
+        const app = Vue.createApp({
+            data() {
+                return {
+                    userFunction: userFunction,
+
+                    PageTitle: '店家管理',
+
+
+                    //原始資料
+                    userInfo: decryptObject(localStorage.userInfo),
+                    storeInfo: decryptObject(localStorage.storeInfo),
+                    allStore: decryptObject(localStorage.allStore),
+
+                    storeInfoEdit:
+                    {
+                        "store": {
+                            "storeId": "262318e8-e447-4f58-9757-258d348046d7",
+                            "storeName": "Store001",
+                            "storePhone": "0223456789",
+                            "minOrderAmount": 5,
+                            "orderInterval": 15,
+                            "createdDate": "2025-03-18T10:12:14.013",
+                            "enable": true,
+                            "deleted": false,
+                            "id": 11,
+                            "slotLimit": 1000,
+                            "amountLimit": 200,
+                        },
+                        "storeInfo": {
+                            "storeId": "262318e8-e447-4f58-9757-258d348046d7",
+                            "city": "新北市",
+                            "districts": "新店區",
+                            "shortAddress": "",
+                            "email": "",
+                            "tel": "",
+                            "businessNum": "",
+                            "introduction": "<p><br></p>",
+                            "tags": [],
+                            "basicwaitingTime": "",
+                            "minimumOrderAmount": "",
+                            "minimumOrderText": "",
+                            "minimumOrderEnabled": true,
+                            "maxReservationDays": 0
+                        },
+                        "openTime": {
+                            "businessDays": [
+                                {
+                                    "id": "Mon",
+                                    "title": "週一",
+                                    "operation": true,
+                                    "time": [
+                                        {
+                                            "open": "",
+                                            "close": ""
+                                        }
+                                    ]
+                                },
+                                {
+                                    "id": "Tue",
+                                    "title": "週二",
+                                    "operation": true,
+                                    "time": [
+                                        {
+                                            "open": "",
+                                            "close": ""
+                                        }
+                                    ]
+                                },
+                                {
+                                    "id": "Wed",
+                                    "title": "週三",
+                                    "operation": true,
+                                    "time": [
+                                        {
+                                            "open": "",
+                                            "close": ""
+                                        }
+                                    ]
+                                },
+                                {
+                                    "id": "Thu",
+                                    "title": "週四",
+                                    "operation": true,
+                                    "time": [
+                                        {
+                                            "open": "",
+                                            "close": ""
+                                        }
+                                    ]
+                                },
+                                {
+                                    "id": "Fri",
+                                    "title": "週五",
+                                    "operation": true,
+                                    "time": [
+                                        {
+                                            "open": "",
+                                            "close": ""
+                                        }
+                                    ]
+                                },
+                                {
+                                    "id": "Sat",
+                                    "title": "週六",
+                                    "operation": true,
+                                    "time": [
+                                        {
+                                            "open": "",
+                                            "close": ""
+                                        }
+                                    ]
+                                },
+                                {
+                                    "id": "Sun",
+                                    "title": "週日",
+                                    "operation": true,
+                                    "time": [
+                                        {
+                                            "open": "",
+                                            "close": ""
+                                        }
+                                    ]
+                                }
+                            ],
+                            "specialCloseDays": []
+                        },
+                        "status": {
+                            "storeId": "",
+                            "isOpen": true,
+                            "currentOpenTime": "",
+                            "currentCloseTime": "",
+                            "lastUpdated": ""
+                        },
+                        "activeMenu": {
+                            "menuId": "",
+                            "menuName": "",
+                            "isActive": true,
+                            "createdDate": "",
+                            "itemCount": 0
+                        },
+                        "nextAvailable": {
+                            "time": "",
+                            "timeFormatted": "",
+                            "waitingMinutes": 0,
+                            "waitingTimeDisplay": ""
+                        }
+                    },
+
+                    storeId: urlParams.get("sid"),
+
+                    allCity: [],
+                    allDistricts: [],
+
+                    StoreEditItem: [
+                        {
+                            id: 'StoreInfo',
+                            name: '<i class="fas fa-store mr-2"></i>店家資訊',
+                            discriptions: '店家基本資訊，圖片、地址、電話...',
+                            settingItem: [
+                                {
+                                    name: '店家名稱',
+                                    groupitem:
+                                    {
+                                        type: 'storeName',
+                                        enabled: true,
+                                        placeholder: ""
+                                    }
+
+                                },
+                                {
+                                    name: 'LOGO圖片',
+                                    groupitem:
+                                    {
+                                        type: 'LogoImage',
+                                        enabled: true,
+                                        placeholder: ""
+                                    },
+                                },
+                                {
+                                    name: '橫幅圖片',
+                                    groupitem:
+                                    {
+                                        type: 'BannerImage',
+                                        enabled: true,
+                                        placeholder: ""
+                                    },
+                                },
+                                {
+                                    name: '店家地址',
+                                    groupitem:
+                                    {
+                                        type: 'address',
+                                        enabled: true,
+                                        placeholder: ""
+                                    },
+                                    checkFunc: this.address
+                                },
+                                {
+                                    name: 'E-Mail',
+                                    groupitem:
+                                    {
+                                        type: 'email',
+                                        enabled: true,
+                                        placeholder: ""
+                                    }
+
+                                },
+                                {
+                                    name: '店家電話',
+                                    groupitem:
+                                    {
+                                        type: 'tel',
+                                        enabled: true,
+                                        placeholder: "(02)1234-5678"
+                                    }
+
+                                },
+                                {
+                                    name: '店家簡介',
+                                    groupitem:
+                                    {
+                                        type: 'text editor',
+                                        enabled: true,
+                                        placeholder: ""
+                                    }
+
+                                },
+                                {
+                                    name: '統一編號',
+                                    groupitem:
+                                    {
+                                        type: 'businessNum',
+                                        enabled: true,
+                                        placeholder: "",
+                                    }
+
+                                },
+                                {
+                                    name: '標籤',
+                                    groupitem:
+                                    {
+                                        type: 'KeyWord Tag',
+                                        enabled: true,
+                                        placeholder: ""
+                                    }
+
+                                },
+                            ],
+                            editDone: false,
+                            editError: false
+                        },
+                        {
+                            id: 'BusinessTime',
+                            name: '<i class="fas fa-coffee mr-2"></i>營業時間設定',
+                            discriptions: '正常營業時間設定',
+                            settingItem: [
+                                {
+                                    name: '',
+                                    groupitem:
+                                    {
+                                        type: 'BusinessTime',
+                                        enabled: true,
+                                        placeholder: ""
+                                    }
+
+                                },
+                            ],
+                            editDone: false,
+                            editError: false,
+                        },
+                        {
+                            id: 'WaitingTime',
+                            name: '<i class="fas fa-clock mr-2"></i>取餐等待時間',
+                            discriptions: '用於計算取餐等待時間的設定',
+                            settingItem: [
+                                {
+                                    name: '每單基礎等待時間',
+                                    groupitem:
+                                    {
+                                        type: 'BasicTime',
+                                        enabled: true,
+                                        placeholder: "",
+                                    }
+
+                                },
+                                {
+                                    name: '最高區間數量',
+                                    groupitem:
+                                    {
+                                        type: 'minOrderAmount',
+                                        enabled: true,
+                                        placeholder: "",
+                                    }
+                                },
+                                {
+                                    name: '間隔時間',
+                                    groupitem:
+                                    {
+                                        type: 'IntervalTime',
+                                        enabled: true,
+                                        placeholder: "",
+                                    }
+
+                                },
+                                {
+                                    name: '最低金額',
+                                    groupitem:
+                                    {
+                                        type: 'minPrice',
+                                        enabled: true,
+                                        placeholder: "",
+                                    }
+
+                                },
+                                {
+                                    name: '最高金額',
+                                    groupitem:
+                                    {
+                                        type: 'maxPrice',
+                                        enabled: true,
+                                        placeholder: "",
+                                    }
+
+                                },
+                                {
+                                    name: '最多可預訂天數',
+                                    groupitem:
+                                    {
+                                        type: 'maxReservationDays',
+                                        enabled: true,
+                                        placeholder: "可預訂天數，EX:0",
+                                    }
+
+                                }
+                            ],
+                            editDone: false,
+                            editError: false,
+                        },
+                        {
+                            id: 'ReminderToggle',
+                            name: '<i class="fas fa-bell mr-2"></i>低消提醒功能',
+                            discriptions: '訂單低消提醒設定',
+                            settingItem: [
+                                {
+                                    name: '低消金額',
+                                    groupitem:
+                                    {
+                                        type: 'LowSpendingAmount',
+                                        enabled: true,
+                                        placeholder: "",
+                                    }
+
+                                }
+                                ,
+                                {
+                                    name: '低消提示',
+                                    groupitem:
+                                    {
+                                        type: 'Reminder',
+                                        enabled: true,
+                                        placeholder: "",
+                                    }
+
+                                }
+                            ],
+                            editDone: false,
+                            editError: false,
+                        },
+                        {
+                            id: 'StoreClosed',
+                            name: '<i class="fas fa-bed mr-2"></i>特定店休日',
+                            discriptions: '公休外的店休，EX:國定假日...自由新增',
+                            settingItem: [
+                                {
+                                    name: '店休日期',
+                                    groupitem:
+                                    {
+                                        type: 'StoreClosed',
+                                        enabled: true,
+                                        placeholder: "EX:端午節",
+                                    }
+
+                                }
+                            ],
+                            editDone: false,
+                            editError: false,
+                        }
+                    ],
+
+                    LogoImageSize: { w: 300, h: 300 },
+                    BannerImageSize: { w: 1920, h: 1080 },
+                    imageAction: '',
+
+                    // 防呆參數
+                    // 營業時間
+                    CheckBusinessDays: [true, true, true, true, true, true, true],
+
+                    // 低消
+                    CheckLowSpending: [true, true], // 金額,提示內容
+                }
+            },
+            mounted() {
+
+                // 初始資料載入
+                this.initCityData();
+                this.setDistricts();
+
+                this.GetStoreInfo()
+
+
+                // console.log(this.storeInfoEdit);
+
+                // loadingOff()
+
+                this.$nextTick(() => {
+                    this.$refs.inputs.forEach(input => {
+                        input.addEventListener("input", function () {
+                            if (this.value < 0) {
+                                this.value = 0;
+                            }
+                        })
+                    })
+                })
+
+                // this.CanSave('default-')
+            },
+            watch: {
+                'storeInfoEdit.storeInfo.city'(newVal) {
+                    this.setDistricts()
+                },
+                'storeInfoEdit.store.minOrderAmount'(newVal, oldVal) { if (newVal > 10) { newVal = 10 } },
+            },
+            methods: {
+                //比對信箱格式
+                validateEmail(par) {
+                    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    return emailRegex.test(par); // 如果格式不正確，顯示錯誤
+                },
+
+                //比對電話格式
+                validateTalAndPhone(par) {
+                    const landlineRegex = /^0[2-8]-?\d{6,8}$/; // 市內電話（含 "-" 可選）
+                    const mobileRegex = /^09\d{8}$/; // 手機號碼（09 開頭 + 8 位數）
+
+                    return landlineRegex.test(par) || mobileRegex.test(par);
+                },
+
+                //比對間隔時間
+                validateIntervalTime(par, intt) {
+                    return par != '' && par % intt === 0
+                },
+
+                // 初始化縣市資料
+                initCityData() {
+                    // 這裡把TWCity中的縣市資料填充到allCity
+                    this.allCity = TWCity.map(city => ({
+                        name: city.name,
+                        value: city.name
+                    }));
+                },
+
+                //帶入鄉鎮區的資料
+                setDistricts() {
+                    // console.log(this.storeInfoEdit.storeInfo.city);
+
+                    const selectedCityData = TWCity.find(city => city.name === this.storeInfoEdit.storeInfo.city);
+                    // console.log(selectedCityData);
+
+
+                    if (selectedCityData) {
+                        this.allDistricts = selectedCityData.districts.map(district => ({
+                            name: district.name,
+                            value: district.name
+                        }));
+                    } else {
+                        this.allDistricts = [];
+                    }
+                },
+
+                //使用者操作func
+                //增加營業時間
+                addOperationTime(k) {
+
+                    this.storeInfoEdit.openTime.businessDays[k].time.push(
+                        { open: '00:00', close: '00:01' }
+                    )
+                    // console.log(this.storeInfoEdit.openTime.businessDays[k].time)
+                },
+
+                //增加營業時間
+                addStoreClosed() {
+                    this.storeInfoEdit.openTime.specialCloseDays.push(
+                        {
+                            title: '',
+                            date: moment().subtract(-1, "days").format('YYYY-MM-DD'),
+                        }
+                    )
+                },
+
+                //刪除營業時間
+                deletOperationTime(id, index) {
+                    // 找到 id 為 "Mon" 的項目
+                    // console.log(this.storeInfoEdit.openTime);
+
+                    const targetDay = this.storeInfoEdit.openTime.businessDays.find(day => day.id === id);
+                    targetDay.time.splice(index, 1);
+
+                    if (targetDay.time.length == 0) {
+                        targetDay.operation = false
+                    }
+                },
+
+                delStoreClosed(index) {
+                    this.storeInfoEdit.openTime.specialCloseDays.splice(index, 1);
+                },
+
+                //切換營業或休息，清空資料
+                toggleOperation(id, newValue) {
+                    // 找到對應的 day
+                    const targetDay = this.storeInfoEdit.openTime.businessDays.find(day => day.id === id);
+
+                    if (newValue) {
+                        // 如果改為 true，並且 time 為空，加入一筆默認時間
+                        if (targetDay.time.length === 0) {
+                            targetDay.time.push({ open: '00:00', close: '00:01' });
+                        }
+                    } else {
+                        // 如果改為 false，清空 time
+                        targetDay.time = [];
+                    }
+                },
+
+                //分鐘設定
+                generateNumbers(start, end, step) {
+                    const numbers = [];
+                    for (let i = start; i <= end; i += step) {
+                        numbers.push(i);
+                    }
+                    return numbers;
+                },
+
+                GetStoreInfo() {
+                    var vue = this
+                    apiWeb("api/Store/detail/" + this.storeId, "GET", null, "取得店家編輯資料", function (v) {
+                        // console.log(v);
+                        vue.storeInfoEdit = v;
+
+                        vue.tel = vue.storeInfoEdit.storeInfo.tel
+
+                        //文字編輯器
+                        var quill = new Quill('#storeIntroduction', {
+                            theme: 'snow', // 使用雪花主題
+                            placeholder: '請輸入店家簡介...', // 設定 placeholder
+                            modules: {
+                                toolbar: [
+                                    [{ 'size': ['small', 'medium', 'large', 'huge'] }],
+                                    [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                                    [{ 'align': [] }],
+                                    ['bold', 'italic', 'underline', 'strike'],
+                                    [{ 'color': [] }, { 'background': [] }],
+                                    ['link', 'image'],
+                                ] // 設定工具列
+                            }
+                        });
+                        // 自動帶入 storeInfo.introduction 的值
+                        quill.root.innerHTML = vue.storeInfoEdit.storeInfo.introduction;
+
+                        // 監聽內容變更
+                        quill.on('text-change', () => {
+                            vue.storeInfoEdit.storeInfo.introduction = quill.root.innerHTML;  // 存儲HTML內容
+                            // 或者如果需要純文字：
+                            // this.storeInfoEdit.introduction = quill.getText();  // 存儲純文字
+                        });
+
+                        //tag標籤
+                        // console.log('標籤------', vue.storeInfoEdit.storeInfo.tags);
+
+                        new TomSelect("#input-tags", {
+                            options: vue.storeInfoEdit.storeInfo.tags.map(tag => ({ value: tag, text: tag })),
+                            items: vue.storeInfoEdit.storeInfo.tags, // 要讓它顯示
+                            create: false,
+                            controlInput: false, // 隱藏輸入框
+                            render: {
+                                option: () => null // 不顯示 dropdown 選單
+                            }
+                        });
+                        $('[data-toggle="tooltip"]').tooltip();
+
+                        loadingOff()
+                    });
+                },
+
+                //儲存
+                save() {
+                    loadingOn();
+                    // console.log('this.storeInfoEdit.storeInfo.image-----' + this.storeInfoEdit.storeInfo.image);
+                    var vue = this
+
+                    var store = this.storeInfoEdit.store
+                    var storeInfo = this.storeInfoEdit.storeInfo
+
+                    var EditData = {
+                        // store:{
+                        // "StoreName": "測試商店",
+                        // "StorePhone": store.storePhone,
+                        "MinOrderAmount": store.minOrderAmount,
+                        "OrderInterval": store.orderInterval,
+                        "Bannerimage": store.bannerimage,
+                        "Image": store.image,
+
+                        // "LineToken": "abcdef123456789",
+                        // "Enable": true,
+                        "SlotLimit": store.slotLimit,
+                        // }
+                        'amountLimit': store.amountLimit,
+                        //storeInfo:{
+                        "City": storeInfo.city,
+                        "Districts": storeInfo.districts,
+                        "ShortAddress": storeInfo.shortAddress,
+                        "Email": storeInfo.email,
+                        "Tel": storeInfo.tel,
+                        "BusinessNum": storeInfo.businessNum,
+                        "Introduction": storeInfo.introduction,
+                        // "Tags": "中式料理,家常菜,快速出餐",
+                        // "AdvanceReservation": storeInfo.advanceReservation,
+                        "BasicwaitingTime": storeInfo.basicwaitingTime,
+                        "MinimumOrderAmount": storeInfo.minimumOrderAmount,
+                        "MinimumOrderText": storeInfo.minimumOrderText,
+                        "MinimumOrderEnabled": storeInfo.minimumOrderEnabled,
+                        "MaxReservationDays": storeInfo.maxReservationDays
+                        // }
+                    }
+
+                    // console.log(EditData);
+
+
+
+                    var aopenTime = {
+                        StoreId: storeId,
+                        BusinessDays: this.storeInfoEdit.openTime.businessDays,
+                        SpecialCloseDays: this.storeInfoEdit.openTime.specialCloseDays
+                    }
+                    // console.log(aopenTime);
+                    apiWeb('api/Store/EditStore/' + storeId, 'PATCH', JSON.stringify(EditData), '保存商店資訊-基本資訊', function (v) {
+                        if (v.message == '商店信息更新成功') {
+                            apiWeb('api/Store/open/time', 'POST', JSON.stringify(aopenTime), '保存商店資訊-營業時間', function (v) {
+                                if (v.message == "Store open time updated successfully") {
+                                    // localStorage.storeInfo = encryptObject(vue.storeInfoEdit);
+                                    // window.location.href = 'StoreMaintain.html?sid=' + storeId
+                                    location.reload()
+                                } else {
+                                    toastr.error("商店信息更新失敗");
+                                    loadingOff();
+                                }
+                            })
+                        } else {
+                            toastr.error("商店信息更新失敗");
+                            loadingOff();
+                        }
+                    })
+
+                },
+
+                //重置
+                reset() {
+                    this.storeInfoEdit = this.storeInfo
+                    toastr.success("已恢復原資料");
+                },
+
+                //能否重製或儲存
+                CanSave(name) {
+                    // console.log(name + "變更檢查結果:", this.hasChanges(this.storeInfo, this.storeInfoEdit) + ' : ' + 'this.storeInfo = ' + JSON.stringify(this.storeInfo) + ' , ' + 'this.storeInfo = ' + JSON.stringify(this.storeInfoEdit));
+
+                    // return !this.hasChanges(this.storeInfo, this.storeInfoEdit);
+                },
+
+                hasChanges(original, edited) {
+                    return Object.keys(original).some(key => {
+                        // 確保 `edited` 也有相同的 key，避免 `undefined`
+                        if (!(key in edited)) return true;
+
+                        // 避免物件遞迴錯誤
+                        if (typeof original[key] === "object" && original[key] !== null) {
+                            return this.hasChanges(original[key], edited[key]); // 加上 `this.`
+                        }
+
+                        // 修正數字類型比對
+                        const originalValue = isNaN(original[key]) ? original[key] : Number(original[key]);
+                        const editedValue = isNaN(edited[key]) ? edited[key] : Number(edited[key]);
+
+                        return originalValue !== editedValue;
+                    });
+                },
+
+                // 處理圖片上傳
+                handleFileUpload_banner(event) {
+                    this.imageAction = 'banner'
+                    var vue = this
+                    const file = event.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            this.imageUrl = e.target.result;
+
+                            // 確保 Modal 開啟後再初始化 Cropper
+                            $("#ProductorEdit").modal("hide");
+                            setTimeout(() => {
+                                $("#cropModal").modal("show");
+                                setTimeout(() => {
+                                    vue.initCropper_banner();
+                                }, 300);
+                            }, 500);
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                },
+                // 初始化 Cropper.js
+                initCropper_banner() {
+                    var vue = this
+                    if (this.cropper) {
+                        this.cropper.destroy();
+                    }
+                    this.$nextTick(() => {
+                        const image = this.$refs.image;
+                        image.onload = () => {
+                            this.cropper = new Cropper(image, {
+                                aspectRatio: 16 / 9,   // 1:1 比例
+                                viewMode: 2,      // 限制裁剪框不超出圖片範圍
+                                autoCropArea: 1,  // 預設裁剪範圍最大
+                                minCropBoxWidth: vue.BannerImageSize.w,
+                                minCropBoxHeight: vue.BannerImageSize.h,
+                                ready: () => {
+                                    this.cropper.setCropBoxData({ width: vue.BannerImageSize.w, height: vue.BannerImageSize.h });
+                                },
+                                rotatable: false, // 禁止旋轉
+                                scalable: false,  // 禁止縮放
+                                zoomable: false,  // 禁止縮放
+                                movable: false,   // 禁止移動圖片
+                                checkOrientation: false // 禁止自動旋轉
+                            });
+                        };
+                        image.src = this.imageUrl;
+                    });
+                },
+                // 裁剪圖片並轉 Base64
+                cropImage_banner(type) {
+                    loadingOn()
+                    const vue = this;
+
+                    if (!this.cropper) return;
+
+                    const canvas = this.cropper.getCroppedCanvas({
+                        width: vue.BannerImageSize.w,
+                        height: vue.BannerImageSize.h
+                    });
+
+                    if (type === "base") {
+                        vue.croppedImage = canvas.toDataURL("image/png");
+                        vue.storeInfoEdit.store.bannerimage = vue.croppedImage;
+
+                        $("#cropModal").modal("hide");
+                        $("#ProductorEdit").modal("show");
+                    } else if (type === "blob") {
+                        canvas.toBlob((blob) => {
+                            vue.croppedImage = blob;
+
+                            const formData = new FormData();
+                            formData.append('file', vue.croppedImage, 'cropped-image.jpg');
+
+                            $.ajax({
+                                type: "POST",
+                                headers: {
+                                    "Content-Type": "application/json; charset=utf-8",
+                                },
+                                url: host + "/api/auth/keylogin",
+                                data: JSON.stringify({ key: AutoKey }),
+                                success: function (res) {
+                                    const token = "Bearer " + res.token;
+                                    // 第二次請求：上傳圖片
+                                    $.ajax({
+                                        url: 'https://sharings.com.tw/api/Image/upload',
+                                        type: 'POST',
+                                        headers: {
+                                            Authorization: token
+                                        },
+                                        data: formData,
+                                        processData: false,
+                                        contentType: false,
+                                        success: function (v) {
+                                            if (v.success == true) {// console.log('上傳成功', uploadRes);
+                                                vue.storeInfoEdit.store.bannerimage = v.url
+                                                toastr.success("圖片上傳成功");
+                                                $("#cropModal").modal("hide");
+                                                $("#ProductorEdit").modal("show");
+                                                loadingOff()
+                                            }
+                                        },
+                                        error: function (xhr, status, error) {
+                                            // console.error('上傳失敗', error);
+                                            // alert("圖片上傳失敗，請稍後再試。");
+                                            toastr.error("圖片上傳失敗");
+                                            $("#cropModal").modal("hide");
+                                            $("#ProductorEdit").modal("show");
+                                            loadingOff()
+                                        }
+                                    });
+                                },
+                                error: function (xhr, status, error) {
+                                    reject(error);
+                                },
+                            });
+                        }, "image/png");
+                    }
+                },
+
+                // 處理圖片上傳
+                handleFileUpload_logo(event) {
+                    this.imageAction = 'logo'
+                    var vue = this
+                    const file = event.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            this.imageUrl = e.target.result;
+
+                            // 確保 Modal 開啟後再初始化 Cropper
+                            $("#ProductorEdit").modal("hide");
+                            setTimeout(() => {
+                                $("#cropModal").modal("show");
+                                setTimeout(() => {
+                                    vue.initCropper_logo();
+                                }, 300);
+                            }, 500);
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                },
+                // 初始化 Cropper.js
+                initCropper_logo() {
+                    var vue = this
+                    if (this.cropper) {
+                        this.cropper.destroy();
+                    }
+                    this.$nextTick(() => {
+                        const image = this.$refs.image;
+                        image.onload = () => {
+                            this.cropper = new Cropper(image, {
+                                aspectRatio: 1,   // 1:1 比例
+                                viewMode: 2,      // 限制裁剪框不超出圖片範圍
+                                autoCropArea: 1,  // 預設裁剪範圍最大
+                                minCropBoxWidth: vue.LogoImageSize.w,
+                                minCropBoxHeight: vue.LogoImageSize.h,
+                                ready: () => {
+                                    this.cropper.setCropBoxData({ width: vue.LogoImageSize.w, height: vue.LogoImageSize.h });
+                                },
+                                rotatable: false, // 禁止旋轉
+                                scalable: false,  // 禁止縮放
+                                zoomable: false,  // 禁止縮放
+                                movable: false,   // 禁止移動圖片
+                                checkOrientation: false // 禁止自動旋轉
+                            });
+                        };
+                        image.src = this.imageUrl;
+                    });
+                },
+                // 裁剪圖片並轉 Base64
+                cropImage_logo(type) {
+                    loadingOn()
+                    const vue = this;
+
+                    if (!this.cropper) return;
+
+                    const canvas = this.cropper.getCroppedCanvas({
+                        width: vue.LogoImageSize.w,
+                        height: vue.LogoImageSize.h
+                    });
+
+                    if (type === "base") {
+                        vue.croppedImage = canvas.toDataURL("image/png");
+                        vue.storeInfoEdit.store.image = vue.croppedImage;
+
+                        $("#cropModal").modal("hide");
+                        $("#ProductorEdit").modal("show");
+                    } else if (type === "blob") {
+                        canvas.toBlob((blob) => {
+                            vue.croppedImage = blob;
+
+                            const formData = new FormData();
+                            formData.append('file', vue.croppedImage, 'cropped-image.jpg');
+
+                            $.ajax({
+                                type: "POST",
+                                headers: {
+                                    "Content-Type": "application/json; charset=utf-8",
+                                },
+                                url: host + "/api/auth/keylogin",
+                                data: JSON.stringify({ key: AutoKey }),
+                                success: function (res) {
+                                    const token = "Bearer " + res.token;
+                                    // 第二次請求：上傳圖片
+                                    $.ajax({
+                                        url: 'https://sharings.com.tw/api/Image/upload',
+                                        type: 'POST',
+                                        headers: {
+                                            Authorization: token
+                                        },
+                                        data: formData,
+                                        processData: false,
+                                        contentType: false,
+                                        success: function (v) {
+                                            if (v.success == true) {// console.log('上傳成功', uploadRes);
+                                                vue.storeInfoEdit.store.image = v.url
+                                                toastr.success("圖片上傳成功");
+                                                $("#cropModal").modal("hide");
+                                                $("#ProductorEdit").modal("show");
+                                                loadingOff()
+                                            }
+                                        },
+                                        error: function (xhr, status, error) {
+                                            // console.error('上傳失敗', error);
+                                            // alert("圖片上傳失敗，請稍後再試。");
+                                            toastr.error("圖片上傳失敗");
+                                            $("#cropModal").modal("hide");
+                                            $("#ProductorEdit").modal("show");
+                                            loadingOff()
+                                        }
+                                    });
+                                },
+                                error: function (xhr, status, error) {
+                                    reject(error);
+                                },
+                            });
+                        }, "image/png");
+                    }
+                }
+
+            },
+            computed: {
+                today() {
+                    return moment().format('YYYY-MM-DD');
+                },
+
+                // 營業時間防呆
+                BusinessDays_FoolProof() {
+                    this.CheckBusinessDays = [true, true, true, true, true, true, true]
+                    const days = this.storeInfoEdit.openTime.businessDays;
+                    let vue = this
+                    for (let dayIndex = 0; dayIndex < days.length; dayIndex++) {
+                        const day = days[dayIndex];
+                        for (let timeIndex = 0; timeIndex < day.time.length; timeIndex++) {
+                            const slot = day.time[timeIndex];
+                            const open = slot.open;
+                            const close = slot.close;
+                            // console.log(open, close)
+                            const BusinessTime = vue.StoreEditItem.find(item => item.id === 'BusinessTime');
+                            BusinessTime.editError = false
+                            if (open === close) {
+                                // console.log(`第 ${dayIndex + 1} 天，第 ${timeIndex + 1} 項不符合：open 與 close 相同`);
+                                vue.CheckBusinessDays[dayIndex] = false
+                                BusinessTime.editError = true
+                                return false;
+                            }
+
+                            if (open >= close) {
+                                vue.CheckBusinessDays[dayIndex] = false
+                                // console.log(`第 ${dayIndex + 1} 天，第 ${timeIndex + 1} 項不符合：open 必須小於 close`);
+                                BusinessTime.editError = true
+                                return false;
+                            }
+
+                        }
+                    }
+
+                    return true;
+                },
+
+                // 取餐等待時間防呆
+                WaitingTime_FoolProof() {
+                    let vue = this
+                    // 時間區隔
+
+                    // console.log('時間區隔-----', this.validateIntervalTime(vue.storeInfoEdit.store.orderInterval, 5));
+
+                    const WaitingTime = vue.StoreEditItem.find(item => item.id === 'WaitingTime');
+
+                    if (vue.validateIntervalTime(vue.storeInfoEdit.store.orderInterval, 5) && vue.storeInfoEdit.store.amountLimit && vue.storeInfoEdit.store.slotLimit && vue.storeInfoEdit.storeInfo.maxReservationDays && vue.storeInfoEdit.store.minOrderAmount) {
+                        WaitingTime.editError = false
+                        return true
+                    } else {
+                        WaitingTime.editError = true
+                        return false
+                    }
+
+                },
+
+                // 低消金額防呆
+                LowSpending_FoolProof() {
+                    this.CheckLowSpending = [true, true]
+                    let vue = this
+
+                    // if (vue.storeInfoEdit.storeInfo.minimumOrderAmount && vue.storeInfoEdit.storeInfo.minimumOrderText) {
+                    // console.log(vue.storeInfoEdit.storeInfo.minimumOrderAmount);
+                    // console.log(vue.storeInfoEdit.storeInfo.minimumOrderText)
+
+
+                    let Amount
+                    if (vue.storeInfoEdit.storeInfo.minimumOrderAmount != '' && vue.storeInfoEdit.storeInfo.minimumOrderAmount != 0) {
+                        Amount = true
+
+                    } else {
+                        Amount = false
+                    }
+
+                    if (!Amount) {
+                        vue.CheckLowSpending[0] = false
+                    }
+                    let Text = vue.storeInfoEdit.storeInfo.minimumOrderText ? true : false
+                    if (!Text) {
+                        vue.CheckLowSpending[1] = false
+                    }
+
+                    // console.log(vue.CheckLowSpending);
+                    const ReminderToggle = vue.StoreEditItem.find(item => item.id === 'ReminderToggle');
+                    ReminderToggle.editError = false
+                    // console.log(ReminderToggle.editError);
+
+                    if (Amount && Text) {
+                        ReminderToggle.editError = false
+                        return true
+                    } else {
+                        ReminderToggle.editError = true
+                        return false
+                    }
+                    // }
+                },
+
+                // 特定店休
+                StoreClosed_FoolProof() {
+                    let vue = this
+                    // console.log(this.storeInfoEdit.openTime.specialCloseDays);
+                    const hasEmptyTitle = this.storeInfoEdit.openTime.specialCloseDays.some(day => day.title === "");
+                    // console.log(hasEmptyTitle);
+                    const StoreClosed = vue.StoreEditItem.find(item => item.id === 'StoreClosed');
+
+                    if (hasEmptyTitle) {
+                        StoreClosed.editError = true
+                        return false
+                    } else {
+                        StoreClosed.editError = false
+                        return true
+                    }
+                },
+
+                // 儲存防呆
+                CheckSave() {
+                    if (this.BusinessDays_FoolProof && this.LowSpending_FoolProof && this.WaitingTime_FoolProof && this.StoreClosed_FoolProof) {
+                        return true
+                    } else {
+                        return false
+                    }
+                }
+
+            }
+        });
+        app.mount("#app");
+    </script>
+    <style>
+        /* 修正裁剪區域異常的問題 */
+        .img-container {
+            width: 100%;
+            max-height: 500px;
+            overflow: hidden;
+        }
+
+        /* 增加 modal-xl 讓裁剪區域更大 */
+        .modal-xl {
+            max-width: 90vw;
+        }
+
+        /* 確保裁剪圖片可以完整顯示 */
+        #image {
+            display: block;
+            max-width: 100%;
+            height: auto;
+        }
+    </style>
+
+</html>

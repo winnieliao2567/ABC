@@ -41,6 +41,38 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
 
+    <style>
+        .longText {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 150px;
+        }
+        
+        .badge {
+            font-size: 0.8em;
+            padding: 0.4em 0.6em;
+        }
+        
+        .table th {
+            background-color: #f8f9fa;
+            border-color: #dee2e6;
+        }
+        
+        .pagination .page-link {
+            color: #007bff;
+        }
+        
+        .pagination .page-item.active .page-link {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+        
+        .pagination .page-item.disabled .page-link {
+            color: #6c757d;
+        }
+    </style>
+
 </head>
 
 <body class="sidebar-mini layout-navbar-fixed layout-footer-fixed sidebar-mini-md layout-fixed sidebar-collapse">
@@ -50,6 +82,186 @@
     </div>
     <!-- control-sidebar-slide-open -->
     <div id="app" class="wrapper">
+        
+        <!-- 訂單詳情模態框 -->
+        <div class="modal fade" id="OrderInfo" tabindex="-1" role="dialog" aria-labelledby="orderInfoModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <div>
+                            <p class="text-muted text-sm m-0">{{selectedOrder.no}}</p>
+                            <h5 class="modal-title m-0" id="orderInfoModalLabel">
+                                訂單詳情 <span class="text-primary">#{{selectedOrder.pickupNumber}}</span>
+                            </h5>
+                        </div>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6>基本資訊</h6>
+                                <table class="table table-sm">
+                                    <tr>
+                                        <td><strong>訂單編號：</strong></td>
+                                        <td>{{ selectedOrder.no }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>下單時間：</strong></td>
+                                        <td>{{ formatDateTime(selectedOrder.orderTime) }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>訂購人：</strong></td>
+                                        <td>{{ selectedOrder.subscriberName }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>聯絡電話：</strong></td>
+                                        <td>{{ selectedOrder.subscriberNumber }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>訂單金額：</strong></td>
+                                        <td>${{ selectedOrder.price }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>訂單狀態：</strong></td>
+                                        <td>
+                                            <span v-if="selectedOrder.status==1" class="text-success">
+                                                <i class="fas fa-check-square mr-1"></i>
+                                                訂單成立
+                                            </span>
+                                            <span v-if="selectedOrder.status==2" class="text-danger">
+                                                <i class="fas fa-exclamation-circle mr-1"></i>
+                                                訂單取消
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>取餐號碼：</strong></td>
+                                        <td>{{ selectedOrder.pickupNumber }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>付款方式：</strong></td>
+                                        <td>{{ selectedOrder.paymentMethods }}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="col-md-6">
+                                <h6>其他資訊</h6>
+                                <table class="table table-sm">
+                                    <tr>
+                                        <td><strong>會員姓名：</strong></td>
+                                        <td>{{ selectedOrder.memberName || '非會員' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>會員電話：</strong></td>
+                                        <td>{{ selectedOrder.memberNumber || '-' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>預約日期：</strong></td>
+                                        <td>{{ selectedOrder.appointmentDate || '-' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>預約時間：</strong></td>
+                                        <td>{{ selectedOrder.appointmentTime || '-' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>折扣：</strong></td>
+                                        <td>{{ selectedOrder.discount || 0 }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>餐具：</strong></td>
+                                        <td>{{ selectedOrder.isTableware ? '是' : '否' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>環保袋：</strong></td>
+                                        <td>{{ selectedOrder.bag ? '是' : '否' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>備註：</strong></td>
+                                        <td>{{ selectedOrder.remark || '-' }}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <!-- 取消訂單按鈕 -->
+                        <div class="row" v-if="selectedOrder.status==1">
+                            <div class="col-12 py-3">
+                                <button class="btn btn-danger float-right" @click="showCancelOrder">取消訂單</button>
+                            </div>
+                        </div>
+                        
+                        <!-- 餐點明細 -->
+                        <div class="row mt-3">
+                            <div class="col-12">
+                                <h6>餐點明細</h6>
+                                <div v-if="selectedOrder.mealSummary && selectedOrder.mealSummary.length > 0">
+                                    <table class="table table-bordered table-hover">
+                                        <thead class="table-primary">
+                                            <tr>
+                                                <th>#</th>
+                                                <th>品項</th>
+                                                <th>數量</th>
+                                                <th>小記</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr v-for="(productor,proIndex) in selectedOrder.mealSummary" :key="proIndex">
+                                                <td>{{proIndex+1}}</td>
+                                                <td>
+                                                    <h6>{{productor.mealname}}</h6>
+                                                    <div class="text-sm">
+                                                        <span>{{productor.description}}</span>
+                                                    </div>
+                                                </td>
+                                                <td>{{productor.count}}</td>
+                                                <td>{{productor.totalPrice}}</td>
+                                            </tr>
+                                        </tbody>
+                                        <tfoot>
+                                            <tr>
+                                                <td colspan="4">
+                                                    <span>總金額（共{{selectedOrder.totalItems}}項）</span>
+                                                    <span class="text-bold float-right">${{selectedOrder.price}}</span>
+                                                </td>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+                                <div v-else class="text-center text-muted">
+                                    正在載入餐點明細...
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">關閉</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 取消訂單確認模態框 -->
+        <div class="modal fade" id="CancelOrder" tabindex="-1" role="dialog" aria-labelledby="cancelOrderModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-sm" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="cancelOrderModalLabel">取消訂單</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        是否確認取消訂單 #{{ selectedOrder.pickupNumber }}？
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                        <button type="button" class="btn btn-danger" @click="confirmCancelOrder">確認取消</button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <!-- Navbar -->
         <nav class="main-header navbar navbar-expand navbar-white navbar-light">
@@ -96,17 +308,21 @@
                         role="menu" data-accordion="false">
                         <!-- Add icons to the links using the .nav-icon class
                  <br /> with font-awesome or any other icon font library -->
-                        <li class="nav-item" v-for="(fuc,index) in userFunction">
-                            <a :href="fuc.url" class="nav-link" :class="{'active':fuc.status==true}">
+                        <li class="nav-item" v-for="(fuc,index) in userFunction" :class="{'has-treeview': fuc.item != null}">
+                            <a v-if="fuc.item == null" :href="fuc.url" class="nav-link" :class="{'active':fuc.status==true}">
+                                <i class="nav-icon" :class="fuc.icon"></i>
+                                <p>{{fuc.name}}</p>
+                            </a>
+                            <a v-else href="#" class="nav-link" :class="{'active':fuc.status==true}">
                                 <i class="nav-icon" :class="fuc.icon"></i>
                                 <p>
                                     {{fuc.name}}
-                                    <i class="fas fa-angle-left right" v-if="fuc.item!=null"></i>
+                                    <i class="fas fa-angle-left right"></i>
                                 </p>
                             </a>
                             <ul class="nav nav-treeview" v-if="fuc.item!=null">
                                 <li class="nav-item" v-for="(fucItem,index) in fuc.item" :key="index">
-                                    <a :href="fucItem.url" class="nav-link" :class="{'active':fuc.status==true}">
+                                    <a :href="fucItem.url" class="nav-link" :class="{'active':fucItem.status==true}">
                                         <i class="nav-icon" :class="fucItem.icon"></i>
                                         <p>{{fucItem.name}}</p>
                                     </a>
@@ -145,93 +361,115 @@
             <div class="content">
                 <div class="container-fluid">
                     <div class="row">
-                        <form class="col-12 py-3" v-show="result==false" @submit.prevent="search">
-                            <div class="form-group">
-                                <lable>
-                                    訂購人姓名
-                                </lable>
-                                <input class="form-control" autocomplete="off" v-model="Search.Name">
+                        <form class="col-12 p-3 border mb-3 bg-white" @submit.prevent="search">
+                            <h5><i class="fas fa-search mr-2"></i>搜尋條件</h5>
+                            <div class="row">
+                                <div class="form-group col-12 col-md-6 col-lg-3">
+                                    <lable>訂單日期範圍</lable>
+                                    <input id="daterange" class="form-control">
+                                </div>
+                                <div class="form-group col-12 col-md-6 col-lg-3">
+                                    <lable>訂購人姓名</lable>
+                                    <input v-model="Search.subscribername" class="form-control">
+                                </div>
+                                <div class="form-group col-12 col-md-6 col-lg-3">
+                                    <lable>訂購人電話</lable>
+                                    <input v-model="Search.subscribernumber" class="form-control">
+                                </div>
+                                <div class="form-group col-12 col-md-6 col-lg-3">
+                                    <lable>訂單編號</lable>
+                                    <input v-model="Search.No" class="form-control">
+                                </div>
                             </div>
-                            <div class="form-group">
-                                <lable>
-                                    電話
-                                </lable>
-                                <input class="form-control" autocomplete="off" v-model="Search.Phone">
-                            </div>
-                            <div class="form-group">
-                                <lable>
-                                    訂單編號
-                                </lable>
-                                <input class="form-control" autocomplete="off" v-model="Search.OrderId">
-                            </div>
-                            <div class=" text-right">
-                                <button class="btn btn-default" type="submit">
-                                    搜尋
+                            <div class="text-right">
+                                <button class="btn btn-primary" type="submit" :disabled="isSearching">
+                                    <i class="fas fa-search mr-1"></i>
+                                    {{ isSearching ? '搜尋中...' : '搜尋' }}
                                 </button>
                             </div>
                         </form>
-                        <div class="col-12" v-show="result==true">
-                            <div class="btn-link btn" @click="reloadPage">
-                                <i class="fas fa-chevron-left mr-2"></i>重新搜尋
-                            </div>
-                            <div class="p-3">
-                                <table class="table table-bordered table-hover">
-                                    <thead class="table-primary">
-                                        <tr>
-                                            <th class="longText">
-                                                #
-                                            </th>
-                                            <th class="longText">
-                                                下單時間
-                                            </th>
-                                            <th class="longText">
-                                            </th>
-                                            <th class="longText">
-                                            </th>
-                                            <th class="longText">
-                                            </th>
-                                            <th class="longText">
-                                            </th>
-                                            <th class="longText">
-                                            </th>
-                                            <th class="longText">
-                                            </th>
-                                            <th class="longText">
-                                            </th>
-                                            <th class="longText">
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td class="longText">
-                                                1
-                                            </td>
-                                            <td class="longText">
-                                                下單時間
-                                            </td>
-                                            <td class="longText">
-                                            </td>
-                                            <td class="longText">
-                                            </td>
-                                            <td class="longText">
-                                            </td>
-                                            <td class="longText">
-                                            </td>
-                                            <td class="longText">
-                                            </td>
-                                            <td class="longText">
-                                            </td>
-                                            <td class="longText">
-                                            </td>
-                                            <td class="longText">
-                                                <button class="btn-default btn">取消訂單</button>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
+                        <div class="col-12" v-if="result">
+                            <div class="p-3 bg-white">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-hover">
+                                        <thead class="table-primary">
+                                            <tr>
+                                                <th>#</th>
+                                                <th>店家名稱</th>
+                                                <th>訂單編號</th>
+                                                <th>下單時間</th>
+                                                <th>訂購人</th>
+                                                <th>金額</th>
+                                                <th>狀態</th>
+                                                <th>操作</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr v-if="OrderList.length === 0">
+                                                <td colspan="8" class="text-center">
+                                                    <div class="py-5">
+                                                        <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                                                        <h5 class="text-muted">沒有找到符合條件的訂單</h5>
+                                                        <p class="text-muted">請嘗試調整搜尋條件或清空篩選</p>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr v-for="(order, index) in paginatedOrders" :key="order.no">
+                                                <td>{{ (currentPage - 1) * pageSize + index + 1 }}</td>
+                                                <td>{{ order.storeName }}</td>
+                                                <td class="longText">
+                                                    <p class="text-primary text-bold m-0">#{{order.pickupNumber}}</p>
+                                                    {{ order.no.slice(-5) }}
+                                                </td>
+                                                <td>{{ formatDateTime(order.orderTime) }}</td>
+                                                <td>
+                                                    <p class="text-sm text-muted m-0">{{ order.subscriberNumber }}</p>
+                                                    {{ order.subscriberName }}
+                                                </td>
+                                                <td>${{ order.price }}</td>
+                                                <td>
+                                                    <div v-if="order.status==1" class="d-flex justify-content-start align-items-center text-success">
+                                                        <i class="fas fa-check-square mr-1"></i>
+                                                        <span class="d-none d-md-inline">訂單成立</span>
+                                                    </div>
+                                                    <div v-if="order.status==2" class="d-flex justify-content-start align-items-center text-danger">
+                                                        <i class="fas fa-exclamation-circle mr-1"></i>
+                                                        <span class="d-none d-md-inline">訂單取消</span>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <button class="btn btn-info btn-sm mr-1" @click="showOrderDetailModal(order)">
+                                                        <i class="fas fa-eye"></i>
+                                                    </button>
+                                                    <button class="btn btn-danger btn-sm" v-if="order.status == 1" @click="showCancelOrderModal(order)">
+                                                        <i class="fas fa-times"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
 
+                                <!-- 分頁控制 -->
+                                <div class="d-flex justify-content-between align-items-center mt-3" v-if="OrderList.length > 0">
+                                    <div>
+                                        顯示第 {{ (currentPage - 1) * pageSize + 1 }} 到 {{ Math.min(currentPage * pageSize, OrderList.length) }} 筆，共 {{ OrderList.length }} 筆資料
+                                    </div>
+                                    <nav>
+                                        <ul class="pagination">
+                                            <li class="page-item" :class="{ disabled: currentPage === 1 }">
+                                                <a class="page-link" href="#" @click.prevent="prevPage">&laquo;</a>
+                                            </li>
+                                            <li class="page-item" v-for="page in totalPages" :key="page" :class="{ active: page === currentPage }">
+                                                <a class="page-link" href="#" @click.prevent="goToPage(page)">{{ page }}</a>
+                                            </li>
+                                            <li class="page-item" :class="{ disabled: currentPage === totalPages }">
+                                                <a class="page-link" href="#" @click.prevent="nextPage">&raquo;</a>
+                                            </li>
+                                        </ul>
+                                    </nav>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <!-- /.row -->
@@ -279,13 +517,42 @@
                 },
 
                 Search: {
-                    Name: '',
-                    Phone: '',
-                    OrderNo: ''
+                    subscribername: '',
+                    subscribernumber: '',
+                    No: '',
+                    startdatetime: moment().subtract(6, 'days').format('YYYY-MM-DD 00:00:ss'),
+                    enddatetime: moment().format('YYYY-MM-DD 23:59:ss')
                 },
 
-                currentPage: currentPage, // 當前頁面
-                pageSize: pageSize, // 每頁顯示筆數
+                OrderList: [], // 新增訂單列表資料
+
+                currentPage: 1, // 當前頁面
+                pageSize: 10, // 每頁顯示筆數
+
+                selectedOrder: {
+                    "no": "",
+                    "status": "",
+                    "price": 0,
+                    "storeName": "",
+                    "paymentMethods": "",
+                    "pickupNumber": "",
+                    "storeId": "",
+                    "memberId": "",
+                    "memberName": "",
+                    "memberNumber": "",
+                    "orderTime": "",
+                    "appointmentDate": "",
+                    "appointmentTime": "",
+                    "discount": 0,
+                    "isTableware": false,
+                    "remark": "",
+                    "bag": false,
+                    "subscriberName": "",
+                    "subscriberNumber": "",
+                    "mealSummary": [],
+                    "totalItems": 0
+                }, // 用於儲存選中的訂單詳情
+                isSearching: false // 搜尋狀態
             }
         },
         computed: {
@@ -302,6 +569,23 @@
         mounted() {
             var vue = this
 
+            $('#daterange').daterangepicker({
+                locale: {
+                    format: 'YYYY-MM-DD',
+                    applyLabel: '確定',
+                    cancelLabel: '取消',
+                    daysOfWeek: ['日', '一', '二', '三', '四', '五', '六'],
+                    monthNames: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],
+                },
+                startDate: moment().subtract(6, 'days'),
+                endDate: moment(),
+                autoApply: true,
+                maxDate: moment()
+            }, function (start, end) {
+                vue.Search.startdatetime = start.format('YYYY-MM-DD 00:00:ss');
+                vue.Search.enddatetime = end.format('YYYY-MM-DD 23:59:ss');
+            });
+
             loadingOff()
             $('[data-toggle="tooltip"]').tooltip();
         },
@@ -309,8 +593,30 @@
         },
         methods: {
             search() {
-                this.PageTitle = '搜尋結果'
-                this.result = true
+                this.isSearching = true
+                loadingOn()
+                let vue = this
+                
+                // 準備搜尋參數
+                const searchParams = {
+                    subscribername: this.Search.subscribername,
+                    subscribernumber: this.Search.subscribernumber,
+                    No: this.Search.No,
+                    startdatetime: this.Search.startdatetime,
+                    enddatetime: this.Search.enddatetime,
+                }
+
+                apiWeb('/api/store/order/list', 'POST', JSON.stringify(searchParams), '搜尋訂單', function (v) {
+                    vue.OrderList = v.orders || []
+                    vue.result = true
+                    vue.currentPage = 1 // 重置到第一頁
+                    vue.isSearching = false
+                    loadingOff()
+                }, function(error) {
+                    toastr.error("搜尋失敗：" + error.message)
+                    vue.isSearching = false
+                    loadingOff()
+                })
             },
 
             showDeleteWin() {
@@ -328,6 +634,7 @@
             reloadPage() {
                 window.location.reload();
             },
+            
             // 切換到上一頁
             prevPage() {
                 if (this.currentPage > 1) {
@@ -344,6 +651,72 @@
             goToPage(page) {
                 this.currentPage = page;
             },
+            // 格式化日期時間
+            formatDateTime(dateTime) {
+                if (!dateTime) return '';
+                return moment(dateTime).format('YYYY-MM-DD HH:mm');
+            },
+            // 獲取狀態樣式
+            getStatusClass(status) {
+                switch(status) {
+                    case 1:
+                        return 'badge badge-success';
+                    case 2:
+                        return 'badge badge-danger';
+                    default:
+                        return 'badge badge-secondary';
+                }
+            },
+            getStatusText(status) {
+                switch(status) {
+                    case 1:
+                        return '訂單成立';
+                    case 2:
+                        return '訂單取消';
+                    default:
+                        return '未知';
+                }
+            },
+            // 顯示訂單詳情模態框
+            showOrderDetailModal(order) {
+                this.selectedOrder = order;
+                let vue = this;
+                
+                apiWeb('api/store/order/detail/' + order.no, 'POST', null, '獲得詳細資訊', function (v) {
+                    vue.selectedOrder.mealSummary = v.orderDetail.mealSummary;
+                    vue.selectedOrder.totalItems = v.orderDetail.totalItems || vue.selectedOrder.mealSummary.length;
+                    $('#OrderInfo').modal('show');
+                });
+            },
+            
+            // 顯示取消訂單確認模態框
+            showCancelOrderModal(order) {
+                this.selectedOrder = order;
+                $('#CancelOrder').modal('show');
+            },
+            
+            // 顯示取消訂單確認（在詳情模態框內）
+            showCancelOrder() {
+                $('#OrderInfo').modal('hide');
+                $('#CancelOrder').modal('show');
+            },
+            
+            // 確認取消訂單
+            confirmCancelOrder() {
+                loadingOn()
+                let vue = this
+                
+                apiWeb('/api/store/order/cancel/' + this.selectedOrder.no, 'POST', null, '取消訂單', function (v) {
+                    if (v.message == 'cancel successful') {
+                        toastr.success("訂單取消成功");
+                        $('#CancelOrder').modal('hide');
+                        // 重新搜尋以更新列表
+                        vue.search();
+                    } else {
+                        toastr.error("訂單取消失敗");
+                    }
+                })
+            }
         },
     });
     app.mount("#app");

@@ -691,12 +691,13 @@
                     "closeImmediately": false,
                     "closeTime": this.EarlyClosure.time
                 }
-                // console.log(closeData);
-
-                // apiWeb('api/StoreStatus/early-close/' + storeId, 'POST', null, '設定提前休息', function (v) {
-                //     $('#EarlyClosureModal').modal('hide')
-
-                // })
+                loadingOn()
+                var vue = this
+                apiWeb('api/StoreStatus/early-close/' + storeId, 'POST', JSON.stringify(closeData), '設定提前休店', function (v) {
+                    $('#EarlyClosureModal').modal('hide')
+                    toastr.success('已設定提早關店')
+                    loadingOff()
+                })
             },
 
             //分鐘設定

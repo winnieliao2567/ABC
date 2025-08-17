@@ -38,6 +38,91 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
 
+    <style>
+        .sortable-ghost {
+            opacity: 0.5;
+            background: #f8f9fa;
+        }
+        
+        .sortable-chosen {
+            background: #e3f2fd;
+        }
+        
+        .meal-item {
+            cursor: move;
+            transition: all 0.2s ease;
+        }
+        
+        .meal-item:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .category-item {
+            cursor: move;
+            transition: all 0.2s ease;
+        }
+        
+        .category-item:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .search-highlight {
+            background-color: #fff3cd;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+        
+        .bulk-actions {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .meal-checkbox {
+            margin-right: 10px;
+        }
+        
+        .category-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 15px;
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .category-title {
+            font-weight: bold;
+            color: #495057;
+        }
+        
+        .category-actions {
+            display: flex;
+            gap: 5px;
+        }
+
+        /* 修正裁剪區域異常的問題 */
+        .img-container {
+            width: 100%;
+            max-height: 500px;
+            overflow: hidden;
+        }
+
+        /* 增加 modal-xl 讓裁剪區域更大 */
+        .modal-xl {
+            max-width: 90vw;
+        }
+
+        /* 確保裁剪圖片可以完整顯示 */
+        #image {
+            display: block;
+            max-width: 100%;
+            height: auto;
+        }
+    </style>
+
 </head>
 
 <body class="sidebar-mini layout-navbar-fixed layout-footer-fixed sidebar-mini-md layout-fixed sidebar-collapse">
@@ -60,24 +145,6 @@
                             <input class="form-control" v-model="menuName">
                             <p class="text-danger" v-if="menuName.length>10">* 不能超過10個字</p>
                         </div>
-                        <div class="form-group">
-                            <label>調整類別在菜單中的順序</label>
-                            <div class="list-group btnHover" ref="sortableListGroup">
-                                <div class="list-group-item" v-for="(group,index) in profuct_Data"
-                                    :key="group.categoryId" :data-id="group.categoryId">
-                                    <div class="row m-0">
-                                        <div class="handle col-2 col-md-1">
-                                            <i class="fas fa-ellipsis-v"></i>
-                                            <i class="fas fa-ellipsis-v"></i>
-                                        </div>
-                                        <div class="col">
-                                            {{ group.sortOrder + 1 }}. {{ group.categoryName }}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-primary" v-on:click="save()"
@@ -117,6 +184,184 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-primary" @click="saveSortList">
                             儲存</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 商品編輯 Modal -->
+        <div class="modal fade" id="MealEditModal" tabindex="-1" role="dialog" aria-labelledby="MealEditModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="MealEditModalLabel">
+                            <span>{{mealEditData.userAction}}</span>商品
+                        </h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row m-0">
+                            <div class="col-12 bg-light p-3 mb-2">
+                                <h5 class="mb-3">商品內容</h5>
+                                <div class="row flex-row-reverse m-0 align-items-stretch">
+                                    <div class="col-12 col-lg-4 p-1">
+                                        <label class="m-0">商品圖片</label>
+                                        <div class="d-flex justify-content-center embed-responsive embed-responsive-1by1"
+                                            style="overflow: hidden;"
+                                            :class="{'unknowIMG':mealEditData.data.image==''}">
+                                            <img id="MealImage" class="border w-100" :src="mealEditData.data.image">
+                                        </div>
+                                        <div class="custom-file">
+                                            <input type="file" class="custom-file-input" id="mealImageFile"
+                                                @change="handleMealImageUpload" accept=".jpg,.jpeg,.png">
+                                            <label class="custom-file-label" for="mealImageFile">
+                                                更換圖片
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-lg-8 p-1">
+                                        <div class="form-group mb-3">
+                                            <label class="m-0">商品名稱</label>
+                                            <input class="form-control" placeholder="商品名稱"
+                                                :class="{'is-invalid':!checkMealName}"
+                                                v-model="mealEditData.data.name">
+                                            <p class="text-sm text-bold text-danger" v-show="!checkMealName">
+                                                <i class="fas fa-exclamation-circle mr-2"></i>
+                                                請輸入商品名稱
+                                            </p>
+                                        </div>
+                                        <div class="form-group mb-3">
+                                            <label class="m-0">商品敘述</label>
+                                            <textarea class="form-control" placeholder="商品敘述"
+                                                v-model="mealEditData.data.remark"></textarea>
+                                        </div>
+                                        <div class="form-group mb-3">
+                                            <label class="m-0">商品分類</label>
+                                            <select v-model="mealEditData.data.categoryId" class="form-control"
+                                                :class="{'is-invalid':!checkMealCategory}">
+                                                <option value="" disabled v-if="mealEditData.userAction==='新增'">
+                                                    --請選擇 --
+                                                </option>
+                                                <option v-for="category in profuct_Data" :value="category.categoryId">
+                                                    {{category.categoryName}}
+                                                </option>
+                                            </select>
+                                            <p class="text-sm text-bold text-danger" v-show="!checkMealCategory">
+                                                <i class="fas fa-exclamation-circle mr-2"></i>
+                                                請選擇商品分類
+                                            </p>
+                                        </div>
+                                        <div class="form-group mb-3">
+                                            <label class="m-0">
+                                                定價
+                                                <span class="text-primary" data-toggle="tooltip" data-placement="right"
+                                                    title="商品的基本價格，不含份量及客製化選項的加減差價">
+                                                    <i class="fas fa-question-circle"></i>
+                                                </span>
+                                            </label>
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text">NT$</span>
+                                                </div>
+                                                <input class="form-control" placeholder="價格" type="number"
+                                                    v-model="mealEditData.data.price"
+                                                    :class="{'is-invalid':!checkMealPrice}" step="1">
+                                            </div>
+                                            <p class="text-sm text-bold text-danger" v-show="!checkMealPrice">
+                                                <i class="fas fa-exclamation-circle mr-2"></i>
+                                                請輸入有效的商品價格
+                                            </p>
+                                        </div>
+                                        <div class="form-group mb-3">
+                                            <label class="m-0">
+                                                出單機排序
+                                                <span class="text-primary" data-toggle="tooltip" data-placement="right"
+                                                    title="顯示於訂單記錄的順序">
+                                                    <i class="fas fa-question-circle"></i>
+                                                </span>
+                                            </label>
+                                            <select class="form-control" v-model="mealEditData.data.priority">
+                                                <option value="999">-- 尚未設定 --</option>
+                                                <option v-for="sort in sortClassData" :value="sort.priorityId">
+                                                    {{sort.title}}
+                                                </option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 bg-light p-3 mb-2">
+                                <h5>份量</h5>
+                                <p class="text-muted">若您的餐點有不同份量，可以新增份量並設定差價。</p>
+                                <template v-if="mealEditData.data.mealConfig && mealEditData.data.mealConfig.options">
+                                    <template v-for="(size, sizeIndex) in mealEditData.data.mealConfig.options" :key="sizeIndex">
+                                        <div class="input-group mb-1">
+                                            <input class="form-control" placeholder="份量名稱，EX：大杯" v-model="size.title">
+                                            <div class="input-group-prepend input-group-append">
+                                                <span class="input-group-text">NT $</span>
+                                            </div>
+                                            <input class="form-control" placeholder="EX:20或-50" type="number"
+                                                v-model="size.extraPrice" step="1">
+                                            <div class="input-group-append">
+                                                <button v-on:click="deleteMealSize(sizeIndex)" class="btn btn-outline-secondary">
+                                                    <i class="fas fa-trash-alt"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </template>
+                                </template>
+                                <div class="form-group mb-3">
+                                    <a href="#" @click="addMealSize">+ 新增一個份量</a>
+                                </div>
+                            </div>
+                            <div class="col-12 bg-light p-3 mb-2">
+                                <h5>客製化選項類別</h5>
+                                <table class="table table-bordered table-hover">
+                                    <tbody>
+                                        <template v-for="template in templateLibrary">
+                                            <tr>
+                                                <td>
+                                                    <input type="checkbox" :id="'meal-checkbox-'+template.templateId"
+                                                        v-model="mealEditData.data.customConfig"
+                                                        :value="template.templateId">
+                                                </td>
+                                                <td :for="'meal-checkbox-'+template.templateId">
+                                                    {{template.templateName}}
+                                                </td>
+                                            </tr>
+                                        </template>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" @click="saveMeal"
+                            :disabled="!checkMealForm" v-if="mealEditData.userAction==='編輯'">確認儲存</button>
+                        <button type="button" class="btn btn-primary" @click="addMeal"
+                            :disabled="!checkMealForm" v-if="mealEditData.userAction==='新增'">確認新增</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 圖片裁切 Modal -->
+        <div class="modal fade" id="cropModal" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false">
+            <div class="modal-dialog modal-xl modal-dialog-scrollable modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">裁剪圖片</h5>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                    <div class="modal-body text-center">
+                        <div class="img-container">
+                            <img id="image" ref="image" class="img-fluid">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-primary" @click="cropImage('blob')">確定裁剪</button>
                     </div>
                 </div>
             </div>
@@ -246,6 +491,49 @@
             <div class="content">
                 <div class="container-fluid">
                     <div class="row">
+                        <!-- 搜尋區域 -->
+                        <div class="col-12 mb-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="input-group">
+                                                <input type="text" class="form-control" placeholder="搜尋商品名稱..." 
+                                                       v-model="searchKeyword" @input="searchMeals">
+                                                <div class="input-group-append">
+                                                    <button class="btn btn-outline-secondary" type="button" @click="clearSearch">
+                                                        <i class="fas fa-times"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 text-right">
+                                            <button class="btn btn-primary" @click="showMealEditModal('新增')">
+                                                <i class="fas fa-plus mr-1"></i>新增商品
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 批量操作區域 -->
+                        <div class="col-12 mb-3" v-if="selectedMeals.length > 0">
+                            <div class="bulk-actions">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span>已選擇 {{ selectedMeals.length }} 個商品</span>
+                                    <div>
+                                        <button class="btn btn-warning btn-sm mr-2" @click="bulkToggleStatus">
+                                            <i class="fas fa-toggle-on mr-1"></i>{{ bulkActionText }}
+                                        </button>
+                                        <button class="btn btn-danger btn-sm" @click="bulkDelete">
+                                            <i class="fas fa-trash mr-1"></i>批量刪除
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="col-12">
                             <div v-if="profuct_Data.length==0">
                                 <div class="emptyImage emptyImage2"></div>
@@ -258,55 +546,79 @@
                             <div class="card card-primary card-outline card-outline-tabs" v-if="profuct_Data.length>0">
                                 <div class="card-header p-0 border-bottom-0">
                                     <ul class="nav nav-tabs" id="custom-tabs-four-tab" role="tablist">
-                                        <li class="nav-item" v-for="(className,index) in profuct_Data">
-                                            <a class="nav-link" :class="{ 'active': index == 0 }"
+                                        <li class="nav-item" v-for="(className,index) in profuct_Data" :key="className.categoryId">
+                                            <a class="nav-link d-flex align-items-center" :class="{ 'active': activeCategoryId === className.categoryId }"
                                                 :id="'tab-'+className.categoryId" data-toggle="pill"
                                                 :href="'#tab-content-'+className.categoryId" role="tab"
                                                 aria-controls="custom-tabs-four-home"
-                                                aria-selected="true">{{className.categoryName
-                                                }}</a>
+                                                aria-selected="true" @click="activeCategoryId = className.categoryId">
+                                                <i class="fas fa-grip-vertical mr-2 handle-category" style="cursor: move;"></i>
+                                                <span>{{className.categoryName}}</span>
+                                            </a>
                                         </li>
                                     </ul>
                                 </div>
                                 <div class="card-body">
                                     <div class="tab-content" id="custom-tabs-four-tabContent">
                                         <div v-for="(className,index) in profuct_Data" class="tab-pane fade show"
-                                            :class="{ 'active': index == 0 }" :id="'tab-content-'+className.categoryId"
+                                            :key="className.categoryId" :class="{ 'active': activeCategoryId === className.categoryId }" :id="'tab-content-'+className.categoryId"
                                             role="tabpanel" aria-labelledby="custom-tabs-four-home-tab">
-                                            <div class="text-right mb-2">
-                                                <button class="btn btn-default btn-sm" @click="showSortClassWin(index)">
-                                                    <i class="fas fa-sort-amount-down-alt"></i>
-                                                    排序設定
-                                                </button>
+                                            
+                                            <!-- 分類標題和操作 -->
+                                            <div class="category-header">
+                                                <div class="category-title">
+                                                    {{ className.categoryName }}
+                                                </div>
+                                                <div class="category-actions">
+                                                    <button class="btn btn-sm btn-outline-primary" @click="toggleSelectAllInCategory(className.categoryId, className.meals)">
+                                                        <i class="fas fa-check-square mr-1"></i>{{ isAllSelected(className.meals) ? '取消全選' : '全選' }}
+                                                    </button>
+                                                    <button class="btn btn-sm btn-outline-secondary" @click="showMealEditModal('新增', {categoryId: className.categoryId})">
+                                                        <i class="fas fa-plus mr-1"></i>新增商品
+                                                    </button>
+                                                </div>
                                             </div>
-                                            <div class="list-group">
-                                                <div class="d-flex align-items-center py-2 list-group-item"
-                                                    v-for="(prod,pindex) in className.meals">
+
+                                            <!-- 商品列表 -->
+                                            <div class="list-group meal-list-group" :data-category-id="className.categoryId">
+                                                <div class="d-flex align-items-center py-2 list-group-item meal-item"
+                                                    v-for="(prod,pindex) in className.meals" :key="prod.mealId" :data-id="prod.mealId">
+                                                    <i class="fas fa-grip-vertical handle-meal mr-2" style="cursor: move;"></i>
+                                                    <div class="meal-checkbox">
+                                                        <input type="checkbox" :id="'meal-' + prod.mealId" 
+                                                               v-model="selectedMeals" :value="prod.mealId">
+                                                    </div>
                                                     <div class="d-flex justify-content-center"
                                                         style="width: 50px; overflow: hidden;">
-                                                        <img :src="prod.image" class="border" height="50px"
-                                                            width="50px">
+                                                        <img :src="prod.image" class="border" height="50px" width="50px">
                                                     </div>
-                                                    <div class="pl-3">
-                                                        <div class="text-bold">{{prod.name}}</div>
+                                                    <div class="pl-3 flex-grow-1">
+                                                        <div class="text-bold" v-html="highlightSearch(prod.name)"></div>
+                                                        <div class="text-muted" v-html="highlightSearch(prod.remark)"></div>
+                                                        <small class="text-info">NT$ {{ prod.price }}</small>
                                                     </div>
-                                                    <div class="ml-auto">
-                                                        <div class="custom-control custom-switch">
+                                                    <div class="ml-auto d-flex align-items-center">
+                                                        <div class="custom-control custom-switch mr-2">
                                                             <input type="checkbox"
                                                                 @change="changeProd(prod.mealId,prod.enabled)"
                                                                 class="custom-control-input" v-model="prod.enabled"
                                                                 :id="'prod-'+prod.mealId">
-                                                            <label class="custom-control-label text-danger m-0 ml-2"
+                                                            <label class="custom-control-label text-danger m-0"
                                                                 :for="'prod-'+prod.mealId"></label>
                                                         </div>
+                                                        <button class="btn btn-sm btn-outline-primary mr-1" @click="showMealEditModal('編輯', prod)">
+                                                            <i class="fas fa-edit"></i>
+                                                        </button>
+                                                        <button class="btn btn-sm btn-outline-danger" @click="deleteMeal(prod.mealId)">
+                                                            <i class="fas fa-trash"></i>
+                                                        </button>
                                                     </div>
                                                 </div>
                                                 <div v-if="className.meals.length==0">
                                                     <div class="emptyImage emptyImage2"></div>
                                                     <p class="text-center">尚未新增餐點品項，前往
-                                                        <button class="ml-2 btn btn-primary" type="button"
-                                                            @click="toAddProductors">
-                                                            新增分類及品項
+                                                        <button class="ml-2 btn btn-primary" type="button" @click="showMealEditModal('新增', {categoryId: className.categoryId})">
+                                                            新增商品
                                                         </button>
                                                     </p>
                                                 </div>
@@ -315,6 +627,71 @@
                                     </div>
                                 </div>
                                 <!-- /.card -->
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="card mt-3">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <h5 class="m-0">必選專區</h5>
+                                    <div class="custom-control custom-switch">
+                                        <input type="checkbox" class="custom-control-input" id="optEnabled"
+                                               v-model="optionsEnabled">
+                                        <label class="custom-control-label" for="optEnabled">啟用</label>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="alert alert-secondary" v-if="!optionsEnabled">
+                                        關閉狀態下，前台不會要求必選。
+                                    </div>
+                                    <div class="row" v-if="optionsEnabled">
+                                        <div class="col-12 col-md-5">
+                                            <h6>模板庫</h6>
+                                            <div class="list-group">
+                                                <div class="list-group-item d-flex align-items-center"
+                                                     v-for="tpl in templateLibrary" :key="tpl.templateId">
+                                                    <div>
+                                                        <div class="text-bold">{{tpl.templateName}}</div>
+                                                        <small class="text-muted">選項數：{{(tpl.options||[]).length}}</small>
+                                                    </div>
+                                                    <button class="btn btn-sm btn-primary ml-auto"
+                                                            @click="addTemplate(tpl)">
+                                                        加入
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-md-7">
+                                            <h6>本菜單必選群組</h6>
+                                            <div class="list-group">
+                                                <div class="list-group-item" v-for="(tpl,idx) in selectedTemplates" :key="tpl.templateId">
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="mr-3 text-bold">{{tpl.templateName}}</div>
+                                                        <div class="form-inline">
+                                                            <div class="custom-control custom-switch mr-3">
+                                                                <input type="checkbox" class="custom-control-input" :id="'req-'+tpl.templateId" v-model="tpl.required">
+                                                                <label class="custom-control-label" :for="'req-'+tpl.templateId">必選</label>
+                                                            </div>
+                                                            <label class="mr-2">類型</label>
+                                                            <select class="form-control form-control-sm mr-3" v-model.number="tpl.type">
+                                                                <option :value="0">單選</option>
+                                                                <option :value="1">多選</option>
+                                                            </select>
+                                                            <label class="mr-2">至少選</label>
+                                                            <input type="number" class="form-control form-control-sm" style="width:90px" min="0" v-model.number="tpl.minChoices">
+                                                        </div>
+                                                        <button class="btn btn-sm btn-outline-danger ml-auto" @click="removeTemplate(idx)">
+                                                            移除
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                <div class="text-muted" v-if="selectedTemplates.length===0">尚未加入任何模板</div>
+                                            </div>
+                                            <div class="text-right mt-3">
+                                                <button class="btn btn-primary" @click="saveRequiredTemplates">儲存設定</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -362,44 +739,71 @@
                 profuct_Data: [],
 
                 editSortList: [],
-                editPDSortList: {}
-
+                editPDSortList: {},
+                optionsEnabled: false,
+                templateLibrary: [],
+                selectedTemplates: [],
+                mealEditData: {
+                    userAction: '新增', // '新增' 或 '編輯'
+                    data: {
+                        mealId: '',
+                        name: '',
+                        remark: '',
+                        image: '',
+                        price: 0,
+                        categoryId: '',
+                        priority: 999,
+                        enabled: true,
+                        customConfig: [], // 選中的客製化選項類別 ID
+                        mealConfig: { // 份量資訊
+                            options: []
+                        }
+                    }
+                },
+                sortClassData: [], // 出單機排序資料
+                searchKeyword: '', // 搜尋關鍵字
+                selectedMeals: [], // 選中的商品
+                originalMealsData: [], // 原始商品資料，用於搜尋恢復
+                activeCategoryId: null,
+                cropper: null,
+                imageUrl: "",
+                croppedImage: "",
+                imageSize: { w: 300, h: 300 },
+                categorySortable: null,
+                mealSortables: []
             }
         },
         computed: {
+            bulkActionText() {
+                if (this.selectedMeals.length === 0) return '請選擇商品';
+                if (this.selectedMeals.length === 1) return '切換狀態';
+                return '批量切換狀態';
+            },
+            checkMealName() {
+                return this.mealEditData.data.name && this.mealEditData.data.name.trim() !== '';
+            },
+            checkMealCategory() {
+                return this.mealEditData.data.categoryId && this.mealEditData.data.categoryId !== '';
+            },
+            checkMealPrice() {
+                return this.mealEditData.data.price !== '' && !isNaN(this.mealEditData.data.price) && parseFloat(this.mealEditData.data.price) >= 0;
+            },
+            checkMealForm() {
+                return this.checkMealName && this.checkMealCategory && this.checkMealPrice;
+            }
         },
         mounted() {
             this.getMenuInfo()
 
             let vue = this
-
-            const GS = this.$refs.sortableListGroup
-            Sortable.create(GS, {
-                handle: ".handle", // 指定拖曳的手柄
-                animation: 150,
-                onEnd: () => {
-                    const items = this.$refs.sortableListGroup.querySelectorAll('[data-id]');
-                    items.forEach((item, index) => {
-                        const id = Number(item.getAttribute('data-id'));
-                        const target = this.profuct_Data.find(group => group.categoryId === id);
-                        if (target) {
-                            target.sortOrder = index;
-                        }
-                    });
-
-                    // 送出 CategoryId 與 SortOrder（注意大小寫）
-                    vue.editSortList = this.profuct_Data.map(group => ({
-                        CategoryId: group.categoryId,
-                        SortOrder: group.sortOrder
-                    }));
-
-                    // console.log(vue.editSortList);
-
-                }
-            });
-
         },
         watch: {
+            searchKeyword(newVal, oldVal) {
+                if (newVal !== oldVal) {
+                    // 當搜尋關鍵字改變時，清空選擇
+                    this.selectedMeals = [];
+                }
+            }
         },
         methods: {
             getMenuInfo() {
@@ -407,33 +811,78 @@
                 apiWeb('/api/Menu/menu/' + storeId + '/' + menuId, 'GET', null, '獲得菜單詳情', function (v) {
                     vue.menuInfo_DataEdit = v.menu
                     vue.profuct_Data = v.menu.categories
+                    vue.activeCategoryId = vue.profuct_Data[0]?.categoryId;
+                    vue.originalMealsData = JSON.parse(JSON.stringify(v.menu.categories.flatMap(c => c.meals)))
                     vue.PageTitle = v.menu.menuName
                     vue.menuName = v.menu.menuName
+                    vue.optionsEnabled = !!v.menu.optionsEnabled || !!v.menu.OptionsEnabled
+                    // 載入現有必選模板
+                    apiWeb('/api/Menu/menu/' + storeId + '/' + menuId + '/required-templates', 'GET', null, '必選模板', function(r){
+                        console.log('載入必選模板回應:', r)
+                        try {
+                            vue.optionsEnabled = !!(r.optionsEnabled ?? r.OptionsEnabled)
+                            const templates = r.templates || r.Templates
+                            console.log('模板資料:', templates)
+                            
+                            // 檢查是否為新格式 (有 groups 屬性)
+                            if (templates && typeof templates === 'object' && templates.groups && Array.isArray(templates.groups)) {
+                                vue.selectedTemplates = templates.groups.map(g => ({
+                                    templateId: g.id,
+                                    templateName: g.name,
+                                    required: g.required,
+                                    type: g.type === 'single' ? 0 : 1,
+                                    minChoices: g.minChoices || 1,
+                                    options: g.items || []
+                                }))
+                            } else if (templates && templates.rawData) {
+                                // 資料庫中有錯誤格式的資料
+                                console.warn('必選模板資料格式錯誤:', templates.rawData)
+                                vue.selectedTemplates = []
+                                toastr.warning('必選專區資料格式錯誤，請重新設定')
+                            } else {
+                                // 空資料或其他情況
+                                vue.selectedTemplates = []
+                            }
+                        } catch (error) {
+                            console.error('解析必選模板時發生錯誤:', error)
+                            vue.selectedTemplates = []
+                            toastr.error('載入必選專區設定失敗')
+                        }
+                        loadingOff()
+                    })
+                    // 載入模板庫
+                    apiWeb('/api/Menu/attributes/list/' + storeId, 'GET', null, '模板庫', function(r){
+                        const list = r.templates || r.Templates || []
+                        // API 已經返回正確格式，直接使用
+                        vue.templateLibrary = list
+                        console.log('模板庫載入完成:', vue.templateLibrary)
+                    })
+                    // 載入出單機排序資料
+                    apiWeb('/api/MealPriority/titles/' + storeId, 'GET', null, '出單機排序', function(r){
+                        vue.sortClassData = r.titles || r.Titles || []
+                        console.log('出單機排序載入完成:', vue.sortClassData)
+                    })
                     //console.log(vue.profuct_Data[0].meals[0].enabled);
-                    loadingOff()
+                    // loadingOff() 改由子請求結束後關閉
+                    
+                    // 初始化拖曳排序
+                    vue.$nextTick(() => {
+                        vue.initSortable();
+                    });
                 })
             },
             save() {
-                loadingOff()
-                const data = {
-                    "Categories": this.editSortList
-                }
-                apiWeb('/api/Menu/menu/' + storeId + '/' + menuId + '/categories/order', 'PUT', JSON.stringify(data), '變更菜單分類順序', function (v) {
-                    if (v.success == true) {
-                        vue.getMenuInfo()
-                        toastr.success("已經更新類別排序");
-                    } else {
-                        toastr.error("餐點狀態變更失敗");
-                    }
-                })
+                loadingOn();
+                let vue = this;
                 apiWeb('api/Menu/menu/' + storeId + '/' + menuId, 'PUT', JSON.stringify({ MenuName: this.menuName }), '菜單改名', function (v) {
                     if (v.success == true) {
                         $('#EditTitleModal').modal('hide')
-                        location.reload();
                         toastr.success("修改成功");
+                        vue.PageTitle = vue.menuName;
                     } else {
                         toastr.error("修改失敗");
                     }
+                    loadingOff();
                 })
             },
             changeProd(id, status) {
@@ -441,7 +890,7 @@
                 var changeData = {
                     "Enabled": status
                 }
-                apiWeb('api/Menu/menu/' + storeId + '/' + menuId + '/meal/' + id + '/status', 'PATCH', JSON.stringify(changeData), '變更餐點狀態', function (v) {
+                apiWeb('/api/Menu/menu/' + storeId + '/' + menuId + '/meal/' + id + '/status', 'PATCH', JSON.stringify(changeData), '變更餐點狀態', function (v) {
                     if (v.success == true) {
                         if (status == true) {
                             toastr.success("已上架餐點");
@@ -503,6 +952,545 @@
                         toastr.error("餐點狀態變更失敗");
                     }
                 })
+            },
+            addTemplate(tpl){
+                if(this.selectedTemplates.find(x => x.templateId === tpl.templateId)) return
+                this.selectedTemplates.push({
+                    templateId: tpl.templateId,
+                    templateName: tpl.templateName,
+                    required: tpl.required,
+                    type: tpl.type || 0,
+                    minChoices: tpl.minChoices || 1,
+                    options: tpl.options || []
+                })
+            },
+            removeTemplate(idx){
+                this.selectedTemplates.splice(idx,1)
+            },
+            saveRequiredTemplates(){
+                loadingOn()
+                
+                console.log('選中的模板:', this.selectedTemplates)
+                
+                // 將 selectedTemplates 轉換成正確的格式
+                const formattedTemplates = {
+                    groups: this.selectedTemplates.map(tpl => {
+                        console.log('處理模板:', tpl)
+                        
+                        // 確保 options 是陣列
+                        const options = Array.isArray(tpl.options) ? tpl.options : []
+                        
+                        const group = {
+                            id: String(tpl.templateId),
+                            name: tpl.templateName,
+                            type: tpl.type === 0 ? 'single' : 'multi',
+                            required: Boolean(tpl.required),
+                            minChoices: Number(tpl.minChoices || 1),
+                            items: options.map(opt => ({
+                                id: String(opt.title || opt.id || ''),
+                                title: String(opt.title || ''),
+                                extra: Number(opt.extra || 0)
+                            }))
+                        }
+                        
+                        console.log('轉換後的群組:', group)
+                        return group
+                    })
+                }
+                
+                const payload = {
+                    OptionsEnabled: this.optionsEnabled,
+                    Templates: formattedTemplates
+                }
+                
+                console.log('最終儲存的資料:', JSON.stringify(payload, null, 2))
+                
+                apiWeb('/api/Menu/menu/' + storeId + '/' + menuId + '/required-templates', 'PUT', JSON.stringify(payload), '儲存必選模板', function(v){
+                    toastr.success('已儲存必選專區設定')
+                    loadingOff()
+                })
+            },
+            showMealEditModal(action, data = null) {
+                this.mealEditData.userAction = action;
+                if (data && data.mealId) {
+                    // 編輯模式
+                    this.mealEditData.data = JSON.parse(JSON.stringify(data));
+                    // 確保 customConfig 是陣列格式
+                    if (typeof this.mealEditData.data.customConfig === 'string') {
+                        try {
+                            this.mealEditData.data.customConfig = JSON.parse(this.mealEditData.data.customConfig);
+                        } catch (e) {
+                            this.mealEditData.data.customConfig = [];
+                        }
+                    }
+                    // 確保 mealConfig 是物件格式
+                    if (typeof this.mealEditData.data.mealConfig === 'string') {
+                        try {
+                            this.mealEditData.data.mealConfig = JSON.parse(this.mealEditData.data.mealConfig);
+                        } catch (e) {
+                            this.mealEditData.data.mealConfig = { options: [] };
+                        }
+                    }
+                } else {
+                    // 新增模式
+                    this.mealEditData.data = {
+                        mealId: '',
+                        name: '',
+                        remark: '',
+                        image: '',
+                        price: 0,
+                        categoryId: data ? data.categoryId : '',
+                        priority: 999,
+                        enabled: true,
+                        customConfig: [],
+                        mealConfig: {
+                            options: []
+                        }
+                    };
+                }
+                $('#MealEditModal').modal('show');
+            },
+            handleMealImageUpload(event) {
+                var vue = this
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        this.imageUrl = e.target.result;
+
+                        // 確保 Modal 開啟後再初始化 Cropper
+                        $("#MealEditModal").modal("hide"); // Hide the edit modal
+                        setTimeout(() => {
+                            $("#cropModal").modal("show");
+                            setTimeout(() => {
+                                vue.initCropper();
+                            }, 300);
+                        }, 500);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            },
+            initCropper() {
+                var vue = this
+                if (this.cropper) {
+                    this.cropper.destroy();
+                }
+                this.$nextTick(() => {
+                    const image = this.$refs.image;
+                    image.onload = () => {
+                        this.cropper = new Cropper(image, {
+                            aspectRatio: 1,   // 1:1 比例
+                            viewMode: 2,      // 限制裁剪框不超出圖片範圍
+                            autoCropArea: 1,  // 預設裁剪範圍最大
+                            minCropBoxWidth: vue.imageSize.w,
+                            minCropBoxHeight: vue.imageSize.h,
+                            ready: () => {
+                                this.cropper.setCropBoxData({ width: vue.imageSize.w, height: vue.imageSize.h });
+                            },
+                            rotatable: false, // 禁止旋轉
+                            scalable: false,  // 禁止縮放
+                            zoomable: false,  // 禁止縮放
+                            movable: false,   // 禁止移動圖片
+                            checkOrientation: false // 禁止自動旋轉
+                        });
+                    };
+                    image.src = this.imageUrl;
+                });
+            },
+            cropImage(type) {
+                loadingOn()
+                const vue = this;
+
+                if (!this.cropper) return;
+
+                const canvas = this.cropper.getCroppedCanvas({
+                    width: vue.imageSize.w,
+                    height: vue.imageSize.h
+                });
+
+                if (type === "blob") {
+                    canvas.toBlob((blob) => {
+                        vue.croppedImage = blob;
+
+                        const formData = new FormData();
+                        formData.append('file', vue.croppedImage, 'cropped-image.jpg');
+
+                        $.ajax({
+                            type: "POST",
+                            headers: {
+                                "Content-Type": "application/json; charset=utf-8",
+                            },
+                            url: host + "/api/auth/keylogin",
+                            data: JSON.stringify({ key: AutoKey }),
+                            success: function (res) {
+                                const token = "Bearer " + res.token;
+                                // 第二次請求：上傳圖片
+                                $.ajax({
+                                    url: 'https://sharings.com.tw/api/Image/upload',
+                                    type: 'POST',
+                                    headers: {
+                                        Authorization: token
+                                    },
+                                    data: formData,
+                                    processData: false,
+                                    contentType: false,
+                                    success: function (v) {
+                                        if (v.success == true) {
+                                            vue.mealEditData.data.image = v.url;
+                                            toastr.success("圖片上傳成功");
+                                        } else {
+                                            toastr.error(v.message || "圖片上傳失敗");
+                                        }
+                                        $("#cropModal").modal("hide");
+                                        $("#MealEditModal").modal("show");
+                                        loadingOff();
+                                    },
+                                    error: function (xhr, status, error) {
+                                        toastr.error("圖片上傳失敗");
+                                        $("#cropModal").modal("hide");
+                                        $("#MealEditModal").modal("show");
+                                        loadingOff();
+                                    }
+                                });
+                            },
+                            error: function (xhr, status, error) {
+                                toastr.error("驗證失敗，無法上傳圖片");
+                                loadingOff();
+                                $("#cropModal").modal("hide");
+                                $("#MealEditModal").modal("show");
+                            },
+                        });
+                    }, "image/png");
+                }
+            },
+            addMealSize() {
+                this.mealEditData.data.mealConfig.options.push({
+                    title: '',
+                    extraPrice: 0
+                });
+            },
+            deleteMealSize(index) {
+                this.mealEditData.data.mealConfig.options.splice(index, 1);
+            },
+            saveMeal() {
+                let vue = this;
+                // 驗證表單
+                if (!this.checkMealForm) {
+                    if (!this.checkMealName) {
+                        toastr.warning('請輸入商品名稱');
+                        return;
+                    }
+                    if (!this.checkMealCategory) {
+                        toastr.warning('請選擇商品分類');
+                        return;
+                    }
+                    if (!this.checkMealPrice) {
+                        toastr.warning('請輸入有效的商品價格');
+                        return;
+                    }
+                    return;
+                }
+
+                const payload = {
+                    Name: this.mealEditData.data.name,
+                    Remark: this.mealEditData.data.remark,
+                    Price: this.mealEditData.data.price,
+                    CategoryId: this.mealEditData.data.categoryId,
+                    Priority: this.mealEditData.data.priority,
+                    Enabled: this.mealEditData.data.enabled,
+                    Image: this.mealEditData.data.image,
+                    CustomConfig: JSON.stringify(this.mealEditData.data.customConfig),
+                    MealConfig: JSON.stringify(this.mealEditData.data.mealConfig)
+                };
+
+                loadingOn();
+                if (this.mealEditData.data.mealId) { // 編輯
+                    apiWeb('/api/Meal/' + storeId + '/' + this.mealEditData.data.mealId, 'PUT', JSON.stringify(payload), '更新商品', function(v) {
+                        if (v.success == true) {
+                            toastr.success('商品更新成功');
+                            $('#MealEditModal').modal('hide');
+                            vue.getMenuInfo();
+                        } else {
+                            toastr.error('商品更新失敗');
+                        }
+                        loadingOff();
+                    });
+                } else { // 新增
+                    apiWeb('/api/Meal/' + storeId + '/add', 'POST', JSON.stringify(payload), '新增商品', function(v) {
+                        if (v.success == true) {
+                            toastr.success('商品新增成功');
+                            $('#MealEditModal').modal('hide');
+                            vue.getMenuInfo();
+                        } else {
+                            toastr.error('商品新增失敗');
+                        }
+                        loadingOff();
+                    });
+                }
+            },
+            addMeal() {
+                let vue = this;
+                // 驗證表單
+                if (!this.checkMealForm) {
+                    if (!this.checkMealName) {
+                        toastr.warning('請輸入商品名稱');
+                        return;
+                    }
+                    if (!this.checkMealCategory) {
+                        toastr.warning('請選擇商品分類');
+                        return;
+                    }
+                    if (!this.checkMealPrice) {
+                        toastr.warning('請輸入有效的商品價格');
+                        return;
+                    }
+                    return;
+                }
+
+                const payload = {
+                    Name: this.mealEditData.data.name,
+                    Remark: this.mealEditData.data.remark,
+                    Price: this.mealEditData.data.price,
+                    CategoryId: this.mealEditData.data.categoryId,
+                    Priority: this.mealEditData.data.priority,
+                    Enabled: this.mealEditData.data.enabled,
+                    Image: this.mealEditData.data.image,
+                    CustomConfig: JSON.stringify(this.mealEditData.data.customConfig),
+                    MealConfig: JSON.stringify(this.mealEditData.data.mealConfig)
+                };
+
+                loadingOn();
+                apiWeb('/api/Meal/' + storeId + '/add', 'POST', JSON.stringify(payload), '新增商品', function(v) {
+                    if (v.success == true) {
+                        toastr.success('商品新增成功');
+                        $('#MealEditModal').modal('hide');
+                        vue.getMenuInfo();
+                    } else {
+                        toastr.error('商品新增失敗');
+                    }
+                    loadingOff();
+                });
+            },
+            
+            // 初始化拖曳排序
+            initSortable() {
+                let vue = this;
+                
+                // 銷毀舊的實例
+                if (vue.categorySortable) {
+                    vue.categorySortable.destroy();
+                }
+                vue.mealSortables.forEach(s => s.destroy());
+                vue.mealSortables = [];
+
+                // 初始化分類排序
+                const categoryContainer = document.querySelector('#custom-tabs-four-tab');
+                if (categoryContainer) {
+                    vue.categorySortable = Sortable.create(categoryContainer, {
+                        handle: ".handle-category",
+                        animation: 150,
+                        onEnd: (evt) => {
+                            const newOrder = Array.from(evt.to.children).map((item, index) => ({
+                                CategoryId: item.querySelector('a').id.replace('tab-', ''),
+                                SortOrder: index
+                            }));
+                            vue.updateCategoryOrder(newOrder);
+                        }
+                    });
+                }
+                
+                // 初始化商品排序
+                this.$nextTick(() => {
+                    document.querySelectorAll('.meal-list-group').forEach(group => {
+                        const sortableInstance = Sortable.create(group, {
+                            group: 'meals',
+                            handle: ".handle-meal",
+                            animation: 150,
+                            onEnd: (evt) => {
+                                const categoryId = evt.to.dataset.categoryId;
+                                const newOrder = Array.from(evt.to.children).map((item, index) => ({
+                                    MealId: item.dataset.id,
+                                    SortOrder: index
+                                }));
+                                vue.updateMealOrder(newOrder);
+                            }
+                        });
+                        vue.mealSortables.push(sortableInstance);
+                    });
+                });
+            },
+            
+            // 更新分類順序
+            updateCategoryOrder(newOrder) {
+                let vue = this;
+                loadingOn();
+                const payload = { Categories: newOrder };
+                
+                apiWeb('/api/Menu/menu/' + storeId + '/' + menuId + '/categories/order', 'PUT', JSON.stringify(payload), '更新分類順序', function(v) {
+                    if (v.success == true) {
+                        toastr.success('分類順序更新成功');
+                        vue.getMenuInfo();
+                    } else {
+                        toastr.error('分類順序更新失敗');
+                    }
+                    loadingOff();
+                });
+            },
+            
+            // 更新商品順序
+            updateMealOrder(newOrder) {
+                let vue = this;
+                loadingOn();
+                const payload = { Meals: newOrder };
+                
+                apiWeb('/api/Menu/menu/' + storeId + '/' + menuId + '/meals/order', 'PUT', JSON.stringify(payload), '更新商品順序', function(v) {
+                    if (v.success == true) {
+                        toastr.success('商品順序更新成功');
+                        vue.getMenuInfo();
+                    } else {
+                        toastr.error('商品順序更新失敗');
+                    }
+                    loadingOff();
+                });
+            },
+            
+            searchMeals() {
+                let firstCategoryIdWithResult = null;
+                if (!this.searchKeyword.trim()) {
+                    this.profuct_Data.forEach(category => {
+                        category.meals = this.originalMealsData.filter(meal => meal.categoryId === category.categoryId);
+                    });
+                } else {
+                    const keyword = this.searchKeyword.toLowerCase();
+                    this.profuct_Data.forEach(category => {
+                        category.meals = this.originalMealsData.filter(meal => 
+                            meal.categoryId === category.categoryId &&
+                            (meal.name.toLowerCase().includes(keyword) || 
+                             (meal.remark && meal.remark.toLowerCase().includes(keyword)))
+                        );
+                        if (firstCategoryIdWithResult === null && category.meals.length > 0) {
+                            firstCategoryIdWithResult = category.categoryId;
+                        }
+                    });
+                }
+
+                if (firstCategoryIdWithResult) {
+                    this.activeCategoryId = firstCategoryIdWithResult;
+                }
+                
+                // 重新初始化拖曳排序
+                this.$nextTick(() => {
+                    this.initSortable();
+                });
+            },
+            clearSearch() {
+                this.searchKeyword = '';
+                this.searchMeals(); // 清除搜尋關鍵字時，恢復原始資料
+            },
+            highlightSearch(text) {
+                if (!text || !this.searchKeyword) return text;
+                const keyword = this.searchKeyword;
+                const regex = new RegExp(`(${keyword})`, 'gi');
+                return text.replace(regex, '<span class="search-highlight">$1</span>');
+            },
+            
+            isAllSelected(meals) {
+                if (!meals || meals.length === 0) return false;
+                return meals.every(meal => this.selectedMeals.includes(meal.mealId));
+            },
+            
+            toggleSelectAllInCategory(categoryId, meals) {
+                if (this.isAllSelected(meals)) {
+                    // 取消全選
+                    this.selectedMeals = this.selectedMeals.filter(id => !meals.some(meal => meal.mealId === id));
+                } else {
+                    // 全選
+                    meals.forEach(meal => {
+                        if (!this.selectedMeals.includes(meal.mealId)) {
+                            this.selectedMeals.push(meal.mealId);
+                        }
+                    });
+                }
+            },
+            
+            // 選擇分類內所有商品
+            selectAllInCategory(categoryId) {
+                const category = this.profuct_Data.find(c => c.categoryId === categoryId);
+                if (category) {
+                    const categoryMealIds = category.meals.map(meal => meal.mealId);
+                    this.selectedMeals = categoryMealIds;
+                }
+            },
+            
+            // 批量切換狀態
+            bulkToggleStatus() {
+                if (this.selectedMeals.length === 0) {
+                    toastr.warning('請選擇商品');
+                    return;
+                }
+                
+                const allEnabled = this.profuct_Data.flatMap(c => c.meals)
+                                           .filter(m => this.selectedMeals.includes(m.mealId))
+                                           .every(m => m.enabled);
+
+                const payload = {
+                    MealIds: this.selectedMeals,
+                    Enabled: !allEnabled
+                };
+                
+                apiWeb('/api/Menu/menu/' + storeId + '/' + menuId + '/meals/bulk-status', 'PATCH', JSON.stringify(payload), '批量切換商品狀態', function(v) {
+                    if (v.success == true) {
+                        toastr.success('批量切換狀態成功');
+                        vue.getMenuInfo();
+                        vue.selectedMeals = []; // 清空選擇
+                    } else {
+                        toastr.error('批量切換狀態失敗');
+                    }
+                    loadingOff();
+                });
+            },
+            
+            // 批量刪除
+            bulkDelete() {
+                if (this.selectedMeals.length === 0) {
+                    toastr.warning('請選擇商品');
+                    return;
+                }
+                const status = confirm('確定要批量刪除這些商品嗎？此操作無法復原！');
+                if (!status) return;
+
+                loadingOn();
+                const payload = {
+                    MealIds: this.selectedMeals
+                };
+                
+                apiWeb('/api/Menu/menu/' + storeId + '/' + menuId + '/meals/bulk-delete', 'DELETE', JSON.stringify(payload), '批量刪除商品', function(v) {
+                    if (v.success == true) {
+                        toastr.success('批量刪除成功');
+                        vue.getMenuInfo();
+                        vue.selectedMeals = []; // 清空選擇
+                    } else {
+                        toastr.error('批量刪除失敗');
+                    }
+                    loadingOff();
+                });
+            },
+            
+            // 刪除單個商品
+            deleteMeal(mealId) {
+                const status = confirm('確定要刪除這個商品嗎？此操作無法復原！');
+                if (!status) return;
+
+                loadingOn();
+                apiWeb('/api/Menu/menu/' + storeId + '/' + menuId + '/meal/' + mealId, 'DELETE', null, '刪除商品', function(v) {
+                    if (v.success == true) {
+                        toastr.success('商品刪除成功');
+                        vue.getMenuInfo();
+                    } else {
+                        toastr.error('商品刪除失敗');
+                    }
+                    loadingOff();
+                });
             }
         },
     });

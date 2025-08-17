@@ -702,23 +702,17 @@ scratch. This page gets rid of all links and provides the needed markup only.
             //可用標籤
             getTheTags(_func) {
                 var vue = this
-                apiWeb('/api/tags/nearby?latitude=' + localStorage.latitude + '&longitude=' + localStorage.longitude + '&&radius=' + radius, 'GET', null, '獲得所有標籤', function (v) {
+                apiWeb('/api/tags/nearby?latitude=' + localStorage.latitude + '&longitude=' + localStorage.longitude + '&&radius=' + radius + '&includeRelatedTags=true', 'GET', null, '獲得所有標籤', function (v) {
                     if (v.success == true) {
-                        // console.log('v.data----------', v.data);
+                        // 合併 nearbyTags 和 relatedTags
+                        let nearbyTags = v.data.nearbyTags || []
+                        let relatedTags = v.data.relatedTags || []
+                        let allTags = [...nearbyTags, ...relatedTags]
 
-                        let tags = v.data
+                        vue.BusinessDistrictList = allTags.filter(tag => tag.typeName === "地區/商圈標籤");
+                        vue.FoodTypeList = allTags.filter(tag => tag.typeName === "食物類別標籤");
+                        vue.PromotionsList = allTags.filter(tag => tag.typeName === "優惠專區標籤");
 
-                        vue.BusinessDistrictList = tags.filter(tag => tag.type === "地區/商圈標籤");
-                        // console.log(vue.BusinessDistrictList);
-
-                        vue.FoodTypeList = tags.filter(tag => tag.type === "食物類別標籤");
-                        vue.PromotionsList = tags.filter(tag => tag.type === "優惠專區標籤");
-
-                        // vue.BusinessDistrictList = v.data
-                        // console.log(vue.BusinessDistrictList);
-
-                        // vue.PromotionsList = v.data
-                        // vue.FoodTypeList = v.data
                         if (_func) _func()
                     }
                 })

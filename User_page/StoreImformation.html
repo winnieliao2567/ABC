@@ -1042,12 +1042,87 @@ scratch. This page gets rid of all links and provides the needed markup only.
                     }
                 }
 
+                // 合併必選結果（若存在）並計入價格
+                try {
+                    const requiredSelections = JSON.parse(localStorage.getItem('requiredSelections') || '{}')
+                    const requiredTemplates = JSON.parse(localStorage.getItem('requiredTemplatesCache') || '[]')
+                    const selectionsArray = []
+                    let requiredExtra = 0
+                    Object.keys(requiredSelections).forEach(k => {
+                        const titles = requiredSelections[k]
+                        const tpl = requiredTemplates[Number(k)]
+                        if (!tpl) return
+                        const opts = tpl.options || []
+                        titles.forEach(title => {
+                            const found = opts.find(o => (o.title === title))
+                            const extra = found ? Number(found.extra || 0) : 0
+                            requiredExtra += extra
+                            selectionsArray.push({ group: tpl.templateName || tpl.TemplateName, title, extra })
+                        })
+                    })
+                    if (selectionsArray.length > 0) {
+                        // 附加到購物車的最後一筆（剛加入的項目）
+                        const idx = cart.length - 1
+                        if (idx >= 0) {
+                            cart[idx].requiredSelection = selectionsArray
+                            // 單價增加必選加價
+                            cart[idx].price = Number(cart[idx].price || 0) + requiredExtra
+                            // 重新計算總價：單價 × 數量
+                            cart[idx].totalPrice = cart[idx].price * (cart[idx].quantity || 1)
+                        }
+                        // 清掉一次性必選暫存
+                        localStorage.removeItem('requiredSelections')
+                        localStorage.removeItem('requiredTemplatesCache')
+                        localStorage.removeItem('pendingRequiredForStore')
+                        localStorage.removeItem('pendingRequiredForMenu')
+                    }
+                } catch(e) {}
+
                 localStorage.cart = JSON.stringify(cart)
                 // 修復：計算總數量（所有商品的 quantity 總和）而不是項目數
                 this.cartCount = cart.reduce((total, item) => {
                     return total + (item.quantity || 1);
                 }, 0);
                 $('#FoodModal').modal('hide')
+ 
+                // 檢查是否有「必選專區」流程
+                this.handleRequiredFlow()
+            },
+ 
+             // 檢查是否有必選專區（使用菜單屬性模板 Required=true）
+             handleRequiredFlow() {
+                 const vue = this
+                 loadingOn()
+                 const tryFetch = (mId) => {
+                     apiWeb('/api/Menu/menu/' + storeId + '/' + mId + '/required-templates', 'GET', null, '取得必選專區模板', function (resp) {
+                         try {
+                             const optionsEnabled = !!(resp.optionsEnabled ?? resp.OptionsEnabled)
+                             if (!optionsEnabled) { loadingOff(); return }
+                             const templates = (resp.templates || resp.Templates || [])
+                             const requiredGroups = templates.filter(t => t.required === true || t.Required === true)
+                             if (requiredGroups.length > 0) {
+                                 localStorage.setItem('requiredTemplatesCache', JSON.stringify(requiredGroups))
+                                 localStorage.setItem('pendingRequiredForStore', storeId)
+                                 localStorage.setItem('pendingRequiredForMenu', mId)
+                                 window.location.href = 'RequiredSelection.html?sid=' + storeId
+                                 return
+                             }
+                         } catch (e) {}
+                         loadingOff()
+                     })
+                 }
+                 const currentMenuId = vue.storeInfo.activeMenu?.menuId || vue.storeInfo.activeMenu?.MenuId || ''
+                 if (currentMenuId) {
+                     tryFetch(currentMenuId)
+                 } else {
+                     // 後援：查詢菜單列表取 isActive 的 menuId
+                     apiWeb('/api/Menu/menu/list/' + storeId, 'GET', null, '菜單列表', function(r){
+                         const menus = r.menus || r.Menus || []
+                         const active = menus.find(m => (m.isActive === true || m.IsActive === true)) || menus[0]
+                         const mId = active ? (active.menuId || active.MenuId) : ''
+                         if (mId) { tryFetch(mId); } else { loadingOff(); }
+                     })
+                 }
             },
 
             // 檢查是否有相同配置的餐點

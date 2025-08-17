@@ -123,6 +123,30 @@
                 </div>
             </div>
         </div>
+        <div class="modal fade" id="cloneMenuModal" tabindex="-1" role="dialog" aria-labelledby="cloneMenuLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-md" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="cloneMenuLabel">複製菜單</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p class="mb-2">來源菜單：<b>{{CloneMenuData.sourceMenuName}}</b></p>
+                        <div class="form-group">
+                            <label for="cloneMenuName">新菜單名稱（可留空）</label>
+                            <input id="cloneMenuName" type="text" class="form-control" v-model="CloneMenuData.targetMenuName"
+                                   placeholder="未填則預設為 原名稱_複製，自動避開重複">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" v-on:click="cloneMenu">確認複製</button>
+                    </div>
+                </div>
+            </div>
+        </div>
         <!-- Navbar -->
         <nav class="main-header navbar navbar-expand navbar-white navbar-light">
             <!-- Left navbar links -->
@@ -288,6 +312,12 @@
                                                     v-on:click="selectMenu(item.menuId)">
                                                     <i class="fas fa-edit"></i>
                                                 </button>
+                                                <button :id="'clone-'+item.menuId" :data-id="item.menuId"
+                                                    :data-name="item.menuName"
+                                                    class="btn btn-sm btn-outline-primary d-inline-block ml-2"
+                                                    v-on:click="showCloneModal(item.menuId)">
+                                                    <i class="fas fa-copy"></i>
+                                                </button>
                                             </div>
                                         </div>
                                     </div>
@@ -348,6 +378,11 @@
                     "menuId": '',
                     "menuName": "''",
                     enabled: true
+                },
+                CloneMenuData: {
+                    sourceMenuId: '',
+                    sourceMenuName: '',
+                    targetMenuName: ''
                 }
 
             }
@@ -419,6 +454,29 @@
                 // console.log(this.DeletMenuDate);
 
                 $('#deletMenuModal').modal('show')
+            },
+            showCloneModal(id) {
+                this.CloneMenuData.sourceMenuId = $('#clone-' + id).attr('data-id')
+                this.CloneMenuData.sourceMenuName = $('#clone-' + id).attr('data-name')
+                this.CloneMenuData.targetMenuName = ''
+                $('#cloneMenuModal').modal('show')
+            },
+            cloneMenu() {
+                loadingOn()
+                const body = {
+                    sourceMenuId: this.CloneMenuData.sourceMenuId
+                }
+                if ((this.CloneMenuData.targetMenuName || '').trim() !== '') {
+                    body.targetMenuName = this.CloneMenuData.targetMenuName.trim()
+                }
+                apiWeb('/api/Menu/menu/' + storeId + '/copy', 'POST', JSON.stringify(body), '複製菜單', function (v) {
+                    if (v.success === true || v.Success === true) {
+                        location.reload();
+                    } else {
+                        toastr.error('複製失敗')
+                        loadingOff()
+                    }
+                })
             },
             changeActive(id, name) {
                 this.ActiveMenuDate.menuId = id

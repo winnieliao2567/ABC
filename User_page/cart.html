@@ -231,12 +231,19 @@
                 <p class="text-muted m-0 text-xs">
                   <template v-if="item.mealConfig && item.mealConfig.options && item.mealConfig.options.length > 0">
                     <span v-for="(option, optionIndex) in item.mealConfig.options" :key="optionIndex">
-                      {{option.title}}({{option.extraPrice >= 0 ? '+' : ''}}{{option.extraPrice}})<span v-if="optionIndex < item.mealConfig.options.length - 1">,</span>
+                      {{option.title}}<span v-if="option.extraPrice != 0">({{option.extraPrice >= 0 ? '+' : ''}}{{option.extraPrice}})</span><span v-if="optionIndex < item.mealConfig.options.length - 1">,</span>
                     </span>
                     <span v-if="item.customConfig && item.customConfig[0] && item.customConfig[0].options">,</span>
                   </template>
                   <template v-for="(option,opIndex) in item.customConfig[0].options">
-                    <span v-for="(select,selectIndex) in option.content">{{select.title}}(+{{select.extra}}),</span>
+                    <span v-for="(select,selectIndex) in option.content">
+                      {{select.title}}<span v-if="select.extra && select.extra != '0'">({{select.extra >= 0 ? '+' : ''}}{{select.extra}})</span><span v-if="selectIndex < option.content.length - 1">,</span>
+                    </span>
+                  </template>
+                  <template v-if="item.requiredSelection && item.requiredSelection.length">
+                    <span v-for="(sel, sidx) in item.requiredSelection">
+                      {{sel.group}}：{{sel.title}}<span v-if="sel.extra != 0">({{sel.extra >= 0 ? '+' : ''}}{{sel.extra}})</span><span v-if="sidx < item.requiredSelection.length - 1">,</span>
+                    </span>
                   </template>
                 </p>
                 <!-- <div class="text-right">
@@ -318,7 +325,9 @@
       }
     },
     mounted() {
-
+      // 當進入購物車頁面時，清除可能存在的舊必選項目數據
+      // 確保每次從商品頁重新進入購物車時都是乾淨的狀態
+      this.clearRequiredSelections()
 
       // console.log(this.userInfo);
 
@@ -331,6 +340,7 @@
           veu.lowAmount.enabled = v.storeInfo.minimumOrderEnabled
           veu.lowAmount.minimumOrderAmount = v.storeInfo.minimumOrderAmount
           veu.lowAmount.minimumOrderText = v.storeInfo.minimumOrderText
+          
           loadingOff()
         })
       } else {
@@ -342,6 +352,189 @@
     },
 
     methods: {
+      async checkRequiredItems() {
+        try {
+          if (this.cartList.length === 0) return
+          
+          // 每次前往結帳都先清除舊的必選項目數據，確保重新選擇
+          this.clearRequiredSelections()
+          
+          // 取得店家資訊
+          const storeId = this.cartList[0].storeId
+          
+          // 首先從 API 獲取最新的店家資訊，包含當前啟動的菜單
+          let menuId = null
+          
+          try {
+            // 獲取正確的 API Token
+            const token = await this.getApiToken()
+            
+            const storeResponse = await fetch(`${host}api/Store/detail/${storeId}`, {
+              headers: {
+                'Authorization': 'Bearer ' + token,
+                'Content-Type': 'application/json'
+              }
+            })
+            
+            if (storeResponse.ok) {
+              const storeData = await storeResponse.json()
+
+              
+              // 從店家資訊中獲取當前啟動的菜單 (注意大小寫)
+              if (storeData.ActiveMenu && storeData.ActiveMenu.menuId) {
+                menuId = storeData.ActiveMenu.menuId
+
+              } else if (storeData.activeMenu && storeData.activeMenu.menuId) {
+                menuId = storeData.activeMenu.menuId
+              } else {
+                // 沒有找到 ActiveMenu
+              }
+            }
+          } catch (error) {
+            console.error('獲取店家資訊失敗:', error)
+          }
+          
+          // 如果 API 沒有返回 activeMenu，嘗試從 localStorage 獲取
+          if (!menuId) {
+            const storeInfo = localStorage.getItem('storeInfo') ? decryptObject(localStorage.getItem('storeInfo')) : {}
+            menuId = storeInfo.activeMenu || storeInfo.menuId
+
+          }
+          
+          // 最後嘗試從購物車項目中獲取
+          if (!menuId && this.cartList.length > 0) {
+            menuId = this.cartList[0].menuId
+          }
+          
+          if (!menuId) {
+            console.warn('無法獲取 menuId，跳過必選檢查')
+            return
+          }
+          
+          // 獲取 API Token
+          const token = await this.getApiToken()
+          
+          // 移除調試端點調用以提高安全性
+          
+          // 呼叫 API 檢查菜單的必選模板
+          const response = await fetch(`${host}api/Menu/menu/${storeId}/${menuId}/required-templates`, {
+            headers: {
+              'Authorization': 'Bearer ' + token,
+              'Content-Type': 'application/json'
+            }
+          })
+          
+          if (response.ok) {
+            const data = await response.json()
+            
+            if (data.success && data.optionsEnabled && data.templates) {
+
+              
+              // 檢查 templates 結構
+              let groups = []
+              
+              // 如果 templates 只有 valueKind，可能是 JSON 解析問題
+              if (data.templates.valueKind && Object.keys(data.templates).length === 1) {
+
+                groups = []
+              } else if (data.templates.groups) {
+                groups = data.templates.groups
+
+              } else if (Array.isArray(data.templates)) {
+                groups = data.templates
+
+              } else if (typeof data.templates === 'object') {
+                // 嘗試從對象中提取群組數據
+                for (const key of ['groups', 'Groups', 'items', 'Items']) {
+                  if (data.templates[key] && Array.isArray(data.templates[key])) {
+                    groups = data.templates[key]
+
+                    break
+                  }
+                }
+              }
+              
+
+              
+              if (groups.length > 0) {
+                // 檢查是否有必選群組
+                const hasRequired = groups.some(g => g.required === true)
+
+                
+                if (hasRequired) {
+                  // 檢查是否已經有必選項目的選擇
+                  const existingSelections = localStorage.getItem('requiredSelections')
+                  
+                  if (!existingSelections) {
+                    // 沒有選擇，跳轉到必選頁面
+                    localStorage.setItem('requiredTemplatesCache', JSON.stringify(groups))
+                    localStorage.setItem('pendingRequiredForStore', storeId)
+                    localStorage.setItem('pendingRequiredForMenu', menuId)
+                    
+                    // 提示用戶完成必選
+                    toastr.warning('此商品有必選項目，請先完成必選')
+                    setTimeout(() => {
+                      window.location.href = `RequiredSelection.html?sid=${storeId}`
+                    }, 2000)
+                    return false  // 返回 false 表示不應繼續流程
+                  }
+                  // 如果已有選擇，繼續正常流程（必選項目作為獨立項目處理）
+                }
+              }
+            }
+          } else {
+            console.error('API 請求失敗:', response.status, response.statusText)
+          }
+          
+                    } catch (error) {
+              console.error('檢查必選項目時發生錯誤:', error)
+              return false
+            }
+            
+            return true  // 沒有必選項目或已完成選擇，可以繼續
+          },
+
+          // 清除舊的必選項目數據
+          clearRequiredSelections() {
+            localStorage.removeItem('requiredSelections')
+            localStorage.removeItem('requiredTemplatesCache')
+
+          },
+
+      
+      // 獲取 API Token 的方法
+      async getApiToken() {
+        try {
+          const response = await fetch(`${host}api/auth/keylogin`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              key: 'sharings-api-r^rz-jofw-ccwf'
+            })
+          })
+          
+          if (response.ok) {
+            const data = await response.json()
+
+            return data.token
+          } else {
+            console.error('獲取 API Token 失敗:', response.status)
+            throw new Error('Token 獲取失敗')
+          }
+        } catch (error) {
+          console.error('Token 獲取錯誤:', error)
+          // 嘗試使用 localStorage 中的 token 作為備用
+          const fallbackToken = localStorage.getItem('token')
+          if (fallbackToken) {
+
+            return fallbackToken
+          }
+          throw error
+        }
+      },
+      
       deleteWindow(data, index) {
         // console.log(data);
         // console.log(index);
@@ -357,24 +550,35 @@
       backToStore() {
         window.location.href = "StoreImformation.html?sid=" + this.cartList[0].storeId
       },
-      toPay() {
-        // loadingOn()
+      async toPay() {
+        loadingOn()
         let vue = this
-        // console.log(JSON.stringify(vue.lowAmount));
 
-        if (vue.lowAmount.enabled == true) {
-          // console.log(vue.getTotalPrice());
-
-
-          if (vue.getTotalPrice() >= vue.lowAmount.minimumOrderAmount) {
-            window.location.href = "pay.html?sid=" + vue.cartList[0].storeId
-          } else {
-            $('#minimumOrderModalContent').html(vue.lowAmount.minimumOrderText)
-            $('#minimumOrderModal').modal('show')
+        try {
+          // 先檢查是否有必選項目需要處理
+          const canProceed = await vue.checkRequiredItems()
+          
+          if (!canProceed) {
+            // 需要跳轉到必選專區，停止後續流程
             loadingOff()
+            return
           }
-        } else {
-          window.location.href = "pay.html?sid=" + vue.cartList[0].storeId
+          
+          // 檢查最低消費
+          if (vue.lowAmount.enabled == true) {
+            if (vue.getTotalPrice() >= vue.lowAmount.minimumOrderAmount) {
+              window.location.href = "pay.html?sid=" + vue.cartList[0].storeId
+            } else {
+              $('#minimumOrderModalContent').html(vue.lowAmount.minimumOrderText)
+              $('#minimumOrderModal').modal('show')
+              loadingOff()
+            }
+          } else {
+            window.location.href = "pay.html?sid=" + vue.cartList[0].storeId
+          }
+        } catch (error) {
+          console.error('前往結帳時發生錯誤:', error)
+          loadingOff()
         }
       },
       getTotalPrice() {

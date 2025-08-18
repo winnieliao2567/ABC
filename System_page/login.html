@@ -87,7 +87,8 @@
                 </div>
               </div>
             </div>
-            <div class="text-memo text-danger formHint" v-if="loginVal.account!=''&&validateEmail(loginVal.account)">*Email格式錯誤</div>
+            <div class="text-memo text-danger formHint" v-if="loginVal.account!=''&&validateEmail(loginVal.account)">
+              *Email格式錯誤</div>
           </div>
           <div class="mb-3">
             <div class="input-group">
@@ -109,7 +110,8 @@
 
             <!-- /.col -->
             <div class="col-4">
-              <button type="button" class="btn btn-primary btn-block" v-on:click="login" :disabled="validateEmail(loginVal.account)">登入</button>
+              <button type="button" class="btn btn-primary btn-block" v-on:click="login"
+                :disabled="validateEmail(loginVal.account)">登入</button>
             </div>
             <!-- /.col -->
 
@@ -167,6 +169,9 @@
           });
           const keyData = await keyRes.json().catch(() => ({}));
           const authHeader = keyRes.ok && keyData.token ? `Bearer ${keyData.token}` : '';
+
+          // console.log(authHeader);
+          ApiAuto = authHeader
 
           const res = await fetch(`${host}api/twofactor/login`, {
             method: 'POST',

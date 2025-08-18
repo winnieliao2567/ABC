@@ -71,7 +71,7 @@
                     <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right overflow-auto StoreSelector">
                         <a class="dropdown-item">
                             <div class="store">
-                                <p class="text-muted">登出</p>
+                                <a href="login.html" class="text-muted">登出</a>
                             </div>
                         </a>
                     </div>
@@ -146,17 +146,24 @@
                 <div class="container-fluid">
                     <div class="row">
                         <form class="col-12 py-3 row" v-show="result==false" @submit.prevent="search">
-                            <div class="col-12 col-lg-4 form-group">
+                            <!-- <div class="col-12 form-group">
                                 <lable>
-                                    店家名稱
+                                    關鍵字
                                 </lable>
-                                <input class="form-control" autocomplete="off" v-model="Search.StoreName">
-                            </div>
+                                <input class="form-control" placeholder="可搜尋店家ID、管理員帳號或店家名稱" autocomplete="off"
+                                    v-model="Search.Account">
+                            </div> -->
                             <div class="col-12 col-lg-4 form-group">
                                 <lable>
                                     店家ID
                                 </lable>
                                 <input class="form-control" autocomplete="off" v-model="Search.StoreId">
+                            </div>
+                            <div class="col-12 col-lg-4 form-group">
+                                <lable>
+                                    店家名稱
+                                </lable>
+                                <input class="form-control" autocomplete="off" v-model="Search.StoreName">
                             </div>
                             <div class="col-12 col-lg-4 form-group">
                                 <lable>
@@ -190,11 +197,16 @@
                                     <tbody>
                                         <tr v-if="DataList.length>0" v-for="(item,index) in DataList">
                                             <td class="longText">
-                                                {{index}}
+                                                {{index+1}}
                                             </td>
                                             <td class="longText">
-                                                <a :href="'StoreMaintain.html?sid='+item.StoreId" target="_blank">
-                                                    {{item.StoreName}} </a>
+                                                <a :href="'StoreMaintain.html?sid='+item.id" target="_blank">
+                                                    {{item.storeName}} </a>
+                                            </td>
+                                        </tr>
+                                        <tr v-else>
+                                            <td colspan="100" class="text-center">
+                                                沒有資料
                                             </td>
                                         </tr>
                                     </tbody>
@@ -283,12 +295,29 @@
                 this.PageTitle = '搜尋結果'
                 this.result = true
                 let vue = this
-                vue.DataList = [{
-                    StoreId: '262318e8-e447-4f58-9757-258d348046d7',
-                    StoreName: '店家A',
-                }
-                ]
-                loadingOff()
+                let a
+
+                console.log(this.Search);
+
+
+                a = [this.Search.StoreName, this.Search.StoreId, this.Search.Account]
+                    .filter(v => v && v.trim() !== "")   // 過濾空值
+                    .join("&&");
+
+                console.log(a);
+
+
+
+
+                apiWeb('/api/Store/search?keyword=' + a, 'GET', null, '搜尋店家', function (v) {
+                    console.log(v.data);
+
+                    vue.DataList = v.data
+                    loadingOff()
+
+                })
+                console.log(this.DataList);
+
             },
 
             showDeleteWin() {

@@ -48,26 +48,26 @@
             text-overflow: ellipsis;
             max-width: 150px;
         }
-        
+
         .badge {
             font-size: 0.8em;
             padding: 0.4em 0.6em;
         }
-        
+
         .table th {
             background-color: #f8f9fa;
             border-color: #dee2e6;
         }
-        
+
         .pagination .page-link {
             color: #007bff;
         }
-        
+
         .pagination .page-item.active .page-link {
             background-color: #007bff;
             border-color: #007bff;
         }
-        
+
         .pagination .page-item.disabled .page-link {
             color: #6c757d;
         }
@@ -82,9 +82,10 @@
     </div>
     <!-- control-sidebar-slide-open -->
     <div id="app" class="wrapper">
-        
+
         <!-- 訂單詳情模態框 -->
-        <div class="modal fade" id="OrderInfo" tabindex="-1" role="dialog" aria-labelledby="orderInfoModalLabel" aria-hidden="true">
+        <div class="modal fade" id="OrderInfo" tabindex="-1" role="dialog" aria-labelledby="orderInfoModalLabel"
+            aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -184,14 +185,14 @@
                                 </table>
                             </div>
                         </div>
-                        
+
                         <!-- 取消訂單按鈕 -->
                         <div class="row" v-if="selectedOrder.status==1">
                             <div class="col-12 py-3">
                                 <button class="btn btn-danger float-right" @click="showCancelOrder">取消訂單</button>
                             </div>
                         </div>
-                        
+
                         <!-- 餐點明細 -->
                         <div class="row mt-3">
                             <div class="col-12">
@@ -207,7 +208,8 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr v-for="(productor,proIndex) in selectedOrder.mealSummary" :key="proIndex">
+                                            <tr v-for="(productor,proIndex) in selectedOrder.mealSummary"
+                                                :key="proIndex">
                                                 <td>{{proIndex+1}}</td>
                                                 <td>
                                                     <h6>{{productor.mealname}}</h6>
@@ -243,7 +245,8 @@
         </div>
 
         <!-- 取消訂單確認模態框 -->
-        <div class="modal fade" id="CancelOrder" tabindex="-1" role="dialog" aria-labelledby="cancelOrderModalLabel" aria-hidden="true">
+        <div class="modal fade" id="CancelOrder" tabindex="-1" role="dialog" aria-labelledby="cancelOrderModalLabel"
+            aria-hidden="true">
             <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-sm" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -283,7 +286,7 @@
                     <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right overflow-auto StoreSelector">
                         <a class="dropdown-item">
                             <div class="store">
-                                <p class="text-muted">登出</p>
+                                <a href="login.html" class="text-muted">登出</a>
                             </div>
                         </a>
                     </div>
@@ -308,8 +311,10 @@
                         role="menu" data-accordion="false">
                         <!-- Add icons to the links using the .nav-icon class
                  <br /> with font-awesome or any other icon font library -->
-                        <li class="nav-item" v-for="(fuc,index) in userFunction" :class="{'has-treeview': fuc.item != null}">
-                            <a v-if="fuc.item == null" :href="fuc.url" class="nav-link" :class="{'active':fuc.status==true}">
+                        <li class="nav-item" v-for="(fuc,index) in userFunction"
+                            :class="{'has-treeview': fuc.item != null}">
+                            <a v-if="fuc.item == null" :href="fuc.url" class="nav-link"
+                                :class="{'active':fuc.status==true}">
                                 <i class="nav-icon" :class="fuc.icon"></i>
                                 <p>{{fuc.name}}</p>
                             </a>
@@ -428,20 +433,24 @@
                                                 </td>
                                                 <td>${{ order.price }}</td>
                                                 <td>
-                                                    <div v-if="order.status==1" class="d-flex justify-content-start align-items-center text-success">
+                                                    <div v-if="order.status==1"
+                                                        class="d-flex justify-content-start align-items-center text-success">
                                                         <i class="fas fa-check-square mr-1"></i>
                                                         <span class="d-none d-md-inline">訂單成立</span>
                                                     </div>
-                                                    <div v-if="order.status==2" class="d-flex justify-content-start align-items-center text-danger">
+                                                    <div v-if="order.status==2"
+                                                        class="d-flex justify-content-start align-items-center text-danger">
                                                         <i class="fas fa-exclamation-circle mr-1"></i>
                                                         <span class="d-none d-md-inline">訂單取消</span>
                                                     </div>
                                                 </td>
                                                 <td>
-                                                    <button class="btn btn-info btn-sm mr-1" @click="showOrderDetailModal(order)">
+                                                    <button class="btn btn-info btn-sm mr-1"
+                                                        @click="showOrderDetailModal(order)">
                                                         <i class="fas fa-eye"></i>
                                                     </button>
-                                                    <button class="btn btn-danger btn-sm" v-if="order.status == 1" @click="showCancelOrderModal(order)">
+                                                    <button class="btn btn-danger btn-sm" v-if="order.status == 1"
+                                                        @click="showCancelOrderModal(order)">
                                                         <i class="fas fa-times"></i>
                                                     </button>
                                                 </td>
@@ -451,17 +460,21 @@
                                 </div>
 
                                 <!-- 分頁控制 -->
-                                <div class="d-flex justify-content-between align-items-center mt-3" v-if="OrderList.length > 0">
+                                <div class="d-flex justify-content-between align-items-center mt-3"
+                                    v-if="OrderList.length > 0">
                                     <div>
-                                        顯示第 {{ (currentPage - 1) * pageSize + 1 }} 到 {{ Math.min(currentPage * pageSize, OrderList.length) }} 筆，共 {{ OrderList.length }} 筆資料
+                                        顯示第 {{ (currentPage - 1) * pageSize + 1 }} 到 {{ Math.min(currentPage * pageSize,
+                                        OrderList.length) }} 筆，共 {{ OrderList.length }} 筆資料
                                     </div>
                                     <nav>
                                         <ul class="pagination">
                                             <li class="page-item" :class="{ disabled: currentPage === 1 }">
                                                 <a class="page-link" href="#" @click.prevent="prevPage">&laquo;</a>
                                             </li>
-                                            <li class="page-item" v-for="page in totalPages" :key="page" :class="{ active: page === currentPage }">
-                                                <a class="page-link" href="#" @click.prevent="goToPage(page)">{{ page }}</a>
+                                            <li class="page-item" v-for="page in totalPages" :key="page"
+                                                :class="{ active: page === currentPage }">
+                                                <a class="page-link" href="#" @click.prevent="goToPage(page)">{{ page
+                                                    }}</a>
                                             </li>
                                             <li class="page-item" :class="{ disabled: currentPage === totalPages }">
                                                 <a class="page-link" href="#" @click.prevent="nextPage">&raquo;</a>
@@ -596,7 +609,7 @@
                 this.isSearching = true
                 loadingOn()
                 let vue = this
-                
+
                 // 準備搜尋參數
                 const searchParams = {
                     subscribername: this.Search.subscribername,
@@ -612,7 +625,7 @@
                     vue.currentPage = 1 // 重置到第一頁
                     vue.isSearching = false
                     loadingOff()
-                }, function(error) {
+                }, function (error) {
                     toastr.error("搜尋失敗：" + error.message)
                     vue.isSearching = false
                     loadingOff()
@@ -634,7 +647,7 @@
             reloadPage() {
                 window.location.reload();
             },
-            
+
             // 切換到上一頁
             prevPage() {
                 if (this.currentPage > 1) {
@@ -658,7 +671,7 @@
             },
             // 獲取狀態樣式
             getStatusClass(status) {
-                switch(status) {
+                switch (status) {
                     case 1:
                         return 'badge badge-success';
                     case 2:
@@ -668,7 +681,7 @@
                 }
             },
             getStatusText(status) {
-                switch(status) {
+                switch (status) {
                     case 1:
                         return '訂單成立';
                     case 2:
@@ -681,31 +694,31 @@
             showOrderDetailModal(order) {
                 this.selectedOrder = order;
                 let vue = this;
-                
+
                 apiWeb('api/store/order/detail/' + order.no, 'POST', null, '獲得詳細資訊', function (v) {
                     vue.selectedOrder.mealSummary = v.orderDetail.mealSummary;
                     vue.selectedOrder.totalItems = v.orderDetail.totalItems || vue.selectedOrder.mealSummary.length;
                     $('#OrderInfo').modal('show');
                 });
             },
-            
+
             // 顯示取消訂單確認模態框
             showCancelOrderModal(order) {
                 this.selectedOrder = order;
                 $('#CancelOrder').modal('show');
             },
-            
+
             // 顯示取消訂單確認（在詳情模態框內）
             showCancelOrder() {
                 $('#OrderInfo').modal('hide');
                 $('#CancelOrder').modal('show');
             },
-            
+
             // 確認取消訂單
             confirmCancelOrder() {
                 loadingOn()
                 let vue = this
-                
+
                 apiWeb('/api/store/order/cancel/' + this.selectedOrder.no, 'POST', null, '取消訂單', function (v) {
                     if (v.message == 'cancel successful') {
                         toastr.success("訂單取消成功");

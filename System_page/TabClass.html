@@ -65,17 +65,46 @@
                     </div>
                     <div class="modal-body">
                         <div class="form-group">
-                            <lable>
-                                標籤類別名稱
-                            </lable>
-                            <input class="form-control" autocomplete="off" :value="EditData.name">
+                            <label>
+                                標籤類別名稱 *
+                            </label>
+                            <input class="form-control" autocomplete="off" v-model="EditData.typeName" 
+                                   placeholder="請輸入標籤類別名稱" maxlength="50">
+                        </div>
+                        <div class="form-group">
+                            <label>
+                                類別描述
+                            </label>
+                            <textarea class="form-control" v-model="EditData.typeDescription" 
+                                      placeholder="請輸入類別描述" maxlength="200" rows="3"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>
+                                排序順序
+                            </label>
+                            <input type="number" class="form-control" v-model.number="EditData.sortOrder" 
+                                   min="0" max="999" placeholder="0">
+                        </div>
+                        <div class="form-group">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" v-model="EditData.isActive" id="isActiveCheck">
+                                <label class="form-check-label" for="isActiveCheck">
+                                    啟用狀態
+                                </label>
+                            </div>
                         </div>
                     </div>
                     <div class="modal-footer">
                         <button class="btn-default btn" type="button" data-dismiss="modal">取消</button>
-                        <button class="btn-primary btn" type="button" data-dismiss="modal"
-                            v-if="EditData.action==1">新增</button>
-                        <button class="btn-primary btn" type="button" data-dismiss="modal" v-else>儲存</button>
+                        <button class="btn-primary btn" type="button" @click="saveTagType" :disabled="loading"
+                            v-if="EditData.action==1">
+                            <i class="fas fa-spinner fa-spin" v-if="loading"></i>
+                            新增
+                        </button>
+                        <button class="btn-primary btn" type="button" @click="saveTagType" :disabled="loading" v-else>
+                            <i class="fas fa-spinner fa-spin" v-if="loading"></i>
+                            儲存
+                        </button>
                     </div>
                 </form>
             </div>
@@ -92,11 +121,15 @@
                         </h5>
                     </div>
                     <div class="modal-body">
-                        是否確定刪除 <span class="fw-bolder">{{DeletData.name}}</span>?
+                        是否確定刪除標籤類別 <span class="fw-bolder">{{DeletData.typeName}}</span>?
+                        <br><small class="text-muted">刪除後該類別下的所有標籤將無法使用</small>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn-default btn">取消</button>
-                        <button type="button" class="btn-danger btn">確定刪除</button>
+                        <button type="button" class="btn-default btn" data-dismiss="modal">取消</button>
+                        <button type="button" class="btn-danger btn" @click="deleteTagType" :disabled="loading">
+                            <i class="fas fa-spinner fa-spin" v-if="loading"></i>
+                            確定刪除
+                        </button>
                     </div>
                 </form>
             </div>
@@ -196,10 +229,35 @@
             <div class="content">
                 <div class="container-fluid">
                     <div class="row">
-                        <div class="col-12 text-right py-3">
+                        <div class="col-md-6 py-3">
+                            <div class="input-group">
+                                <input type="text" class="form-control" placeholder="搜尋標籤類別名稱或描述..." 
+                                       v-model="searchKeyword" @input="performSearch">
+                                <div class="input-group-append">
+                                    <button class="btn btn-outline-secondary" type="button" @click="clearSearch" 
+                                            v-if="searchKeyword">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                    <button class="btn btn-outline-secondary" type="button">
+                                        <i class="fas fa-search"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 text-right py-3">
                             <button class="btn btn-primary mr-3" @click="showAddWin">
+                                <i class="fas fa-plus"></i>
                                 新增
                             </button>
+                        </div>
+                        <div class="col-12" v-if="searchKeyword">
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle"></i>
+                                搜尋 "<strong>{{searchKeyword}}</strong>" 找到 <strong>{{filteredData.length}}</strong> 筆結果
+                                <button class="btn btn-sm btn-outline-primary ml-2" @click="clearSearch">
+                                    <i class="fas fa-times"></i> 清除搜尋
+                                </button>
+                            </div>
                         </div>
                         <div class="col-12">
                             <table class="table table-bordered table-hover">
@@ -211,16 +269,37 @@
                                         <th class="longText">
                                             類別名稱
                                         </th>
-
                                         <th class="longText">
-
+                                            描述
+                                        </th>
+                                        <th class="longText">
+                                            排序
+                                        </th>
+                                        <th class="longText">
+                                            狀態
+                                        </th>
+                                        <th class="longText">
+                                            標籤數量
+                                        </th>
+                                        <th class="longText">
+                                            操作
                                         </th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr v-if="ListData.length==0">
+                                    <tr v-if="filteredData.length==0 && !loading && searchKeyword">
+                                        <td colspan="100" class="text-center">
+                                            <i class="fas fa-search"></i> 找不到符合 "{{searchKeyword}}" 的資料
+                                        </td>
+                                    </tr>
+                                    <tr v-if="ListData.length==0 && !loading && !searchKeyword">
                                         <td colspan="100" class="text-center">
                                             沒有資料
+                                        </td>
+                                    </tr>
+                                    <tr v-if="loading">
+                                        <td colspan="100" class="text-center">
+                                            <i class="fas fa-spinner fa-spin"></i> 載入中...
                                         </td>
                                     </tr>
                                     <tr v-for="(item,index) in paginatedOrders" class="btnHover">
@@ -228,7 +307,21 @@
                                             {{ (currentPage - 1) * pageSize + index + 1 }}
                                         </td>
                                         <td class="longText">
-                                            {{item.name}}
+                                            {{item.typeName}}
+                                        </td>
+                                        <td class="longText">
+                                            {{item.typeDescription || '-'}}
+                                        </td>
+                                        <td class="longText">
+                                            {{item.sortOrder}}
+                                        </td>
+                                        <td class="longText">
+                                            <span class="badge" :class="item.isActive ? 'badge-success' : 'badge-secondary'">
+                                                {{item.isActive ? '啟用' : '停用'}}
+                                            </span>
+                                        </td>
+                                        <td class="longText">
+                                            {{item.activeTagCount || 0}} / {{item.tagCount || 0}}
                                         </td>
                                         <td class="longText">
                                             <div class="btn-danger btn-sm btn float-right" data-toggle="tooltip"
@@ -288,45 +381,41 @@
             return {
                 userFunction: userFunction,
 
-                PageTitle: '店家端帳戶',
+                PageTitle: '標籤類別管理',
 
                 //原始資料
                 userInfo: decryptObject(localStorage.userInfo),
 
-                ListData: [
-                    {
-                        "name": "標籤類別001",
-                        "id": '123456',
-
-                    },
-                    {
-                        "name": "標籤類別002",
-                        "id": '123456',
-
-                    },
-                    {
-                        "name": "標籤類別003",
-                        "id": '123456',
-
-                    },
-                ],
+                ListData: [],
 
                 EditData: {
-                    name: '',
-                    userid: '',
+                    typeId: '',
+                    typeName: '',
+                    typeDescription: '',
+                    sortOrder: 0,
+                    isActive: true,
+                    action: 0
                 },
 
                 DeletData: {
-                    name: '',
-                    userid: '',
+                    typeId: '',
+                    typeName: '',
                 },
 
                 AddData: {
-                    name: '',
-                    userid: '',
+                    typeId: '',
+                    typeName: '',
+                    typeDescription: '',
+                    sortOrder: 0,
+                    isActive: true,
                     action: 1
                 },
 
+                loading: false,
+
+                // 搜尋相關
+                searchKeyword: '',
+                filteredData: [],
 
                 currentPage: currentPage, // 當前頁面
                 pageSize: pageSize, // 每頁顯示筆數
@@ -335,158 +424,199 @@
         computed: {
             // 計算總頁數
             totalPages() {
-                return Math.ceil(this.ListData.length / this.pageSize);
+                const dataToUse = this.searchKeyword ? this.filteredData : this.ListData;
+                return Math.ceil(dataToUse.length / this.pageSize);
             },
-            // 計算當前頁要顯示的訂單
+            // 計算當前頁要顯示的資料
             paginatedOrders() {
+                const dataToUse = this.searchKeyword ? this.filteredData : this.ListData;
                 const start = (this.currentPage - 1) * this.pageSize;
-                return this.ListData.slice(start, start + this.pageSize);
+                return dataToUse.slice(start, start + this.pageSize);
             }
         },
         mounted() {
             var vue = this
 
-            loadingOff()
+            this.loadTagTypes()
             $('[data-toggle="tooltip"]').tooltip();
         },
         watch: {
         },
         methods: {
-            // 處理圖片上傳
-            handleFileUpload_logo(event) {
-                this.imageAction = 'logo'
-                var vue = this
-                const file = event.target.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = (e) => {
-                        this.imageUrl = e.target.result;
-
-                        // 確保 Modal 開啟後再初始化 Cropper
-                        $("#ProductorEdit").modal("hide");
-                        setTimeout(() => {
-                            $("#cropModal").modal("show");
-                            setTimeout(() => {
-                                vue.initCropper_logo();
-                            }, 300);
-                        }, 500);
-                    };
-                    reader.readAsDataURL(file);
+            // 載入標籤類型列表
+            async loadTagTypes() {
+                this.loading = true
+                try {
+                    const token = await this.getAuthToken()
+                    
+                    const response = await fetch(host + '/api/TagType', {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': token,
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                    
+                    const data = await response.json()
+                    
+                    if (data.success || data.Success) {
+                        this.ListData = data.data || data.Data || []
+                        loadingOff()
+                    } else {
+                        toastr.error(data.message || data.Message || '載入標籤類型失敗')
+                    }
+                } catch (error) {
+                    console.error('載入標籤類型錯誤:', error)
+                    toastr.error('載入標籤類型失敗')
+                } finally {
+                    this.loading = false
                 }
             },
-            // 初始化 Cropper.js
-            initCropper_logo() {
-                var vue = this
-                if (this.cropper) {
-                    this.cropper.destroy();
-                }
-                this.$nextTick(() => {
-                    const image = this.$refs.image;
-                    image.onload = () => {
-                        this.cropper = new Cropper(image, {
-                            aspectRatio: 1,   // 1:1 比例
-                            viewMode: 2,      // 限制裁剪框不超出圖片範圍
-                            autoCropArea: 1,  // 預設裁剪範圍最大
-                            minCropBoxWidth: vue.LogoImageSize.w,
-                            minCropBoxHeight: vue.LogoImageSize.h,
-                            ready: () => {
-                                this.cropper.setCropBoxData({ width: vue.LogoImageSize.w, height: vue.LogoImageSize.h });
-                            },
-                            rotatable: false, // 禁止旋轉
-                            scalable: false,  // 禁止縮放
-                            zoomable: false,  // 禁止縮放
-                            movable: false,   // 禁止移動圖片
-                            checkOrientation: false // 禁止自動旋轉
-                        });
-                    };
-                    image.src = this.imageUrl;
-                });
+
+            // 取得驗證Token
+            async getAuthToken() {
+                return new Promise((resolve, reject) => {
+                    $.ajax({
+                        type: "POST",
+                        headers: {
+                            "Content-Type": "application/json; charset=utf-8",
+                        },
+                        url: host + "/api/auth/keylogin",
+                        data: JSON.stringify({ key: AutoKey }),
+                        success: function (res) {
+                            resolve("Bearer " + res.token)
+                        },
+                        error: function (xhr, status, error) {
+                            reject(error)
+                        }
+                    })
+                })
             },
-            // 裁剪圖片並轉 Base64
-            cropImage_logo(type) {
-                loadingOn()
-                const vue = this;
 
-                if (!this.cropper) return;
-
-                const canvas = this.cropper.getCroppedCanvas({
-                    width: vue.LogoImageSize.w,
-                    height: vue.LogoImageSize.h
-                });
-
-                if (type === "base") {
-                    vue.croppedImage = canvas.toDataURL("image/png");
-                    vue.storeInfoEdit.store.image = vue.croppedImage;
-
-                    $("#cropModal").modal("hide");
-                    $("#ProductorEdit").modal("show");
-                } else if (type === "blob") {
-                    canvas.toBlob((blob) => {
-                        vue.croppedImage = blob;
-
-                        const formData = new FormData();
-                        formData.append('file', vue.croppedImage, 'cropped-image.jpg');
-
-                        $.ajax({
-                            type: "POST",
-                            headers: {
-                                "Content-Type": "application/json; charset=utf-8",
-                            },
-                            url: host + "/api/auth/keylogin",
-                            data: JSON.stringify({ key: AutoKey }),
-                            success: function (res) {
-                                const token = "Bearer " + res.token;
-                                // 第二次請求：上傳圖片
-                                $.ajax({
-                                    url: 'https://sharings.com.tw/api/Image/upload',
-                                    type: 'POST',
-                                    headers: {
-                                        Authorization: token
-                                    },
-                                    data: formData,
-                                    processData: false,
-                                    contentType: false,
-                                    success: function (v) {
-                                        if (v.success == true) {// console.log('上傳成功', uploadRes);
-                                            vue.storeInfoEdit.store.image = v.url
-                                            toastr.success("圖片上傳成功");
-                                            $("#cropModal").modal("hide");
-                                            $("#ProductorEdit").modal("show");
-                                            loadingOff()
-                                        }
-                                    },
-                                    error: function (xhr, status, error) {
-                                        // console.error('上傳失敗', error);
-                                        // alert("圖片上傳失敗，請稍後再試。");
-                                        toastr.error("圖片上傳失敗");
-                                        $("#cropModal").modal("hide");
-                                        $("#ProductorEdit").modal("show");
-                                        loadingOff()
-                                    }
-                                });
-                            },
-                            error: function (xhr, status, error) {
-                                reject(error);
-                            },
-                        });
-                    }, "image/png");
+            // 儲存標籤類型（新增或編輯）
+            async saveTagType() {
+                if (!this.EditData.typeName || this.EditData.typeName.trim() === '') {
+                    toastr.error('請輸入標籤類別名稱')
+                    return
                 }
+                
+                this.loading = true
+                
+                try {
+                    const token = await this.getAuthToken()
+                    
+                    const requestData = {
+                        typeName: this.EditData.typeName.trim(),
+                        typeDescription: this.EditData.typeDescription?.trim() || '',
+                        sortOrder: this.EditData.sortOrder || 0,
+                        isActive: this.EditData.isActive
+                    }
+                    
+                    const isCreate = this.EditData.action === 1
+                    const url = isCreate 
+                        ? host + '/api/TagType'
+                        : host + `/api/TagType/${this.EditData.typeId}`
+                    
+                    const response = await fetch(url, {
+                        method: isCreate ? 'POST' : 'PUT',
+                        headers: {
+                            'Authorization': token,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(requestData)
+                    })
+                    
+                    const data = await response.json()
+                    
+                    if (data.success || data.Success) {
+                        toastr.success(isCreate ? '新增成功' : '更新成功')
+                        $('#EditModal').modal('hide')
+                        await this.loadTagTypes()
+                    } else {
+                        toastr.error(data.message || data.Message || (isCreate ? '新增失敗' : '更新失敗'))
+                    }
+                } catch (error) {
+                    console.error('儲存標籤類型錯誤:', error)
+                    toastr.error('操作失敗')
+                } finally {
+                    this.loading = false
+                }
+            },
+
+            // 刪除標籤類型
+            async deleteTagType() {
+                this.loading = true
+                
+                try {
+                    const token = await this.getAuthToken()
+                    
+                    const response = await fetch(host + `/api/TagType/${this.DeletData.typeId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Authorization': token,
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                    
+                    const data = await response.json()
+                    
+                    if (data.success || data.Success) {
+                        toastr.success('刪除成功')
+                        $('#DeleteModal').modal('hide')
+                        await this.loadTagTypes()
+                    } else {
+                        toastr.error(data.message || data.Message || '刪除失敗')
+                    }
+                } catch (error) {
+                    console.error('刪除標籤類型錯誤:', error)
+                    toastr.error('刪除失敗')
+                } finally {
+                    this.loading = false
+                }
+            },
+
+            // 搜尋功能
+            performSearch() {
+                if (!this.searchKeyword || this.searchKeyword.trim() === '') {
+                    this.filteredData = [];
+                    this.currentPage = 1;
+                    return;
+                }
+                
+                const keyword = this.searchKeyword.toLowerCase().trim();
+                this.filteredData = this.ListData.filter(item => {
+                    return (item.typeName && item.typeName.toLowerCase().includes(keyword)) ||
+                           (item.typeDescription && item.typeDescription.toLowerCase().includes(keyword));
+                });
+                
+                // 搜尋後回到第一頁
+                this.currentPage = 1;
+            },
+            
+            // 清除搜尋
+            clearSearch() {
+                this.searchKeyword = '';
+                this.filteredData = [];
+                this.currentPage = 1;
             },
 
             showDeleteWin(i) {
-                this.DeletData = JSON.parse(JSON.stringify(this.ListData[i]))
-                console.log(this.DeletData);
-
+                const dataToUse = this.searchKeyword ? this.filteredData : this.ListData;
+                const actualIndex = (this.currentPage - 1) * this.pageSize + i
+                this.DeletData = JSON.parse(JSON.stringify(dataToUse[actualIndex]))
                 $('#DeleteModal').modal("show");
             },
 
             showEditWin(i) {
-                this.EditData = JSON.parse(JSON.stringify(this.ListData[i]))
+                const dataToUse = this.searchKeyword ? this.filteredData : this.ListData;
+                const actualIndex = (this.currentPage - 1) * this.pageSize + i
+                this.EditData = JSON.parse(JSON.stringify(dataToUse[actualIndex]))
                 this.EditData.action = 0
                 $('#EditModal').modal("show");
             },
+            
             showAddWin() {
-                this.EditData = this.AddData
+                this.EditData = JSON.parse(JSON.stringify(this.AddData))
                 $('#EditModal').modal("show");
             },
 

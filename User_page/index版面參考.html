@@ -60,336 +60,269 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
-    
-    <!-- 防止手機端縮放跑版的JavaScript -->
-    <script>
-        // 防止雙擊縮放
-        let lastTouchEnd = 0;
-        document.addEventListener('touchend', function (event) {
-            const now = (new Date()).getTime();
-            if (now - lastTouchEnd <= 300) {
-                event.preventDefault();
-            }
-            lastTouchEnd = now;
-        }, false);
-        
-        // 防止手勢縮放
-        document.addEventListener('gesturestart', function (e) {
-            e.preventDefault();
-        });
-        
-        document.addEventListener('gesturechange', function (e) {
-            e.preventDefault();
-        });
-        
-        document.addEventListener('gestureend', function (e) {
-            e.preventDefault();
-        });
-        
-        // 確保viewport設定正確
-        function setViewport() {
-            const viewport = document.querySelector('meta[name=viewport]');
-            if (viewport) {
-                viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no');
-            }
-        }
-        
-        // 頁面載入時設定
-        setViewport();
-        
-        // 防止視窗大小改變時的縮放問題
-        window.addEventListener('resize', function() {
-            setViewport();
-        });
-        
-        // 防止orientationchange時的縮放問題
-        window.addEventListener('orientationchange', function() {
-            setTimeout(setViewport, 100);
-        });
-        
-        // 確保下拉選單置頂顯示
-        document.addEventListener('DOMContentLoaded', function() {
-            // 監聽所有下拉選單的顯示事件
-            $('.dropdown-toggle').on('click', function() {
-                const dropdownMenu = $(this).next('.dropdown-menu');
-                if (dropdownMenu.length) {
-                    // 隱藏搜尋標籤下拉選單
-                    $('.food-tags-dropdown').removeClass('show').css('z-index', '9998');
-                    
-                    // 確保下拉選單在最上層
-                    dropdownMenu.css('z-index', '99999');
-                    
-                    // 在手機端，調整位置確保完全可見
-                    if (window.innerWidth <= 767) {
-                        const rect = this.getBoundingClientRect();
-                        const menuHeight = dropdownMenu.outerHeight();
-                        const windowHeight = window.innerHeight;
-                        
-                        // 如果下拉選單會超出螢幕底部，調整位置
-                        if (rect.bottom + menuHeight > windowHeight) {
-                            dropdownMenu.css({
-                                'position': 'fixed',
-                                'top': '60px',
-                                'left': '10px',
-                                'right': '10px',
-                                'max-height': '80vh',
-                                'overflow-y': 'auto'
-                            });
-                        }
-                    }
-                }
-            });
-            
-            // 監聽搜尋框的焦點事件
-            $('.premium-input').on('focus', function() {
-                // 隱藏所有使用者下拉選單
-                $('.dropdown-menu').removeClass('show').css('z-index', '9998');
-                
-                const searchContainer = $(this).closest('.search-container');
-                const dropdown = searchContainer.find('.food-tags-dropdown');
-                if (dropdown.length) {
-                    dropdown.css('z-index', '99999');
-                    
-                    // 在手機端調整位置
-                    if (window.innerWidth <= 767) {
-                        dropdown.css({
-                            'position': 'fixed',
-                            'top': '120px',
-                            'left': '10px',
-                            'right': '10px',
-                            'max-height': '60vh',
-                            'overflow-y': 'auto'
-                        });
-                    }
-                }
-            });
-            
-            // 點擊其他地方時隱藏所有下拉選單
-            $(document).on('click', function(e) {
-                if (!$(e.target).closest('.dropdown, .search-container').length) {
-                    $('.dropdown-menu').removeClass('show').css('z-index', '9998');
-                    $('.food-tags-dropdown').removeClass('show').css('z-index', '9998');
-                }
-            });
-        });
-    </script>
     <style>
-        /* === 高級字體系統 === */
-        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@100;300;400;500;700;900&family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
-        
-        /* === 防止縮放跑版的全域設定 === */
-        * {
-            -webkit-text-size-adjust: 100%;
-            -moz-text-size-adjust: 100%;
-            -ms-text-size-adjust: 100%;
-            text-size-adjust: 100%;
-        }
-        
+        /* === 修正手機瀏覽器拖曳問題（優化版） === */
         html {
-            -webkit-text-size-adjust: 100%;
-            -moz-text-size-adjust: 100%;
-            -ms-text-size-adjust: 100%;
-            text-size-adjust: 100%;
             overflow-x: hidden;
+            -webkit-overflow-scrolling: touch;
         }
         
         body {
-            -webkit-text-size-adjust: 100%;
-            -moz-text-size-adjust: 100%;
-            -ms-text-size-adjust: 100%;
-            text-size-adjust: 100%;
             overflow-x: hidden;
-            min-width: 320px;
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            -webkit-overflow-scrolling: touch;
+            -webkit-transform: translate3d(0, 0, 0);
+            transform: translate3d(0, 0, 0);
         }
-        
-        /* 防止容器溢出 */
-        .container, .container-fluid {
-            max-width: 100vw;
-            overflow-x: hidden;
-        }
-        
-        /* 防止Swiper容器溢出 */
-        .swiper-container {
-            overflow: hidden !important;
-        }
-        
-        /* 防止卡片容器溢出 */
-        .featured-store-card,
-        .tag-card,
-        .store-grid-card {
-            max-width: 100%;
-            box-sizing: border-box;
-        }
-        
-        /* 確保所有元素使用border-box */
+
+        /* 基本盒模型 */
         *, *::before, *::after {
             box-sizing: border-box;
         }
-        
-        /* 防止文字溢出 */
-        .card-title,
-        .card-text,
-        h1, h2, h3, h4, h5, h6,
-        p, span, div {
-            word-wrap: break-word;
-            overflow-wrap: break-word;
-            hyphens: auto;
+
+        /* 主要容器優化 */
+        .wrapper {
+            width: 100%;
+            overflow-x: hidden;
+            -webkit-transform: translate3d(0, 0, 0);
+            transform: translate3d(0, 0, 0);
         }
-        
-        /* 防止圖片溢出 */
-        img {
+
+        .content-wrapper, .content {
+            width: 100%;
+            overflow-x: hidden;
+        }
+
+        .main-header {
+            width: 100%;
+            overflow-x: hidden;
+            overflow-y: visible; /* 確保dropdown可以正常顯示 */
+            position: relative;
+        }
+
+        /* Bootstrap容器優化 */
+        .container, .container-fluid {
+            width: 100%;
+            max-width: 100%;
+            overflow-x: hidden;
+            padding-left: 15px;
+            padding-right: 15px;
+        }
+
+        .row {
+            margin-left: -15px;
+            margin-right: -15px;
+            width: calc(100% + 30px);
+            max-width: calc(100% + 30px);
+        }
+
+        [class*="col-"] {
+            padding-left: 15px;
+            padding-right: 15px;
+        }
+
+        /* 導航欄優化 */
+        .navbar {
+            width: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        .navbar .container {
+            width: 100%;
+            max-width: 100%;
+            margin: 0;
+            overflow: visible; /* 確保dropdown不被截斷 */
+        }
+
+        /* 內容區域優化 */
+        .content-header {
+            width: 100%;
+            margin: 0;
+            padding-left: 0;
+            padding-right: 0;
+        }
+
+        .content-header .container {
+            width: 100%;
+            margin: 0;
+        }
+
+        /* 媒體元素優化 */
+        img, video, iframe, embed, object {
             max-width: 100%;
             height: auto;
-            display: block;
         }
-        
-        /* 防止按鈕和輸入框溢出 */
-        button, input, textarea, select {
+
+        /* 卡片和容器優化 */
+        .card, .content-section {
             max-width: 100%;
-            box-sizing: border-box;
+            overflow-x: hidden;
         }
-        
-        /* 防止flex容器溢出 */
-        .d-flex, .flex-row, .flex-column {
-            min-width: 0;
+
+        /* Swiper優化 */
+        .swiper-container {
             max-width: 100%;
-        }
-        
-        /* 防止grid容器溢出 */
-        .row, .col, [class*="col-"] {
-            min-width: 0;
-            max-width: 100%;
-        }
-        
-        /* 全域文字省略處理 */
-        .text-ellipsis {
             overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            padding: 0 0.25rem;
+            -webkit-transform: translate3d(0, 0, 0);
+            transform: translate3d(0, 0, 0);
+        }
+
+        .swiper-wrapper {
+            -webkit-transform: translate3d(0, 0, 0);
+            transform: translate3d(0, 0, 0);
+        }
+
+        /* 搜尋欄優化 */
+        .search-container, .search-wrapper, .premium-search {
             max-width: 100%;
-            box-sizing: border-box;
         }
-        
-        /* 確保所有卡片標題都有省略處理 */
-        .card-title {
-            overflow: hidden !important;
-            text-overflow: ellipsis !important;
-            white-space: nowrap !important;
-            padding: 0 0.25rem !important;
-            max-width: 100% !important;
-            box-sizing: border-box !important;
-        }
-        
-        /* 確保所有卡片都有固定尺寸 */
-        .card, .card-body {
-            box-sizing: border-box !important;
-        }
-        
-        /* 下拉選單和搜尋區塊置頂效果 */
-        .dropdown-menu {
-            z-index: 9998 !important;
-            position: absolute !important;
-        }
-        
-        .dropdown-menu-lg {
-            z-index: 9998 !important;
-        }
-        
-        /* 搜尋區塊置頂 */
-        .search-container {
-            position: relative;
-            z-index: 9998;
-        }
-        
-        .food-tags-dropdown {
-            z-index: 9998 !important;
-            position: absolute !important;
-        }
-        
-        .food-tags-dropdown.show {
-            z-index: 9998 !important;
-        }
-        
-        /* 確保導航欄置頂 */
-        .navbar {
-            z-index: 10000 !important;
-        }
-        
-        .navbar-nav {
-            z-index: 9998 !important;
-        }
-        
-        /* 購物車和用戶選單置頂 */
-        .navbar-nav .nav-item {
-            position: relative;
-            z-index: 9998;
-        }
-        
-        .navbar-nav .dropdown {
-            z-index: 9998 !important;
-        }
-        
-        /* 確保下拉選單不被遮擋 */
-        .dropdown-menu-right {
-            right: 0 !important;
-            left: auto !important;
-            z-index: 9998 !important;
-        }
-        
-        /* 搜尋按鈕置頂 */
-        .premium-search-btn,
-        .advanced-search-btn {
-            position: relative;
-            z-index: 9998;
-        }
-        
-        /* 手機端置頂優化 */
-        @media (max-width: 767.98px) {
-            .dropdown-menu {
-                z-index: 9998 !important;
-                position: fixed !important;
-                top: 60px !important;
-                left: 10px !important;
-                right: 10px !important;
-                width: auto !important;
-                max-width: none !important;
+
+        /* 手機版優化 */
+        @media (max-width: 768px) {
+            .container {
+                padding-left: 10px;
+                padding-right: 10px;
             }
             
-            .food-tags-dropdown {
-                z-index: 9998 !important;
-                position: fixed !important;
-                top: 120px !important;
-                left: 10px !important;
-                right: 10px !important;
-                width: auto !important;
-                max-width: none !important;
+            .row {
+                margin-left: -10px;
+                margin-right: -10px;
+                width: calc(100% + 20px);
+            }
+            
+            [class*="col-"] {
+                padding-left: 10px;
+                padding-right: 10px;
+            }
+            
+            .navbar-brand img {
+                max-width: 150px;
+                width: auto;
+            }
+            
+            /* 強制招呼語和搜尋欄在同一行 */
+            .content-header .row {
+                flex-wrap: nowrap !important;
+            }
+            
+            .content-header h1 {
+                font-size: 1rem !important;
             }
             
             .search-container {
-                z-index: 9998 !important;
-            }
-        }
-        
-        /* 確保在小螢幕上也能正常顯示 */
-        @media (max-width: 575.98px) {
-            .dropdown-menu-lg {
-                z-index: 9998 !important;
-                max-height: 80vh !important;
-                overflow-y: auto !important;
+                min-width: 0 !important;
             }
             
-            .food-tags-dropdown.show {
-                z-index: 9998 !important;
-                max-height: 60vh !important;
-                overflow-y: auto !important;
+            .premium-search {
+                min-width: 0 !important;
+            }
+            
+            .premium-input {
+                min-width: 120px !important;
             }
         }
+
+        /* 極小螢幕優化 */
+        @media (max-width: 480px) {
+            .container {
+                padding-left: 8px;
+                padding-right: 8px;
+            }
+            
+            .row {
+                margin-left: -8px;
+                margin-right: -8px;
+                width: calc(100% + 16px);
+            }
+            
+            [class*="col-"] {
+                padding-left: 8px;
+                padding-right: 8px;
+            }
+            
+            .navbar-brand img {
+                max-width: 120px;
+            }
+            
+            /* 極小螢幕也強制同一行，但進一步縮小字體 */
+            .content-header h1 {
+                font-size: 0.9rem !important;
+            }
+            
+            .premium-input {
+                min-width: 100px !important;
+                font-size: 0.9rem !important;
+            }
+        }
+
+        /* === 滑動性能優化 === */
+        .content-section, .card, .swiper-slide {
+            -webkit-transform: translate3d(0, 0, 0);
+            transform: translate3d(0, 0, 0);
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            -webkit-perspective: 1000;
+            perspective: 1000;
+        }
+
+        /* 觸控優化 */
+        button, a, .dropdown-item, .nav-link {
+            -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        /* 滾動條優化 */
+        ::-webkit-scrollbar {
+            width: 0px;
+            background: transparent;
+        }
+
+        /* 防止選擇和拖曳干擾 */
+        img, .card-img-top {
+            -webkit-user-drag: none;
+            -khtml-user-drag: none;
+            -moz-user-drag: none;
+            -o-user-drag: none;
+            user-drag: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        /* 修正會員功能選單置頂問題 */
+        .navbar .dropdown-menu {
+            z-index: 9999 !important;
+            position: absolute !important;
+        }
+
+        .dropdown-menu-lg.dropdown-menu-right {
+            z-index: 9999 !important;
+            position: absolute !important;
+        }
+
+        /* 確保dropdown父元素不會截斷子元素 */
+        .nav-item.dropdown {
+            position: static !important;
+        }
+
+        .navbar-nav {
+            overflow: visible !important;
+        }
+
+        /* === 高級字體系統 === */
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@100;300;400;500;700;900&family=Inter:wght@100;200;300;400;500;600;700;800;900&family=Playfair+Display:wght@400;500;600;700;900&family=Crimson+Text:wght@400;600;700&display=swap');
         
         :root {
             /* 字體家族 */
             --font-primary: 'Noto Sans TC', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             --font-english: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            --font-logo: 'Playfair Display', 'Crimson Text', serif;
             
             /* 字體大小階層 */
             --text-xs: 0.75rem;      /* 12px */
@@ -561,7 +494,10 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
         /* 導航欄文字 */
         .navbar .navbar-brand {
+            font-family: var(--font-logo);
             font-weight: var(--font-bold);
+            font-size: 1.5rem;
+            letter-spacing: 0.05em;
         }
 
         .navbar .nav-link {
@@ -628,13 +564,10 @@ scratch. This page gets rid of all links and provides the needed markup only.
             transition: all 0.2s ease;
             text-decoration: none;
             color: inherit;
-            margin-bottom: 0.5rem;
+            margin-bottom: 1rem;
             width: 100%;
-            /* 縮小15% */
-            transform: scale(0.85);
+            transform: scale(1);
             transform-origin: center;
-            min-height: 280px;
-            max-height: 280px;
         }
 
         /* 桌面版店家卡片限制寬度 - 固定最大尺寸 */
@@ -671,7 +604,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
         }
 
         .store-grid-card:hover {
-            transform: scale(0.85) translateY(-2px);
+            transform: scale(1) translateY(-2px);
             box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
             text-decoration: none;
             color: inherit;
@@ -679,7 +612,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
         .store-grid-card .card-img-top {
             width: 100%;
-            aspect-ratio: 8/5;
+            height: 200px;
             object-fit: cover;
             object-position: center;
             border-radius: 0;
@@ -691,12 +624,10 @@ scratch. This page gets rid of all links and provides the needed markup only.
             display: flex;
             flex-direction: column;
             gap: 0.5rem;
-            height: 120px;
-            justify-content: space-between;
         }
 
         .store-grid-card .card-title {
-            font-size: 1rem;
+            font-size: 1.25rem;
             font-weight: 600;
             line-height: 1.3;
             color: var(--text-primary);
@@ -704,13 +635,10 @@ scratch. This page gets rid of all links and provides the needed markup only.
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
-            padding: 0 0.25rem;
-            max-width: 100%;
-            box-sizing: border-box;
         }
 
         .store-grid-card .delivery-time {
-            font-size: 0.875rem;
+            font-size: 1rem;
             font-weight: 500;
             color: var(--text-accent);
             margin: 0 0 0.25rem 0;
@@ -720,7 +648,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
         }
 
         .store-grid-card .delivery-info {
-            font-size: 0.75rem;
+            font-size: 0.9rem;
             color: var(--text-muted);
             margin: 0;
             display: flex;
@@ -833,10 +761,10 @@ scratch. This page gets rid of all links and provides the needed markup only.
             box-shadow: 0 2px 8px rgba(107, 114, 128, 0.3);
         }
 
-        /* === 猜你想看店家圖片（單店家方形卡片設計）=== */
+        /* === 猜你想看店家橫幅設計 === */
         .fromstore-card {
             display: flex !important;
-            flex-direction: column !important;
+            flex-direction: row !important;
             background: white;
             border-radius: 1rem;
             overflow: hidden;
@@ -846,50 +774,223 @@ scratch. This page gets rid of all links and provides the needed markup only.
             margin-bottom: 0.5rem;
             text-decoration: none;
             color: inherit;
-            /* 縮小15% */
-            transform: scale(0.85);
+            min-height: 160px;
+            width: 100%;
         }
         
         .fromstore-card:hover {
-            transform: scale(0.85) translateY(-2px);
+            transform: translateY(-2px);
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
             text-decoration: none;
             color: inherit;
         }
         
         .fromstore-card .card-img-top {
-            width: 100% !important;
-            aspect-ratio: 8/5 !important;
+            width: 200px !important;
+            height: 100% !important;
             object-fit: cover !important;
             object-position: center !important;
             border-radius: 0 !important;
             display: block !important;
             padding: 0 !important;
+            margin: 0 !important;
             background: none !important;
+            flex-shrink: 0;
+            border: none !important;
         }
         
         .fromstore-card .card-body {
             flex: 1;
-            padding: 1rem;
+            padding: 1.25rem;
             display: flex;
             flex-direction: column;
-            gap: 0.5rem;
+            justify-content: center;
+            gap: 0.75rem;
         }
         
         .fromstore-card .card-title {
-            font-size: var(--text-lg);
+            font-size: 1.5rem;
             font-weight: var(--font-bold);
             color: var(--text-primary);
-            margin-bottom: 0.25rem;
+            margin-bottom: 0.5rem;
+            line-height: 1.2;
+            word-wrap: break-word;
+            white-space: normal;
         }
         
         .fromstore-card .delivery-time,
         .fromstore-card .delivery-info {
-            font-size: var(--text-sm);
+            font-size: 1rem;
             color: var(--text-muted);
             display: flex;
             align-items: center;
-            gap: 0.25rem;
+            gap: 0.5rem;
+        }
+
+        .fromstore-card .delivery-time {
+            color: var(--text-accent);
+            font-weight: var(--font-medium);
+        }
+
+        /* 手機版猜你想看 */
+        @media (max-width: 767.98px) {
+            .fromstore-card {
+                min-height: 120px;
+            }
+            
+            .fromstore-card .card-img-top {
+                width: 120px !important;
+                min-width: 120px !important;
+                max-width: 120px !important;
+            }
+            
+            .fromstore-card .card-body {
+                padding: 1rem;
+                flex: 1;
+                min-width: 0;
+            }
+            
+            .fromstore-card .card-title {
+                font-size: 1.125rem;
+                line-height: 1.2;
+            }
+            
+            .fromstore-card .delivery-time,
+            .fromstore-card .delivery-info {
+                font-size: 0.875rem;
+            }
+        }
+
+        /* 平板版猜你想看 */
+        @media (min-width: 768px) and (max-width: 1199.98px) {
+            .fromstore-card {
+                min-height: 150px;
+            }
+            
+            .fromstore-card .card-img-top {
+                width: 180px !important;
+            }
+        }
+
+        /* === 領券浮動按鈕 === */
+        .floating-coupon-btn {
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--text-accent), #f59e0b);
+            border-radius: 50%;
+            border: none;
+            box-shadow: 0 4px 20px rgba(213, 156, 66, 0.4);
+            color: white;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1001;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .floating-coupon-btn:hover {
+            transform: translateY(-3px) scale(1.1);
+            box-shadow: 0 6px 25px rgba(213, 156, 66, 0.6);
+        }
+
+        .floating-coupon-btn::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: inherit;
+            animation: pulse 2s infinite;
+            z-index: -1;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            70% {
+                transform: scale(1.3);
+                opacity: 0;
+            }
+            100% {
+                transform: scale(1.3);
+                opacity: 0;
+            }
+        }
+
+        /* 手機版調整 */
+        @media (max-width: 767.98px) {
+            .floating-coupon-btn {
+                bottom: 70px;
+                right: 15px;
+                width: 56px;
+                height: 56px;
+                font-size: 1.3rem;
+            }
+        }
+
+        /* === 隱藏區塊樣式 === */
+        .hidden-section {
+            display: none;
+        }
+
+        .hidden-section.enabled {
+            display: block;
+        }
+
+        /* === 精選餐廳和活動專區樣式 === */
+        .featured-restaurants-grid,
+        .activity-zone-grid {
+            display: block;
+            margin: 0;
+            padding: 0;
+        }
+
+        .featured-restaurant-card,
+        .activity-card {
+            display: flex;
+            flex-direction: column;
+            background: white;
+            border-radius: 1rem;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            transition: all 0.2s ease;
+            text-decoration: none;
+            color: inherit;
+            margin-bottom: 1rem;
+            width: 100%;
+            transform: scale(1);
+            transform-origin: center;
+        }
+
+        @media (min-width: 768px) {
+            .featured-restaurants-grid,
+            .activity-zone-grid {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .featured-restaurant-card,
+            .activity-card {
+                max-width: 480px;
+                width: 100%;
+            }
+        }
+
+        .featured-restaurant-card:hover,
+        .activity-card:hover {
+            transform: scale(1) translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+            text-decoration: none;
+            color: inherit;
         }
 
         /* === 標籤圖片樣式 === */
@@ -906,10 +1007,6 @@ scratch. This page gets rid of all links and provides the needed markup only.
             transition: all 0.3s ease;
             min-height: 60px;
             max-height: 80px;
-            width: 200px;
-            min-width: 200px;
-            max-width: 200px;
-            flex-shrink: 0;
         }
         
         .tag-card:hover {
@@ -942,7 +1039,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
             min-height: 60px;
         }
         
-        /* 沒有圖片時的純文字標籤樣式 - 統一平台顏色 */
+        /* 沒有圖片時的純文字標籤樣式 - 豐富顏色變化 */
         .tag-card.no-image {
             border: 2px solid rgba(213, 156, 66, 0.2);
             box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
@@ -951,8 +1048,47 @@ scratch. This page gets rid of all links and provides the needed markup only.
             overflow: hidden;
             min-height: 60px;
             max-height: 80px;
+        }
+        
+        /* 不同顏色變化 */
+        .tag-card.no-image:nth-child(1) {
             background: linear-gradient(135deg, #fef3e2 0%, #fbbf24 100%);
             border-color: rgba(251, 191, 36, 0.3);
+        }
+        
+        .tag-card.no-image:nth-child(2) {
+            background: linear-gradient(135deg, #ecfdf5 0%, #10b981 100%);
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+        
+        .tag-card.no-image:nth-child(3) {
+            background: linear-gradient(135deg, #eff6ff 0%, #3b82f6 100%);
+            border-color: rgba(59, 130, 246, 0.3);
+        }
+        
+        .tag-card.no-image:nth-child(4) {
+            background: linear-gradient(135deg, #fdf4ff 0%, #8b5cf6 100%);
+            border-color: rgba(139, 92, 246, 0.3);
+        }
+        
+        .tag-card.no-image:nth-child(5) {
+            background: linear-gradient(135deg, #fef2f2 0%, #ef4444 100%);
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+        
+        .tag-card.no-image:nth-child(6) {
+            background: linear-gradient(135deg, #f0fdf4 0%, #22c55e 100%);
+            border-color: rgba(34, 197, 94, 0.3);
+        }
+        
+        .tag-card.no-image:nth-child(7) {
+            background: linear-gradient(135deg, #fef7ed 0%, #f97316 100%);
+            border-color: rgba(249, 115, 22, 0.3);
+        }
+        
+        .tag-card.no-image:nth-child(8) {
+            background: linear-gradient(135deg, #f1f5f9 0%, #64748b 100%);
+            border-color: rgba(100, 116, 139, 0.3);
         }
         
         .tag-card.no-image .card-img-overlay {
@@ -1005,12 +1141,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
             background: rgba(255, 255, 255, 0.9);
             border: 1px solid rgba(0, 0, 0, 0.08);
             min-height: 75px;
-            max-height: 75px;
-            width: 75px;
-            min-width: 75px;
-            max-width: 75px;
             justify-content: center;
-            flex-shrink: 0;
         }
 
         .foodtype-item:hover {
@@ -1066,11 +1197,6 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
             .tag-card {
                 height: 60px;
-                min-height: 60px;
-                max-height: 60px;
-                width: 180px;
-                min-width: 180px;
-                max-width: 180px;
                 margin-bottom: 0.75rem;
                 aspect-ratio: 4/1;
             }
@@ -1083,10 +1209,6 @@ scratch. This page gets rid of all links and provides the needed markup only.
             .foodtype-item {
                 padding: 0.5rem 0.25rem;
                 min-height: 75px;
-                max-height: 75px;
-                width: 70px;
-                min-width: 70px;
-                max-width: 70px;
             }
 
             .foodtype-item .card-img-top {
@@ -1351,12 +1473,6 @@ scratch. This page gets rid of all links and provides the needed markup only.
             margin: 0;
             line-height: var(--leading-tight);
             letter-spacing: var(--tracking-wide);
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            padding: 0 0.5rem;
-            max-width: 100%;
-            box-sizing: border-box;
         }
 
         .foodtype-item .card-title {
@@ -1369,11 +1485,6 @@ scratch. This page gets rid of all links and provides the needed markup only.
             max-width: 70px;
             word-break: break-word;
             letter-spacing: var(--tracking-normal);
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            padding: 0 0.25rem;
-            box-sizing: border-box;
         }
 
         /* 徽章樣式優化 */
@@ -1405,222 +1516,6 @@ scratch. This page gets rid of all links and provides the needed markup only.
         }
 
         .distance-text {
-
-        /* 精選餐廳橫移卡片樣式 */
-        .featured-store-card {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15), 0 4px 16px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            color: inherit;
-            display: block;
-            width: 280px;
-            margin-right: 1rem;
-            flex-shrink: 0;
-            min-height: 320px;
-            max-height: 320px;
-            border: 1px solid rgba(0, 0, 0, 0.05);
-        }
-
-        .featured-store-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2), 0 8px 24px rgba(0, 0, 0, 0.15);
-        }
-
-        .featured-store-card .card-img-top {
-            width: 100%;
-            height: 160px;
-            object-fit: cover;
-        }
-
-        .featured-store-card .card-body {
-            padding: 1rem;
-            height: 160px;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-start;
-            text-align: left;
-        }
-
-        .featured-store-card .card-title {
-            font-size: 1rem;
-            font-weight: 600;
-            margin-bottom: 0.75rem;
-            color: #333;
-            line-height: 1.3;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            padding: 0;
-            max-width: 100%;
-            box-sizing: border-box;
-            text-align: left;
-        }
-
-        .featured-store-card .delivery-time {
-            font-size: 0.875rem;
-            color: #666;
-            margin-bottom: 0.5rem;
-            display: flex;
-            align-items: center;
-            text-align: left;
-        }
-
-        .featured-store-card .delivery-time i {
-            margin-right: 0.25rem;
-            color: #fbbf24;
-        }
-
-        .featured-store-card .delivery-info {
-            font-size: 0.875rem;
-            color: #666;
-            margin-bottom: 0.75rem;
-            text-align: left;
-        }
-
-        .featured-store-card .store-tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.25rem;
-            margin-top: auto;
-        }
-
-        .featured-store-card .tag-badge {
-            background: #f8f9fa;
-            color: #6c757d;
-            padding: 0.25rem 0.5rem;
-            border-radius: 12px;
-            font-size: 0.75rem;
-            border: 1px solid #e9ecef;
-        }
-
-        .featured-store-card .more-tags {
-            background: #e9ecef;
-            color: #6c757d;
-        }
-
-        /* 手機端響應式設計 - 固定尺寸避免縮放問題 */
-        @media (max-width: 767.98px) {
-            .featured-store-card {
-                width: 260px;
-                min-width: 260px;
-                max-width: 260px;
-                margin-right: 0.75rem;
-                min-height: 300px;
-                max-height: 300px;
-            }
-
-            .featured-store-card .card-img-top {
-                height: 140px;
-                min-height: 140px;
-                max-height: 140px;
-            }
-
-            .featured-store-card .card-body {
-                padding: 0.75rem;
-                height: 160px;
-                min-height: 160px;
-                max-height: 160px;
-            }
-
-            .featured-store-card .card-title {
-                font-size: 0.9rem;
-                margin-bottom: 0.4rem;
-                padding: 0 0.2rem;
-            }
-
-            .featured-store-card .delivery-time,
-            .featured-store-card .delivery-info {
-                font-size: 0.8rem;
-            }
-
-            .featured-store-card .tag-badge {
-                font-size: 0.7rem;
-                padding: 0.2rem 0.4rem;
-            }
-        }
-
-        @media (max-width: 575.98px) {
-            .featured-store-card {
-                width: 240px;
-                min-width: 240px;
-                max-width: 240px;
-                margin-right: 0.5rem;
-                min-height: 280px;
-                max-height: 280px;
-            }
-
-            .featured-store-card .card-img-top {
-                height: 120px;
-                min-height: 120px;
-                max-height: 120px;
-            }
-
-            .featured-store-card .card-body {
-                padding: 0.6rem;
-                height: 160px;
-                min-height: 160px;
-                max-height: 160px;
-            }
-
-            .featured-store-card .card-title {
-                font-size: 0.85rem;
-                margin-bottom: 0.3rem;
-                padding: 0 0.15rem;
-            }
-
-            .featured-store-card .delivery-time,
-            .featured-store-card .delivery-info {
-                font-size: 0.75rem;
-            }
-
-            .featured-store-card .tag-badge {
-                font-size: 0.65rem;
-                padding: 0.15rem 0.3rem;
-            }
-        }
-
-        @media (max-width: 479.98px) {
-            .featured-store-card {
-                width: 220px;
-                min-width: 220px;
-                max-width: 220px;
-                margin-right: 0.4rem;
-                min-height: 260px;
-                max-height: 260px;
-            }
-
-            .featured-store-card .card-img-top {
-                height: 110px;
-                min-height: 110px;
-                max-height: 110px;
-            }
-
-            .featured-store-card .card-body {
-                padding: 0.5rem;
-                height: 150px;
-                min-height: 150px;
-                max-height: 150px;
-            }
-
-            .featured-store-card .card-title {
-                font-size: 0.8rem;
-                margin-bottom: 0.25rem;
-                padding: 0 0.1rem;
-            }
-
-            .featured-store-card .delivery-time,
-            .featured-store-card .delivery-info {
-                font-size: 0.7rem;
-            }
-
-            .featured-store-card .tag-badge {
-                font-size: 0.6rem;
-                padding: 0.1rem 0.25rem;
-            }
-        }
             font-family: var(--font-english);
             font-weight: var(--font-medium);
             color: var(--text-muted);
@@ -1653,99 +1548,6 @@ scratch. This page gets rid of all links and provides the needed markup only.
             }
         }
 
-        /* Header中的搜尋欄位調整 */
-        .content-header .search-container {
-            max-width: 350px;
-            margin: 0;
-            width: 350px;
-        }
-
-        .content-header .premium-search {
-            min-height: 40px;
-        }
-
-        .content-header .premium-input {
-            font-size: 0.85rem;
-            padding: 0.5rem 0.75rem;
-        }
-
-        .content-header .premium-search-btn {
-            padding: 0.5rem 1rem;
-            font-size: 0.85rem;
-        }
-
-        .content-header .advanced-search-btn {
-            padding: 0.5rem;
-            min-width: 40px;
-            font-size: 0.9rem;
-        }
-
-        /* 小螢幕搜尋欄位優化 */
-        @media (max-width: 991.98px) {
-            .content-header .premium-input {
-                font-size: 0.8rem;
-                padding: 0.4rem 0.6rem;
-            }
-            
-            .content-header .premium-search-btn {
-                padding: 0.4rem 0.8rem;
-                font-size: 0.8rem;
-            }
-            
-            .content-header .advanced-search-btn {
-                padding: 0.4rem;
-                min-width: 36px;
-                font-size: 0.85rem;
-            }
-        }
-
-        @media (max-width: 767.98px) {
-            .content-header .premium-input {
-                font-size: 0.75rem;
-                padding: 0.35rem 0.5rem;
-            }
-            
-            .content-header .premium-search-btn {
-                padding: 0.35rem 0.6rem;
-                font-size: 0.75rem;
-            }
-            
-            .content-header .advanced-search-btn {
-                padding: 0.35rem;
-                min-width: 32px;
-                font-size: 0.8rem;
-            }
-        }
-
-        /* 中等螢幕響應式設計 */
-        @media (max-width: 1199.98px) {
-            .content-header .search-container {
-                max-width: 250px;
-                width: 250px;
-            }
-        }
-
-        @media (max-width: 991.98px) {
-            .content-header .search-container {
-                max-width: 220px;
-                width: 220px;
-            }
-        }
-
-        @media (max-width: 767.98px) {
-            .content-header .search-container {
-                max-width: 200px;
-                width: 200px;
-            }
-        }
-
-        @media (max-width: 575.98px) {
-            .content-header .search-container {
-                max-width: 180px;
-                width: 180px;
-            }
-        }
-
         .search-wrapper {
             display: flex;
             gap: 0.5rem;
@@ -1762,6 +1564,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
             padding: 0.375rem;
             box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
             transition: all 0.3s ease;
+            flex: 1;
         }
 
         .premium-search:focus-within {
@@ -1904,129 +1707,17 @@ scratch. This page gets rid of all links and provides the needed markup only.
             color: var(--text-primary);
         }
 
-        /* 領券浮動按鈕 */
-        .floating-coupon-btn {
-            position: fixed;
-            bottom: 80px;
-            right: 20px;
-            width: 60px;
-            height: 60px;
-            background: linear-gradient(135deg, var(--text-accent), #f59e0b);
-            border-radius: 50%;
-            border: none;
-            box-shadow: 0 4px 20px rgba(213, 156, 66, 0.4);
-            color: white;
-            font-size: 1.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1001;
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-
-        .floating-coupon-btn:hover {
-            transform: translateY(-3px) scale(1.1);
-            box-shadow: 0 6px 25px rgba(213, 156, 66, 0.6);
-        }
-
-        .floating-coupon-btn::before {
-            content: '';
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            background: inherit;
-            animation: pulse 2s infinite;
-            z-index: -1;
-        }
-
-        @keyframes pulse {
-            0% {
-                transform: scale(1);
-                opacity: 1;
-            }
-            70% {
-                transform: scale(1.3);
-                opacity: 0;
-            }
-            100% {
-                transform: scale(1.3);
-                opacity: 0;
-            }
-        }
-
-        /* 手機版調整 */
-        @media (max-width: 767.98px) {
-            .floating-coupon-btn {
-                bottom: 70px;
-                right: 15px;
-                width: 56px;
-                height: 56px;
-                font-size: 1.3rem;
-            }
-        }
-
-        /* 小手機版響應式設計 */
-        @media (max-width: 479.98px) {
-            .content-header .row {
-                flex-direction: column !important;
-            }
-            
-            .content-header .col-auto {
-                width: 100% !important;
-                max-width: 100% !important;
-                flex: 0 0 100% !important;
-                margin-right: 0 !important;
-                margin-bottom: 0.5rem !important;
-            }
-            
-            .content-header h1 {
-                font-size: 1rem !important;
-                text-align: center;
-                margin-bottom: 0 !important;
-            }
-            
-            .content-header .search-container {
-                margin-top: 0.5rem;
-                width: 100% !important;
-                max-width: 100% !important;
-            }
-        }
-
-        /* 中等螢幕A欄位優化 */
-        @media (max-width: 991.98px) {
-            .content-header h1 {
-                font-size: 1rem !important;
-            }
-        }
-
-        @media (max-width: 767.98px) {
-            .content-header h1 {
-                font-size: 0.9rem !important;
-            }
-        }
-
-        /* 隱藏區塊樣式 */
-        .hidden-section {
-            display: none;
-        }
-
-        .hidden-section.enabled {
-            display: block;
-        }
-
-        /* 區塊標題優化 - 超緊湊間距 */
+        /* 區塊標題優化 - 響應式設計 */
         .section-title {
             position: relative;
             display: flex;
             align-items: center;
-            margin-bottom: 0.5rem;
+            margin-bottom: 1rem;
             padding: 0;
         }
 
         .section-title h3 {
-            font-size: var(--text-xl);
+            font-size: 1.5rem;
             font-weight: var(--font-bold);
             color: var(--text-primary);
             margin: 0;
@@ -2178,43 +1869,91 @@ scratch. This page gets rid of all links and provides the needed markup only.
             }
         }
 
-        /* 響應式間距調整 - 超緊湊設計 */
-        @media (max-width: 575.98px) {
+        /* 小手機版響應式設計 */
+        @media (max-width: 479.98px) {
+            .content-header .row {
+                flex-direction: column !important;
+            }
+            
+            .content-header .col-auto,
+            .content-header .col {
+                width: 100% !important;
+                max-width: 100% !important;
+                flex: 0 0 100% !important;
+                margin-left: 0 !important;
+            }
+            
+            .content-header h1 {
+                font-size: 1rem !important;
+                text-align: center;
+                margin-bottom: 0.5rem !important;
+            }
+            
+            .search-container {
+                margin-top: 0.5rem;
+            }
+            
+            .fromstore-card {
+                min-height: 100px;
+                flex-direction: column !important;
+            }
+            
+            .fromstore-card .card-img-top {
+                width: 100% !important;
+                height: 120px !important;
+                min-width: auto !important;
+                max-width: none !important;
+            }
+            
+            .fromstore-card .card-body {
+                padding: 0.75rem;
+            }
+        }
+
+        /* 手機版響應式設計 */
+        @media (min-width: 480px) and (max-width: 575.98px) {
             .content-section {
-                margin-bottom: 0.375rem;
-                padding: 0.5rem;
+                margin-bottom: 1rem;
+                padding: 1rem;
                 border-radius: 0.75rem;
             }
             
             .section-title {
-                margin-bottom: 0.375rem;
+                margin-bottom: 1rem;
                 padding: 0;
             }
             
             .section-title h3 {
-                font-size: 1.125rem;
+                font-size: 1.375rem;
             }
             
             .section-title h3 i {
-                font-size: 1.125rem !important;
+                font-size: 1.375rem !important;
             }
             
             .container {
-                padding-left: 0.75rem;
-                padding-right: 0.75rem;
+                padding-left: 1rem;
+                padding-right: 1rem;
             }
             
-            /* 修正手機版文字大小 */
-            .store-card .card-title {
+            /* 手機版文字大小 */
+            .store-card .card-title,
+            .store-grid-card .card-title {
+                font-size: 1.125rem;
+            }
+            
+            .store-card .delivery-time,
+            .store-grid-card .delivery-time {
+                font-size: 1rem;
+            }
+            
+            .store-card .delivery-info,
+            .store-grid-card .delivery-info {
                 font-size: 0.9rem;
             }
             
-            .store-card .delivery-time {
-                font-size: 0.8rem;
-            }
-            
-            .store-card .delivery-info {
-                font-size: 0.75rem;
+            .store-grid-card .card-img-top {
+                height: 180px;
             }
             
             /* 修正食物類別網格 */
@@ -2248,14 +1987,111 @@ scratch. This page gets rid of all links and provides the needed markup only.
             }
         }
 
+        /* 平板版響應式設計 */
         @media (min-width: 576px) and (max-width: 767.98px) {
             .content-section {
-                margin-bottom: 0.5rem;
-                padding: 0.625rem;
+                margin-bottom: 1.25rem;
+                padding: 1.25rem;
             }
             
             .section-title {
-                margin-bottom: 0.5rem;
+                margin-bottom: 1.25rem;
+            }
+            
+            .section-title h3 {
+                font-size: 1.5rem;
+            }
+            
+            .section-title h3 i {
+                font-size: 1.5rem !important;
+            }
+            
+            .store-grid-card .card-title {
+                font-size: 1.25rem;
+            }
+            
+            .store-grid-card .delivery-time {
+                font-size: 1rem;
+            }
+            
+            .store-grid-card .delivery-info {
+                font-size: 0.9rem;
+            }
+            
+            .store-grid-card .card-img-top {
+                height: 200px;
+            }
+        }
+
+        /* 中等屏幕響應式設計 */
+        @media (min-width: 768px) and (max-width: 1199.98px) {
+            .content-section {
+                margin-bottom: 1.5rem;
+                padding: 1.5rem;
+            }
+            
+            .section-title {
+                margin-bottom: 1.5rem;
+            }
+            
+            .section-title h3 {
+                font-size: 1.625rem;
+            }
+            
+            .section-title h3 i {
+                font-size: 1.625rem !important;
+            }
+            
+            .store-grid-card .card-title {
+                font-size: 1.375rem;
+            }
+            
+            .store-grid-card .delivery-time {
+                font-size: 1.125rem;
+            }
+            
+            .store-grid-card .delivery-info {
+                font-size: 1rem;
+            }
+            
+            .store-grid-card .card-img-top {
+                height: 220px;
+            }
+        }
+
+        /* 大屏幕響應式設計 */
+        @media (min-width: 1200px) {
+            .content-section {
+                margin-bottom: 2rem;
+                padding: 2rem;
+            }
+            
+            .section-title {
+                margin-bottom: 2rem;
+            }
+            
+            .section-title h3 {
+                font-size: 1.75rem;
+            }
+            
+            .section-title h3 i {
+                font-size: 1.75rem !important;
+            }
+            
+            .store-grid-card .card-title {
+                font-size: 1.5rem;
+            }
+            
+            .store-grid-card .delivery-time {
+                font-size: 1.25rem;
+            }
+            
+            .store-grid-card .delivery-info {
+                font-size: 1.125rem;
+            }
+            
+            .store-grid-card .card-img-top {
+                height: 250px;
             }
         }
     </style>
@@ -2342,7 +2178,13 @@ scratch. This page gets rid of all links and provides the needed markup only.
                             <span class="dropdown-header">使用者功能</span>
                             <div class="dropdown-divider"></div>
                             <div v-for="(func,index) in userFunction">
-                                <a :href="func.url" class="dropdown-item">
+                                <a v-if="func.name !== '登出'" :href="func.url" class="dropdown-item">
+                                    {{func.name}}
+                                    <span class="float-right text-muted text-sm">
+                                        <i :class="func.icon"></i>
+                                    </span>
+                                </a>
+                                <a v-else @click="logout()" class="dropdown-item" style="cursor: pointer;">
                                     {{func.name}}
                                     <span class="float-right text-muted text-sm">
                                         <i :class="func.icon"></i>
@@ -2359,20 +2201,20 @@ scratch. This page gets rid of all links and provides the needed markup only.
         <div class="content-wrapper">
             <div class="content-header" style="padding: 0.75rem 0;">
                 <div class="container">
-                    <div class="row align-items-center justify-content-between" style="flex-wrap: nowrap;">
-                        <div class="col-auto" style="flex-shrink: 0; margin-right: 1rem;">
+                    <div class="row align-items-center no-gutters" style="flex-wrap: nowrap;">
+                        <div class="col-auto" style="flex-shrink: 0;">
                             <h1 class="m-0 text-gradient text-shadow" style="font-size: 1.125rem; margin-bottom: 0; white-space: nowrap;"> 
                                 {{getTimeOfDay()}}<span class="text-primary">{{userInfo.name}}</span>
                             </h1>
                         </div>
-                        <div class="col-auto" style="flex-shrink: 0; min-width: 0;">
+                        <div class="col ml-2" style="flex-shrink: 1; min-width: 0;">
                             <!-- 搜尋區塊 -->
                             <div class="search-container" style="margin: 0;">
                                 <div class="search-wrapper">
                                     <form class="Myinput-group premium-search" @submit.prevent="search" style="flex: 1;">
                                         <input type="search" 
                                                class="premium-input" 
-                                               placeholder="搜尋餐廳、料理、商圈.." 
+                                               placeholder="搜尋餐廳、料理類型、商圈..." 
                                                v-model="searchKeyword"
                                                @focus="showFoodTags = true"
                                                @blur="hideFoodTags">
@@ -2417,9 +2259,10 @@ scratch. This page gets rid of all links and provides the needed markup only.
             </div>
             <div class="content">
                 <div class="container">
+                    <!-- 猜你想看區塊 - 橫幅設計，無標題 -->
                                         <div v-if="fromStore.store.storeId.length>0" class="content-section">
                         <div class="row justify-content-center">
-                            <div class="col-12 col-md-8 col-lg-6 col-xl-5" style="max-width: 480px;">
+                            <div class="col-12">
                                 <a class="fromstore-card"
                                 :href="'StoreImformation.html?sid='+fromStore.store.storeId">
                                     <img class="card-img-top" :src="fromStore.store.bannerimage || fromStore.store.image || 'img/unknowIMG.png'" />
@@ -2447,33 +2290,10 @@ scratch. This page gets rid of all links and provides the needed markup only.
                     </div>
                     <div class="row">
 
-
-
-                        <!-- 各類美食 -->
-                        <div class="col-12 content-section" v-show="false">
-                            <div class="section-title">
-                                <h3>
-                                    <i class="fas fa-utensils"></i>
-                                    各類美食
-                            </h3>
-                                            </div>
-                            <div class="foodtype-grid">
-                                <a v-for="(item, index) in FoodTypeList" 
-                                   :key="index"
-                                   class="foodtype-item"
-                                            :href="'ClassImformation.html?cid='+item.tagId">
-                                    <img class="card-img-top" :src="item.imageUrl || item.tagPicture || 'img/unknowIMG.png'" />
-                                    <span class="card-title">
-                                        {{ item.title }}
-                                    </span>
-                                </a>
-                            </div>
-                        </div>
-
-                        <!-- 附近商圈 -->
+                        <!-- ===== DEMO 區塊開始：附近商圈 ===== -->
                         <div class="col-12 content-section" v-show="BusinessDistrictList.length>0">
                             <div class="section-title">
-                                <h3>
+                            <h3>
                                     <i class="fas fa-map-marked-alt"></i>
                                     附近商圈
                             </h3>
@@ -2501,63 +2321,57 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                 </button>
                             </div>
                         </div>
+                        <!-- ===== DEMO 區塊結束：附近商圈 ===== -->
 
-                        <!-- 精選餐廳 -->
+                        <!-- ===== DEMO 區塊開始：精選餐廳 ===== -->
                         <div class="col-12 content-section" v-show="FeaturedRestaurantsList.length>0">
                             <div class="section-title">
                                 <h3>
                                     <i class="fas fa-crown"></i>
                                     精選餐廳
                             </h3>
-                    </div>
-                            <div class="swiper-container swiper-container-featured w-100 overflow-hidden">
-                                <div class="swiper-wrapper">
-                                    <template v-for="(item, index) in FeaturedRestaurantsList" :key="index">
-                                        <a class="featured-store-card swiper-slide"
-                                           :href="'StoreImformation.html?sid='+item.storeId">
-                                            <div class="position-relative">
-                                                <span class="store-status-badge" 
-                                                      :class="item.isOpen ? 'open' : 'closed'">
-                                                    {{ item.isOpen ? '營業中' : '休息中' }}
-                                                </span>
-                                                <img class="card-img-top" :src="item.bannerimage || item.image || 'img/unknowIMG.png'" />
                                             </div>
-                                            <div class="card-body">
-                                                <h6 class="card-title">{{ item.storeName }}</h6>
-                                                <div class="delivery-time">
-                                                    <i class="far fa-clock"></i>
-                                                    {{getWaitingTimeString(item.waitingTimeDisplay)}}
-                                                </div>
-                                                <div class="delivery-info">
-                                                    <span class="distance">{{formatDistance(item.distanceInKM)}}</span>
-                                                </div>
-                                                <div class="store-tags" v-if="item.tags && item.tags.length > 0">
-                                                    <span v-for="(tag, tagIndex) in item.tags.slice(0, 3)" 
-                                                          :key="tagIndex" 
-                                                          class="tag-badge">
-                                                        {{ tag.title }}
-                                                    </span>
-                                                    <span v-if="item.tags.length > 3" class="tag-badge more-tags">
-                                                        +{{ item.tags.length - 3 }}
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </a>
-                                    </template>
-                                </div>
-                                <button class="custom-prev-btn shadow">
-                                    <i class="fas fa-arrow-left"></i>
-                                </button>
-                                <button class="custom-next-btn shadow">
-                                    <i class="fas fa-arrow-right"></i>
-                                </button>
+                            <div class="featured-restaurants-grid">
+                                <a v-for="(item, index) in FeaturedRestaurantsList" 
+                                   :key="index"
+                                   class="featured-restaurant-card"
+                                   :href="'StoreImformation.html?sid='+item.storeId">
+                                    <div class="position-relative">
+                                        <span class="store-status-badge" 
+                                              :class="item.isOpen ? 'open' : 'closed'">
+                                            {{ item.isOpen ? '營業中' : '休息中' }}
+                                    </span>
+                                        <img class="card-img-top" :src="item.bannerimage || item.image || 'img/unknowIMG.png'" />
+                                    </div>
+                                    <div class="card-body">
+                                        <h6 class="card-title">{{ item.storeName }}</h6>
+                                        <div class="delivery-time">
+                                            <i class="far fa-clock"></i>
+                                            {{getWaitingTimeString(item.waitingTimeDisplay)}}
+                                        </div>
+                                        <div class="delivery-info">
+                                            <span class="distance">{{formatDistance(item.distanceInKM)}}</span>
+                                        </div>
+                                        <div class="store-tags" v-if="item.tags && item.tags.length > 0">
+                                            <span v-for="(tag, tagIndex) in item.tags.slice(0, 3)" 
+                                                  :key="tagIndex" 
+                                                  class="tag-badge">
+                                                {{ tag.title }}
+                                            </span>
+                                            <span v-if="item.tags.length > 3" class="tag-badge more-tags">
+                                                +{{ item.tags.length - 3 }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </a>
                             </div>
                         </div>
+                        <!-- ===== DEMO 區塊結束：精選餐廳 ===== -->
 
-                        <!-- 活動專區 -->
-                        <div class="col-12 content-section PromotionsList" v-show="PromotionsList.length>0">
+                        <!-- ===== DEMO 區塊開始：活動專區 ===== -->
+                        <div class="col-12 content-section" v-show="PromotionsList.length>0">
                             <div class="section-title">
-                            <h3>
+                                <h3>
                                     <img src="img/bonus.png" class="section-icon">
                                     <span class="text-gradient">活動專區</span>
                             </h3>
@@ -2574,7 +2388,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                             <div class="card-img-overlay d-flex flex-column justify-content-end">
                                                 <h5 class="card-title text-primary text-white">{{ item.title }}</h5>
                                             </div>
-                                        </a></template>
+                                        </a>
+                                    </template>
                                 </div>
                                 <button class="custom-prev-btn shadow">
                                     <i class="fas fa-arrow-left"></i>
@@ -2584,8 +2399,9 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                 </button>
                             </div>
                         </div>
+                        <!-- ===== DEMO 區塊結束：活動專區 ===== -->
 
-                        <!-- 隱藏區塊1 -->
+                        <!-- 第四格：隱藏區塊1 -->
                         <div class="col-12 content-section hidden-section" :class="{ 'enabled': hiddenSection1.enabled }" v-show="hiddenSection1.enabled && hiddenSection1.data.length>0">
                             <div class="section-title">
                                 <h3>
@@ -2609,7 +2425,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                             </div>
                         </div>
 
-                        <!-- 隱藏區塊2 -->
+                        <!-- 第五格：隱藏區塊2 -->
                         <div class="col-12 content-section hidden-section" :class="{ 'enabled': hiddenSection2.enabled }" v-show="hiddenSection2.enabled && hiddenSection2.data.length>0">
                             <div class="section-title">
                                 <h3>
@@ -2633,7 +2449,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                             </div>
                         </div>
 
-                        <!-- 隱藏區塊3 -->
+                        <!-- 第六格：隱藏區塊3 -->
                         <div class="col-12 content-section hidden-section" :class="{ 'enabled': hiddenSection3.enabled }" v-show="hiddenSection3.enabled && hiddenSection3.data.length>0">
                             <div class="section-title">
                                 <h3>
@@ -2657,15 +2473,15 @@ scratch. This page gets rid of all links and provides the needed markup only.
                             </div>
                         </div>
 
-                        <!-- 所有商家 -->
-                        <div class="col-12 content-section" v-show="StoreList.length>0">
+                        <!-- ===== DEMO 區塊開始：所有餐廳 ===== -->
+                        <div class="col-12 content-section">
                             <div class="section-title">
                                 <h3>
                                     <i class="fas fa-store"></i>
-                                    所有商家
+                                    所有餐廳
                             </h3>
                     </div>
-                            <div class="stores-grid">
+                            <div class="stores-grid" v-if="StoreList.length > 0">
                                 <a v-for="(item, index) in StoreList" 
                                    :key="index"
                                    class="store-grid-card"
@@ -2699,7 +2515,12 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                     </div>
                                 </a>
                             </div>
+                            <div v-else class="text-center py-4">
+                                <p class="text-muted">正在載入附近餐廳...</p>
+                                <p class="text-muted small">請確保已允許位置存取權限</p>
                         </div>
+                        </div>
+                        <!-- ===== DEMO 區塊結束：所有餐廳 ===== -->
                     </div>
                 </div>
             </div>
@@ -2748,8 +2569,130 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
                 StoreList: [],
 
-                // 精選餐廳列表
-                FeaturedRestaurantsList: [],
+                // ===== DEMO 數據開始 =====
+                // 以下為測試用假數據，正式上線前需要刪除
+                demoPromotionsList: [
+                    { tagId: 'promo1', title: '新店開幕優惠', imageUrl: 'img/bonus.png' },
+                    { tagId: 'promo2', title: '限時85折', imageUrl: 'img/bonus.png' },
+                    { tagId: 'promo3', title: '滿額送飲品', imageUrl: 'img/bonus.png' },
+                    { tagId: 'promo4', title: '午餐特價', imageUrl: 'img/bonus.png' },
+                    { tagId: 'promo5', title: '會員專屬', imageUrl: 'img/bonus.png' }
+                ],
+                
+                demoBusinessDistrictList: [
+                    { tagId: 'dist1', title: '西門町', imageUrl: 'img/unknowIMG.png' },
+                    { tagId: 'dist2', title: '信義區', imageUrl: 'img/unknowIMG.png' },
+                    { tagId: 'dist3', title: '中山區', imageUrl: 'img/unknowIMG.png' },
+                    { tagId: 'dist4', title: '大安區', imageUrl: 'img/unknowIMG.png' },
+                    { tagId: 'dist5', title: '松山區', imageUrl: 'img/unknowIMG.png' }
+                ],
+                
+                demoFoodTypeList: [
+                    { tagId: 'food1', title: '漢堡', imageUrl: 'img/foodtype/burger.png' },
+                    { tagId: 'food2', title: '義式料理', imageUrl: 'img/unknowIMG.png' },
+                    { tagId: 'food3', title: '日式料理', imageUrl: 'img/unknowIMG.png' },
+                    { tagId: 'food4', title: '中式料理', imageUrl: 'img/unknowIMG.png' },
+                    { tagId: 'food5', title: '韓式料理', imageUrl: 'img/unknowIMG.png' },
+                    { tagId: 'food6', title: '泰式料理', imageUrl: 'img/unknowIMG.png' },
+                    { tagId: 'food7', title: '越式料理', imageUrl: 'img/unknowIMG.png' },
+                    { tagId: 'food8', title: '印度料理', imageUrl: 'img/unknowIMG.png' },
+                    { tagId: 'food9', title: '素食', imageUrl: 'img/unknowIMG.png' },
+                    { tagId: 'food10', title: '甜點', imageUrl: 'img/unknowIMG.png' },
+                    { tagId: 'food11', title: '飲品', imageUrl: 'img/unknowIMG.png' },
+                    { tagId: 'food12', title: '小吃', imageUrl: 'img/unknowIMG.png' }
+                ],
+                
+                demoStoreList: [
+                    {
+                        storeId: 'store1', storeName: '義大利麵專門店', isOpen: true, 
+                        waitingTimeDisplay: 20, distanceInKM: 0.5, bannerimage: 'img/unknowIMG.png',
+                        tags: [{ title: '義式料理' }, { title: '平價' }, { title: '快速出餐' }]
+                    },
+                    {
+                        storeId: 'store2', storeName: '日式拉麵館', isOpen: true, 
+                        waitingTimeDisplay: 15, distanceInKM: 0.8, bannerimage: 'img/unknowIMG.png',
+                        tags: [{ title: '日式料理' }, { title: '湯麵' }, { title: '深夜食堂' }]
+                    },
+                    {
+                        storeId: 'store3', storeName: '韓式燒肉', isOpen: false, 
+                        waitingTimeDisplay: 30, distanceInKM: 1.2, bannerimage: 'img/unknowIMG.png',
+                        tags: [{ title: '韓式料理' }, { title: '燒肉' }, { title: '聚餐' }]
+                    },
+                    {
+                        storeId: 'store4', storeName: '台式小吃攤', isOpen: true, 
+                        waitingTimeDisplay: 10, distanceInKM: 0.3, bannerimage: 'img/unknowIMG.png',
+                        tags: [{ title: '台式料理' }, { title: '小吃' }, { title: '便宜' }]
+                    },
+                    {
+                        storeId: 'store5', storeName: '泰式酸辣湯', isOpen: true, 
+                        waitingTimeDisplay: 25, distanceInKM: 0.9, bannerimage: 'img/unknowIMG.png',
+                        tags: [{ title: '泰式料理' }, { title: '酸辣' }, { title: '香料' }]
+                    },
+                    {
+                        storeId: 'store6', storeName: '美式漢堡店', isOpen: true, 
+                        waitingTimeDisplay: 18, distanceInKM: 0.7, bannerimage: 'img/unknowIMG.png',
+                        tags: [{ title: '美式料理' }, { title: '漢堡' }, { title: '炸物' }]
+                    },
+                    {
+                        storeId: 'store7', storeName: '印度咖哩屋', isOpen: false, 
+                        waitingTimeDisplay: 35, distanceInKM: 1.5, bannerimage: 'img/unknowIMG.png',
+                        tags: [{ title: '印度料理' }, { title: '咖哩' }, { title: '香辣' }]
+                    },
+                    {
+                        storeId: 'store8', storeName: '越式河粉', isOpen: true, 
+                        waitingTimeDisplay: 12, distanceInKM: 0.4, bannerimage: 'img/unknowIMG.png',
+                        tags: [{ title: '越式料理' }, { title: '河粉' }, { title: '清爽' }]
+                    },
+                    {
+                        storeId: 'store9', storeName: '素食健康餐', isOpen: true, 
+                        waitingTimeDisplay: 22, distanceInKM: 1.1, bannerimage: 'img/unknowIMG.png',
+                        tags: [{ title: '素食' }, { title: '健康' }, { title: '有機' }]
+                    },
+                    {
+                        storeId: 'store10', storeName: '法式甜點店', isOpen: true, 
+                        waitingTimeDisplay: 8, distanceInKM: 0.6, bannerimage: 'img/unknowIMG.png',
+                        tags: [{ title: '甜點' }, { title: '法式' }, { title: '精緻' }]
+                    },
+                    {
+                        storeId: 'store11', storeName: '手搖飲品店', isOpen: true, 
+                        waitingTimeDisplay: 5, distanceInKM: 0.2, bannerimage: 'img/unknowIMG.png',
+                        tags: [{ title: '飲品' }, { title: '手搖' }, { title: '新鮮' }]
+                    },
+                    {
+                        storeId: 'store12', storeName: '中式快餐', isOpen: true, 
+                        waitingTimeDisplay: 15, distanceInKM: 0.5, bannerimage: 'img/unknowIMG.png',
+                        tags: [{ title: '中式料理' }, { title: '快餐' }, { title: '便當' }]
+                    }
+                ],
+                
+                demoFeaturedRestaurantsList: [
+                    {
+                        storeId: 'featured1', storeName: '米其林推薦餐廳', isOpen: true, 
+                        waitingTimeDisplay: 45, distanceInKM: 2.0, bannerimage: 'img/unknowIMG.png',
+                        tags: [{ title: '精緻料理' }, { title: '米其林' }, { title: '高檔' }]
+                    },
+                    {
+                        storeId: 'featured2', storeName: '網紅打卡店', isOpen: true, 
+                        waitingTimeDisplay: 30, distanceInKM: 1.3, bannerimage: 'img/unknowIMG.png',
+                        tags: [{ title: '網紅店' }, { title: '打卡' }, { title: '時尚' }]
+                    },
+                    {
+                        storeId: 'featured3', storeName: '老字號名店', isOpen: true, 
+                        waitingTimeDisplay: 25, distanceInKM: 0.9, bannerimage: 'img/unknowIMG.png',
+                        tags: [{ title: '老字號' }, { title: '傳統' }, { title: '道地' }]
+                    },
+                    {
+                        storeId: 'featured4', storeName: '新開幕餐廳', isOpen: true, 
+                        waitingTimeDisplay: 20, distanceInKM: 0.7, bannerimage: 'img/unknowIMG.png',
+                        tags: [{ title: '新開幕' }, { title: '創新' }, { title: '話題' }]
+                    },
+                    {
+                        storeId: 'featured5', storeName: '主廚特色料理', isOpen: true, 
+                        waitingTimeDisplay: 40, distanceInKM: 1.8, bannerimage: 'img/unknowIMG.png',
+                        tags: [{ title: '主廚料理' }, { title: '特色' }, { title: '創意' }]
+                    }
+                ],
+                // ===== DEMO 數據結束 =====
 
                 fromStore: {
                     store: {
@@ -2766,6 +2709,9 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
                 // 搜尋UI控制
                 showFoodTags: false,
+
+                // 精選餐廳列表
+                FeaturedRestaurantsList: [],
 
                 // 隱藏區塊配置
                 hiddenSection1: {
@@ -2804,7 +2750,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
             const sidParam = urlParams.get('sid');
             if (sidParam) {
                 localStorage.setItem('pendingStoreId', sidParam);
-              
+                console.log('保存sid到localStorage:', sidParam);
             }
             
             // 檢查是否有之前保存的storeId
@@ -2818,32 +2764,35 @@ scratch. This page gets rid of all links and provides the needed markup only.
             }
             
             let vue = this
+            
+            // 檢查現有登入狀態（無論TestModel是否開啟都要檢查）
+            if (localStorage.userInfo) {
+                try {
+                    const existingUserInfo = decryptObject(localStorage.userInfo);
+                    if (existingUserInfo && existingUserInfo.id) {
+                        console.log("檢測到現有登入資訊，跳過LIFF登入流程");
+                        vue.userInfo = existingUserInfo;
+                        
+                        // TestModel模式載入Demo數據
+                        if (TestModel) {
+                            vue.loadDemoData();
+                        }
+                        
+                        // 初始化資料和畫面
+                        vue.initializeApp();
+                        return; // 跳過LIFF登入流程
+                    }
+                } catch (error) {
+                    console.log("localStorage用戶資訊無效，需要重新登入:", error);
+                    localStorage.removeItem('userInfo');
+                }
+            }
+            
             if (TestModel) {
-
-                localStorage.userInfo = "U2FsdGVkX18zOYtC+DgwHmz4boHeq6br20Mo/9wjInOApWgzKP4WRsbdslxalM2UClLHZYpzOv5MyaKLcwtxzMh4N7138Vg+iVg8faUvqYhJKIsPCcmt3py18pOoUjreAXTSgL0QaX1xtuI4483Wuna02s6v3V66f0mS/1djKtP4hplQZdX95cdSwP2aorbZ";
-
-
-
-                //資料初始化
-                vue.getLocation();
-
-                //畫面初始化
-                new Swiper(".swiper-container", {
-                    loop: false, // 無限輪播
-                    slidesPerView: 4, // 預設桌機 4 個
-                    spaceBetween: 10, // 間距
-                    navigation: {
-                        nextEl: ".custom-next-btn",
-                        prevEl: ".custom-prev-btn",
-                    },
-                    breakpoints: {
-                        1024: { slidesPerView: 5.5 },  // 桌機
-                        768: { slidesPerView: 4.3 },   // 平板
-                        480: { slidesPerView: 2.5 }, // 一般手機
-                        375: { slidesPerView: 2.5 }, // iPhone SE
-                        320: { slidesPerView: 2.2 }  // 超小手機
-                    },
-                });
+                // TestModel模式下仍然執行正常的LIFF登入流程
+                // 只是會額外載入Demo數據
+                console.log("TestModel模式：執行正常LIFF登入但會載入Demo數據");
+                initializeLiff("2006327628-8x1g1rAv");
                 // 附近店家現在使用網格布局，不需要輪播
                 // new Swiper(".swiper-container-store", {
                 //     loop: false, // 無限輪播
@@ -2862,27 +2811,9 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 //     },
                 // });
                 new Swiper(".swiper-container-foodtype", {
-                    loop: false, // 無限輪播
-                                    slidesPerView: 4, // 預設 4 個
-                                    spaceBetween: 15, // 間距
-                    navigation: {
-                        nextEl: ".custom-next-btn",
-                        prevEl: ".custom-prev-btn",
-                    },
-                    breakpoints: {
-                                        1024: { slidesPerView: 6, spaceBetween: 20 },  // 桌機
-                                        768: { slidesPerView: 5, spaceBetween: 15 },   // 平板
-                                        480: { slidesPerView: 4, spaceBetween: 12 }, // 一般手機
-                                        375: { slidesPerView: 3, spaceBetween: 10 }, // iPhone SE
-                                        320: { slidesPerView: 3, spaceBetween: 8 }  // 超小手機
-                    },
-                });
-
-                // 初始化精選餐廳的Swiper
-                new Swiper(".swiper-container-featured", {
                     loop: false,
-                    slidesPerView: 'auto',
-                    spaceBetween: 16,
+                    slidesPerView: 4,
+                    spaceBetween: 15,
                     speed: 300,
                     freeMode: false,
                     resistance: true,
@@ -2890,16 +2821,16 @@ scratch. This page gets rid of all links and provides the needed markup only.
                     observer: true,
                     observeParents: true,
                     navigation: {
-                        nextEl: ".swiper-container-featured .custom-next-btn",
-                        prevEl: ".swiper-container-featured .custom-prev-btn",
+                        nextEl: ".custom-next-btn",
+                        prevEl: ".custom-prev-btn",
                     },
                     breakpoints: {
-                        320: { slidesPerView: 1.2, spaceBetween: 12 },
-                        480: { slidesPerView: 1.5, spaceBetween: 14 },
-                        768: { slidesPerView: 2.2, spaceBetween: 16 },
-                        1024: { slidesPerView: 3.2, spaceBetween: 18 },
-                        1200: { slidesPerView: 3.8, spaceBetween: 20 }
-                    }
+                        320: { slidesPerView: 3, spaceBetween: 8 },
+                        375: { slidesPerView: 3, spaceBetween: 10 },
+                        480: { slidesPerView: 4, spaceBetween: 12 },
+                        768: { slidesPerView: 5, spaceBetween: 15 },
+                        1024: { slidesPerView: 6, spaceBetween: 20 }
+                    },
                 });
             } else {
                 initializeLiff("2006327628-8x1g1rAv")
@@ -2950,65 +2881,20 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
                                 vue.userInfo = userInfo
 
-                                //資料初始化
-                                vue.getLocation();
+                                // TestModel模式載入Demo數據
+                                if (TestModel) {
+                                    // ===== DEMO 數據初始化 =====
+                                    vue.loadDemoData();
+                                    // ===== DEMO 數據初始化結束 =====
+                                }
 
-                                //畫面初始化
-                                new Swiper(".swiper-container", {
-                                    loop: false, // 無限輪播
-                                    slidesPerView: 4, // 預設桌機 4 個
-                                    spaceBetween: 10, // 間距
-                                    navigation: {
-                                        nextEl: ".custom-next-btn",
-                                        prevEl: ".custom-prev-btn",
-                                    },
-                                    breakpoints: {
-                                        1024: { slidesPerView: 5.5 },  // 桌機
-                                        768: { slidesPerView: 4.3 },   // 平板
-                                        480: { slidesPerView: 2.5 }, // 一般手機
-                                        375: { slidesPerView: 2.5 }, // iPhone SE
-                                        320: { slidesPerView: 2.2 }  // 超小手機
-                                    },
-                                });
-                                // 附近店家現在使用網格布局，不需要輪播
-                                // new Swiper(".swiper-container-store", {
-                                //     loop: false, // 無限輪播
-                                //     slidesPerView: 1.5, // 預設桌機 4 個
-                                //     spaceBetween: 10, // 間距
-                                //     navigation: {
-                                //         nextEl: ".custom-next-btn",
-                                //         prevEl: ".custom-prev-btn",
-                                //     },
-                                //     breakpoints: {
-                                //         1024: { slidesPerView: 5.5 },  // 桌機
-                                //         768: { slidesPerView: 4.3 },   // 平板
-                                //         480: { slidesPerView: 2.5 }, // 一般手機
-                                //         375: { slidesPerView: 2.5 }, // iPhone SE
-                                //         320: { slidesPerView: 1.5 }  // 超小手機
-                                //     },
-                                // });
+                                // 使用統一的初始化方法
+                                vue.initializeApp();
+
                                 new Swiper(".swiper-container-foodtype", {
-                                    loop: false, // 無限輪播
-                                    slidesPerView: 4, // 預設 4 個
-                                    spaceBetween: 15, // 間距
-                                    navigation: {
-                                        nextEl: ".custom-next-btn",
-                                        prevEl: ".custom-prev-btn",
-                                    },
-                                    breakpoints: {
-                                        1024: { slidesPerView: 6, spaceBetween: 20 },  // 桌機
-                                        768: { slidesPerView: 5, spaceBetween: 15 },   // 平板
-                                        480: { slidesPerView: 4, spaceBetween: 12 }, // 一般手機
-                                        375: { slidesPerView: 3, spaceBetween: 10 }, // iPhone SE
-                                        320: { slidesPerView: 3, spaceBetween: 8 }  // 超小手機
-                                    },
-                                });
-
-                                // 初始化精選餐廳的Swiper
-                                new Swiper(".swiper-container-featured", {
                                     loop: false,
-                                    slidesPerView: 'auto',
-                                    spaceBetween: 16,
+                                    slidesPerView: 4,
+                                    spaceBetween: 15,
                                     speed: 300,
                                     freeMode: false,
                                     resistance: true,
@@ -3016,78 +2902,17 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                     observer: true,
                                     observeParents: true,
                                     navigation: {
-                                        nextEl: ".swiper-container-featured .custom-next-btn",
-                                        prevEl: ".swiper-container-featured .custom-prev-btn",
+                                        nextEl: ".custom-next-btn",
+                                        prevEl: ".custom-prev-btn",
                                     },
                                     breakpoints: {
-                                        320: { slidesPerView: 1.2, spaceBetween: 12 },
-                                        480: { slidesPerView: 1.5, spaceBetween: 14 },
-                                        768: { slidesPerView: 2.2, spaceBetween: 16 },
-                                        1024: { slidesPerView: 3.2, spaceBetween: 18 },
-                                        1200: { slidesPerView: 3.8, spaceBetween: 20 }
-                                    }
+                                        320: { slidesPerView: 3, spaceBetween: 8 },
+                                        375: { slidesPerView: 3, spaceBetween: 10 },
+                                        480: { slidesPerView: 4, spaceBetween: 12 },
+                                        768: { slidesPerView: 5, spaceBetween: 15 },
+                                        1024: { slidesPerView: 6, spaceBetween: 20 }
+                                    },
                                 });
-
-                                // 初始化隱藏區塊的Swiper（如果啟用）
-                                if (vue.hiddenSection1.enabled && vue.hiddenSection1.data.length > 0) {
-                                    new Swiper(".swiper-container-hidden1", {
-                                        loop: false,
-                                        slidesPerView: 'auto',
-                                        spaceBetween: 15,
-                                        speed: 300,
-                                        freeMode: false,
-                                        resistance: true,
-                                        resistanceRatio: 0.85,
-                                        observer: true,
-                                        observeParents: true,
-                                        breakpoints: {
-                                            320: { slidesPerView: 1.2, spaceBetween: 10 },
-                                            480: { slidesPerView: 1.5, spaceBetween: 15 },
-                                            768: { slidesPerView: 2.5, spaceBetween: 15 },
-                                            1024: { slidesPerView: 3.5, spaceBetween: 20 }
-                                        }
-                                    });
-                                }
-
-                                if (vue.hiddenSection2.enabled && vue.hiddenSection2.data.length > 0) {
-                                    new Swiper(".swiper-container-hidden2", {
-                                        loop: false,
-                                        slidesPerView: 'auto',
-                                        spaceBetween: 15,
-                                        speed: 300,
-                                        freeMode: false,
-                                        resistance: true,
-                                        resistanceRatio: 0.85,
-                                        observer: true,
-                                        observeParents: true,
-                                        breakpoints: {
-                                            320: { slidesPerView: 1.2, spaceBetween: 10 },
-                                            480: { slidesPerView: 1.5, spaceBetween: 15 },
-                                            768: { slidesPerView: 2.5, spaceBetween: 15 },
-                                            1024: { slidesPerView: 3.5, spaceBetween: 20 }
-                                        }
-                                    });
-                                }
-
-                                if (vue.hiddenSection3.enabled && vue.hiddenSection3.data.length > 0) {
-                                    new Swiper(".swiper-container-hidden3", {
-                                        loop: false,
-                                        slidesPerView: 'auto',
-                                        spaceBetween: 15,
-                                        speed: 300,
-                                        freeMode: false,
-                                        resistance: true,
-                                        resistanceRatio: 0.85,
-                                        observer: true,
-                                        observeParents: true,
-                                        breakpoints: {
-                                            320: { slidesPerView: 1.2, spaceBetween: 10 },
-                                            480: { slidesPerView: 1.5, spaceBetween: 15 },
-                                            768: { slidesPerView: 2.5, spaceBetween: 15 },
-                                            1024: { slidesPerView: 3.5, spaceBetween: 20 }
-                                        }
-                                    });
-                                }
                             }
                         })
                 } catch (e) {
@@ -3225,12 +3050,6 @@ scratch. This page gets rid of all links and provides the needed markup only.
                         vue.getTheTags(function () { 
                             vue.getOpeningStore(function () { 
                                 vue.getFeaturedRestaurants();
-                                
-                                // 檢查是否啟用testdemo模式
-                                if (typeof testdemo !== 'undefined' && testdemo) {
-                                    vue.loadDemoHiddenSections();
-                                }
-                                
                                 loadingOff();
                             });
                         });
@@ -3239,12 +3058,6 @@ scratch. This page gets rid of all links and provides the needed markup only.
                     vue.getTheTags(function () { 
                         vue.getOpeningStore(function () { 
                             vue.getFeaturedRestaurants();
-                            
-                            // 檢查是否啟用testdemo模式
-                            if (typeof testdemo !== 'undefined' && testdemo) {
-                                vue.loadDemoHiddenSections();
-                            }
-                            
                             loadingOff();
                         });
                     });
@@ -3254,151 +3067,34 @@ scratch. This page gets rid of all links and provides the needed markup only.
             //附近營業店家
             getOpeningStore(_func) {
                 var vue = this
-                
-                // 檢查是否啟用testdemo模式
-                if (typeof testdemo !== 'undefined' && testdemo) {
-                    // 載入demo店家資料
-                    vue.loadDemoStores();
-                    if (_func) _func()
-                } else {
-                    apiWeb('/api/stores?openOnly=true&latitude=' + localStorage.latitude + '&longitude=' + localStorage.longitude + '&&radius=' + radius, 'GET', null, '獲得附近店家', function (v) {
-                        if (v.success == true) {
-                            // console.log(v.data);
+                apiWeb('/api/stores?openOnly=true&latitude=' + localStorage.latitude + '&longitude=' + localStorage.longitude + '&&radius=' + radius, 'GET', null, '獲得附近店家', function (v) {
+                    if (v.success == true) {
+                        // console.log(v.data);
 
-                            vue.StoreList = v.data
-                            // console.log(vue.StoreList);
-                            if (_func) _func()
-                        }
-                    })
-                }
-            },
-
-            // 載入demo店家資料
-            loadDemoStores() {
-                this.StoreList = [
-                    {
-                        storeId: 'store1', storeName: '義大利麵專門店', isOpen: true, 
-                        waitingTimeDisplay: 20, distanceInKM: 0.5, bannerimage: 'img/unknowIMG.png',
-                        tags: [{ title: '義式料理' }, { title: '平價' }, { title: '快速出餐' }]
-                    },
-                    {
-                        storeId: 'store2', storeName: '日式拉麵館', isOpen: true, 
-                        waitingTimeDisplay: 15, distanceInKM: 0.8, bannerimage: 'img/unknowIMG.png',
-                        tags: [{ title: '日式料理' }, { title: '湯麵' }, { title: '深夜食堂' }]
-                    },
-                    {
-                        storeId: 'store3', storeName: '韓式燒肉', isOpen: false, 
-                        waitingTimeDisplay: 30, distanceInKM: 1.2, bannerimage: 'img/unknowIMG.png',
-                        tags: [{ title: '韓式料理' }, { title: '燒肉' }, { title: '聚餐' }]
-                    },
-                    {
-                        storeId: 'store4', storeName: '台式小吃攤', isOpen: true, 
-                        waitingTimeDisplay: 10, distanceInKM: 0.3, bannerimage: 'img/unknowIMG.png',
-                        tags: [{ title: '台式料理' }, { title: '小吃' }, { title: '便宜' }]
-                    },
-                    {
-                        storeId: 'store5', storeName: '泰式酸辣湯', isOpen: true, 
-                        waitingTimeDisplay: 25, distanceInKM: 0.9, bannerimage: 'img/unknowIMG.png',
-                        tags: [{ title: '泰式料理' }, { title: '酸辣' }, { title: '香料' }]
-                    },
-                    {
-                        storeId: 'store6', storeName: '美式漢堡店', isOpen: true, 
-                        waitingTimeDisplay: 18, distanceInKM: 0.7, bannerimage: 'img/unknowIMG.png',
-                        tags: [{ title: '美式料理' }, { title: '漢堡' }, { title: '炸物' }]
-                    },
-                    {
-                        storeId: 'store7', storeName: '印度咖哩屋', isOpen: false, 
-                        waitingTimeDisplay: 35, distanceInKM: 1.5, bannerimage: 'img/unknowIMG.png',
-                        tags: [{ title: '印度料理' }, { title: '咖哩' }, { title: '香辣' }]
-                    },
-                    {
-                        storeId: 'store8', storeName: '越式河粉', isOpen: true, 
-                        waitingTimeDisplay: 12, distanceInKM: 0.4, bannerimage: 'img/unknowIMG.png',
-                        tags: [{ title: '越式料理' }, { title: '河粉' }, { title: '清爽' }]
-                    },
-                    {
-                        storeId: 'store9', storeName: '素食健康餐', isOpen: true, 
-                        waitingTimeDisplay: 22, distanceInKM: 1.1, bannerimage: 'img/unknowIMG.png',
-                        tags: [{ title: '素食' }, { title: '健康' }, { title: '有機' }]
-                    },
-                    {
-                        storeId: 'store10', storeName: '法式甜點店', isOpen: true, 
-                        waitingTimeDisplay: 8, distanceInKM: 0.6, bannerimage: 'img/unknowIMG.png',
-                        tags: [{ title: '甜點' }, { title: '法式' }, { title: '精緻' }]
-                    },
-                    {
-                        storeId: 'store11', storeName: '手搖飲品店', isOpen: true, 
-                        waitingTimeDisplay: 5, distanceInKM: 0.2, bannerimage: 'img/unknowIMG.png',
-                        tags: [{ title: '飲品' }, { title: '手搖' }, { title: '新鮮' }]
-                    },
-                    {
-                        storeId: 'store12', storeName: '中式快餐', isOpen: true, 
-                        waitingTimeDisplay: 15, distanceInKM: 0.5, bannerimage: 'img/unknowIMG.png',
-                        tags: [{ title: '中式料理' }, { title: '快餐' }, { title: '便當' }]
+                        vue.StoreList = v.data
+                        // console.log(vue.StoreList);
+                        if (_func) _func()
                     }
-                ];
+                })
             },
 
             //可用標籤
             getTheTags(_func) {
                 var vue = this
-                
-                // 檢查是否啟用testdemo模式
-                if (typeof testdemo !== 'undefined' && testdemo) {
-                    // 載入demo標籤資料
-                    vue.loadDemoTags();
-                    if (_func) _func()
-                } else {
-                    apiWeb('/api/tags/nearby?latitude=' + localStorage.latitude + '&longitude=' + localStorage.longitude + '&&radius=' + radius + '&includeRelatedTags=true', 'GET', null, '獲得所有標籤', function (v) {
-                        if (v.success == true) {
-                            // 合併 nearbyTags 和 relatedTags
-                            let nearbyTags = v.data.nearbyTags || []
-                            let relatedTags = v.data.relatedTags || []
-                            let allTags = [...nearbyTags, ...relatedTags]
+                apiWeb('/api/tags/nearby?latitude=' + localStorage.latitude + '&longitude=' + localStorage.longitude + '&&radius=' + radius + '&includeRelatedTags=true', 'GET', null, '獲得所有標籤', function (v) {
+                    if (v.success == true) {
+                        // 合併 nearbyTags 和 relatedTags
+                        let nearbyTags = v.data.nearbyTags || []
+                        let relatedTags = v.data.relatedTags || []
+                        let allTags = [...nearbyTags, ...relatedTags]
 
-                            vue.BusinessDistrictList = allTags.filter(tag => tag.typeName === "地區/商圈標籤");
-                            vue.FoodTypeList = allTags.filter(tag => tag.typeName === "食物類別標籤");
-                            vue.PromotionsList = allTags.filter(tag => tag.typeName === "優惠專區標籤");
+                        vue.BusinessDistrictList = allTags.filter(tag => tag.typeName === "地區/商圈標籤");
+                        vue.FoodTypeList = allTags.filter(tag => tag.typeName === "食物類別標籤");
+                        vue.PromotionsList = allTags.filter(tag => tag.typeName === "優惠專區標籤");
 
-                            if (_func) _func()
-                        }
-                    })
-                }
-            },
-
-            // 載入demo標籤資料
-            loadDemoTags() {
-                // 附近商圈demo資料
-                this.BusinessDistrictList = [
-                    { tagId: 'dist1', title: '西門町', imageUrl: 'img/unknowIMG.png' },
-                    { tagId: 'dist2', title: '信義區', imageUrl: 'img/unknowIMG.png' },
-                    { tagId: 'dist3', title: '中山區', imageUrl: 'img/unknowIMG.png' },
-                    { tagId: 'dist4', title: '大安區', imageUrl: 'img/unknowIMG.png' },
-                    { tagId: 'dist5', title: '松山區', imageUrl: 'img/unknowIMG.png' },
-                    { tagId: 'dist6', title: '南港區', imageUrl: 'img/unknowIMG.png' }
-                ];
-
-                // 食物類型demo資料
-                this.FoodTypeList = [
-                    { tagId: 'food1', title: '漢堡', imageUrl: 'img/foodtype/burger.png' },
-                    { tagId: 'food2', title: '義式料理', imageUrl: 'img/unknowIMG.png' },
-                    { tagId: 'food3', title: '日式料理', imageUrl: 'img/unknowIMG.png' },
-                    { tagId: 'food4', title: '中式料理', imageUrl: 'img/unknowIMG.png' },
-                    { tagId: 'food5', title: '韓式料理', imageUrl: 'img/unknowIMG.png' },
-                    { tagId: 'food6', title: '泰式料理', imageUrl: 'img/unknowIMG.png' },
-                    { tagId: 'food7', title: '越式料理', imageUrl: 'img/unknowIMG.png' },
-                    { tagId: 'food8', title: '印度料理', imageUrl: 'img/unknowIMG.png' }
-                ];
-
-                // 活動專區demo資料
-                this.PromotionsList = [
-                    { tagId: 'promo1', title: '新店開幕優惠', imageUrl: 'img/bonus.png' },
-                    { tagId: 'promo2', title: '限時85折', imageUrl: 'img/bonus.png' },
-                    { tagId: 'promo3', title: '滿額送飲品', imageUrl: 'img/bonus.png' },
-                    { tagId: 'promo4', title: '午餐特價', imageUrl: 'img/bonus.png' },
-                    { tagId: 'promo5', title: '會員專屬', imageUrl: 'img/bonus.png' },
-                    { tagId: 'promo6', title: '生日優惠', imageUrl: 'img/bonus.png' }
-                ];
+                        if (_func) _func()
+                    }
+                })
             },
 
             // 格式化距離顯示
@@ -3436,25 +3132,12 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
             // 搜尋相關方法
             toggleFoodTags() {
-                // 隱藏所有使用者下拉選單
-                $('.dropdown-menu').removeClass('show').css('z-index', '9998');
-                
                 this.showFoodTags = !this.showFoodTags;
-                
-                if (this.showFoodTags) {
-                    // 如果顯示搜尋標籤，設置最高z-index
-                    $('.food-tags-dropdown').css('z-index', '99999');
-                } else {
-                    // 如果隱藏搜尋標籤，回到預設z-index
-                    $('.food-tags-dropdown').css('z-index', '9998');
-                }
             },
 
             hideFoodTags() {
                 setTimeout(() => {
                     this.showFoodTags = false;
-                    // 確保搜尋標籤下拉選單的z-index回到預設值
-                    $('.food-tags-dropdown').css('z-index', '9998');
                 }, 200);
             },
 
@@ -3464,107 +3147,190 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 toastr.info('領券功能開發中，敬請期待！');
             },
 
-                            // 獲得精選餐廳
-                getFeaturedRestaurants() {
-                    var vue = this;
-                    
-                    // 檢查是否啟用testdemo模式
-                    if (typeof testdemo !== 'undefined' && testdemo) {
-                        // 載入demo資料
-                        vue.loadDemoFeaturedRestaurants();
-                    } else {
-                        // 這裡先用空數組，之後將根據「精選餐廳」標籤來篩選店家
-                        // apiWeb('/api/stores/featured?latitude=' + localStorage.latitude + '&longitude=' + localStorage.longitude + '&&radius=' + radius, 'GET', null, '獲得精選餐廳', function (v) {
-                        //     if (v.success == true) {
-                        //         vue.FeaturedRestaurantsList = v.data;
-                        //     }
-                        // });
-                        this.FeaturedRestaurantsList = []; // 暫時為空，待後續實作
-                    }
-                },
+            // 獲得精選餐廳
+            getFeaturedRestaurants() {
+                var vue = this;
+                // 這裡先用空數組，之後將根據「精選餐廳」標籤來篩選店家
+                // apiWeb('/api/stores/featured?latitude=' + localStorage.latitude + '&longitude=' + localStorage.longitude + '&&radius=' + radius, 'GET', null, '獲得精選餐廳', function (v) {
+                //     if (v.success == true) {
+                //         vue.FeaturedRestaurantsList = v.data;
+                //     }
+                // });
+                this.FeaturedRestaurantsList = []; // 暫時為空，待後續實作
+            },
 
-                // 載入精選餐廳demo資料
-                loadDemoFeaturedRestaurants() {
-                    this.FeaturedRestaurantsList = [
-                        {
-                            storeId: 'featured1', storeName: '米其林推薦餐廳', isOpen: true, 
-                            waitingTimeDisplay: 45, distanceInKM: 2.0, bannerimage: 'img/unknowIMG.png',
-                            tags: [{ title: '精緻料理' }, { title: '米其林' }, { title: '高檔' }]
-                        },
-                        {
-                            storeId: 'featured2', storeName: '網紅打卡店', isOpen: true, 
-                            waitingTimeDisplay: 30, distanceInKM: 1.3, bannerimage: 'img/unknowIMG.png',
-                            tags: [{ title: '網紅店' }, { title: '打卡' }, { title: '時尚' }]
-                        },
-                        {
-                            storeId: 'featured3', storeName: '老字號名店', isOpen: true, 
-                            waitingTimeDisplay: 25, distanceInKM: 0.9, bannerimage: 'img/unknowIMG.png',
-                            tags: [{ title: '老字號' }, { title: '傳統' }, { title: '道地' }]
-                        },
-                        {
-                            storeId: 'featured4', storeName: '新開幕餐廳', isOpen: true, 
-                            waitingTimeDisplay: 20, distanceInKM: 0.7, bannerimage: 'img/unknowIMG.png',
-                            tags: [{ title: '新開幕' }, { title: '創新' }, { title: '話題' }]
-                        },
-                        {
-                            storeId: 'featured5', storeName: '主廚特色料理', isOpen: true, 
-                            waitingTimeDisplay: 40, distanceInKM: 1.8, bannerimage: 'img/unknowIMG.png',
-                            tags: [{ title: '主廚料理' }, { title: '特色' }, { title: '創意' }]
-                        },
-                        {
-                            storeId: 'featured6', storeName: '深夜食堂', isOpen: true, 
-                            waitingTimeDisplay: 15, distanceInKM: 0.5, bannerimage: 'img/unknowIMG.png',
-                            tags: [{ title: '深夜食堂' }, { title: '宵夜' }, { title: '溫暖' }]
-                        },
-                        {
-                            storeId: 'featured7', storeName: '健康輕食館', isOpen: true, 
-                            waitingTimeDisplay: 18, distanceInKM: 1.1, bannerimage: 'img/unknowIMG.png',
-                            tags: [{ title: '健康' }, { title: '輕食' }, { title: '有機' }]
+            // ===== DEMO 數據載入方法開始 =====
+            loadDemoData() {
+                // 載入測試用假數據，正式上線前需要刪除此方法
+                this.PromotionsList = [...this.demoPromotionsList];
+                this.BusinessDistrictList = [...this.demoBusinessDistrictList];
+                this.FoodTypeList = [...this.demoFoodTypeList];
+                this.StoreList = [...this.demoStoreList];
+                this.FeaturedRestaurantsList = [...this.demoFeaturedRestaurantsList];
+                
+                // 啟用隱藏區塊並設置測試數據
+                this.hiddenSection1.enabled = true;
+                this.hiddenSection1.title = '今日推薦';
+                this.hiddenSection1.icon = 'fas fa-thumbs-up';
+                this.hiddenSection1.data = [
+                    { id: 1, name: '推薦項目1' },
+                    { id: 2, name: '推薦項目2' },
+                    { id: 3, name: '推薦項目3' }
+                ];
+                
+                this.hiddenSection2.enabled = true;
+                this.hiddenSection2.title = '熱門活動';
+                this.hiddenSection2.icon = 'fas fa-fire';
+                this.hiddenSection2.data = [
+                    { id: 1, name: '活動項目1' },
+                    { id: 2, name: '活動項目2' },
+                    { id: 3, name: '活動項目3' }
+                ];
+                
+                this.hiddenSection3.enabled = true;
+                this.hiddenSection3.title = '限時優惠';
+                this.hiddenSection3.icon = 'fas fa-clock';
+                this.hiddenSection3.data = [
+                    { id: 1, name: '優惠項目1' },
+                    { id: 2, name: '優惠項目2' },
+                    { id: 3, name: '優惠項目3' }
+                ];
+                
+                console.log('Demo數據已載入:', {
+                    promotions: this.PromotionsList.length,
+                    districts: this.BusinessDistrictList.length,
+                    foodTypes: this.FoodTypeList.length,
+                    stores: this.StoreList.length,
+                    featured: this.FeaturedRestaurantsList.length,
+                    hidden1: this.hiddenSection1.enabled,
+                    hidden2: this.hiddenSection2.enabled,
+                    hidden3: this.hiddenSection3.enabled
+                });
+            },
+            // ===== DEMO 數據載入方法結束 =====
+
+            // 統一的應用初始化方法
+            initializeApp() {
+                //資料初始化
+                this.getLocation();
+
+                //畫面初始化（性能優化版）
+                new Swiper(".swiper-container", {
+                    loop: false,
+                    slidesPerView: 4,
+                    spaceBetween: 10,
+                    speed: 300, // 滑動速度
+                    freeMode: false,
+                    resistance: true,
+                    resistanceRatio: 0.85,
+                    preventClicks: false,
+                    preventClicksPropagation: false,
+                    observer: true,
+                    observeParents: true,
+                    updateOnWindowResize: true,
+                    navigation: {
+                        nextEl: ".custom-next-btn",
+                        prevEl: ".custom-prev-btn",
+                    },
+                    breakpoints: {
+                        320: { slidesPerView: 2.2, spaceBetween: 8 },
+                        375: { slidesPerView: 2.5, spaceBetween: 8 },
+                        480: { slidesPerView: 2.5, spaceBetween: 10 },
+                        768: { slidesPerView: 4.3, spaceBetween: 10 },
+                        1024: { slidesPerView: 5.5, spaceBetween: 10 }
+                    },
+                });
+
+                // 初始化隱藏區塊的Swiper（如果啟用）
+                if (this.hiddenSection1.enabled && this.hiddenSection1.data.length > 0) {
+                    new Swiper(".swiper-container-hidden1", {
+                        loop: false,
+                        slidesPerView: 'auto',
+                        spaceBetween: 15,
+                        speed: 300,
+                        freeMode: false,
+                        resistance: true,
+                        resistanceRatio: 0.85,
+                        observer: true,
+                        observeParents: true,
+                        breakpoints: {
+                            320: { slidesPerView: 1.2, spaceBetween: 10 },
+                            480: { slidesPerView: 1.5, spaceBetween: 15 },
+                            768: { slidesPerView: 2.5, spaceBetween: 15 },
+                            1024: { slidesPerView: 3.5, spaceBetween: 20 }
                         }
-                    ];
-                },
-
-                // 載入隱藏區塊demo資料
-                loadDemoHiddenSections() {
-                    // 隱藏區塊1 - 今日推薦
-                    this.hiddenSection1.enabled = true;
-                    this.hiddenSection1.title = '今日推薦';
-                    this.hiddenSection1.icon = 'fas fa-thumbs-up';
-                    this.hiddenSection1.data = [
-                        { id: 1, name: '限時優惠套餐' },
-                        { id: 2, name: '新店開幕特價' },
-                        { id: 3, name: '會員專屬折扣' },
-                        { id: 4, name: '季節限定料理' },
-                        { id: 5, name: '推薦必點美食' },
-                        { id: 6, name: '人氣排行榜' }
-                    ];
-
-                    // 隱藏區塊2 - 熱門活動
-                    this.hiddenSection2.enabled = true;
-                    this.hiddenSection2.title = '熱門活動';
-                    this.hiddenSection2.icon = 'fas fa-fire';
-                    this.hiddenSection2.data = [
-                        { id: 1, name: '美食節活動' },
-                        { id: 2, name: '抽獎送大獎' },
-                        { id: 3, name: '打卡送飲料' },
-                        { id: 4, name: '滿額送甜點' },
-                        { id: 5, name: '生日優惠券' },
-                        { id: 6, name: '新用戶禮包' }
-                    ];
-
-                    // 隱藏區塊3 - 限時優惠
-                    this.hiddenSection3.enabled = true;
-                    this.hiddenSection3.title = '限時優惠';
-                    this.hiddenSection3.icon = 'fas fa-clock';
-                    this.hiddenSection3.data = [
-                        { id: 1, name: '午餐時段85折' },
-                        { id: 2, name: '晚餐滿額送' },
-                        { id: 3, name: '外帶9折優惠' },
-                        { id: 4, name: '學生證優惠' },
-                        { id: 5, name: '信用卡回饋' },
-                        { id: 6, name: '團購優惠價' }
-                    ];
+                    });
                 }
+
+                if (this.hiddenSection2.enabled && this.hiddenSection2.data.length > 0) {
+                    new Swiper(".swiper-container-hidden2", {
+                        loop: false,
+                        slidesPerView: 'auto',
+                        spaceBetween: 15,
+                        speed: 300,
+                        freeMode: false,
+                        resistance: true,
+                        resistanceRatio: 0.85,
+                        observer: true,
+                        observeParents: true,
+                        breakpoints: {
+                            320: { slidesPerView: 1.2, spaceBetween: 10 },
+                            480: { slidesPerView: 1.5, spaceBetween: 15 },
+                            768: { slidesPerView: 2.5, spaceBetween: 15 },
+                            1024: { slidesPerView: 3.5, spaceBetween: 20 }
+                        }
+                    });
+                }
+
+                if (this.hiddenSection3.enabled && this.hiddenSection3.data.length > 0) {
+                    new Swiper(".swiper-container-hidden3", {
+                        loop: false,
+                        slidesPerView: 'auto',
+                        spaceBetween: 15,
+                        speed: 300,
+                        freeMode: false,
+                        resistance: true,
+                        resistanceRatio: 0.85,
+                        observer: true,
+                        observeParents: true,
+                        breakpoints: {
+                            320: { slidesPerView: 1.2, spaceBetween: 10 },
+                            480: { slidesPerView: 1.5, spaceBetween: 15 },
+                            768: { slidesPerView: 2.5, spaceBetween: 15 },
+                            1024: { slidesPerView: 3.5, spaceBetween: 20 }
+                        }
+                    });
+                }
+                
+                console.log("應用初始化完成");
+            },
+
+            // 登出功能（可選擇使用AuthManager或原本方式）
+            logout() {
+                // 可以選擇使用AuthManager統一處理或原本的方式
+                // AuthManager.performLogout(); // 統一方式
+                
+                // 原本的方式
+                try {
+                    localStorage.removeItem('userInfo');
+                    localStorage.removeItem('cart');
+                    localStorage.removeItem('requiredSelections');
+                    localStorage.removeItem('pendingStoreId');
+                    localStorage.removeItem('token');
+                    
+                    if (typeof liff !== 'undefined' && liff.isInClient()) {
+                        if (liff.isLoggedIn()) {
+                            liff.logout();
+                        }
+                    }
+                    
+                    window.location.href = "login.html";
+                } catch (error) {
+                    console.error("登出錯誤:", error);
+                    localStorage.clear();
+                    window.location.href = "login.html";
+                }
+            },
 
         },
         computed: {

@@ -53,6 +53,12 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
 
+    <script>
+        const queryString = window.location.search;
+        const urlParams = new URLSearchParams(queryString);
+        const storeId = urlParams.get("sid");
+    </script>
+
 </head>
 
 <body class="sidebar-mini layout-navbar-fixed layout-footer-fixed sidebar-mini-md layout-fixed sidebar-collapse">
@@ -834,16 +840,16 @@
 
                             },
                             {
-                                name: 'LOGO圖片',
+                                name: '店家Logo',
                                 groupitem:
                                 {
                                     type: 'LogoImage',
                                     enabled: true,
                                     placeholder: ""
-                                },
+                                }
                             },
                             {
-                                name: '橫幅圖片',
+                                name: '店家橫幅',
                                 groupitem:
                                 {
                                     type: 'BannerImage',
@@ -1053,8 +1059,8 @@
                     }
                 ],
 
-                LogoImageSize: { w: 300, h: 300 },
-                BannerImageSize: { w: 1920, h: 1080 },
+                LogoImageSize: { w: 400, h: 400 },
+                BannerImageSize: { w: 1200, h: 600 },
                 imageAction: '',
 
                 // 防呆參數
@@ -1390,7 +1396,7 @@
                     const image = this.$refs.image;
                     image.onload = () => {
                         this.cropper = new Cropper(image, {
-                            aspectRatio: 16 / 9,   // 1:1 比例
+                            aspectRatio: 2,   // 2:1 比例
                             viewMode: 2,      // 限制裁剪框不超出圖片範圍
                             autoCropArea: 1,  // 預設裁剪範圍最大
                             minCropBoxWidth: vue.BannerImageSize.w,

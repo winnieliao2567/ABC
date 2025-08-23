@@ -8,7 +8,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>共響 SHARING</title>
+    <title id="page-title">共響 SHARING</title>
 
     <!-- jquery -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
@@ -623,8 +623,31 @@ scratch. This page gets rid of all links and provides the needed markup only.
         mounted() {
             this.updateCartCount(); // 確保頁面載入時購物車數量正確
             this.getStoreInfo()
+            
+            // 強制清除任何可能的快取標題
+            setTimeout(() => {
+                if (this.storeInfo.store && this.storeInfo.store.storeName) {
+                    this.updatePageTitle();
+                }
+            }, 100);
         },
         watch: {
+            'storeInfo.store.storeName': {
+                handler(newStoreName) {
+                    if (newStoreName) {
+                        this.updatePageTitle();
+                    }
+                },
+                immediate: true
+            },
+            'storeInfo.storeInfo.introduction': {
+                handler() {
+                    if (this.storeInfo.store.storeName) {
+                        this.updatePageTitle();
+                    }
+                },
+                immediate: true
+            },
             addToCart: {
                 handler(newVal) {
                     console.log(newVal);
@@ -758,8 +781,14 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 var vue = this
                 apiWeb('api/Store/detail/' + storeId, 'GET', null, '取得店家資訊', function (v) {
                     vue.storeInfo = v
-                    // console.log(v);
+                    console.log('API Response:', v);
                     vue.PageTitle = vue.storeInfo.store.storeName
+                    
+                    // 立即更新標題
+                    vue.$nextTick(() => {
+                        vue.updatePageTitle();
+                    });
+                    
                     vue.date.day = moment().format('ddd')
                     // console.log(this.date.day);
                     // console.log(vue.storeInfo.storeInfo.introduction);
@@ -1148,6 +1177,72 @@ scratch. This page gets rid of all links and provides the needed markup only.
                         return 0;
                     }
                 })() : 0;
+            },
+            
+            updatePageTitle() {
+                console.log('UpdatePageTitle called');
+                console.log('Store Info exists:', !!this.storeInfo);
+                console.log('Store exists:', !!this.storeInfo.store);
+                console.log('Store Name:', this.storeInfo?.store?.storeName);
+                console.log('StoreInfo exists:', !!this.storeInfo.storeInfo);
+                console.log('Introduction:', this.storeInfo?.storeInfo?.introduction);
+                
+                if (!this.storeInfo?.store?.storeName) {
+                    console.log('Store name not available yet, skipping title update');
+                    return;
+                }
+                
+                // 處理店家簡介
+                const introduction = this.storeInfo.storeInfo?.introduction || '';
+                const cleanIntroduction = introduction && introduction !== "<p><br></p>" 
+                    ? introduction.replace(/<[^>]*>/g, '').trim()
+                    : '';
+                
+                const shortIntroduction = cleanIntroduction 
+                    ? cleanIntroduction.substring(0, 50) + (cleanIntroduction.length > 50 ? '...' : '')
+                    : '立即訂餐';
+                
+                const fullDescription = cleanIntroduction 
+                    ? cleanIntroduction.substring(0, 150) + (cleanIntroduction.length > 150 ? '...' : '')
+                    : `${this.storeInfo.store.storeName}，立即線上訂餐，免註冊、免下載 App，支援 Line Pay 快速結帳。`;
+                
+                const newTitle = `${this.storeInfo.store.storeName} - ${shortIntroduction} | 共響 SHARING`;
+                console.log('Setting title to:', newTitle);
+                
+                // 多種方式更新頁面標題
+                document.title = newTitle;
+                
+                // 也嘗試通過 querySelector 更新
+                const titleElement = document.querySelector('title');
+                if (titleElement) {
+                    titleElement.textContent = newTitle;
+                    titleElement.innerHTML = newTitle;
+                }
+                
+                // 通過 ID 更新（如果有的話）
+                const pageTitleElement = document.getElementById('page-title');
+                if (pageTitleElement) {
+                    pageTitleElement.textContent = newTitle;
+                    pageTitleElement.innerHTML = newTitle;
+                }
+                
+                // 更新或創建 meta description
+                let metaDescription = document.querySelector('meta[name="description"]');
+                if (!metaDescription) {
+                    metaDescription = document.createElement('meta');
+                    metaDescription.name = 'description';
+                    document.head.appendChild(metaDescription);
+                }
+                metaDescription.content = fullDescription;
+                
+                // 強制觸發瀏覽器更新
+                setTimeout(() => {
+                    console.log('Final title check:', document.title);
+                    console.log('Title element content:', document.querySelector('title')?.textContent);
+                }, 50);
+                
+                console.log('Title updated to:', document.title);
+                console.log('Meta description:', metaDescription.content);
             }
         },
         computed: {

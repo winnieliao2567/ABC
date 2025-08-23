@@ -4,7 +4,7 @@ const host = "https://sharings.com.tw/";
 const AutoKey = "sharings-api-r^rz-jofw-ccwf";
 
 const TestModel = false; //test
-
+const testdemo = true; //testdemo - 啟用Demo測試資料
 const currentPage = 1; // 當前頁面
 const pageSize = 10; // 每頁顯示筆數
 const queryString = window.location.search;

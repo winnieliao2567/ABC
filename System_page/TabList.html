@@ -134,6 +134,84 @@
             </div>
         </div>
 
+        <!-- 座標確認視窗 -->
+        <div class="modal fade" id="coordinateModal" tabindex="-1" role="dialog" aria-labelledby="coordinateModalLabel"
+            aria-hidden="true" style="z-index: 9999;">
+            <div class="modal-dialog modal-dialog-centered modal-md" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="coordinateModalLabel">
+                            <i class="fas fa-map-marker-alt"></i>
+                            座標轉換結果
+                        </h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div v-if="geocodeResult.success">
+                            <div class="alert alert-success">
+                                <i class="fas fa-check-circle"></i>
+                                成功找到座標位置！
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-12 mb-3">
+                                    <strong>輸入地址：</strong>
+                                    <div class="text-muted">{{geocodeResult.inputAddress}}</div>
+                                </div>
+                                <div class="col-12 mb-3" v-if="geocodeResult.matchedAddress">
+                                    <strong>匹配地址：</strong>
+                                    <div class="text-muted">{{geocodeResult.matchedAddress}}</div>
+                                </div>
+                                <div class="col-6">
+                                    <strong>緯度 (Latitude)：</strong>
+                                    <div class="text-primary">{{geocodeResult.latitude}}</div>
+                                </div>
+                                <div class="col-6">
+                                    <strong>經度 (Longitude)：</strong>
+                                    <div class="text-primary">{{geocodeResult.longitude}}</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div v-else>
+                            <div class="alert alert-warning">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                查無相關座標資料
+                            </div>
+                            <p class="mb-3">
+                                無法根據「<strong>{{geocodeResult.inputAddress}}</strong>」找到對應的座標位置。
+                            </p>
+                            <div class="alert alert-info">
+                                <i class="fas fa-lightbulb"></i>
+                                <strong>建議：</strong>
+                                <ul class="mb-0 mt-2">
+                                    <li>請確認地址是否正確完整</li>
+                                    <li>您可以手動輸入座標</li>
+                                    <li>或使用Google地圖等工具查詢座標</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                            取消
+                        </button>
+                        <button type="button" class="btn btn-primary" @click="confirmCoordinates" 
+                                v-if="geocodeResult.success">
+                            <i class="fas fa-check"></i>
+                            確定使用
+                        </button>
+                        <button type="button" class="btn btn-warning" data-dismiss="modal"
+                                v-else>
+                            <i class="fas fa-edit"></i>
+                            手動輸入座標
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <!-- 編輯視窗 -->
         <div class="modal fade" id="EditModal" tabindex="-1" role="dialog" aria-labelledby="EditModalLabel"
@@ -154,7 +232,7 @@
                                 <label class="embed-responsive embed-responsive-1by1 d-flex justify-content-center"
                                     style="overflow: hidden;max-width: 300px;">
 
-                                    <img :src="EditData.image || 'img/unknowIMG.png'" class="border h-100">
+                                    <img :src="EditData.tagPicture || 'img/unknowIMG.png'" class="border h-100">
 
                                     <input type="file" class="custom-file-input" id="LogoImage"
                                         @change="handleFileUpload_logo" accept=".jpg,.jpeg,.png">
@@ -163,41 +241,92 @@
                         </div>
                         <div class="col-sm-12 col-lg-8">
                             <div class="form-group">
-                                <lable>
-                                    標籤類別名稱
-                                </lable>
-                                <input class="form-control" autocomplete="off" :value="EditData.name">
+                                <label>
+                                    標籤名稱 *
+                                </label>
+                                <input class="form-control" autocomplete="off" v-model="EditData.title" 
+                                       placeholder="請輸入標籤名稱" maxlength="50">
                             </div>
                             <div class="form-group">
-                                <lable>
-                                    所屬類別
-                                </lable>
-                                <select class="form-control" autocomplete="off" :value="EditData.class">
-                                    <option value="1">類別001</option>
-                                    <option value="2">類別002</option>
-                                    <option value="3">類別003</option>
+                                <label>
+                                    標籤描述
+                                </label>
+                                <textarea class="form-control" v-model="EditData.description" 
+                                          placeholder="請輸入標籤描述" maxlength="500" rows="3"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>
+                                    所屬類別 *
+                                </label>
+                                <select class="form-control" v-model="EditData.typeId">
+                                    <option value="">請選擇類別</option>
+                                    <option v-for="type in TagTypeList" :key="type.typeId" :value="type.typeId">
+                                        {{type.typeName}}
+                                    </option>
                                 </select>
                             </div>
                             <div class="form-group">
-                                <lable>
-                                    Location X
-                                </lable>
-                                <input class="form-control" autocomplete="off" :value="EditData.locationx">
+                                <label>
+                                    地址轉座標
+                                </label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" v-model="addressInput" 
+                                           placeholder="請輸入完整地址，例如：台北市信義區信義路五段7號" 
+                                           @keyup.enter="geocodeAddress">
+                                    <div class="input-group-append">
+                                        <button class="btn btn-outline-secondary" type="button" 
+                                                @click="geocodeAddress" :disabled="!addressInput || geocoding">
+                                            <i class="fas fa-spinner fa-spin" v-if="geocoding"></i>
+                                            <i class="fas fa-search" v-else></i>
+                                            轉換
+                                        </button>
+                                        <button class="btn btn-outline-info" type="button" 
+                                                @click="testModal" title="測試Modal">
+                                            <i class="fas fa-bug"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <small class="form-text text-muted">
+                                    <i class="fas fa-info-circle"></i> 
+                                    請提供完整地址以獲得準確的座標結果
+                                </small>
                             </div>
                             <div class="form-group">
-                                <lable>
-                                    Location Y
-                                </lable>
-                                <input class="form-control" autocomplete="off" :value="EditData.locationy">
+                                <label>
+                                    緯度 (Latitude)
+                                </label>
+                                <input type="number" class="form-control" v-model.number="EditData.latitude" 
+                                       placeholder="例如: 25.0330" step="any">
+                            </div>
+                            <div class="form-group">
+                                <label>
+                                    經度 (Longitude)
+                                </label>
+                                <input type="number" class="form-control" v-model.number="EditData.longitude" 
+                                       placeholder="例如: 121.5654" step="any">
+                            </div>
+                            <div class="form-group">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" v-model="EditData.isActive" id="tagActiveCheck">
+                                    <label class="form-check-label" for="tagActiveCheck">
+                                        啟用狀態
+                                    </label>
+                                </div>
                             </div>
                         </div>
 
                     </div>
                     <div class="modal-footer">
                         <button class="btn-default btn" type="button" data-dismiss="modal">取消</button>
-                        <button class="btn-primary btn" type="button" data-dismiss="modal"
-                            v-if="EditData.action==1">新增</button>
-                        <button class="btn-primary btn" type="button" data-dismiss="modal" v-else>儲存</button>
+                        <button class="btn-primary btn" type="button" @click="saveTag" :disabled="loading"
+                            v-if="EditData.action==1">
+                            <i class="fas fa-spinner fa-spin" v-if="loading"></i>
+                            新增
+                        </button>
+                        <button class="btn-primary btn" type="button" @click="saveTag" :disabled="loading" v-else>
+                            <i class="fas fa-spinner fa-spin" v-if="loading"></i>
+                            儲存
+                        </button>
                     </div>
                 </form>
             </div>
@@ -214,11 +343,15 @@
                         </h5>
                     </div>
                     <div class="modal-body">
-                        是否確定刪除 <span class="fw-bolder">{{DeletData.name}}</span>?
+                        是否確定刪除標籤 <span class="fw-bolder">{{DeletData.title}}</span>?
+                        <br><small class="text-muted">刪除後相關店鋪將失去此標籤</small>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn-default btn">取消</button>
-                        <button type="button" class="btn-danger btn">確定刪除</button>
+                        <button type="button" class="btn-default btn" data-dismiss="modal">取消</button>
+                        <button type="button" class="btn-danger btn" @click="deleteTag" :disabled="loading">
+                            <i class="fas fa-spinner fa-spin" v-if="loading"></i>
+                            確定刪除
+                        </button>
                     </div>
                 </form>
             </div>
@@ -318,10 +451,57 @@
             <div class="content">
                 <div class="container-fluid">
                     <div class="row">
-                        <div class="col-12 text-right py-3">
+                        <div class="col-md-6 py-3">
+                            <div class="row">
+                                <div class="col-md-6 mb-2">
+                                    <label class="small text-muted mb-1">標籤類型篩選</label>
+                                    <select class="form-control form-control-sm" v-model="selectedTypeId" @change="filterByType">
+                                        <option value="">全部類型</option>
+                                        <option v-for="type in TagTypeList" :key="type.typeId" :value="type.typeId">
+                                            {{type.typeName}} ({{getTypeTagCount(type.typeId)}})
+                                        </option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-2">
+                                    <label class="small text-muted mb-1">關鍵字搜尋</label>
+                                    <div class="input-group input-group-sm">
+                                        <input type="text" class="form-control" placeholder="搜尋標籤名稱、描述..." 
+                                               v-model="searchKeyword" @input="performSearch">
+                                        <div class="input-group-append">
+                                            <button class="btn btn-outline-secondary" type="button" @click="clearAllFilters" 
+                                                    v-if="searchKeyword || selectedTypeId">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                            <button class="btn btn-outline-secondary" type="button">
+                                                <i class="fas fa-search"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 text-right py-3">
                             <button class="btn btn-primary mr-3" @click="showAddWin">
+                                <i class="fas fa-plus"></i>
                                 新增
                             </button>
+                        </div>
+                        <div class="col-12" v-if="searchKeyword || selectedTypeId">
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle"></i>
+                                <span v-if="selectedTypeId && searchKeyword">
+                                    在類型 "<strong>{{getSelectedTypeName()}}</strong>" 中搜尋 "<strong>{{searchKeyword}}</strong>" 找到 <strong>{{filteredData.length}}</strong> 筆結果
+                                </span>
+                                <span v-else-if="selectedTypeId">
+                                    篩選類型 "<strong>{{getSelectedTypeName()}}</strong>" 找到 <strong>{{filteredData.length}}</strong> 筆結果
+                                </span>
+                                <span v-else-if="searchKeyword">
+                                    搜尋 "<strong>{{searchKeyword}}</strong>" 找到 <strong>{{filteredData.length}}</strong> 筆結果
+                                </span>
+                                <button class="btn btn-sm btn-outline-primary ml-2" @click="clearAllFilters">
+                                    <i class="fas fa-times"></i> 清除篩選
+                                </button>
+                            </div>
                         </div>
                         <div class="col-12">
                             <table class="table table-bordered table-hover">
@@ -331,7 +511,7 @@
                                             #
                                         </th>
                                         <th class="longText">
-                                            類別名稱
+                                            標籤名稱
                                         </th>
                                         <th class="longText">
                                             圖片
@@ -340,17 +520,36 @@
                                             所屬類別
                                         </th>
                                         <th class="longText">
-                                            Location
+                                            位置座標
                                         </th>
                                         <th class="longText">
-
+                                            操作
                                         </th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr v-if="ListData.length==0">
+                                    <tr v-if="filteredData.length==0 && !loading && (searchKeyword || selectedTypeId)">
+                                        <td colspan="100" class="text-center">
+                                            <i class="fas fa-search"></i> 
+                                            <span v-if="selectedTypeId && searchKeyword">
+                                                在類型 "{{getSelectedTypeName()}}" 中找不到符合 "{{searchKeyword}}" 的資料
+                                            </span>
+                                            <span v-else-if="selectedTypeId">
+                                                類型 "{{getSelectedTypeName()}}" 中沒有標籤
+                                            </span>
+                                            <span v-else-if="searchKeyword">
+                                                找不到符合 "{{searchKeyword}}" 的資料
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    <tr v-if="ListData.length==0 && !loading && !searchKeyword && !selectedTypeId">
                                         <td colspan="100" class="text-center">
                                             沒有資料
+                                        </td>
+                                    </tr>
+                                    <tr v-if="loading">
+                                        <td colspan="100" class="text-center">
+                                            <i class="fas fa-spinner fa-spin"></i> 載入中...
                                         </td>
                                     </tr>
                                     <tr v-for="(item,index) in paginatedOrders" class="btnHover">
@@ -358,21 +557,25 @@
                                             {{ (currentPage - 1) * pageSize + index + 1 }}
                                         </td>
                                         <td class="longText">
-                                            {{item.name}}
+                                            {{item.title}}
                                             <div class="btn btn-sm float-right" data-toggle="tooltip"
                                                 data-placement="top" title="查看店家列表" @click="viewInfo(index)">
                                                 <i class="fas fa-list"></i>
                                             </div>
                                         </td>
-                                        <th class="longText">
-                                            {{item.image}}
-                                        </th>
                                         <td class="longText">
-                                            {{item.locationx}}<br>
-                                            {{item.locationy}}
+                                            <img v-if="item.tagPicture" :src="item.tagPicture" 
+                                                 class="img-thumbnail" style="max-width: 50px; max-height: 50px;">
+                                            <span v-else class="text-muted">無圖片</span>
                                         </td>
                                         <td class="longText">
-                                            {{item.class}}
+                                            {{item.typeName || '-'}}
+                                        </td>
+                                        <td class="longText">
+                                            <span v-if="item.latitude && item.longitude">
+                                                {{item.latitude}}, {{item.longitude}}
+                                            </span>
+                                            <span v-else class="text-muted">無位置</span>
                                         </td>
                                         <td class="longText">
                                             <div class="btn-danger btn-sm btn float-right" data-toggle="tooltip"
@@ -437,103 +640,56 @@
                 //原始資料
                 userInfo: decryptObject(localStorage.userInfo),
 
-                ListData: [
-                    {
-                        "name": "標籤001",
-                        "id": '123456',
-                        image: '',
-                        class: 1,
-                        locationx: '',
-                        locationy: '',
-                        StoreList: [
-                            {
-                                storeName: '店家A',
-                                storeId: ''
-                            },
-                            {
-                                storeName: '店家B',
-                                storeId: ''
-                            },
-                            {
-                                storeName: '店家C',
-                                storeId: ''
-                            },
-                        ]
-                    },
-                    {
-                        "name": "標籤002",
-                        "id": '123456',
-                        image: '',
-                        class: 1,
-                        locationx: '',
-                        locationy: '',
-                        StoreList: [{
-                            storeName: '店家AA',
-                            storeId: ''
-                        },
-                        {
-                            storeName: '店家BB',
-                            storeId: ''
-                        },
-                        {
-                            storeName: '店家CC',
-                            storeId: ''
-                        },]
-                    },
-                    {
-                        "name": "標籤003",
-                        "id": '123456',
-                        image: '',
-                        class: 1,
-                        locationx: '',
-                        locationy: '',
-                        StoreList: [{
-                            storeName: '店家AAA',
-                            storeId: ''
-                        },
-                        {
-                            storeName: '店家BBB',
-                            storeId: ''
-                        },
-                        {
-                            storeName: '店家CCC',
-                            storeId: ''
-                        },]
-                    },
-                ],
+                ListData: [],
+                TagTypeList: [],
 
                 EditData: {
-                    name: '',
-                    userid: '',
-                    image: '',
-                    class: '',
-                    locationx: '',
-                    locationy: ''
+                    tagId: '',
+                    title: '',
+                    description: '',
+                    typeId: '',
+                    tagPicture: '',
+                    latitude: '',
+                    longitude: '',
+                    isActive: true,
+                    action: 0
                 },
 
                 DeletData: {
-                    name: '',
-                    userid: '',
-                    image: '',
-                    class: '',
-                    locationx: '',
-                    locationy: ''
+                    tagId: '',
+                    title: '',
                 },
 
                 AddData: {
-                    name: '',
-                    userid: '',
-                    image: '',
-                    class: '1',
-                    locationx: '',
-                    locationy: '',
+                    tagId: '',
+                    title: '',
+                    description: '',
+                    typeId: '',
+                    tagPicture: '',
+                    latitude: '',
+                    longitude: '',
+                    isActive: true,
                     action: 1
                 },
 
-                StoreList: [
+                StoreList: [],
+                loading: false,
+                
+                // 地址轉座標相關
+                addressInput: '',
+                geocoding: false,
+                geocodeResult: {
+                    success: false,
+                    inputAddress: '',
+                    matchedAddress: '',
+                    latitude: null,
+                    longitude: null
+                },
 
-                ],
-
+                // 搜尋和篩選相關
+                searchKeyword: '',
+                selectedTypeId: '',
+                filteredData: [],
 
                 currentPage: currentPage, // 當前頁面
                 pageSize: pageSize, // 每頁顯示筆數
@@ -542,31 +698,108 @@
                 cropper: null,         // Cropper 實例
                 croppedImage: null,    // 裁切結果
                 imageAction: '',       // 依你需求保留
-                LogoImageSize: { w: 300, h: 300 }, // 裁切輸出尺寸（可調）
+                LogoImageSize: { w: 600, h: 400 }, // 標籤圖片尺寸 3:2 比例
             }
         },
         computed: {
             // 計算總頁數
             totalPages() {
-                return Math.ceil(this.ListData.length / this.pageSize);
+                const dataToUse = (this.searchKeyword || this.selectedTypeId) ? this.filteredData : this.ListData;
+                return Math.ceil(dataToUse.length / this.pageSize);
             },
-            // 計算當前頁要顯示的訂單
+            // 計算當前頁要顯示的資料
             paginatedOrders() {
+                const dataToUse = (this.searchKeyword || this.selectedTypeId) ? this.filteredData : this.ListData;
                 const start = (this.currentPage - 1) * this.pageSize;
-                return this.ListData.slice(start, start + this.pageSize);
+                return dataToUse.slice(start, start + this.pageSize);
             }
         },
         mounted() {
             var vue = this
 
-            loadingOff()
+            this.loadTagTypes()
+            this.loadTags()
             $('[data-toggle="tooltip"]').tooltip();
-
-
         },
         watch: {
         },
         methods: {
+            // 載入標籤類型列表
+            async loadTagTypes() {
+                try {
+                    const token = await this.getAuthToken()
+                    
+                    const response = await fetch(host + '/api/TagType', {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': token,
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                    
+                    const data = await response.json()
+                    
+                    if (data.success || data.Success) {
+                        this.TagTypeList = data.data || data.Data || []
+                    } else {
+                        toastr.error(data.message || data.Message || '載入標籤類型失敗')
+                    }
+                } catch (error) {
+                    console.error('載入標籤類型錯誤:', error)
+                    toastr.error('載入標籤類型失敗')
+                }
+            },
+
+            // 載入標籤列表
+            async loadTags() {
+                this.loading = true
+                try {
+                    const token = await this.getAuthToken()
+                    
+                    const response = await fetch(host + '/api/Tags', {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': token,
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                    
+                    const data = await response.json()
+                    
+                    if (data.success || data.Success) {
+                        this.ListData = data.data || data.Data || []
+                        loadingOff()
+                    } else {
+                        toastr.error(data.message || data.Message || '載入標籤失敗')
+                    }
+                } catch (error) {
+                    console.error('載入標籤錯誤:', error)
+                    toastr.error('載入標籤失敗')
+                } finally {
+                    this.loading = false
+                }
+            },
+
+            // 取得驗證Token
+            async getAuthToken() {
+                return new Promise((resolve, reject) => {
+                    $.ajax({
+                        type: "POST",
+                        headers: {
+                            "Content-Type": "application/json; charset=utf-8",
+                        },
+                        url: host + "/api/auth/keylogin",
+                        data: JSON.stringify({ key: AutoKey }),
+                        success: function (res) {
+                            resolve("Bearer " + res.token)
+                        },
+                        error: function (xhr, status, error) {
+                            reject(error)
+                        }
+                    })
+                })
+            },
+
             // 處理圖片上傳
             handleFileUpload_logo(event) {
                 this.imageAction = 'logo'
@@ -611,7 +844,7 @@
 
                     const init = () => {
                         this.cropper = new Cropper(img, {
-                            aspectRatio: 1,
+                            aspectRatio: 3/2,
                             viewMode: 2,
                             autoCropArea: 1,
                             minCropBoxWidth: this.LogoImageSize.w,
@@ -658,7 +891,7 @@
 
                 if (type === "base") {
                     vue.croppedImage = canvas.toDataURL("image/png");
-                    vue.EditData.image = vue.croppedImage;
+                    vue.EditData.tagPicture = vue.croppedImage;
 
                     $("#cropModal").modal("hide");
                     $("#EditModal").modal("show");
@@ -690,7 +923,7 @@
                                     contentType: false,
                                     success: function (v) {
                                         if (v.success == true) {// console.log('上傳成功', uploadRes);
-                                            vue.EditData.image = v.url
+                                            vue.EditData.tagPicture = v.url
                                             toastr.success("圖片上傳成功");
                                             $("#cropModal").modal("hide");
                                             $("#EditModal").modal("show");
@@ -715,26 +948,352 @@
                 }
             },
 
-            viewInfo(i) {
-                this.StoreList = this.ListData[i].StoreList
+            // 儲存標籤（新增或編輯）
+            async saveTag() {
+                if (!this.EditData.title || this.EditData.title.trim() === '') {
+                    toastr.error('請輸入標籤名稱')
+                    return
+                }
+                
+                if (!this.EditData.typeId) {
+                    toastr.error('請選擇標籤類別')
+                    return
+                }
+                
+                this.loading = true
+                
+                try {
+                    const token = await this.getAuthToken()
+                    
+                    const formData = new FormData()
+                    formData.append('title', this.EditData.title.trim())
+                    formData.append('typeId', this.EditData.typeId)
+                    formData.append('description', this.EditData.description?.trim() || '')
+                    formData.append('isActive', this.EditData.isActive)
+                    
+                    if (this.EditData.latitude) {
+                        formData.append('latitude', this.EditData.latitude)
+                    }
+                    if (this.EditData.longitude) {
+                        formData.append('longitude', this.EditData.longitude)
+                    }
+                    
+                    // 如果有上傳新圖片
+                    if (this.croppedImage && typeof this.croppedImage === 'string') {
+                        // Base64 圖片轉 Blob
+                        const response = await fetch(this.croppedImage)
+                        const blob = await response.blob()
+                        formData.append('imageFile', blob, 'tag-image.png')
+                    } else if (this.EditData.tagPicture) {
+                        formData.append('tagPicture', this.EditData.tagPicture)
+                    }
+                    
+                    const isCreate = this.EditData.action === 1
+                    const url = isCreate 
+                        ? host + '/api/Tags/create'
+                        : host + `/api/Tags/${this.EditData.tagId}`
+                    
+                    const response = await fetch(url, {
+                        method: isCreate ? 'POST' : 'PUT',
+                        headers: {
+                            'Authorization': token
+                        },
+                        body: formData
+                    })
+                    
+                    const data = await response.json()
+                    
+                    if (data.success || data.Success) {
+                        toastr.success(isCreate ? '新增成功' : '更新成功')
+                        $('#EditModal').modal('hide')
+                        await this.loadTags()
+                    } else {
+                        toastr.error(data.message || data.Message || (isCreate ? '新增失敗' : '更新失敗'))
+                    }
+                } catch (error) {
+                    console.error('儲存標籤錯誤:', error)
+                    toastr.error('操作失敗')
+                } finally {
+                    this.loading = false
+                }
+            },
 
+            // 刪除標籤
+            async deleteTag() {
+                this.loading = true
+                
+                try {
+                    const token = await this.getAuthToken()
+                    
+                    const response = await fetch(host + `/api/Tags/${this.DeletData.tagId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Authorization': token,
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                    
+                    const data = await response.json()
+                    
+                    if (data.success || data.Success) {
+                        toastr.success('刪除成功')
+                        $('#DeleteModal').modal('hide')
+                        await this.loadTags()
+                    } else {
+                        toastr.error(data.message || data.Message || '刪除失敗')
+                    }
+                } catch (error) {
+                    console.error('刪除標籤錯誤:', error)
+                    toastr.error('刪除失敗')
+                } finally {
+                    this.loading = false
+                }
+            },
+
+            // 獲取標籤的關聯店鋪
+            async loadTagStores(tagId) {
+                try {
+                    const token = await this.getAuthToken()
+                    
+                    const response = await fetch(host + `/api/Tags/${tagId}`, {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': token,
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                    
+                    const data = await response.json()
+                    
+                    if ((data.success || data.Success) && (data.data || data.Data)) {
+                        const responseData = data.data || data.Data
+                        this.StoreList = responseData.stores || responseData.Stores || []
+                    } else {
+                        this.StoreList = []
+                    }
+                } catch (error) {
+                    console.error('載入店鋪列表錯誤:', error)
+                    this.StoreList = []
+                }
+            },
+
+            // 地址轉座標
+            async geocodeAddress() {
+                if (!this.addressInput || this.addressInput.trim() === '') {
+                    toastr.error('請輸入地址')
+                    return
+                }
+                
+                console.log('開始地址轉座標，地址:', this.addressInput)
+                this.geocoding = true
+                
+                try {
+                    const token = await this.getAuthToken()
+                    console.log('取得Token成功')
+                    
+                    const response = await fetch(host + '/api/Tags/geocode', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': token,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            address: this.addressInput.trim()
+                        })
+                    })
+                    
+                    const data = await response.json()
+                    console.log('API回應:', data)
+                    
+                    if ((data.success || data.Success) && (data.data || data.Data)) {
+                        // 成功轉換
+                        const responseData = data.data || data.Data
+                        this.geocodeResult = {
+                            success: true,
+                            inputAddress: responseData.inputAddress || responseData.InputAddress || this.addressInput,
+                            matchedAddress: responseData.matchedAddress || responseData.MatchedAddress || '',
+                            latitude: responseData.coordinates?.latitude || responseData.Coordinates?.Latitude || responseData.coordinates?.Latitude,
+                            longitude: responseData.coordinates?.longitude || responseData.Coordinates?.Longitude || responseData.coordinates?.Longitude
+                        }
+                        console.log('轉換成功:', this.geocodeResult)
+                    } else {
+                        // 轉換失敗
+                        this.geocodeResult = {
+                            success: false,
+                            inputAddress: this.addressInput,
+                            matchedAddress: '',
+                            latitude: null,
+                            longitude: null
+                        }
+                        console.log('轉換失敗:', this.geocodeResult)
+                    }
+                    
+                    console.log('準備顯示Modal')
+                    // 確保在下一個渲染週期顯示Modal
+                    this.$nextTick(() => {
+                        $('#coordinateModal').modal('show')
+                        console.log('Modal顯示指令已執行')
+                    })
+                    
+                } catch (error) {
+                    console.error('地址轉座標錯誤:', error)
+                    this.geocodeResult = {
+                        success: false,
+                        inputAddress: this.addressInput,
+                        matchedAddress: '',
+                        latitude: null,
+                        longitude: null
+                    }
+                    this.$nextTick(() => {
+                        $('#coordinateModal').modal('show')
+                    })
+                } finally {
+                    this.geocoding = false
+                }
+            },
+
+            // 測試Modal顯示（除錯用）
+            testModal() {
+                console.log('測試顯示座標Modal')
+                this.geocodeResult = {
+                    success: true,
+                    inputAddress: '測試地址',
+                    matchedAddress: '測試匹配地址',
+                    latitude: 25.0330,
+                    longitude: 121.5654
+                }
+                
+                this.$nextTick(() => {
+                    $('#coordinateModal').modal('show')
+                    console.log('測試Modal已觸發')
+                })
+            },
+
+            // 確認使用轉換的座標
+            confirmCoordinates() {
+                if (this.geocodeResult.success) {
+                    this.EditData.latitude = this.geocodeResult.latitude
+                    this.EditData.longitude = this.geocodeResult.longitude
+                    this.addressInput = '' // 清空地址輸入
+                    toastr.success('座標已設定')
+                    $('#coordinateModal').modal('hide')
+                }
+            },
+
+            // 搜尋功能
+            performSearch() {
+                this.applyFilters();
+                
+                // 如果搜尋typeName，自動切換到對應的類型
+                if (this.searchKeyword && this.searchKeyword.trim() !== '') {
+                    const keyword = this.searchKeyword.toLowerCase().trim();
+                    const matchedType = this.TagTypeList.find(type => 
+                        type.typeName && type.typeName.toLowerCase().includes(keyword)
+                    );
+                    
+                    if (matchedType && !this.selectedTypeId) {
+                        this.selectedTypeId = matchedType.typeId;
+                        toastr.info(`已自動切換到類型：${matchedType.typeName}`);
+                    }
+                }
+                
+                this.applyFilters();
+            },
+            
+            // 類型篩選
+            filterByType() {
+                this.applyFilters();
+            },
+            
+            // 統一的篩選邏輯
+            applyFilters() {
+                let data = [...this.ListData];
+                
+                // 先按類型篩選
+                if (this.selectedTypeId) {
+                    data = data.filter(item => item.typeId == this.selectedTypeId);
+                }
+                
+                // 再按關鍵字篩選
+                if (this.searchKeyword && this.searchKeyword.trim() !== '') {
+                    const keyword = this.searchKeyword.toLowerCase().trim();
+                    data = data.filter(item => {
+                        return (item.title && item.title.toLowerCase().includes(keyword)) ||
+                               (item.description && item.description.toLowerCase().includes(keyword));
+                    });
+                }
+                
+                this.filteredData = data;
+                this.currentPage = 1;
+            },
+            
+            // 清除所有篩選
+            clearAllFilters() {
+                this.searchKeyword = '';
+                this.selectedTypeId = '';
+                this.filteredData = [];
+                this.currentPage = 1;
+            },
+            
+            // 取得選中類型名稱
+            getSelectedTypeName() {
+                const selectedType = this.TagTypeList.find(type => type.typeId == this.selectedTypeId);
+                return selectedType ? selectedType.typeName : '';
+            },
+            
+            // 取得指定類型的標籤數量
+            getTypeTagCount(typeId) {
+                return this.ListData.filter(item => item.typeId == typeId).length;
+            },
+
+            async viewInfo(i) {
+                const dataToUse = (this.searchKeyword || this.selectedTypeId) ? this.filteredData : this.ListData;
+                const actualIndex = (this.currentPage - 1) * this.pageSize + i
+                const tag = dataToUse[actualIndex]
+                
+                await this.loadTagStores(tag.tagId)
                 $('#infoModal').modal('show')
             },
 
             showDeleteWin(i) {
-                this.DeletData = JSON.parse(JSON.stringify(this.ListData[i]))
-                console.log(this.DeletData);
-
+                const dataToUse = (this.searchKeyword || this.selectedTypeId) ? this.filteredData : this.ListData;
+                const actualIndex = (this.currentPage - 1) * this.pageSize + i
+                this.DeletData = JSON.parse(JSON.stringify(dataToUse[actualIndex]))
                 $('#DeleteModal').modal("show");
             },
 
             showEditWin(i) {
-                this.EditData = JSON.parse(JSON.stringify(this.ListData[i]))
+                const dataToUse = (this.searchKeyword || this.selectedTypeId) ? this.filteredData : this.ListData;
+                const actualIndex = (this.currentPage - 1) * this.pageSize + i
+                this.EditData = JSON.parse(JSON.stringify(dataToUse[actualIndex]))
                 this.EditData.action = 0
+                // 清空地址輸入
+                this.addressInput = ''
+                this.geocodeResult = {
+                    success: false,
+                    inputAddress: '',
+                    matchedAddress: '',
+                    latitude: null,
+                    longitude: null
+                }
                 $('#EditModal').modal("show");
             },
+            
             showAddWin() {
-                this.EditData = this.AddData
+                this.EditData = JSON.parse(JSON.stringify(this.AddData))
+                // 設定預設的第一個類別
+                if (this.TagTypeList.length > 0) {
+                    this.EditData.typeId = this.TagTypeList[0].typeId
+                }
+                // 清空地址輸入
+                this.addressInput = ''
+                this.geocodeResult = {
+                    success: false,
+                    inputAddress: '',
+                    matchedAddress: '',
+                    latitude: null,
+                    longitude: null
+                }
                 $('#EditModal').modal("show");
             },
 

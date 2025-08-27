@@ -191,7 +191,7 @@
               localStorage.userInfo = encryptObject(adminInfo)
               vue.allStore = v.stores
               localStorage.allStore = encryptObject(vue.allStore)
-
+              localStorage.token = v.encryptedId
               selectedStore(vue.allStore, 'index')
               // selectStore(v.stores[0].storeId)
             }

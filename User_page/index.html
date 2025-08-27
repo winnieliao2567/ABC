@@ -7,7 +7,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
     <title>立即訂餐｜共饗 SHARING 附近美食平台，免註冊支援 Line Pay，優惠多</title>
     <!-- description -->
     <link rel="icon" href="/favicon.ico" type="image/x-icon">
@@ -20,7 +21,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <meta property="og:url" content="https://sharings.com.tw" />
     <meta property="og:image" content="https://sharings.com.tw/img/logo.svg" /> <!-- replace with your preview image -->
 
-    
+
     <!-- jquery -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
@@ -60,7 +61,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
-    
+
     <!-- 防止手機端縮放跑版的JavaScript -->
     <script>
         // 防止雙擊縮放
@@ -72,20 +73,20 @@ scratch. This page gets rid of all links and provides the needed markup only.
             }
             lastTouchEnd = now;
         }, false);
-        
+
         // 防止手勢縮放
         document.addEventListener('gesturestart', function (e) {
             e.preventDefault();
         });
-        
+
         document.addEventListener('gesturechange', function (e) {
             e.preventDefault();
         });
-        
+
         document.addEventListener('gestureend', function (e) {
             e.preventDefault();
         });
-        
+
         // 確保viewport設定正確
         function setViewport() {
             const viewport = document.querySelector('meta[name=viewport]');
@@ -93,38 +94,38 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no');
             }
         }
-        
+
         // 頁面載入時設定
         setViewport();
-        
+
         // 防止視窗大小改變時的縮放問題
-        window.addEventListener('resize', function() {
+        window.addEventListener('resize', function () {
             setViewport();
         });
-        
+
         // 防止orientationchange時的縮放問題
-        window.addEventListener('orientationchange', function() {
+        window.addEventListener('orientationchange', function () {
             setTimeout(setViewport, 100);
         });
-        
+
         // 確保下拉選單置頂顯示
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             // 監聽所有下拉選單的顯示事件
-            $('.dropdown-toggle').on('click', function() {
+            $('.dropdown-toggle').on('click', function () {
                 const dropdownMenu = $(this).next('.dropdown-menu');
                 if (dropdownMenu.length) {
                     // 隱藏搜尋標籤下拉選單
-                    $('.food-tags-dropdown').removeClass('show').css('z-index', '9998');
-                    
+                    $('.food-tags-dropdown').removeClass('show').css('z-index', '9999');
+
                     // 確保下拉選單在最上層
                     dropdownMenu.css('z-index', '99999');
-                    
+
                     // 在手機端，調整位置確保完全可見
                     if (window.innerWidth <= 767) {
                         const rect = this.getBoundingClientRect();
                         const menuHeight = dropdownMenu.outerHeight();
                         const windowHeight = window.innerHeight;
-                        
+
                         // 如果下拉選單會超出螢幕底部，調整位置
                         if (rect.bottom + menuHeight > windowHeight) {
                             dropdownMenu.css({
@@ -139,17 +140,28 @@ scratch. This page gets rid of all links and provides the needed markup only.
                     }
                 }
             });
-            
+
             // 監聽搜尋框的焦點事件
-            $('.premium-input').on('focus', function() {
+            $('.premium-input').on('focus', function () {
                 // 隱藏所有使用者下拉選單
-                $('.dropdown-menu').removeClass('show').css('z-index', '9998');
-                
+                $('.dropdown-menu').removeClass('show').css('z-index', '9999');
+
                 const searchContainer = $(this).closest('.search-container');
                 const dropdown = searchContainer.find('.food-tags-dropdown');
                 if (dropdown.length) {
                     dropdown.css('z-index', '99999');
-                    
+
+                    // 在高解析度時確保懸浮效果
+                    if (window.innerWidth >= 1080) {
+                        dropdown.css({
+                            'position': 'absolute',
+                            'z-index': '99999',
+                            'top': '100%',
+                            'left': '0',
+                            'right': '0'
+                        });
+                    }
+
                     // 在手機端調整位置
                     if (window.innerWidth <= 767) {
                         dropdown.css({
@@ -163,20 +175,20 @@ scratch. This page gets rid of all links and provides the needed markup only.
                     }
                 }
             });
-            
+
             // 點擊其他地方時隱藏所有下拉選單
-            $(document).on('click', function(e) {
+            $(document).on('click', function (e) {
                 if (!$(e.target).closest('.dropdown, .search-container').length) {
-                    $('.dropdown-menu').removeClass('show').css('z-index', '9998');
-                    $('.food-tags-dropdown').removeClass('show').css('z-index', '9998');
+                    $('.dropdown-menu').removeClass('show').css('z-index', '9999');
+                    $('.food-tags-dropdown').removeClass('show').css('z-index', '9999');
                 }
             });
         });
     </script>
     <style>
-        /* === 高級字體系統 === */
+        /* === 字體系統 === */
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@100;300;400;500;700;900&family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
-        
+
         /* === 防止縮放跑版的全域設定 === */
         * {
             -webkit-text-size-adjust: 100%;
@@ -184,7 +196,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
             -ms-text-size-adjust: 100%;
             text-size-adjust: 100%;
         }
-        
+
         html {
             -webkit-text-size-adjust: 100%;
             -moz-text-size-adjust: 100%;
@@ -192,7 +204,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
             text-size-adjust: 100%;
             overflow-x: hidden;
         }
-        
+
         body {
             -webkit-text-size-adjust: 100%;
             -moz-text-size-adjust: 100%;
@@ -201,66 +213,101 @@ scratch. This page gets rid of all links and provides the needed markup only.
             overflow-x: hidden;
             min-width: 320px;
         }
-        
+
         /* 防止容器溢出 */
-        .container, .container-fluid {
+        .container,
+        .container-fluid {
             max-width: 100vw;
             overflow-x: hidden;
         }
-        
+
         /* 防止Swiper容器溢出 */
         .swiper-container {
             overflow: hidden !important;
         }
-        
+
+        /* 確保搜索區塊不受 swiper 容器影響 */
+        .search-container {
+            overflow: visible !important;
+        }
+
+        .food-tags-dropdown {
+            overflow: visible !important;
+        }
+
         /* 防止卡片容器溢出 */
-        .featured-store-card,
+        /* .featured-store-card,
         .tag-card,
-        .store-grid-card {
+        .store-grid-card { */
+        .featured-store-card,
+        .tag-card {
             max-width: 100%;
             box-sizing: border-box;
         }
-        
+
         /* 確保所有元素使用border-box */
-        *, *::before, *::after {
+        *,
+        *::before,
+        *::after {
             box-sizing: border-box;
         }
-        
+
         /* 防止文字溢出 */
         .card-title,
         .card-text,
-        h1, h2, h3, h4, h5, h6,
-        p, span, div {
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6,
+        p,
+        span,
+        div {
             word-wrap: break-word;
             overflow-wrap: break-word;
             hyphens: auto;
         }
-        
+
         /* 防止圖片溢出 */
         img {
             max-width: 100%;
             height: auto;
             display: block;
         }
-        
+
         /* 防止按鈕和輸入框溢出 */
-        button, input, textarea, select {
+        button,
+        input,
+        textarea,
+        select {
             max-width: 100%;
             box-sizing: border-box;
         }
-        
+
         /* 防止flex容器溢出 */
-        .d-flex, .flex-row, .flex-column {
+        .d-flex,
+        .flex-row,
+        .flex-column {
             min-width: 0;
             max-width: 100%;
         }
-        
+
         /* 防止grid容器溢出 */
-        .row, .col, [class*="col-"] {
+        .row,
+        .col,
+        [class*="col-"] {
             min-width: 0;
             max-width: 100%;
         }
-        
+
+        /* 確保搜索區塊容器不受限制 */
+        .content-header .container,
+        .content-header .row,
+        .content-header .col-auto {
+            overflow: visible !important;
+        }
+
         /* 全域文字省略處理 */
         .text-ellipsis {
             overflow: hidden;
@@ -270,7 +317,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
             max-width: 100%;
             box-sizing: border-box;
         }
-        
+
         /* 確保所有卡片標題都有省略處理 */
         .card-title {
             overflow: hidden !important;
@@ -280,74 +327,75 @@ scratch. This page gets rid of all links and provides the needed markup only.
             max-width: 100% !important;
             box-sizing: border-box !important;
         }
-        
+
         /* 確保所有卡片都有固定尺寸 */
-        .card, .card-body {
+        .card,
+        .card-body {
             box-sizing: border-box !important;
         }
-        
+
         /* 下拉選單和搜尋區塊置頂效果 */
         .dropdown-menu {
             z-index: 9998 !important;
             position: absolute !important;
         }
-        
+
         .dropdown-menu-lg {
             z-index: 9998 !important;
         }
-        
+
         /* 搜尋區塊置頂 */
         .search-container {
             position: relative;
-            z-index: 9998;
+            z-index: 9999;
         }
-        
+
         .food-tags-dropdown {
-            z-index: 9998 !important;
+            z-index: 9999 !important;
             position: absolute !important;
         }
-        
+
         .food-tags-dropdown.show {
-            z-index: 9998 !important;
+            z-index: 9999 !important;
         }
-        
+
         /* 確保導航欄置頂 */
         .navbar {
             z-index: 10000 !important;
         }
-        
+
         .navbar-nav {
             z-index: 9998 !important;
         }
-        
+
         /* 購物車和用戶選單置頂 */
         .navbar-nav .nav-item {
             position: relative;
             z-index: 9998;
         }
-        
+
         .navbar-nav .dropdown {
             z-index: 9998 !important;
         }
-        
+
         /* 確保下拉選單不被遮擋 */
         .dropdown-menu-right {
             right: 0 !important;
             left: auto !important;
             z-index: 9998 !important;
         }
-        
+
         /* 搜尋按鈕置頂 */
         .premium-search-btn,
         .advanced-search-btn {
             position: relative;
             z-index: 9998;
         }
-        
+
         /* 手機端置頂優化 */
         @media (max-width: 767.98px) {
             .dropdown-menu {
-                z-index: 9998 !important;
+                z-index: 9999 !important;
                 position: fixed !important;
                 top: 60px !important;
                 left: 10px !important;
@@ -355,9 +403,9 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 width: auto !important;
                 max-width: none !important;
             }
-            
+
             .food-tags-dropdown {
-                z-index: 9998 !important;
+                z-index: 9999 !important;
                 position: fixed !important;
                 top: 120px !important;
                 left: 10px !important;
@@ -365,42 +413,52 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 width: auto !important;
                 max-width: none !important;
             }
-            
+
             .search-container {
-                z-index: 9998 !important;
+                z-index: 9999 !important;
             }
         }
-        
+
         /* 確保在小螢幕上也能正常顯示 */
         @media (max-width: 575.98px) {
             .dropdown-menu-lg {
-                z-index: 9998 !important;
+                z-index: 9999 !important;
                 max-height: 80vh !important;
                 overflow-y: auto !important;
             }
-            
+
             .food-tags-dropdown.show {
-                z-index: 9998 !important;
+                z-index: 9999 !important;
                 max-height: 60vh !important;
                 overflow-y: auto !important;
             }
         }
-        
+
+
+
         :root {
             /* 字體家族 */
             --font-primary: 'Noto Sans TC', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             --font-english: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            
+
             /* 字體大小階層 */
-            --text-xs: 0.75rem;      /* 12px */
-            --text-sm: 0.875rem;     /* 14px */
-            --text-base: 1rem;       /* 16px */
-            --text-lg: 1.125rem;     /* 18px */
-            --text-xl: 1.25rem;      /* 20px */
-            --text-2xl: 1.5rem;      /* 24px */
-            --text-3xl: 1.875rem;    /* 30px */
-            --text-4xl: 2.25rem;     /* 36px */
-            
+            --text-xs: 0.75rem;
+            /* 12px */
+            --text-sm: 0.875rem;
+            /* 14px */
+            --text-base: 1rem;
+            /* 16px */
+            --text-lg: 1.125rem;
+            /* 18px */
+            --text-xl: 1.25rem;
+            /* 20px */
+            --text-2xl: 1.5rem;
+            /* 24px */
+            --text-3xl: 1.875rem;
+            /* 30px */
+            --text-4xl: 2.25rem;
+            /* 36px */
+
             /* 字重 */
             --font-light: 300;
             --font-normal: 400;
@@ -408,20 +466,20 @@ scratch. This page gets rid of all links and provides the needed markup only.
             --font-semibold: 600;
             --font-bold: 700;
             --font-black: 900;
-            
+
             /* 行高 */
             --leading-tight: 1.25;
             --leading-snug: 1.375;
             --leading-normal: 1.5;
             --leading-relaxed: 1.625;
             --leading-loose: 2;
-            
+
             /* 字間距 */
             --tracking-tight: -0.025em;
             --tracking-normal: 0;
             --tracking-wide: 0.025em;
             --tracking-wider: 0.05em;
-            
+
             /* 高級色彩系統 */
             --text-primary: #1a1a1a;
             --text-secondary: #4a4a4a;
@@ -445,7 +503,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
         }
 
         /* 標題層級系統 */
-        h1, .h1 {
+        h1,
+        .h1 {
             font-size: var(--text-4xl);
             font-weight: var(--font-bold);
             line-height: var(--leading-tight);
@@ -454,7 +513,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
             margin-bottom: 1.5rem;
         }
 
-        h2, .h2 {
+        h2,
+        .h2 {
             font-size: var(--text-3xl);
             font-weight: var(--font-semibold);
             line-height: var(--leading-tight);
@@ -463,7 +523,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
             margin-bottom: 1.25rem;
         }
 
-        h3, .h3 {
+        h3,
+        .h3 {
             font-size: var(--text-2xl);
             font-weight: var(--font-semibold);
             line-height: var(--leading-snug);
@@ -472,7 +533,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
             position: relative;
         }
 
-        h4, .h4 {
+        h4,
+        .h4 {
             font-size: var(--text-xl);
             font-weight: var(--font-medium);
             line-height: var(--leading-snug);
@@ -480,7 +542,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
             margin-bottom: 0.75rem;
         }
 
-        h5, .h5 {
+        h5,
+        .h5 {
             font-size: var(--text-lg);
             font-weight: var(--font-medium);
             line-height: var(--leading-snug);
@@ -488,7 +551,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
             margin-bottom: 0.5rem;
         }
 
-        h6, .h6 {
+        h6,
+        .h6 {
             font-size: var(--text-base);
             font-weight: var(--font-medium);
             line-height: var(--leading-snug);
@@ -497,7 +561,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
         }
 
         /* 段落和文字樣式 */
-        p, .text {
+        p,
+        .text {
             font-size: var(--text-base);
             line-height: var(--leading-relaxed);
             color: var(--text-secondary);
@@ -617,24 +682,22 @@ scratch. This page gets rid of all links and provides the needed markup only.
             padding: 0;
         }
 
-        .store-grid-card {
+        .store-grid-card,
+        .featured-store-card {
             display: flex;
             flex-direction: column;
             background: white;
             border-radius: 1rem;
             overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-            border: 1px solid rgba(0, 0, 0, 0.05);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1), 0 3px 6px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(0, 0, 0, 0.08);
             transition: all 0.2s ease;
             text-decoration: none;
             color: inherit;
-            margin-bottom: 0.5rem;
-            width: 100%;
-            /* 縮小15% */
-            transform: scale(0.85);
-            transform-origin: center;
-            min-height: 280px;
-            max-height: 280px;
+            margin-bottom: 1rem;
+            /* width: 100%;
+            min-height: 320px;
+            max-height: 360px; */
         }
 
         /* 桌面版店家卡片限制寬度 - 固定最大尺寸 */
@@ -644,69 +707,73 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 flex-direction: column;
                 align-items: center;
             }
-            
-            .store-grid-card {
-                max-width: 480px;
+
+            /* .store-grid-card {
+                max-width: 600px;
                 width: 100%;
-            }
+            } */
         }
 
         @media (min-width: 992px) {
-            .store-grid-card {
-                max-width: 520px;
-            }
+            /* .store-grid-card {
+                max-width: 720px;
+            } */
         }
 
         @media (min-width: 1200px) {
-            .store-grid-card {
-                max-width: 550px;
-            }
+            /* .store-grid-card {
+                max-width: 800px;
+            } */
         }
 
         /* 超大解析度限制 */
         @media (min-width: 1600px) {
-            .store-grid-card {
-                max-width: 580px;
-            }
+            /* .store-grid-card {
+                max-width: 900px;
+            } */
         }
 
         .store-grid-card:hover {
-            transform: scale(0.85) translateY(-2px);
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15), 0 6px 12px rgba(0, 0, 0, 0.1);
             text-decoration: none;
             color: inherit;
         }
 
         .store-grid-card .card-img-top {
             width: 100%;
-            aspect-ratio: 8/5;
+            aspect-ratio: 16/9;
             object-fit: cover;
             object-position: center;
             border-radius: 0;
         }
 
-        .store-grid-card .card-body {
+        .store-grid-card .card-body,
+        .featured-store-card .card-body {
             flex: 1;
             padding: 1rem;
             display: flex;
             flex-direction: column;
             gap: 0.5rem;
-            height: 120px;
-            justify-content: space-between;
+            min-height: 160px;
+            /* max-height: 200px; */
+            justify-content: flex-start;
         }
 
-        .store-grid-card .card-title {
+        .store-grid-card .card-title,
+        .featured-store-card .card-title {
             font-size: 1rem;
             font-weight: 600;
-            line-height: 1.3;
-            color: var(--text-primary);
+            line-height: 1.4;
+            color: #333 !important;
             margin: 0 0 0.5rem 0;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
-            padding: 0 0.25rem;
+            padding: 0;
             max-width: 100%;
             box-sizing: border-box;
+            display: block;
         }
 
         .store-grid-card .delivery-time {
@@ -732,6 +799,238 @@ scratch. This page gets rid of all links and provides the needed markup only.
         .store-grid-card .delivery-info .distance {
             font-weight: 500;
             color: var(--text-secondary);
+        }
+
+        .store-grid-card .store-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.375rem;
+            margin-top: auto;
+            text-align: left;
+        }
+
+        /* === 第二種店家卡片樣式（左圖右文佈局）=== */
+        .store-list-card {
+            display: flex;
+            flex-direction: row;
+            background: white;
+            border-radius: 1rem;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.06);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            transition: all 0.2s ease;
+            text-decoration: none;
+            color: inherit;
+            margin-bottom: 1rem;
+            width: 100%;
+            min-height: 140px;
+            max-height: 140px;
+        }
+
+        .store-list-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12), 0 4px 8px rgba(0, 0, 0, 0.08);
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .store-image-container {
+            position: relative;
+            width: 140px;
+            min-width: 140px;
+            max-width: 140px;
+            height: 140px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f8f9fa;
+            border-radius: 1rem 0 0 1rem;
+            overflow: hidden;
+        }
+
+        .store-logo {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+        }
+
+        .store-info {
+            flex: 1;
+            padding: 1rem 1.25rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            min-height: 140px;
+            text-align: left;
+            gap: 0.5rem;
+        }
+
+        .store-name {
+            font-size: 1.125rem;
+            font-weight: 600;
+            line-height: 1.3;
+            color: var(--text-primary);
+            margin: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            max-width: 100%;
+            box-sizing: border-box;
+        }
+
+        .store-list-card .delivery-time {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-accent);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            text-align: left;
+        }
+
+        .store-list-card .delivery-time i {
+            color: #fbbf24;
+            margin-right: 0.25rem;
+        }
+
+        .store-list-card .delivery-info {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            text-align: left;
+        }
+
+        .store-list-card .delivery-info .distance {
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .store-list-card .store-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.375rem;
+            margin-top: auto;
+            text-align: left;
+        }
+
+        .store-list-card .tag-badge {
+            font-size: 0.7rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 1rem;
+            background: #f8f9fa;
+            color: #6c757d;
+            border: 1px solid #e9ecef;
+        }
+
+        /* 第二種卡片的手機端響應式設計 */
+        @media (max-width: 767.98px) {
+            .store-list-card {
+                min-height: 120px;
+                max-height: 120px;
+                margin-bottom: 0.75rem;
+            }
+
+            .store-image-container {
+                width: 120px;
+                min-width: 120px;
+                max-width: 120px;
+                height: 120px;
+            }
+
+            .store-info {
+                padding: 0.75rem 1rem;
+                min-height: 120px;
+                gap: 0.375rem;
+            }
+
+            .store-name {
+                font-size: 1rem;
+            }
+
+            .store-list-card .delivery-time,
+            .store-list-card .delivery-info {
+                font-size: 0.8rem;
+            }
+
+            .store-list-card .tag-badge {
+                font-size: 0.65rem;
+                padding: 0.15rem 0.4rem;
+            }
+        }
+
+        @media (max-width: 575.98px) {
+            .store-list-card {
+                min-height: 150px;
+                max-height: 150px;
+                margin-bottom: 0.5rem;
+            }
+
+            .store-image-container {
+                width: 110px;
+                min-width: 110px;
+                max-width: 110px;
+                height: 110px;
+            }
+
+            .store-info {
+                padding: 0.625rem 0.875rem;
+                min-height: 110px;
+                gap: 0.3rem;
+            }
+
+            .store-name {
+                font-size: 0.95rem;
+            }
+
+            .store-list-card .delivery-time,
+            .store-list-card .delivery-info {
+                font-size: 0.75rem;
+            }
+
+            .store-list-card .tag-badge {
+                font-size: 0.6rem;
+                padding: 0.1rem 0.3rem;
+            }
+        }
+
+        @media (max-width: 479.98px) {
+            .store-list-card {
+                min-height: 100px;
+                max-height: 100px;
+            }
+
+            .store-image-container {
+                width: 100px;
+                min-width: 100px;
+                max-width: 100px;
+                height: 100px;
+            }
+
+            .store-info {
+                padding: 0.5rem 0.75rem;
+                min-height: 100px;
+                gap: 0.25rem;
+            }
+
+            .store-name {
+                font-size: 0.9rem;
+            }
+
+            .store-list-card .delivery-time,
+            .store-list-card .delivery-info {
+                font-size: 0.7rem;
+            }
+
+            .store-list-card .tag-badge {
+                font-size: 0.55rem;
+                padding: 0.05rem 0.25rem;
+            }
         }
 
         /* === 高級標籤樣式 === */
@@ -789,19 +1088,20 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 font-size: 0.7rem;
                 padding: 0.2rem 0.6rem;
             }
-            
+
             .store-tags {
                 gap: 0.375rem;
                 margin-top: 0.375rem;
             }
         }
 
+
         @media (min-width: 1200px) {
             .tag-badge {
                 font-size: 0.8rem;
                 padding: 0.3rem 0.8rem;
             }
-            
+
             .store-tags {
                 gap: 0.625rem;
                 margin-top: 0.625rem;
@@ -833,63 +1133,404 @@ scratch. This page gets rid of all links and provides the needed markup only.
             box-shadow: 0 2px 8px rgba(107, 114, 128, 0.3);
         }
 
-        /* === 猜你想看店家圖片（單店家方形卡片設計）=== */
+        /* 1) 置頂store */
         .fromstore-card {
             display: flex !important;
-            flex-direction: column !important;
+            flex-direction: row !important;
+            align-items: stretch;
             background: white;
             border-radius: 1rem;
             overflow: hidden;
-            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
-            border: 1px solid rgba(213, 156, 66, 0.1);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1), 0 3px 6px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(213, 156, 66, 0.2);
             transition: all 0.3s ease;
-            margin-bottom: 0.5rem;
+            margin-bottom: 1rem;
             text-decoration: none;
             color: inherit;
-            /* 縮小15% */
-            transform: scale(0.85);
+            min-height: 144px;
+            height: 144px;
+            max-height: 144px !important;
         }
-        
+
         .fromstore-card:hover {
-            transform: scale(0.85) translateY(-2px);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15), 0 4px 8px rgba(0, 0, 0, 0.1);
             text-decoration: none;
             color: inherit;
         }
-        
+
+        /* 2) 圖片固定尺寸，不擠壓文字區 */
         .fromstore-card .card-img-top {
-            width: 100% !important;
-            aspect-ratio: 8/5 !important;
-            object-fit: cover !important;
-            object-position: center !important;
-            border-radius: 0 !important;
-            display: block !important;
-            padding: 0 !important;
-            background: none !important;
+            width: 144px !important;
+            min-width: 144px !important;
+            max-width: 144px !important;
+            height: 144px !important;
+            aspect-ratio: 1/1;
+            /* 正方形縮放更穩定 */
+            object-fit: cover;
+            object-position: center;
+            flex: 0 0 auto;
+            border-radius: 12px 0 0 12px;
+            display: block;
+            padding: 0;
+            background: #f8f9fa;
         }
-        
+
+        /* 3) 文字區塊固定高度 */
         .fromstore-card .card-body {
             flex: 1;
-            padding: 1rem;
+            min-height: 144px;
+            height: 144px;
+            padding: 0.75rem 1rem;
             display: flex;
             flex-direction: column;
-            gap: 0.5rem;
+            justify-content: flex-start;
+            text-align: left;
+            gap: .4rem;
+            overflow: visible;
         }
-        
+
+        /* 4) 店名允許多行顯示（覆蓋全域強制 nowrap） */
         .fromstore-card .card-title {
-            font-size: var(--text-lg);
-            font-weight: var(--font-bold);
-            color: var(--text-primary);
-            margin-bottom: 0.25rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #333 !important;
+            white-space: normal !important;
+            /* 覆蓋原本的 nowrap !important */
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 2;
+            /* 最多 2 行，避免過長 */
+            line-clamp: 2;
+            overflow: hidden;
+            line-height: 1.35;
+            margin: 0 0 .25rem 0;
+            padding: 0;
+            max-width: 100%;
+            box-sizing: border-box;
+            position: relative;
+            z-index: 2;
         }
-        
+
+        /* 5) 運送時間/距離排版 */
         .fromstore-card .delivery-time,
         .fromstore-card .delivery-info {
-            font-size: var(--text-sm);
+            font-size: .9rem;
             color: var(--text-muted);
+            margin: 0;
             display: flex;
             align-items: center;
-            gap: 0.25rem;
+            gap: .5rem;
+            white-space: normal;
+            word-wrap: break-word;
+        }
+
+        /* 6) 標籤可換行 - 與所有店家一致 */
+        .fromstore-card .store-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.375rem;
+            margin-top: auto;
+            text-align: left;
+            white-space: normal;
+            word-wrap: break-word;
+        }
+
+        .fromstore-card .tag-badge {
+            background: #f8f9fa;
+            color: #6c757d;
+            padding: 0.25rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            border: 1px solid #e9ecef;
+        }
+
+        /* 7) 手機端字體大小調整 */
+        @media (max-width:767.98px) {
+            .fromstore-card .card-title {
+                font-size: 1rem;
+            }
+
+            .fromstore-card .delivery-time,
+            .fromstore-card .delivery-info {
+                font-size: .8rem;
+            }
+
+            .fromstore-card .tag-badge {
+                font-size: .65rem;
+                padding: .15rem .4rem;
+            }
+        }
+
+        /* 8) 超小螢幕字體調整 */
+        @media (max-width:575.98px) {
+            .fromstore-card .card-title {
+                font-size: .95rem;
+            }
+
+            .fromstore-card .delivery-time,
+            .fromstore-card .delivery-info {
+                font-size: .75rem;
+            }
+
+            .fromstore-card .tag-badge {
+                font-size: .6rem;
+                padding: .1rem .3rem;
+            }
+        }
+
+        /* 9) 中等螢幕字體調整 */
+        @media (min-width:768px) and (max-width:991.98px) {
+            .fromstore-card .card-title {
+                font-size: 1.2rem;
+            }
+        }
+
+        /* 10) 大螢幕字體調整 */
+        @media (min-width:992px) {
+            .fromstore-card .card-title {
+                font-size: 1.25rem;
+            }
+        }
+
+        /* 11) 高解析度螢幕縮放優化 (≥1000px) */
+        @media (min-width: 1080px) {
+
+            /* 全域縮放 10% */
+            body,
+            .container,
+            .card-body,
+            h6,
+            p,
+            span {
+                font-size: 90%;
+            }
+
+            /* 卡片內容縮放 */
+            .card-body {
+                padding: 0.9em;
+                /* min-height: 220px; */
+            }
+
+            /* 店家資訊縮放 */
+            .store-name,
+            .distance,
+            .waiting-time,
+            .tags span {
+                font-size: 90%;
+            }
+
+            /* 區塊間距縮放 - 更緊湊 */
+            .container-section,
+            .row {
+                padding: 0.7em;
+                margin: 0.7em auto;
+            }
+
+            /* 修正麵包屑滾動問題 */
+            .breadcrumb {
+                font-size: 0.675rem !important;
+                /* 0.75rem * 0.9 */
+                overflow: visible !important;
+                white-space: nowrap;
+            }
+
+            /* fromstore-card 高解析度字體調整 */
+            .fromstore-card .card-title {
+                font-size: 1.0125rem;
+                /* 1.125rem * 0.9 */
+            }
+
+            .fromstore-card .delivery-time,
+            .fromstore-card .delivery-info {
+                font-size: 0.81rem;
+                /* 0.9rem * 0.9 */
+            }
+
+            .fromstore-card .card-title {
+                font-size: 1.0125rem;
+                /* 1.125rem * 0.9 */
+            }
+
+            .fromstore-card .delivery-time,
+            .fromstore-card .delivery-info {
+                font-size: 0.81rem;
+                /* 0.9rem * 0.9 */
+            }
+
+            .fromstore-card .tag-badge {
+                font-size: 0.63rem;
+                /* 0.7rem * 0.9 */
+                padding: 0.18rem 0.45rem;
+                /* 0.2rem * 0.9, 0.5rem * 0.9 */
+            }
+        }
+
+        /* 12) 滾動按鈕置中優化 */
+        .swiper-container {
+            position: relative;
+        }
+
+        .custom-prev-btn,
+        .custom-next-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.6);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10;
+            transition: all 0.3s ease;
+        }
+
+        .custom-prev-btn:hover,
+        .custom-next-btn:hover {
+            background: rgba(0, 0, 0, 0.8);
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .custom-prev-btn {
+            left: 10px;
+        }
+
+        .custom-next-btn {
+            right: 10px;
+        }
+
+        @media (min-width: 1000px) {
+
+            .custom-prev-btn,
+            .custom-next-btn {
+                width: 36px;
+                /* 40px * 0.9 */
+                height: 36px;
+                /* 40px * 0.9 */
+                font-size: 0.9em;
+            }
+        }
+
+        /* 13) CSS Grid 佈局優化 */
+        .store-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            overflow-x: auto;
+        }
+
+        @media (min-width: 1000px) {
+            .store-grid {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 9px;
+            }
+        }
+
+        @media (min-width: 1080px) {
+            .store-grid {
+                grid-template-columns: repeat(5, 1fr);
+                /* 最多 5 家 */
+                gap: 9px;
+            }
+        }
+
+        /* 隱藏 Bootstrap cols 在 grid 模式 */
+        .store-grid .col {
+            width: auto;
+        }
+
+        /* 高解析度優化 stores-grid */
+        @media (min-width: 1000px) {
+            .stores-grid {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 9px;
+            }
+        }
+
+        @media (min-width: 1080px) {
+            .stores-grid {
+                grid-template-columns: repeat(5, 1fr);
+                /* 最多 5 家 */
+                gap: 9px;
+            }
+
+            /* 高解析度優化 featured-store-card */
+            .featured-store-card {
+                width: 216px;
+                /* 240px * 0.9 */
+                min-width: 216px;
+                max-width: 216px;
+                /* min-height: 252px; */
+                /* 280px * 0.9 */
+            }
+
+            .featured-store-card .card-img-top {
+                height: 144px;
+                /* 160px * 0.9 */
+            }
+
+            .featured-store-card .card-body {
+                padding: 0.9rem;
+                /* 1rem * 0.9 */
+                /* height: 144px; */
+                /* 160px * 0.9 */
+            }
+
+            .featured-store-card .card-title {
+                font-size: 0.9rem;
+                /* 1rem * 0.9 */
+            }
+
+            .featured-store-card .delivery-time,
+            .featured-store-card .delivery-info {
+                font-size: 0.7875rem;
+                /* 0.875rem * 0.9 */
+            }
+
+            .featured-store-card .tag-badge {
+                font-size: 0.675rem;
+                /* 0.75rem * 0.9 */
+                padding: 0.225rem 0.45rem;
+                /* 0.25rem * 0.9, 0.5rem * 0.9 */
+            }
+
+            /* 高解析度搜索區塊懸浮優化 */
+            .search-container {
+                z-index: 9999 !important;
+                position: relative !important;
+                overflow: visible !important;
+            }
+
+            .food-tags-dropdown {
+                z-index: 9999 !important;
+                position: absolute !important;
+                top: 100% !important;
+                left: 0 !important;
+                right: 0 !important;
+                background: white !important;
+                border-radius: 1rem !important;
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12) !important;
+                border: 1px solid rgba(213, 156, 66, 0.2) !important;
+                padding: 1rem !important;
+                margin-top: 0.5rem !important;
+                opacity: 0 !important;
+                visibility: hidden !important;
+                transform: translateY(-10px) !important;
+                transition: all 0.3s ease !important;
+                overflow: visible !important;
+            }
+
+            .food-tags-dropdown.show {
+                z-index: 9999 !important;
+                opacity: 1 !important;
+                visibility: visible !important;
+                transform: translateY(0) !important;
+            }
         }
 
         /* === 標籤圖片樣式 === */
@@ -903,6 +1544,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
             justify-content: center;
             background: rgba(255, 255, 255, 0.95);
             border: 1px solid rgba(213, 156, 66, 0.15);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06), 0 1px 4px rgba(0, 0, 0, 0.04);
             transition: all 0.3s ease;
             min-height: 60px;
             max-height: 80px;
@@ -911,10 +1553,10 @@ scratch. This page gets rid of all links and provides the needed markup only.
             max-width: 200px;
             flex-shrink: 0;
         }
-        
+
         .tag-card:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12), 0 3px 8px rgba(0, 0, 0, 0.08);
         }
 
         .tag-card .card-img-top {
@@ -931,7 +1573,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
         .tag-card .card-img-overlay {
             position: relative;
             z-index: 3;
-            background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.4) 50%, transparent 100%);
+            background: linear-gradient(to top, rgb(0, 0, 0) 0%, rgba(0, 0, 0, 0.4) 50%, transparent 100%);
             color: white;
             padding: 1rem;
             width: 100%;
@@ -941,7 +1583,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
             justify-content: flex-end;
             min-height: 60px;
         }
-        
+
         /* 沒有圖片時的純文字標籤樣式 - 統一平台顏色 */
         .tag-card.no-image {
             border: 2px solid rgba(213, 156, 66, 0.2);
@@ -954,7 +1596,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
             background: linear-gradient(135deg, #fef3e2 0%, #fbbf24 100%);
             border-color: rgba(251, 191, 36, 0.3);
         }
-        
+
         .tag-card.no-image .card-img-overlay {
             background: none;
             z-index: 2;
@@ -963,7 +1605,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
             min-height: 100%;
             padding: 0.5rem 1rem;
         }
-        
+
         .tag-card.no-image .card-title {
             color: white !important;
             text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
@@ -975,7 +1617,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
             text-overflow: ellipsis;
             max-width: 100%;
         }
-        
+
         .tag-card .card-title {
             margin: 0;
             font-size: var(--text-base);
@@ -1004,6 +1646,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
             transition: all 0.2s ease;
             background: rgba(255, 255, 255, 0.9);
             border: 1px solid rgba(0, 0, 0, 0.08);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.03);
             min-height: 75px;
             max-height: 75px;
             width: 75px;
@@ -1017,7 +1660,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
             transform: translateY(-2px);
             text-decoration: none;
             background: rgba(255, 255, 255, 1);
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1), 0 3px 6px rgba(0, 0, 0, 0.06);
             border-color: rgba(213, 156, 66, 0.2);
         }
 
@@ -1050,18 +1693,39 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
         /* === RWD 響應式調整 === */
         @media (max-width: 575.98px) {
+
             /* 超小屏幕 - 更寬鬆的設計 */
             .container {
                 padding-left: 1rem;
                 padding-right: 1rem;
             }
-            
+
             .store-card .card-img-top {
                 height: 120px;
             }
-            
+
+            .fromstore-card {
+                min-height: 144px;
+                max-height: 144px;
+            }
+
             .fromstore-card .card-img-top {
-                aspect-ratio: 8/5;
+                width: 144px !important;
+                min-width: 144px !important;
+                max-width: 144px !important;
+                height: 144px !important;
+            }
+
+            .fromstore-card .card-body {
+                min-height: 144px;
+                padding: 0.875rem 1rem;
+                gap: 0.5rem;
+            }
+
+            .fromstore-card .card-title {
+                font-size: 1.125rem;
+                margin: 0 0 0.5rem 0;
+                max-height: 3.375rem;
             }
 
             .tag-card {
@@ -1099,15 +1763,15 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 font-size: 0.65rem;
                 line-height: 1;
             }
-            
+
             .section-title h3 {
                 font-size: 1.25rem;
             }
-            
+
             .section-title h3 i {
                 font-size: 1.25rem !important;
             }
-            
+
             .section-icon {
                 width: 32px;
                 height: 32px;
@@ -1117,7 +1781,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
             .stores-grid {
                 display: block;
             }
-            
+
             .store-grid-card {
                 margin-bottom: 1rem;
                 width: 100%;
@@ -1125,14 +1789,13 @@ scratch. This page gets rid of all links and provides the needed markup only.
         }
 
         @media (min-width: 576px) and (max-width: 767.98px) {
+
             /* 小屏幕 - 平衡設計 */
             .store-card .card-img-top {
                 height: 140px;
             }
 
-            .fromstore-card .card-img-top {
-                aspect-ratio: 8/5;
-            }
+
 
             .tag-card {
                 height: 70px;
@@ -1154,7 +1817,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 height: 40px;
                 margin-bottom: 0.3rem;
             }
-            
+
             .foodtype-item .card-title {
                 font-size: 0.7rem;
             }
@@ -1163,7 +1826,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
             .stores-grid {
                 display: block;
             }
-            
+
             .store-grid-card {
                 margin-bottom: 1rem;
                 width: 100%;
@@ -1171,14 +1834,18 @@ scratch. This page gets rid of all links and provides the needed markup only.
         }
 
         @media (min-width: 768px) and (max-width: 991.98px) {
+
             /* 中等屏幕 - 舒適設計 */
             .store-card .card-img-top {
                 height: 160px;
             }
 
-            .fromstore-card .card-img-top {
-                aspect-ratio: 8/5;
+            .fromstore-card {
+                min-height: 144px;
+                max-height: 144px;
             }
+
+
 
             .tag-card {
                 height: 75px;
@@ -1200,7 +1867,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 height: 44px;
                 margin-bottom: 0.375rem;
             }
-            
+
             .foodtype-item .card-title {
                 font-size: 0.75rem;
             }
@@ -1209,7 +1876,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
             .stores-grid {
                 display: block;
             }
-            
+
             .store-grid-card {
                 margin-bottom: 1rem;
                 width: 100%;
@@ -1217,14 +1884,13 @@ scratch. This page gets rid of all links and provides the needed markup only.
         }
 
         @media (min-width: 992px) {
+
             /* 大屏幕 - 最佳視覺效果 */
             .store-card .card-img-top {
                 height: 200px;
             }
 
-            .fromstore-card .card-img-top {
-                aspect-ratio: 8/5;
-            }
+
 
             .tag-card {
                 height: 80px;
@@ -1246,7 +1912,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 height: 48px;
                 margin-bottom: 0.375rem;
             }
-            
+
             .foodtype-item .card-title {
                 font-size: 0.8rem;
             }
@@ -1255,7 +1921,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
             .stores-grid {
                 display: block;
             }
-            
+
             .store-grid-card {
                 margin-bottom: 1.25rem;
                 width: 100%;
@@ -1266,6 +1932,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
         .swiper-slide {
             height: auto;
             display: flex;
+            width: auto !important;
+            flex-shrink: 0;
         }
 
         .swiper-slide .card,
@@ -1273,6 +1941,47 @@ scratch. This page gets rid of all links and provides the needed markup only.
         .swiper-slide .foodtype-item {
             width: 100%;
             margin-bottom: 0;
+        }
+
+        /* === Swiper 容器優化 === */
+        .swiper-container,
+        .swiper-container-foodtype,
+        .swiper-container-featured,
+        .swiper-container-hidden1,
+        .swiper-container-hidden2,
+        .swiper-container-hidden3 {
+            overflow: hidden !important;
+            padding: 0 !important;
+            position: relative;
+            z-index: 1;
+        }
+
+        .swiper-wrapper {
+            align-items: stretch;
+            padding: 2px;
+        }
+
+        /* === 針對各類型卡片設定固定寬度 === */
+        .swiper-container .swiper-slide .card {
+            min-width: 280px;
+            width: 280px;
+        }
+
+        .swiper-container-foodtype .swiper-slide .foodtype-item {
+            min-width: 120px;
+            width: 120px;
+        }
+
+        .swiper-container-featured .swiper-slide .featured-store-card {
+            min-width: 300px;
+            width: 300px;
+        }
+
+        .swiper-container-hidden1 .swiper-slide .card,
+        .swiper-container-hidden2 .swiper-slide .card,
+        .swiper-container-hidden3 .swiper-slide .card {
+            min-width: 250px;
+            width: 250px;
         }
 
         /* === 優化文字顯示 === */
@@ -1287,7 +1996,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
             white-space: nowrap;
         }
 
-        .store-card .delivery-time {
+        .store-card .delivery-time,
+        .featured-store-card .delivery-time {
             font-size: 0.875rem;
             font-weight: 500;
             color: #666;
@@ -1347,7 +2057,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
             font-size: var(--text-xl);
             font-weight: var(--font-bold);
             color: var(--text-white);
-            text-shadow: 0 2px 8px rgba(0,0,0,0.6);
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
             margin: 0;
             line-height: var(--leading-tight);
             letter-spacing: var(--tracking-wide);
@@ -1406,221 +2116,266 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
         .distance-text {
 
-        /* 精選餐廳橫移卡片樣式 */
-        .featured-store-card {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15), 0 4px 16px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            color: inherit;
-            display: block;
-            width: 280px;
-            margin-right: 1rem;
-            flex-shrink: 0;
-            min-height: 320px;
-            max-height: 320px;
-            border: 1px solid rgba(0, 0, 0, 0.05);
-        }
-
-        .featured-store-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2), 0 8px 24px rgba(0, 0, 0, 0.15);
-        }
-
-        .featured-store-card .card-img-top {
-            width: 100%;
-            height: 160px;
-            object-fit: cover;
-        }
-
-        .featured-store-card .card-body {
-            padding: 1rem;
-            height: 160px;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-start;
-            text-align: left;
-        }
-
-        .featured-store-card .card-title {
-            font-size: 1rem;
-            font-weight: 600;
-            margin-bottom: 0.75rem;
-            color: #333;
-            line-height: 1.3;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            padding: 0;
-            max-width: 100%;
-            box-sizing: border-box;
-            text-align: left;
-        }
-
-        .featured-store-card .delivery-time {
-            font-size: 0.875rem;
-            color: #666;
-            margin-bottom: 0.5rem;
-            display: flex;
-            align-items: center;
-            text-align: left;
-        }
-
-        .featured-store-card .delivery-time i {
-            margin-right: 0.25rem;
-            color: #fbbf24;
-        }
-
-        .featured-store-card .delivery-info {
-            font-size: 0.875rem;
-            color: #666;
-            margin-bottom: 0.75rem;
-            text-align: left;
-        }
-
-        .featured-store-card .store-tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.25rem;
-            margin-top: auto;
-        }
-
-        .featured-store-card .tag-badge {
-            background: #f8f9fa;
-            color: #6c757d;
-            padding: 0.25rem 0.5rem;
-            border-radius: 12px;
-            font-size: 0.75rem;
-            border: 1px solid #e9ecef;
-        }
-
-        .featured-store-card .more-tags {
-            background: #e9ecef;
-            color: #6c757d;
-        }
-
-        /* 手機端響應式設計 - 固定尺寸避免縮放問題 */
-        @media (max-width: 767.98px) {
+            /* 精選餐廳卡片樣式 - 與所有店家一致 */
             .featured-store-card {
-                width: 260px;
-                min-width: 260px;
-                max-width: 260px;
-                margin-right: 0.75rem;
-                min-height: 300px;
-                max-height: 300px;
-            }
-
-            .featured-store-card .card-img-top {
-                height: 140px;
-                min-height: 140px;
-                max-height: 140px;
-            }
-
-            .featured-store-card .card-body {
-                padding: 0.75rem;
-                height: 160px;
-                min-height: 160px;
-                max-height: 160px;
-            }
-
-            .featured-store-card .card-title {
-                font-size: 0.9rem;
-                margin-bottom: 0.4rem;
-                padding: 0 0.2rem;
-            }
-
-            .featured-store-card .delivery-time,
-            .featured-store-card .delivery-info {
-                font-size: 0.8rem;
-            }
-
-            .featured-store-card .tag-badge {
-                font-size: 0.7rem;
-                padding: 0.2rem 0.4rem;
-            }
-        }
-
-        @media (max-width: 575.98px) {
-            .featured-store-card {
+                display: flex;
+                flex-direction: column;
+                background: white;
+                border-radius: 1rem;
+                overflow: hidden;
+                box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1), 0 3px 6px rgba(0, 0, 0, 0.08);
+                border: 1px solid rgba(0, 0, 0, 0.08);
+                transition: all 0.2s ease;
+                text-decoration: none;
+                color: inherit;
                 width: 240px;
                 min-width: 240px;
                 max-width: 240px;
-                margin-right: 0.5rem;
+                margin-right: 1rem;
+                flex-shrink: 0;
                 min-height: 280px;
-                max-height: 280px;
+                max-height: 320px;
+            }
+
+            .featured-store-card:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15), 0 6px 12px rgba(0, 0, 0, 0.1);
+                text-decoration: none;
+                color: inherit;
             }
 
             .featured-store-card .card-img-top {
-                height: 120px;
+                width: 100%;
+                aspect-ratio: 16/9;
+                object-fit: cover;
+                object-position: center;
+                border-radius: 0;
+            }
+
+            .featured-store-card .card-body {
+                flex: 1;
+                padding: 0.75rem;
+                display: flex;
+                flex-direction: column;
+                gap: 0.3rem;
                 min-height: 120px;
-                max-height: 120px;
-            }
-
-            .featured-store-card .card-body {
-                padding: 0.6rem;
-                height: 160px;
-                min-height: 160px;
-                max-height: 160px;
+                max-height: 140px;
+                justify-content: flex-start;
             }
 
             .featured-store-card .card-title {
-                font-size: 0.85rem;
-                margin-bottom: 0.3rem;
-                padding: 0 0.15rem;
+                font-size: 0.95rem;
+                font-weight: 600;
+                line-height: 1.3;
+                color: #333 !important;
+                margin: 0 0 0.3rem 0;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: normal;
+                word-wrap: break-word;
+                padding: 0;
+                max-width: 100%;
+                box-sizing: border-box;
+                display: block;
             }
 
-            .featured-store-card .delivery-time,
-            .featured-store-card .delivery-info {
-                font-size: 0.75rem;
-            }
-
-            .featured-store-card .tag-badge {
-                font-size: 0.65rem;
-                padding: 0.15rem 0.3rem;
-            }
-        }
-
-        @media (max-width: 479.98px) {
-            .featured-store-card {
-                width: 220px;
-                min-width: 220px;
-                max-width: 220px;
-                margin-right: 0.4rem;
-                min-height: 260px;
-                max-height: 260px;
-            }
-
-            .featured-store-card .card-img-top {
-                height: 110px;
-                min-height: 110px;
-                max-height: 110px;
-            }
-
-            .featured-store-card .card-body {
-                padding: 0.5rem;
-                height: 150px;
-                min-height: 150px;
-                max-height: 150px;
-            }
-
-            .featured-store-card .card-title {
+            /* .featured-store-card .delivery-time {
                 font-size: 0.8rem;
-                margin-bottom: 0.25rem;
-                padding: 0 0.1rem;
-            }
+                font-weight: 500;
+                color: var(--text-accent);
+                margin: 0 0 0.15rem 0;
+                display: flex;
+                align-items: center;
+                gap: 0.25rem;
+                white-space: normal;
+                word-wrap: break-word;
+            } */
 
-            .featured-store-card .delivery-time,
             .featured-store-card .delivery-info {
                 font-size: 0.7rem;
+                color: var(--text-muted);
+                margin: 0;
+                display: flex;
+                align-items: center;
+                flex-wrap: wrap;
+                gap: 0.4rem;
+                white-space: normal;
+                word-wrap: break-word;
+            }
+
+            .featured-store-card .store-tags {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 0.3rem;
+                margin-top: auto;
+                text-align: left;
             }
 
             .featured-store-card .tag-badge {
-                font-size: 0.6rem;
-                padding: 0.1rem 0.25rem;
+                background: #f8f9fa;
+                color: #6c757d;
+                padding: 0.2rem 0.4rem;
+                border-radius: 10px;
+                font-size: 0.7rem;
+                border: 1px solid #e9ecef;
             }
-        }
+
+            .featured-store-card .more-tags {
+                background: #e9ecef;
+                color: #6c757d;
+            }
+
+            /* 手機端響應式設計 - 固定尺寸 */
+            @media (max-width: 767.98px) {
+                /* .featured-store-card {
+                    width: 220px;
+                    min-width: 220px;
+                    max-width: 220px;
+                    margin-right: 0.75rem;
+                    min-height: 260px;
+                    max-height: 280px;
+                }
+
+                .featured-store-card .card-img-top {
+                    height: 140px;
+                    min-height: 140px;
+                    max-height: 140px;
+                }
+
+                .featured-store-card .card-body {
+                    padding: 0.75rem;
+                    height: 160px;
+                    min-height: 160px;
+                    max-height: 160px;
+                    justify-content: flex-start;
+                    text-align: left;
+                } */
+
+                /* .featured-store-card .card-title {
+                    font-size: 0.9rem;
+                    margin-bottom: 0.4rem;
+                    padding: 0 0.2rem;
+                    text-align: left;
+                } */
+
+                /* .featured-store-card .delivery-time {
+                    font-size: 0.8rem;
+                    margin-bottom: 0.4rem;
+                    text-align: left;
+                } */
+
+                /* .featured-store-card .delivery-info {
+                    font-size: 0.8rem;
+                    margin-bottom: 0.4rem;
+                    text-align: left;
+                } */
+
+                /* .featured-store-card .tag-badge {
+                    font-size: 0.7rem;
+                    padding: 0.2rem 0.4rem;
+                } */
+            }
+
+            @media (max-width: 575.98px) {
+                .featured-store-card {
+                    width: 200px;
+                    min-width: 200px;
+                    max-width: 200px;
+                    margin-right: 0.5rem;
+                    min-height: 240px;
+                    max-height: 260px;
+                }
+
+                .featured-store-card .card-img-top {
+                    height: 120px;
+                    min-height: 120px;
+                    max-height: 120px;
+                }
+
+                .featured-store-card .card-body {
+                    padding: 0.6rem;
+                    height: 160px;
+                    min-height: 160px;
+                    max-height: 160px;
+                    justify-content: flex-start;
+                    text-align: left;
+                }
+
+                .featured-store-card .card-title {
+                    font-size: 0.85rem;
+                    margin-bottom: 0.3rem;
+                    padding: 0 0.15rem;
+                    text-align: left;
+                }
+
+                /* .featured-store-card .delivery-time {
+                    font-size: 0.75rem;
+                    margin-bottom: 0.3rem;
+                    text-align: left;
+                } */
+
+                .featured-store-card .delivery-info {
+                    font-size: 0.75rem;
+                    margin-bottom: 0.3rem;
+                    text-align: left;
+                }
+
+                .featured-store-card .tag-badge {
+                    font-size: 0.65rem;
+                    padding: 0.15rem 0.3rem;
+                }
+            }
+
+            @media (max-width: 479.98px) {
+                .featured-store-card {
+                    width: 180px;
+                    min-width: 180px;
+                    max-width: 180px;
+                    margin-right: 0.4rem;
+                    min-height: 220px;
+                    max-height: 260px;
+                }
+
+                .featured-store-card .card-img-top {
+                    height: 130px;
+                    min-height: 130px;
+                    max-height: 130px;
+                }
+
+                .featured-store-card .card-body {
+                    padding: 0.5rem;
+                    height: 150px;
+                    min-height: 150px;
+                    max-height: 150px;
+                    justify-content: flex-start;
+                    text-align: left;
+                }
+
+                .featured-store-card .card-title {
+                    font-size: 0.8rem;
+                    margin-bottom: 0.25rem;
+                    padding: 0 0.1rem;
+                    text-align: left;
+                }
+
+                /* .featured-store-card .delivery-time {
+                    font-size: 0.7rem;
+                    margin-bottom: 0.25rem;
+                    text-align: left;
+                } */
+
+                .featured-store-card .delivery-info {
+                    font-size: 0.7rem;
+                    margin-bottom: 0.25rem;
+                    text-align: left;
+                }
+
+                .featured-store-card .tag-badge {
+                    font-size: 0.6rem;
+                    padding: 0.1rem 0.25rem;
+                }
+            }
+
             font-family: var(--font-english);
             font-weight: var(--font-medium);
             color: var(--text-muted);
@@ -1640,12 +2395,12 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
         /* 高級搜尋框 - 進階設計 */
         .search-container {
-            max-width: 600px;
+            /* max-width: 600px; */
             margin: 0 auto;
             position: relative;
             width: 100%;
         }
-        
+
         @media (max-width: 575.98px) {
             .search-container {
                 max-width: 100%;
@@ -1655,9 +2410,9 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
         /* Header中的搜尋欄位調整 */
         .content-header .search-container {
-            max-width: 350px;
+            /* max-width: 350px; */
             margin: 0;
-            width: 350px;
+            /* width: 350px; */
         }
 
         .content-header .premium-search {
@@ -1686,12 +2441,12 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 font-size: 0.8rem;
                 padding: 0.4rem 0.6rem;
             }
-            
+
             .content-header .premium-search-btn {
                 padding: 0.4rem 0.8rem;
                 font-size: 0.8rem;
             }
-            
+
             .content-header .advanced-search-btn {
                 padding: 0.4rem;
                 min-width: 36px;
@@ -1704,12 +2459,12 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 font-size: 0.75rem;
                 padding: 0.35rem 0.5rem;
             }
-            
+
             .content-header .premium-search-btn {
                 padding: 0.35rem 0.6rem;
                 font-size: 0.75rem;
             }
-            
+
             .content-header .advanced-search-btn {
                 padding: 0.35rem;
                 min-width: 32px;
@@ -1717,32 +2472,50 @@ scratch. This page gets rid of all links and provides the needed markup only.
             }
         }
 
+        /* 高解析度搜尋欄位等寬設計 */
+        @media (min-width: 1200px) {
+            .content-header .search-container {
+                max-width: 100%;
+                width: 100%;
+                flex: 1;
+            }
+
+            .content-header .search-wrapper {
+                width: 100%;
+            }
+
+            .content-header .premium-search {
+                flex: 1;
+                min-width: 0;
+            }
+        }
+
         /* 中等螢幕響應式設計 */
         @media (max-width: 1199.98px) {
             .content-header .search-container {
-                max-width: 250px;
-                width: 250px;
+                /* max-width: 250px; */
+                /* width: 250px; */
             }
         }
 
         @media (max-width: 991.98px) {
             .content-header .search-container {
-                max-width: 220px;
-                width: 220px;
+                /* max-width: 220px; */
+                /* width: 220px; */
             }
         }
 
         @media (max-width: 767.98px) {
             .content-header .search-container {
-                max-width: 200px;
-                width: 200px;
+                /* max-width: 200px; */
+                /* width: 200px; */
             }
         }
 
         @media (max-width: 575.98px) {
             .content-header .search-container {
-                max-width: 180px;
-                width: 180px;
+                /* max-width: 180px; */
+                /* width: 180px; */
             }
         }
 
@@ -1750,6 +2523,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
             display: flex;
             gap: 0.5rem;
             align-items: center;
+            width: 100%;
         }
 
         .premium-search {
@@ -1762,6 +2536,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
             padding: 0.375rem;
             box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
             transition: all 0.3s ease;
+            flex: 1;
         }
 
         .premium-search:focus-within {
@@ -1946,10 +2721,12 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 transform: scale(1);
                 opacity: 1;
             }
+
             70% {
                 transform: scale(1.3);
                 opacity: 0;
             }
+
             100% {
                 transform: scale(1.3);
                 opacity: 0;
@@ -1970,23 +2747,23 @@ scratch. This page gets rid of all links and provides the needed markup only.
         /* 小手機版響應式設計 */
         @media (max-width: 479.98px) {
             .content-header .row {
-                flex-direction: column !important;
+                flex-direction: r !important;
             }
-            
+
             .content-header .col-auto {
-                width: 100% !important;
-                max-width: 100% !important;
-                flex: 0 0 100% !important;
+                /* width: 100% !important; */
+                /* max-width: 100% !important; */
+                /* flex: 0 0 100% !important; */
                 margin-right: 0 !important;
                 margin-bottom: 0.5rem !important;
             }
-            
+
             .content-header h1 {
                 font-size: 1rem !important;
                 text-align: center;
                 margin-bottom: 0 !important;
             }
-            
+
             .content-header .search-container {
                 margin-top: 0.5rem;
                 width: 100% !important;
@@ -2077,6 +2854,11 @@ scratch. This page gets rid of all links and provides the needed markup only.
         .content-wrapper {
             background: transparent;
             min-height: calc(100vh - 200px);
+            overflow: visible !important;
+        }
+
+        .content-header {
+            overflow: visible !important;
         }
 
         .content {
@@ -2090,56 +2872,59 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 padding-left: 2.5rem;
                 padding-right: 2.5rem;
             }
-            
+
             /* 放大字體和間距 */
             .section-title h3 {
                 font-size: 1.75rem;
             }
-            
+
             .section-title h3 i {
                 font-size: 1.5rem !important;
             }
-            
+
             .content-section {
                 margin-bottom: 1rem;
                 padding: 1.25rem;
             }
-            
+
             /* 放大店家卡片 - 使用 aspect-ratio 替代固定高度 */
-            
+
             .store-card .card-title,
             .store-grid-card .card-title {
                 font-size: 1.125rem;
             }
-            
+
             .store-card .delivery-time,
             .store-card .delivery-info,
             .store-grid-card .delivery-time,
             .store-grid-card .delivery-info {
                 font-size: 0.9rem;
             }
-            
+
             /* 放大食物類別 */
             .foodtype-item {
-                min-height: 110px;
+                min-height: 130px;
                 padding: 1rem 0.75rem;
             }
-            
+
             .foodtype-item .card-img-top {
                 width: 58px;
                 height: 58px;
                 padding: 0.5rem;
             }
-            
+
             .foodtype-item .card-title {
                 font-size: 0.95rem;
             }
 
             /* 店家完整顯示 - 大螢幕 */
             .stores-grid {
-                display: block;
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 10px;
+                overflow-x: auto;
             }
-            
+
             .store-grid-card {
                 margin-bottom: 1.5rem;
                 width: 100%;
@@ -2152,25 +2937,25 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 padding-left: 2rem;
                 padding-right: 2rem;
             }
-            
+
             /* 中等屏幕字體放大 */
             .section-title h3 {
                 font-size: 1.5rem;
             }
-            
+
             .content-section {
                 margin-bottom: 0.75rem;
                 padding: 1rem;
             }
-            
+
             /* 中等屏幕使用 aspect-ratio */
-            
+
             /* 中等屏幕食物類別 */
             .foodtype-item {
                 min-height: 95px;
                 padding: 0.875rem 0.625rem;
             }
-            
+
             .foodtype-item .card-img-top {
                 width: 50px;
                 height: 50px;
@@ -2185,66 +2970,72 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 padding: 0.5rem;
                 border-radius: 0.75rem;
             }
-            
+
             .section-title {
                 margin-bottom: 0.375rem;
                 padding: 0;
             }
-            
+
             .section-title h3 {
                 font-size: 1.125rem;
             }
-            
+
             .section-title h3 i {
                 font-size: 1.125rem !important;
             }
-            
+
             .container {
                 padding-left: 0.75rem;
                 padding-right: 0.75rem;
             }
-            
+
             /* 修正手機版文字大小 */
             .store-card .card-title {
                 font-size: 0.9rem;
             }
-            
-            .store-card .delivery-time {
+
+            .store-card .delivery-time,
+            .featured-store-card .delivery-time {
                 font-size: 0.8rem;
             }
-            
+
             .store-card .delivery-info {
                 font-size: 0.75rem;
             }
-            
+
             /* 修正食物類別網格 */
             .foodtype-grid {
                 min-height: auto;
             }
-            
+
             .foodtype-item {
                 min-height: 75px;
                 padding: 0.5rem 0.375rem;
             }
-            
+
             .foodtype-item .card-img-top {
                 width: 38px;
                 height: 38px;
             }
-            
+
             /* 猜你想看手機版調整 */
             .fromstore-card {
-                flex-direction: column;
-                height: auto;
+                flex-direction: row !important;
+                min-height: 150px !important;
+                max-height: 150px !important;
             }
-            
+
             .fromstore-card .card-img-top {
-                width: 100%;
-                aspect-ratio: 8/5;
+                width: 144px !important;
+                min-width: 144px !important;
+                max-width: 144px !important;
+                height: 144px !important;
+                aspect-ratio: 1/1 !important;
             }
-            
+
             .fromstore-card .card-body {
-                padding: 0.75rem;
+                padding: 0.75rem 1rem;
+                min-height: 144px;
             }
         }
 
@@ -2253,7 +3044,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 margin-bottom: 0.5rem;
                 padding: 0.625rem;
             }
-            
+
             .section-title {
                 margin-bottom: 0.5rem;
             }
@@ -2357,48 +3148,44 @@ scratch. This page gets rid of all links and provides the needed markup only.
         </nav>
 
         <div class="content-wrapper">
-            <div class="content-header" style="padding: 0.75rem 0;">
+            <div class="content-header">
                 <div class="container">
                     <div class="row align-items-center justify-content-between" style="flex-wrap: nowrap;">
                         <div class="col-auto" style="flex-shrink: 0; margin-right: 1rem;">
-                            <h1 class="m-0 text-gradient text-shadow" style="font-size: 1.125rem; margin-bottom: 0; white-space: nowrap;"> 
+                            <h1 class="m-0 text-gradient text-shadow text-left"
+                                style="font-size: 1.125rem; margin-bottom: 0; white-space: nowrap;">
                                 {{getTimeOfDay()}}<span class="text-primary">{{userInfo.name}}</span>
                             </h1>
+                            <ol class="breadcrumb"
+                                style="font-size: 0.75rem; margin-bottom: 0; background: none; padding: 0;">
+                                <li class="breadcrumb-item"><a class="toIndex">SHARING</a></li>
+                                <li class="breadcrumb-item">{{PageTitle}}</li>
+                            </ol>
                         </div>
-                        <div class="col-auto" style="flex-shrink: 0; min-width: 0;">
+                        <div class="col" style="flex: 1; min-width: 0;">
                             <!-- 搜尋區塊 -->
                             <div class="search-container" style="margin: 0;">
                                 <div class="search-wrapper">
-                                    <form class="Myinput-group premium-search" @submit.prevent="search" style="flex: 1;">
-                                        <input type="search" 
-                                               class="premium-input" 
-                                               placeholder="搜尋餐廳、料理、商圈.." 
-                                               v-model="searchKeyword"
-                                               @focus="showFoodTags = true"
-                                               @blur="hideFoodTags">
-                                        <button type="submit" 
-                                                class="btn premium-search-btn" 
-                                                :disabled="searchKeyword.length==0">
+                                    <form class="Myinput-group premium-search" @submit.prevent="search"
+                                        style="flex: 1;">
+                                        <input type="search" class="premium-input" placeholder="搜尋餐廳、料理、商圈.."
+                                            v-model="searchKeyword" @focus="showFoodTags = true" @blur="hideFoodTags">
+                                        <button type="submit" class="btn premium-search-btn"
+                                            :disabled="searchKeyword.length==0">
                                             <i class="fa fa-search"></i>
                                         </button>
                                     </form>
-                                    <button class="btn advanced-search-btn" 
-                                            @click="toggleFoodTags"
-                                            title="進階搜尋">
+                                    <button class="btn advanced-search-btn" @click="toggleFoodTags" title="進階搜尋">
                                         <i class="fas fa-sliders-h"></i>
                                     </button>
                                 </div>
-                                
+
                                 <!-- 美食標籤懸浮選單 -->
-                                <div class="food-tags-dropdown" 
-                                     :class="{ 'show': showFoodTags }"
-                                     @mousedown.prevent>
+                                <div class="food-tags-dropdown" :class="{ 'show': showFoodTags }" @mousedown.prevent>
                                     <div class="food-tags-grid">
-                                        <a v-for="(item, index) in FoodTypeList.slice(0, 12)" 
-                                           :key="index"
-                                           class="food-tag-item"
-                                           :href="'ClassImformation.html?cid='+item.tagId"
-                                           @click="hideFoodTags">
+                                        <a v-for="(item, index) in FoodTypeList.slice(0, 12)" :key="index"
+                                            class="food-tag-item" :href="'ClassImformation.html?cid='+item.tagId"
+                                            @click="hideFoodTags">
                                             <img :src="item.imageUrl || item.tagPicture || 'img/unknowIMG.png'" />
                                             <span>{{ item.title }}</span>
                                         </a>
@@ -2406,43 +3193,50 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                 </div>
                             </div>
                         </div>
-                        <div class="col-12 mt-2">
-                            <ol class="breadcrumb" style="font-size: 0.75rem; margin-bottom: 0; background: none; padding: 0;">
+                        <!-- <div class="col-auto mt-2">
+                            <ol class="breadcrumb"
+                                style="font-size: 0.75rem; margin-bottom: 0; background: none; padding: 0;">
                                 <li class="breadcrumb-item"><a class="toIndex">SHARING</a></li>
                                 <li class="breadcrumb-item">{{PageTitle}}</li>
                             </ol>
-                        </div>
+                        </div> -->
                     </div>
                 </div>
             </div>
             <div class="content">
                 <div class="container">
-                                        <div v-if="fromStore.store.storeId.length>0" class="content-section">
-                        <div class="row justify-content-center">
-                            <div class="col-12 col-md-8 col-lg-6 col-xl-5" style="max-width: 480px;">
-                                <a class="fromstore-card"
-                                :href="'StoreImformation.html?sid='+fromStore.store.storeId">
-                                    <img class="card-img-top" :src="fromStore.store.bannerimage || fromStore.store.image || 'img/unknowIMG.png'" />
-                                <div class="card-body">
+                    <div v-if="fromStore.store.storeId.length>0" class="">
+                        <div class="d-flex justify-content-start">
+                            <div class="col-12 col-md-10 col-lg-4 col-xl-4">
+                                <a class="fromstore-card" :href="'StoreImformation.html?sid='+fromStore.store.storeId">
+                                    <div class="position-relative">
+                                        <span class="store-status-badge"
+                                            :class="fromStore.nextAvailable && fromStore.nextAvailable.isOpen ? 'open' : 'closed'">
+                                            {{ fromStore.nextAvailable && fromStore.nextAvailable.isOpen ? '營業中' : '休息中'
+                                            }}
+                                        </span>
+                                        <img class="card-img-top" :src="fromStore.store.image || 'img/unknowIMG.png'" />
+                                    </div>
+                                    <div class="card-body">
                                         <h6 class="card-title">{{ fromStore.store.storeName }}</h6>
                                         <div class="delivery-time">
-                                        <i class="far fa-clock mr-2"></i>
-                                        {{getWaitingTimeString(fromStore.nextAvailable.waitingTimeDisplay)}}
+                                            <i class="far fa-clock mr-2"></i>
+                                            {{getFromStoreWaitingTime(fromStore.nextAvailable)}}
                                         </div>
                                         <div class="delivery-info">
                                             <i class="fas fa-map-marker-alt mr-2"></i>
                                             {{fromStore.store.distance || '距離未知'}}
                                         </div>
-                                        <div class="store-tags" v-if="fromStore.storeInfo && fromStore.storeInfo.tags && fromStore.storeInfo.tags.length > 0">
-                                            <span v-for="(tag, tagIndex) in fromStore.storeInfo.tags.slice(0, 3)" 
-                                                  :key="tagIndex" 
-                                                  class="tag-badge">
+                                        <div class="store-tags"
+                                            v-if="fromStore.storeInfo && fromStore.storeInfo.tags && fromStore.storeInfo.tags.length > 0">
+                                            <span v-for="(tag, tagIndex) in fromStore.storeInfo.tags.slice(0, 3)"
+                                                :key="tagIndex" class="tag-badge">
                                                 {{ tag }}
                                             </span>
                                         </div>
-                                </div>
-                            </a>
-                        </div>
+                                    </div>
+                                </a>
+                            </div>
                         </div>
                     </div>
                     <div class="row">
@@ -2451,18 +3245,18 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
                         <!-- 各類美食 -->
                         <div class="col-12 content-section" v-show="false">
-                            <div class="section-title">
+                            <!-- <div class="section-title"> -->
+                            <div class="row">
                                 <h3>
                                     <i class="fas fa-utensils"></i>
                                     各類美食
-                            </h3>
-                                            </div>
+                                </h3>
+                            </div>
                             <div class="foodtype-grid">
-                                <a v-for="(item, index) in FoodTypeList" 
-                                   :key="index"
-                                   class="foodtype-item"
-                                            :href="'ClassImformation.html?cid='+item.tagId">
-                                    <img class="card-img-top" :src="item.imageUrl || item.tagPicture || 'img/unknowIMG.png'" />
+                                <a v-for="(item, index) in FoodTypeList" :key="index" class="foodtype-item"
+                                    :href="'ClassImformation.html?cid='+item.tagId">
+                                    <img class="card-img-top"
+                                        :src="item.imageUrl || item.tagPicture || 'img/unknowIMG.png'" />
                                     <span class="card-title">
                                         {{ item.title }}
                                     </span>
@@ -2470,13 +3264,14 @@ scratch. This page gets rid of all links and provides the needed markup only.
                             </div>
                         </div>
 
+
                         <!-- 附近商圈 -->
                         <div class="col-12 content-section" v-show="BusinessDistrictList.length>0">
                             <div class="section-title">
                                 <h3>
                                     <i class="fas fa-map-marked-alt"></i>
                                     附近商圈
-                            </h3>
+                                </h3>
                             </div>
                             <div class="swiper-container w-100 overflow-hidden">
                                 <div class="swiper-wrapper">
@@ -2484,9 +3279,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                         <a class="tag-card mb-2 swiper-slide"
                                             :class="{ 'no-image': !item.imageUrl && !item.tagPicture }"
                                             :href="'ClassImformation.html?cid='+item.tagId+'&cname='+item.title+'&ctype=附近的商圈'">
-                                            <img v-if="item.imageUrl || item.tagPicture" 
-                                                 class="card-img-top" 
-                                                 :src="item.imageUrl || item.tagPicture" />
+                                            <img v-if="item.imageUrl || item.tagPicture" class="card-img-top"
+                                                :src="item.imageUrl || item.tagPicture" />
                                             <div class="card-img-overlay d-flex flex-column justify-content-end">
                                                 <h5 class="card-title text-primary text-white">{{ item.title }}</h5>
                                             </div>
@@ -2508,22 +3302,23 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                 <h3>
                                     <i class="fas fa-crown"></i>
                                     精選餐廳
-                            </h3>
-                    </div>
+                                </h3>
+                            </div>
                             <div class="swiper-container swiper-container-featured w-100 overflow-hidden">
                                 <div class="swiper-wrapper">
                                     <template v-for="(item, index) in FeaturedRestaurantsList" :key="index">
-                                        <a class="featured-store-card swiper-slide"
-                                           :href="'StoreImformation.html?sid='+item.storeId">
+                                        <a class="store-grid-card swiper-slide"
+                                            :href="'StoreImformation.html?sid='+item.storeId">
                                             <div class="position-relative">
-                                                <span class="store-status-badge" 
-                                                      :class="item.isOpen ? 'open' : 'closed'">
+                                                <span class="store-status-badge"
+                                                    :class="item.isOpen ? 'open' : 'closed'">
                                                     {{ item.isOpen ? '營業中' : '休息中' }}
                                                 </span>
-                                                <img class="card-img-top" :src="item.bannerimage || item.image || 'img/unknowIMG.png'" />
+                                                <img class="card-img-top"
+                                                    :src="item.bannerimage || item.image || 'img/unknowIMG.png'" />
                                             </div>
-                                            <div class="card-body">
-                                                <h6 class="card-title">{{ item.storeName }}</h6>
+                                            <div class="card-body w-100">
+                                                <h6 class="card-title w-100">{{ item.storeName }}</h6>
                                                 <div class="delivery-time">
                                                     <i class="far fa-clock"></i>
                                                     {{getWaitingTimeString(item.waitingTimeDisplay)}}
@@ -2532,9 +3327,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                                     <span class="distance">{{formatDistance(item.distanceInKM)}}</span>
                                                 </div>
                                                 <div class="store-tags" v-if="item.tags && item.tags.length > 0">
-                                                    <span v-for="(tag, tagIndex) in item.tags.slice(0, 3)" 
-                                                          :key="tagIndex" 
-                                                          class="tag-badge">
+                                                    <span v-for="(tag, tagIndex) in item.tags.slice(0, 3)"
+                                                        :key="tagIndex" class="tag-badge">
                                                         {{ tag.title }}
                                                     </span>
                                                     <span v-if="item.tags.length > 3" class="tag-badge more-tags">
@@ -2557,10 +3351,10 @@ scratch. This page gets rid of all links and provides the needed markup only.
                         <!-- 活動專區 -->
                         <div class="col-12 content-section PromotionsList" v-show="PromotionsList.length>0">
                             <div class="section-title">
-                            <h3>
+                                <h3>
                                     <img src="img/bonus.png" class="section-icon">
                                     <span class="text-gradient">活動專區</span>
-                            </h3>
+                                </h3>
                             </div>
                             <div class="swiper-container w-100 overflow-hidden">
                                 <div class="swiper-wrapper">
@@ -2568,9 +3362,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                         <a class="tag-card mb-2 swiper-slide"
                                             :class="{ 'no-image': !item.imageUrl && !item.tagPicture }"
                                             :href="'ClassImformation.html?cid='+item.tagId">
-                                            <img v-if="item.imageUrl || item.tagPicture" 
-                                                 class="card-img-top" 
-                                                 :src="item.imageUrl || item.tagPicture" />
+                                            <img v-if="item.imageUrl || item.tagPicture" class="card-img-top"
+                                                :src="item.imageUrl || item.tagPicture" />
                                             <div class="card-img-overlay d-flex flex-column justify-content-end">
                                                 <h5 class="card-title text-primary text-white">{{ item.title }}</h5>
                                             </div>
@@ -2586,7 +3379,9 @@ scratch. This page gets rid of all links and provides the needed markup only.
                         </div>
 
                         <!-- 隱藏區塊1 -->
-                        <div class="col-12 content-section hidden-section" :class="{ 'enabled': hiddenSection1.enabled }" v-show="hiddenSection1.enabled && hiddenSection1.data.length>0">
+                        <div class="col-12 content-section hidden-section"
+                            :class="{ 'enabled': hiddenSection1.enabled }"
+                            v-show="hiddenSection1.enabled && hiddenSection1.data.length>0">
                             <div class="section-title">
                                 <h3>
                                     <i :class="hiddenSection1.icon"></i>
@@ -2600,7 +3395,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                             <div class="card">
                                                 <div class="card-body">
                                                     <h6 class="card-title">{{ item.name }}</h6>
-                                                    <p class="card-text text-muted">這是{{ hiddenSection1.title }}的測試內容</p>
+                                                    <p class="card-text text-muted">這是{{ hiddenSection1.title }}的測試內容
+                                                    </p>
                                                 </div>
                                             </div>
                                         </div>
@@ -2610,7 +3406,9 @@ scratch. This page gets rid of all links and provides the needed markup only.
                         </div>
 
                         <!-- 隱藏區塊2 -->
-                        <div class="col-12 content-section hidden-section" :class="{ 'enabled': hiddenSection2.enabled }" v-show="hiddenSection2.enabled && hiddenSection2.data.length>0">
+                        <div class="col-12 content-section hidden-section"
+                            :class="{ 'enabled': hiddenSection2.enabled }"
+                            v-show="hiddenSection2.enabled && hiddenSection2.data.length>0">
                             <div class="section-title">
                                 <h3>
                                     <i :class="hiddenSection2.icon"></i>
@@ -2624,7 +3422,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                             <div class="card">
                                                 <div class="card-body">
                                                     <h6 class="card-title">{{ item.name }}</h6>
-                                                    <p class="card-text text-muted">這是{{ hiddenSection2.title }}的測試內容</p>
+                                                    <p class="card-text text-muted">這是{{ hiddenSection2.title }}的測試內容
+                                                    </p>
                                                 </div>
                                             </div>
                                         </div>
@@ -2634,7 +3433,9 @@ scratch. This page gets rid of all links and provides the needed markup only.
                         </div>
 
                         <!-- 隱藏區塊3 -->
-                        <div class="col-12 content-section hidden-section" :class="{ 'enabled': hiddenSection3.enabled }" v-show="hiddenSection3.enabled && hiddenSection3.data.length>0">
+                        <div class="col-12 content-section hidden-section"
+                            :class="{ 'enabled': hiddenSection3.enabled }"
+                            v-show="hiddenSection3.enabled && hiddenSection3.data.length>0">
                             <div class="section-title">
                                 <h3>
                                     <i :class="hiddenSection3.icon"></i>
@@ -2648,7 +3449,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                             <div class="card">
                                                 <div class="card-body">
                                                     <h6 class="card-title">{{ item.name }}</h6>
-                                                    <p class="card-text text-muted">這是{{ hiddenSection3.title }}的測試內容</p>
+                                                    <p class="card-text text-muted">這是{{ hiddenSection3.title }}的測試內容
+                                                    </p>
                                                 </div>
                                             </div>
                                         </div>
@@ -2663,38 +3465,40 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                 <h3>
                                     <i class="fas fa-store"></i>
                                     所有商家
-                            </h3>
-                    </div>
-                            <div class="stores-grid">
-                                <a v-for="(item, index) in StoreList" 
-                                   :key="index"
-                                   class="store-grid-card"
-                                   :href="'StoreImformation.html?sid='+item.storeId">
-                                    <div class="position-relative">
-                                        <span class="store-status-badge" 
-                                              :class="item.isOpen ? 'open' : 'closed'">
-                                            {{ item.isOpen ? '營業中' : '休息中' }}
-                                        </span>
-                                        <img class="card-img-top" :src="item.bannerimage || item.image || 'img/unknowIMG.png'" />
-                </div>
-                                    <div class="card-body">
-                                        <h6 class="card-title">{{ item.storeName }}</h6>
-                                        <div class="delivery-time">
-                                            <i class="far fa-clock"></i>
-                                            {{getWaitingTimeString(item.waitingTimeDisplay)}}
-                                        </div>
-                                        <div class="delivery-info">
-                                            <span class="distance">{{formatDistance(item.distanceInKM)}}</span>
-                                        </div>
-                                        <div class="store-tags" v-if="item.tags && item.tags.length > 0">
-                                            <span v-for="(tag, tagIndex) in item.tags.slice(0, 3)" 
-                                                  :key="tagIndex" 
-                                                  class="tag-badge">
-                                                {{ tag.title }}
+                                </h3>
+                            </div>
+                            <div class="row gap-3">
+                                <!-- <div class="stores-grid"> -->
+                                <!-- <a v-for="(item, index) in StoreList" :key="index" class="store-grid-card" -->
+                                <a v-for="(item, index) in StoreList" :key="index"
+                                    class="col-xs-6 col-sm-6 col-md-4 col-lg-3"
+                                    :href="'StoreImformation.html?sid='+item.storeId">
+                                    <div class=" store-grid-card">
+                                        <div class="position-relative">
+                                            <span class="store-status-badge" :class="item.isOpen ? 'open' : 'closed'">
+                                                {{ item.isOpen ? '營業中' : '休息中' }}
                                             </span>
-                                            <span v-if="item.tags.length > 3" class="tag-badge more-tags">
-                                                +{{ item.tags.length - 3 }}
-                                            </span>
+                                            <img class="card-img-top"
+                                                :src="item.bannerimage || item.image || 'img/unknowIMG.png'" />
+                                        </div>
+                                        <div class="card-body">
+                                            <h6 class="card-title">{{ item.storeName }}</h6>
+                                            <div class="delivery-time">
+                                                <i class="far fa-clock"></i>
+                                                {{getWaitingTimeString(item.waitingTimeDisplay)}}
+                                            </div>
+                                            <div class="delivery-info">
+                                                <span class="distance">{{formatDistance(item.distanceInKM)}}</span>
+                                            </div>
+                                            <div class="store-tags" v-if="item.tags && item.tags.length > 0">
+                                                <span v-for="(tag, tagIndex) in item.tags.slice(0, 3)" :key="tagIndex"
+                                                    class="tag-badge">
+                                                    {{ tag.title }}
+                                                </span>
+                                                <span v-if="item.tags.length > 3" class="tag-badge more-tags">
+                                                    +{{ item.tags.length - 3 }}
+                                                </span>
+                                            </div>
                                         </div>
                                     </div>
                                 </a>
@@ -2785,38 +3589,42 @@ scratch. This page gets rid of all links and provides the needed markup only.
                     title: '隱藏區塊3',
                     icon: 'fas fa-question',
                     data: []
-                }
+                },
+
+                // URL參數檢測
+                hasStoreId: false
 
             }
         },
         mounted() {
-          // Detect if current user is a known crawler to skip LIFF login
-          const userAgent = navigator.userAgent.toLowerCase();
-          const isCrawler = /googlebot|bingbot|slurp|duckduckbot|baiduspider|yandexbot|sogou/.test(userAgent);
-      
-          if (isCrawler) {
-              console.log("Detected crawler: skipping LINE login to avoid 4xx error.");
-              return; // Stop here for crawlers (no LIFF redirect)
-          }
-          
+            // Detect if current user is a known crawler to skip LIFF login
+            const userAgent = navigator.userAgent.toLowerCase();
+            const isCrawler = /googlebot|bingbot|slurp|duckduckbot|baiduspider|yandexbot|sogou/.test(userAgent);
+
+            if (isCrawler) {
+                console.log("Detected crawler: skipping LINE login to avoid 4xx error.");
+                return; // Stop here for crawlers (no LIFF redirect)
+            }
+
             // 檢查並保存sid參數到localStorage
             const urlParams = new URLSearchParams(window.location.search);
             const sidParam = urlParams.get('sid');
             if (sidParam) {
                 localStorage.setItem('pendingStoreId', sidParam);
-              
+                this.hasStoreId = true;
             }
-            
+
             // 檢查是否有之前保存的storeId
             const savedStoreId = localStorage.getItem('pendingStoreId');
             if (savedStoreId && !sidParam) {
+                this.hasStoreId = true;
                 // 如果當前URL沒有sid但localStorage有，則使用保存的值
                 window.storeId = savedStoreId;
                 // 清除localStorage中的值，避免重複使用
                 localStorage.removeItem('pendingStoreId');
                 console.log('從localStorage恢復storeId:', savedStoreId);
             }
-            
+
             let vue = this
             if (TestModel) {
 
@@ -2829,19 +3637,36 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
                 //畫面初始化
                 new Swiper(".swiper-container", {
-                    loop: false, // 無限輪播
-                    slidesPerView: 4, // 預設桌機 4 個
-                    spaceBetween: 10, // 間距
+                    loop: false,
+                    slidesPerView: 'auto',
+                    spaceBetween: 10,
+                    speed: 300,
+                    freeMode: true,
+                    freeModeMomentum: true,
+                    freeModeMomentumRatio: 1,
+                    freeModeMomentumVelocityRatio: 1,
+                    freeModeSticky: false,
+                    resistance: false,
+                    observer: true,
+                    observeParents: true,
+                    preventClicks: false,
+                    preventClicksPropagation: false,
+                    updateOnWindowResize: true,
+                    watchSlidesProgress: true,
+                    watchOverflow: true,
+                    touchRatio: 1,
+                    touchAngle: 45,
+                    grabCursor: true,
                     navigation: {
                         nextEl: ".custom-next-btn",
                         prevEl: ".custom-prev-btn",
                     },
                     breakpoints: {
-                        1024: { slidesPerView: 5.5 },  // 桌機
-                        768: { slidesPerView: 4.3 },   // 平板
-                        480: { slidesPerView: 2.5 }, // 一般手機
-                        375: { slidesPerView: 2.5 }, // iPhone SE
-                        320: { slidesPerView: 2.2 }  // 超小手機
+                        1024: { slidesPerView: 'auto', spaceBetween: 10 },
+                        768: { slidesPerView: 'auto', spaceBetween: 10 },
+                        480: { slidesPerView: 'auto', spaceBetween: 8 },
+                        375: { slidesPerView: 'auto', spaceBetween: 8 },
+                        320: { slidesPerView: 'auto', spaceBetween: 6 }
                     },
                 });
                 // 附近店家現在使用網格布局，不需要輪播
@@ -2862,19 +3687,36 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 //     },
                 // });
                 new Swiper(".swiper-container-foodtype", {
-                    loop: false, // 無限輪播
-                                    slidesPerView: 4, // 預設 4 個
-                                    spaceBetween: 15, // 間距
+                    loop: false,
+                    slidesPerView: 'auto',
+                    spaceBetween: 15,
+                    speed: 300,
+                    freeMode: true,
+                    freeModeMomentum: true,
+                    freeModeMomentumRatio: 1,
+                    freeModeMomentumVelocityRatio: 1,
+                    freeModeSticky: false,
+                    resistance: false,
+                    observer: true,
+                    observeParents: true,
+                    preventClicks: false,
+                    preventClicksPropagation: false,
+                    updateOnWindowResize: true,
+                    watchSlidesProgress: true,
+                    watchOverflow: true,
+                    touchRatio: 1,
+                    touchAngle: 45,
+                    grabCursor: true,
                     navigation: {
                         nextEl: ".custom-next-btn",
                         prevEl: ".custom-prev-btn",
                     },
                     breakpoints: {
-                                        1024: { slidesPerView: 6, spaceBetween: 20 },  // 桌機
-                                        768: { slidesPerView: 5, spaceBetween: 15 },   // 平板
-                                        480: { slidesPerView: 4, spaceBetween: 12 }, // 一般手機
-                                        375: { slidesPerView: 3, spaceBetween: 10 }, // iPhone SE
-                                        320: { slidesPerView: 3, spaceBetween: 8 }  // 超小手機
+                        1024: { slidesPerView: 6, spaceBetween: 20 },
+                        768: { slidesPerView: 5, spaceBetween: 15 },
+                        480: { slidesPerView: 4, spaceBetween: 12 },
+                        375: { slidesPerView: 3, spaceBetween: 10 },
+                        320: { slidesPerView: 3, spaceBetween: 8 }
                     },
                 });
 
@@ -2884,11 +3726,22 @@ scratch. This page gets rid of all links and provides the needed markup only.
                     slidesPerView: 'auto',
                     spaceBetween: 16,
                     speed: 300,
-                    freeMode: false,
-                    resistance: true,
-                    resistanceRatio: 0.85,
+                    freeMode: true,
+                    freeModeMomentum: true,
+                    freeModeMomentumRatio: 1,
+                    freeModeMomentumVelocityRatio: 1,
+                    freeModeSticky: false,
+                    resistance: false,
                     observer: true,
                     observeParents: true,
+                    preventClicks: false,
+                    preventClicksPropagation: false,
+                    updateOnWindowResize: true,
+                    watchSlidesProgress: true,
+                    watchOverflow: true,
+                    touchRatio: 1,
+                    touchAngle: 45,
+                    grabCursor: true,
                     navigation: {
                         nextEl: ".swiper-container-featured .custom-next-btn",
                         prevEl: ".swiper-container-featured .custom-prev-btn",
@@ -2913,20 +3766,20 @@ scratch. This page gets rid of all links and provides the needed markup only.
                     // 在初始化LIFF前，檢查並保存sid參數
                     const currentUrl = new URL(window.location.href);
                     const sidParam = currentUrl.searchParams.get('sid');
-                    
+
                     await liff.init({ liffId });
 
                     // 如果未登入，執行登入
                     if (!liff.isLoggedIn()) {
                         // console.log("未登入，重新導向登入...");
-                        
+
                         // 如果有sid參數，將其加入到登入重導向URL中
                         if (sidParam) {
                             const redirectUri = new URL(window.location.origin + window.location.pathname);
                             redirectUri.searchParams.set('sid', sidParam);
                             liff.login({ redirectUri: redirectUri.toString() });
                         } else {
-                        liff.login();
+                            liff.login();
                         }
                         return;
                     }
@@ -2955,19 +3808,37 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
                                 //畫面初始化
                                 new Swiper(".swiper-container", {
-                                    loop: false, // 無限輪播
-                                    slidesPerView: 4, // 預設桌機 4 個
-                                    spaceBetween: 10, // 間距
+                                    loop: false,
+                                    slidesPerView: 'auto',
+                                    spaceBetween: 10,
+                                    speed: 300,
+                                    freeMode: true,
+                                    freeModeMomentum: true,
+                                    freeModeMomentumRatio: 1,
+                                    freeModeMomentumVelocityRatio: 1,
+                                    freeModeSticky: false,
+                                    resistance: true,
+                                    resistanceRatio: 0.85,
+                                    observer: true,
+                                    observeParents: true,
+                                    preventClicks: false,
+                                    preventClicksPropagation: false,
+                                    updateOnWindowResize: true,
+                                    watchSlidesProgress: true,
+                                    watchOverflow: true,
+                                    touchRatio: 1,
+                                    touchAngle: 45,
+                                    grabCursor: true,
                                     navigation: {
                                         nextEl: ".custom-next-btn",
                                         prevEl: ".custom-prev-btn",
                                     },
                                     breakpoints: {
-                                        1024: { slidesPerView: 5.5 },  // 桌機
-                                        768: { slidesPerView: 4.3 },   // 平板
-                                        480: { slidesPerView: 2.5 }, // 一般手機
-                                        375: { slidesPerView: 2.5 }, // iPhone SE
-                                        320: { slidesPerView: 2.2 }  // 超小手機
+                                        1024: { slidesPerView: 'auto', spaceBetween: 10 },
+                                        768: { slidesPerView: 'auto', spaceBetween: 10 },
+                                        480: { slidesPerView: 'auto', spaceBetween: 8 },
+                                        375: { slidesPerView: 'auto', spaceBetween: 8 },
+                                        320: { slidesPerView: 'auto', spaceBetween: 6 }
                                     },
                                 });
                                 // 附近店家現在使用網格布局，不需要輪播
@@ -2988,19 +3859,37 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                 //     },
                                 // });
                                 new Swiper(".swiper-container-foodtype", {
-                                    loop: false, // 無限輪播
-                                    slidesPerView: 4, // 預設 4 個
-                                    spaceBetween: 15, // 間距
+                                    loop: false,
+                                    slidesPerView: 'auto',
+                                    spaceBetween: 15,
+                                    speed: 300,
+                                    freeMode: true,
+                                    freeModeMomentum: true,
+                                    freeModeMomentumRatio: 1,
+                                    freeModeMomentumVelocityRatio: 1,
+                                    freeModeSticky: false,
+                                    resistance: true,
+                                    resistanceRatio: 0.85,
+                                    observer: true,
+                                    observeParents: true,
+                                    preventClicks: false,
+                                    preventClicksPropagation: false,
+                                    updateOnWindowResize: true,
+                                    watchSlidesProgress: true,
+                                    watchOverflow: true,
+                                    touchRatio: 1,
+                                    touchAngle: 45,
+                                    grabCursor: true,
                                     navigation: {
                                         nextEl: ".custom-next-btn",
                                         prevEl: ".custom-prev-btn",
                                     },
                                     breakpoints: {
-                                        1024: { slidesPerView: 6, spaceBetween: 20 },  // 桌機
-                                        768: { slidesPerView: 5, spaceBetween: 15 },   // 平板
-                                        480: { slidesPerView: 4, spaceBetween: 12 }, // 一般手機
-                                        375: { slidesPerView: 3, spaceBetween: 10 }, // iPhone SE
-                                        320: { slidesPerView: 3, spaceBetween: 8 }  // 超小手機
+                                        1024: { slidesPerView: 6, spaceBetween: 20 },
+                                        768: { slidesPerView: 5, spaceBetween: 15 },
+                                        480: { slidesPerView: 4, spaceBetween: 12 },
+                                        375: { slidesPerView: 3, spaceBetween: 10 },
+                                        320: { slidesPerView: 3, spaceBetween: 8 }
                                     },
                                 });
 
@@ -3010,11 +3899,23 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                     slidesPerView: 'auto',
                                     spaceBetween: 16,
                                     speed: 300,
-                                    freeMode: false,
+                                    freeMode: true,
+                                    freeModeMomentum: true,
+                                    freeModeMomentumRatio: 1,
+                                    freeModeMomentumVelocityRatio: 1,
+                                    freeModeSticky: false,
                                     resistance: true,
                                     resistanceRatio: 0.85,
                                     observer: true,
                                     observeParents: true,
+                                    preventClicks: false,
+                                    preventClicksPropagation: false,
+                                    updateOnWindowResize: true,
+                                    watchSlidesProgress: true,
+                                    watchOverflow: true,
+                                    touchRatio: 1,
+                                    touchAngle: 45,
+                                    grabCursor: true,
                                     navigation: {
                                         nextEl: ".swiper-container-featured .custom-next-btn",
                                         prevEl: ".swiper-container-featured .custom-prev-btn",
@@ -3035,11 +3936,23 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                         slidesPerView: 'auto',
                                         spaceBetween: 15,
                                         speed: 300,
-                                        freeMode: false,
+                                        freeMode: true,
+                                        freeModeMomentum: true,
+                                        freeModeMomentumRatio: 1,
+                                        freeModeMomentumVelocityRatio: 1,
+                                        freeModeSticky: false,
                                         resistance: true,
                                         resistanceRatio: 0.85,
                                         observer: true,
                                         observeParents: true,
+                                        preventClicks: false,
+                                        preventClicksPropagation: false,
+                                        updateOnWindowResize: true,
+                                        watchSlidesProgress: true,
+                                        watchOverflow: true,
+                                        touchRatio: 1,
+                                        touchAngle: 45,
+                                        grabCursor: true,
                                         breakpoints: {
                                             320: { slidesPerView: 1.2, spaceBetween: 10 },
                                             480: { slidesPerView: 1.5, spaceBetween: 15 },
@@ -3055,11 +3968,23 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                         slidesPerView: 'auto',
                                         spaceBetween: 15,
                                         speed: 300,
-                                        freeMode: false,
+                                        freeMode: true,
+                                        freeModeMomentum: true,
+                                        freeModeMomentumRatio: 1,
+                                        freeModeMomentumVelocityRatio: 1,
+                                        freeModeSticky: false,
                                         resistance: true,
                                         resistanceRatio: 0.85,
                                         observer: true,
                                         observeParents: true,
+                                        preventClicks: false,
+                                        preventClicksPropagation: false,
+                                        updateOnWindowResize: true,
+                                        watchSlidesProgress: true,
+                                        watchOverflow: true,
+                                        touchRatio: 1,
+                                        touchAngle: 45,
+                                        grabCursor: true,
                                         breakpoints: {
                                             320: { slidesPerView: 1.2, spaceBetween: 10 },
                                             480: { slidesPerView: 1.5, spaceBetween: 15 },
@@ -3075,11 +4000,23 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                         slidesPerView: 'auto',
                                         spaceBetween: 15,
                                         speed: 300,
-                                        freeMode: false,
+                                        freeMode: true,
+                                        freeModeMomentum: true,
+                                        freeModeMomentumRatio: 1,
+                                        freeModeMomentumVelocityRatio: 1,
+                                        freeModeSticky: false,
                                         resistance: true,
                                         resistanceRatio: 0.85,
                                         observer: true,
                                         observeParents: true,
+                                        preventClicks: false,
+                                        preventClicksPropagation: false,
+                                        updateOnWindowResize: true,
+                                        watchSlidesProgress: true,
+                                        watchOverflow: true,
+                                        touchRatio: 1,
+                                        touchAngle: 45,
+                                        grabCursor: true,
                                         breakpoints: {
                                             320: { slidesPerView: 1.2, spaceBetween: 10 },
                                             480: { slidesPerView: 1.5, spaceBetween: 15 },
@@ -3222,29 +4159,29 @@ scratch. This page gets rid of all links and provides the needed markup only.
                         vue.fromStore = v
                         // console.log('透過鏈結進入首頁--------', vue.fromStore);
 
-                        vue.getTheTags(function () { 
-                            vue.getOpeningStore(function () { 
+                        vue.getTheTags(function () {
+                            vue.getOpeningStore(function () {
                                 vue.getFeaturedRestaurants();
-                                
+
                                 // 檢查是否啟用testdemo模式
                                 if (typeof testdemo !== 'undefined' && testdemo) {
                                     vue.loadDemoHiddenSections();
                                 }
-                                
+
                                 loadingOff();
                             });
                         });
                     })
                 } else {
-                    vue.getTheTags(function () { 
-                        vue.getOpeningStore(function () { 
+                    vue.getTheTags(function () {
+                        vue.getOpeningStore(function () {
                             vue.getFeaturedRestaurants();
-                            
+
                             // 檢查是否啟用testdemo模式
                             if (typeof testdemo !== 'undefined' && testdemo) {
                                 vue.loadDemoHiddenSections();
                             }
-                            
+
                             loadingOff();
                         });
                     });
@@ -3254,7 +4191,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
             //附近營業店家
             getOpeningStore(_func) {
                 var vue = this
-                
+
                 // 檢查是否啟用testdemo模式
                 if (typeof testdemo !== 'undefined' && testdemo) {
                     // 載入demo店家資料
@@ -3277,62 +4214,62 @@ scratch. This page gets rid of all links and provides the needed markup only.
             loadDemoStores() {
                 this.StoreList = [
                     {
-                        storeId: 'store1', storeName: '義大利麵專門店', isOpen: true, 
+                        storeId: 'store1', storeName: '義大利麵專門店', isOpen: true,
                         waitingTimeDisplay: 20, distanceInKM: 0.5, bannerimage: 'img/unknowIMG.png',
                         tags: [{ title: '義式料理' }, { title: '平價' }, { title: '快速出餐' }]
                     },
                     {
-                        storeId: 'store2', storeName: '日式拉麵館', isOpen: true, 
+                        storeId: 'store2', storeName: '日式拉麵館', isOpen: true,
                         waitingTimeDisplay: 15, distanceInKM: 0.8, bannerimage: 'img/unknowIMG.png',
                         tags: [{ title: '日式料理' }, { title: '湯麵' }, { title: '深夜食堂' }]
                     },
                     {
-                        storeId: 'store3', storeName: '韓式燒肉', isOpen: false, 
+                        storeId: 'store3', storeName: '韓式燒肉', isOpen: false,
                         waitingTimeDisplay: 30, distanceInKM: 1.2, bannerimage: 'img/unknowIMG.png',
                         tags: [{ title: '韓式料理' }, { title: '燒肉' }, { title: '聚餐' }]
                     },
                     {
-                        storeId: 'store4', storeName: '台式小吃攤', isOpen: true, 
+                        storeId: 'store4', storeName: '台式小吃攤', isOpen: true,
                         waitingTimeDisplay: 10, distanceInKM: 0.3, bannerimage: 'img/unknowIMG.png',
                         tags: [{ title: '台式料理' }, { title: '小吃' }, { title: '便宜' }]
                     },
                     {
-                        storeId: 'store5', storeName: '泰式酸辣湯', isOpen: true, 
+                        storeId: 'store5', storeName: '泰式酸辣湯', isOpen: true,
                         waitingTimeDisplay: 25, distanceInKM: 0.9, bannerimage: 'img/unknowIMG.png',
                         tags: [{ title: '泰式料理' }, { title: '酸辣' }, { title: '香料' }]
                     },
                     {
-                        storeId: 'store6', storeName: '美式漢堡店', isOpen: true, 
+                        storeId: 'store6', storeName: '美式漢堡店', isOpen: true,
                         waitingTimeDisplay: 18, distanceInKM: 0.7, bannerimage: 'img/unknowIMG.png',
                         tags: [{ title: '美式料理' }, { title: '漢堡' }, { title: '炸物' }]
                     },
                     {
-                        storeId: 'store7', storeName: '印度咖哩屋', isOpen: false, 
+                        storeId: 'store7', storeName: '印度咖哩屋', isOpen: false,
                         waitingTimeDisplay: 35, distanceInKM: 1.5, bannerimage: 'img/unknowIMG.png',
                         tags: [{ title: '印度料理' }, { title: '咖哩' }, { title: '香辣' }]
                     },
                     {
-                        storeId: 'store8', storeName: '越式河粉', isOpen: true, 
+                        storeId: 'store8', storeName: '越式河粉', isOpen: true,
                         waitingTimeDisplay: 12, distanceInKM: 0.4, bannerimage: 'img/unknowIMG.png',
                         tags: [{ title: '越式料理' }, { title: '河粉' }, { title: '清爽' }]
                     },
                     {
-                        storeId: 'store9', storeName: '素食健康餐', isOpen: true, 
+                        storeId: 'store9', storeName: '素食健康餐', isOpen: true,
                         waitingTimeDisplay: 22, distanceInKM: 1.1, bannerimage: 'img/unknowIMG.png',
                         tags: [{ title: '素食' }, { title: '健康' }, { title: '有機' }]
                     },
                     {
-                        storeId: 'store10', storeName: '法式甜點店', isOpen: true, 
+                        storeId: 'store10', storeName: '法式甜點店', isOpen: true,
                         waitingTimeDisplay: 8, distanceInKM: 0.6, bannerimage: 'img/unknowIMG.png',
                         tags: [{ title: '甜點' }, { title: '法式' }, { title: '精緻' }]
                     },
                     {
-                        storeId: 'store11', storeName: '手搖飲品店', isOpen: true, 
+                        storeId: 'store11', storeName: '手搖飲品店', isOpen: true,
                         waitingTimeDisplay: 5, distanceInKM: 0.2, bannerimage: 'img/unknowIMG.png',
                         tags: [{ title: '飲品' }, { title: '手搖' }, { title: '新鮮' }]
                     },
                     {
-                        storeId: 'store12', storeName: '中式快餐', isOpen: true, 
+                        storeId: 'store12', storeName: '中式快餐', isOpen: true,
                         waitingTimeDisplay: 15, distanceInKM: 0.5, bannerimage: 'img/unknowIMG.png',
                         tags: [{ title: '中式料理' }, { title: '快餐' }, { title: '便當' }]
                     }
@@ -3342,7 +4279,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
             //可用標籤
             getTheTags(_func) {
                 var vue = this
-                
+
                 // 檢查是否啟用testdemo模式
                 if (typeof testdemo !== 'undefined' && testdemo) {
                     // 載入demo標籤資料
@@ -3416,7 +4353,12 @@ scratch. This page gets rid of all links and provides the needed markup only.
             },
 
             //回傳等待時間
-            getWaitingTimeString(timeint) {
+            getWaitingTimeString(timeint, isOpen) {
+                // 如果传入了 isOpen 参数，优先检查营业状态
+                if (isOpen !== undefined && !isOpen) {
+                    return "休息中";
+                }
+
                 if (timeint) {
                     // console.log('getWaitingTimeString--------', timeint);
 
@@ -3434,13 +4376,30 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 }
             },
 
+            // 為 fromStore 特別創建的等待時間函數
+            getFromStoreWaitingTime(nextAvailable) {
+                if (!nextAvailable) return "資料無效";
+
+                // 檢查是否營業
+                if (!nextAvailable.isOpen) {
+                    return nextAvailable.closedReason || "休息中";
+                }
+
+                // 如果有等待時間顯示
+                if (nextAvailable.waitingTimeDisplay) {
+                    return this.getWaitingTimeString(nextAvailable.waitingTimeDisplay, true);
+                }
+
+                return "營業中";
+            },
+
             // 搜尋相關方法
             toggleFoodTags() {
                 // 隱藏所有使用者下拉選單
                 $('.dropdown-menu').removeClass('show').css('z-index', '9998');
-                
+
                 this.showFoodTags = !this.showFoodTags;
-                
+
                 if (this.showFoodTags) {
                     // 如果顯示搜尋標籤，設置最高z-index
                     $('.food-tags-dropdown').css('z-index', '99999');
@@ -3464,107 +4423,107 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 toastr.info('領券功能開發中，敬請期待！');
             },
 
-                            // 獲得精選餐廳
-                getFeaturedRestaurants() {
-                    var vue = this;
-                    
-                    // 檢查是否啟用testdemo模式
-                    if (typeof testdemo !== 'undefined' && testdemo) {
-                        // 載入demo資料
-                        vue.loadDemoFeaturedRestaurants();
-                    } else {
-                        // 這裡先用空數組，之後將根據「精選餐廳」標籤來篩選店家
-                        // apiWeb('/api/stores/featured?latitude=' + localStorage.latitude + '&longitude=' + localStorage.longitude + '&&radius=' + radius, 'GET', null, '獲得精選餐廳', function (v) {
-                        //     if (v.success == true) {
-                        //         vue.FeaturedRestaurantsList = v.data;
-                        //     }
-                        // });
-                        this.FeaturedRestaurantsList = []; // 暫時為空，待後續實作
-                    }
-                },
+            // 獲得精選餐廳
+            getFeaturedRestaurants() {
+                var vue = this;
 
-                // 載入精選餐廳demo資料
-                loadDemoFeaturedRestaurants() {
-                    this.FeaturedRestaurantsList = [
-                        {
-                            storeId: 'featured1', storeName: '米其林推薦餐廳', isOpen: true, 
-                            waitingTimeDisplay: 45, distanceInKM: 2.0, bannerimage: 'img/unknowIMG.png',
-                            tags: [{ title: '精緻料理' }, { title: '米其林' }, { title: '高檔' }]
-                        },
-                        {
-                            storeId: 'featured2', storeName: '網紅打卡店', isOpen: true, 
-                            waitingTimeDisplay: 30, distanceInKM: 1.3, bannerimage: 'img/unknowIMG.png',
-                            tags: [{ title: '網紅店' }, { title: '打卡' }, { title: '時尚' }]
-                        },
-                        {
-                            storeId: 'featured3', storeName: '老字號名店', isOpen: true, 
-                            waitingTimeDisplay: 25, distanceInKM: 0.9, bannerimage: 'img/unknowIMG.png',
-                            tags: [{ title: '老字號' }, { title: '傳統' }, { title: '道地' }]
-                        },
-                        {
-                            storeId: 'featured4', storeName: '新開幕餐廳', isOpen: true, 
-                            waitingTimeDisplay: 20, distanceInKM: 0.7, bannerimage: 'img/unknowIMG.png',
-                            tags: [{ title: '新開幕' }, { title: '創新' }, { title: '話題' }]
-                        },
-                        {
-                            storeId: 'featured5', storeName: '主廚特色料理', isOpen: true, 
-                            waitingTimeDisplay: 40, distanceInKM: 1.8, bannerimage: 'img/unknowIMG.png',
-                            tags: [{ title: '主廚料理' }, { title: '特色' }, { title: '創意' }]
-                        },
-                        {
-                            storeId: 'featured6', storeName: '深夜食堂', isOpen: true, 
-                            waitingTimeDisplay: 15, distanceInKM: 0.5, bannerimage: 'img/unknowIMG.png',
-                            tags: [{ title: '深夜食堂' }, { title: '宵夜' }, { title: '溫暖' }]
-                        },
-                        {
-                            storeId: 'featured7', storeName: '健康輕食館', isOpen: true, 
-                            waitingTimeDisplay: 18, distanceInKM: 1.1, bannerimage: 'img/unknowIMG.png',
-                            tags: [{ title: '健康' }, { title: '輕食' }, { title: '有機' }]
-                        }
-                    ];
-                },
-
-                // 載入隱藏區塊demo資料
-                loadDemoHiddenSections() {
-                    // 隱藏區塊1 - 今日推薦
-                    this.hiddenSection1.enabled = true;
-                    this.hiddenSection1.title = '今日推薦';
-                    this.hiddenSection1.icon = 'fas fa-thumbs-up';
-                    this.hiddenSection1.data = [
-                        { id: 1, name: '限時優惠套餐' },
-                        { id: 2, name: '新店開幕特價' },
-                        { id: 3, name: '會員專屬折扣' },
-                        { id: 4, name: '季節限定料理' },
-                        { id: 5, name: '推薦必點美食' },
-                        { id: 6, name: '人氣排行榜' }
-                    ];
-
-                    // 隱藏區塊2 - 熱門活動
-                    this.hiddenSection2.enabled = true;
-                    this.hiddenSection2.title = '熱門活動';
-                    this.hiddenSection2.icon = 'fas fa-fire';
-                    this.hiddenSection2.data = [
-                        { id: 1, name: '美食節活動' },
-                        { id: 2, name: '抽獎送大獎' },
-                        { id: 3, name: '打卡送飲料' },
-                        { id: 4, name: '滿額送甜點' },
-                        { id: 5, name: '生日優惠券' },
-                        { id: 6, name: '新用戶禮包' }
-                    ];
-
-                    // 隱藏區塊3 - 限時優惠
-                    this.hiddenSection3.enabled = true;
-                    this.hiddenSection3.title = '限時優惠';
-                    this.hiddenSection3.icon = 'fas fa-clock';
-                    this.hiddenSection3.data = [
-                        { id: 1, name: '午餐時段85折' },
-                        { id: 2, name: '晚餐滿額送' },
-                        { id: 3, name: '外帶9折優惠' },
-                        { id: 4, name: '學生證優惠' },
-                        { id: 5, name: '信用卡回饋' },
-                        { id: 6, name: '團購優惠價' }
-                    ];
+                // 檢查是否啟用testdemo模式
+                if (typeof testdemo !== 'undefined' && testdemo) {
+                    // 載入demo資料
+                    vue.loadDemoFeaturedRestaurants();
+                } else {
+                    // 這裡先用空數組，之後將根據「精選餐廳」標籤來篩選店家
+                    // apiWeb('/api/stores/featured?latitude=' + localStorage.latitude + '&longitude=' + localStorage.longitude + '&&radius=' + radius, 'GET', null, '獲得精選餐廳', function (v) {
+                    //     if (v.success == true) {
+                    //         vue.FeaturedRestaurantsList = v.data;
+                    //     }
+                    // });
+                    this.FeaturedRestaurantsList = []; // 暫時為空，待後續實作
                 }
+            },
+
+            // 載入精選餐廳demo資料
+            loadDemoFeaturedRestaurants() {
+                this.FeaturedRestaurantsList = [
+                    {
+                        storeId: 'featured1', storeName: '米其林推薦餐廳', isOpen: true,
+                        waitingTimeDisplay: 45, distanceInKM: 2.0, bannerimage: 'img/unknowIMG.png',
+                        tags: [{ title: '精緻料理' }, { title: '米其林' }, { title: '高檔' }]
+                    },
+                    {
+                        storeId: 'featured2', storeName: '網紅打卡店', isOpen: true,
+                        waitingTimeDisplay: 30, distanceInKM: 1.3, bannerimage: 'img/unknowIMG.png',
+                        tags: [{ title: '網紅店' }, { title: '打卡' }, { title: '時尚' }]
+                    },
+                    {
+                        storeId: 'featured3', storeName: '老字號名店', isOpen: true,
+                        waitingTimeDisplay: 25, distanceInKM: 0.9, bannerimage: 'img/unknowIMG.png',
+                        tags: [{ title: '老字號' }, { title: '傳統' }, { title: '道地' }]
+                    },
+                    {
+                        storeId: 'featured4', storeName: '新開幕餐廳', isOpen: true,
+                        waitingTimeDisplay: 20, distanceInKM: 0.7, bannerimage: 'img/unknowIMG.png',
+                        tags: [{ title: '新開幕' }, { title: '創新' }, { title: '話題' }]
+                    },
+                    {
+                        storeId: 'featured5', storeName: '主廚特色料理', isOpen: true,
+                        waitingTimeDisplay: 40, distanceInKM: 1.8, bannerimage: 'img/unknowIMG.png',
+                        tags: [{ title: '主廚料理' }, { title: '特色' }, { title: '創意' }]
+                    },
+                    {
+                        storeId: 'featured6', storeName: '深夜食堂', isOpen: true,
+                        waitingTimeDisplay: 15, distanceInKM: 0.5, bannerimage: 'img/unknowIMG.png',
+                        tags: [{ title: '深夜食堂' }, { title: '宵夜' }, { title: '溫暖' }]
+                    },
+                    {
+                        storeId: 'featured7', storeName: '健康輕食館', isOpen: true,
+                        waitingTimeDisplay: 18, distanceInKM: 1.1, bannerimage: 'img/unknowIMG.png',
+                        tags: [{ title: '健康' }, { title: '輕食' }, { title: '有機' }]
+                    }
+                ];
+            },
+
+            // 載入隱藏區塊demo資料
+            loadDemoHiddenSections() {
+                // 隱藏區塊1 - 今日推薦
+                this.hiddenSection1.enabled = true;
+                this.hiddenSection1.title = '今日推薦';
+                this.hiddenSection1.icon = 'fas fa-thumbs-up';
+                this.hiddenSection1.data = [
+                    { id: 1, name: '限時優惠套餐' },
+                    { id: 2, name: '新店開幕特價' },
+                    { id: 3, name: '會員專屬折扣' },
+                    { id: 4, name: '季節限定料理' },
+                    { id: 5, name: '推薦必點美食' },
+                    { id: 6, name: '人氣排行榜' }
+                ];
+
+                // 隱藏區塊2 - 熱門活動
+                this.hiddenSection2.enabled = true;
+                this.hiddenSection2.title = '熱門活動';
+                this.hiddenSection2.icon = 'fas fa-fire';
+                this.hiddenSection2.data = [
+                    { id: 1, name: '美食節活動' },
+                    { id: 2, name: '抽獎送大獎' },
+                    { id: 3, name: '打卡送飲料' },
+                    { id: 4, name: '滿額送甜點' },
+                    { id: 5, name: '生日優惠券' },
+                    { id: 6, name: '新用戶禮包' }
+                ];
+
+                // 隱藏區塊3 - 限時優惠
+                this.hiddenSection3.enabled = true;
+                this.hiddenSection3.title = '限時優惠';
+                this.hiddenSection3.icon = 'fas fa-clock';
+                this.hiddenSection3.data = [
+                    { id: 1, name: '午餐時段85折' },
+                    { id: 2, name: '晚餐滿額送' },
+                    { id: 3, name: '外帶9折優惠' },
+                    { id: 4, name: '學生證優惠' },
+                    { id: 5, name: '信用卡回饋' },
+                    { id: 6, name: '團購優惠價' }
+                ];
+            }
 
         },
         computed: {

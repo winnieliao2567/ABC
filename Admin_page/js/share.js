@@ -130,6 +130,8 @@ function apiWeb(_url, _type, _data, TimelogTag, _fun) {
                     headers: {
                         "Content-Type": "application/json; charset=utf-8",
                         Authorization: ApiAuto, // 需要的話可以加上授權標頭
+                        "EMPAUTH":localStorage.token,
+                        "X-Page-Url":window.location.href
                     },
                     url: host + _url,
                     data: _data,

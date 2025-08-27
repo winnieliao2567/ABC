@@ -118,7 +118,8 @@
                                         {{index+1}}
                                     </td>
                                     <td class="longText">
-                                        {{item.storeName}}
+                                        <a :href="'StoreMaintain.html?sid='+item.storeId" target="_blank">
+                                            {{item.storeName}}</a>
                                     </td>
                                 </tr>
                             </tbody>
@@ -154,7 +155,7 @@
                                 <i class="fas fa-check-circle"></i>
                                 成功找到座標位置！
                             </div>
-                            
+
                             <div class="row">
                                 <div class="col-12 mb-3">
                                     <strong>輸入地址：</strong>
@@ -174,7 +175,7 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div v-else>
                             <div class="alert alert-warning">
                                 <i class="fas fa-exclamation-triangle"></i>
@@ -198,13 +199,12 @@
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">
                             取消
                         </button>
-                        <button type="button" class="btn btn-primary" @click="confirmCoordinates" 
-                                v-if="geocodeResult.success">
+                        <button type="button" class="btn btn-primary" @click="confirmCoordinates"
+                            v-if="geocodeResult.success">
                             <i class="fas fa-check"></i>
                             確定使用
                         </button>
-                        <button type="button" class="btn btn-warning" data-dismiss="modal"
-                                v-else>
+                        <button type="button" class="btn btn-warning" data-dismiss="modal" v-else>
                             <i class="fas fa-edit"></i>
                             手動輸入座標
                         </button>
@@ -244,15 +244,15 @@
                                 <label>
                                     標籤名稱 *
                                 </label>
-                                <input class="form-control" autocomplete="off" v-model="EditData.title" 
-                                       placeholder="請輸入標籤名稱" maxlength="50">
+                                <input class="form-control" autocomplete="off" v-model="EditData.title"
+                                    placeholder="請輸入標籤名稱" maxlength="50">
                             </div>
                             <div class="form-group">
                                 <label>
                                     標籤描述
                                 </label>
-                                <textarea class="form-control" v-model="EditData.description" 
-                                          placeholder="請輸入標籤描述" maxlength="500" rows="3"></textarea>
+                                <textarea class="form-control" v-model="EditData.description" placeholder="請輸入標籤描述"
+                                    maxlength="500" rows="3"></textarea>
                             </div>
                             <div class="form-group">
                                 <label>
@@ -270,24 +270,23 @@
                                     地址轉座標
                                 </label>
                                 <div class="input-group">
-                                    <input type="text" class="form-control" v-model="addressInput" 
-                                           placeholder="請輸入完整地址，例如：台北市信義區信義路五段7號" 
-                                           @keyup.enter="geocodeAddress">
+                                    <input type="text" class="form-control" v-model="addressInput"
+                                        placeholder="請輸入完整地址，例如：台北市信義區信義路五段7號" @keyup.enter="geocodeAddress">
                                     <div class="input-group-append">
-                                        <button class="btn btn-outline-secondary" type="button" 
-                                                @click="geocodeAddress" :disabled="!addressInput || geocoding">
+                                        <button class="btn btn-outline-secondary" type="button" @click="geocodeAddress"
+                                            :disabled="!addressInput || geocoding">
                                             <i class="fas fa-spinner fa-spin" v-if="geocoding"></i>
                                             <i class="fas fa-search" v-else></i>
                                             轉換
                                         </button>
-                                        <button class="btn btn-outline-info" type="button" 
-                                                @click="testModal" title="測試Modal">
+                                        <button class="btn btn-outline-info" type="button" @click="testModal"
+                                            title="測試Modal">
                                             <i class="fas fa-bug"></i>
                                         </button>
                                     </div>
                                 </div>
                                 <small class="form-text text-muted">
-                                    <i class="fas fa-info-circle"></i> 
+                                    <i class="fas fa-info-circle"></i>
                                     請提供完整地址以獲得準確的座標結果
                                 </small>
                             </div>
@@ -295,19 +294,20 @@
                                 <label>
                                     緯度 (Latitude)
                                 </label>
-                                <input type="number" class="form-control" v-model.number="EditData.latitude" 
-                                       placeholder="例如: 25.0330" step="any">
+                                <input type="number" class="form-control" v-model.number="EditData.latitude"
+                                    placeholder="例如: 25.0330" step="any">
                             </div>
                             <div class="form-group">
                                 <label>
                                     經度 (Longitude)
                                 </label>
-                                <input type="number" class="form-control" v-model.number="EditData.longitude" 
-                                       placeholder="例如: 121.5654" step="any">
+                                <input type="number" class="form-control" v-model.number="EditData.longitude"
+                                    placeholder="例如: 121.5654" step="any">
                             </div>
                             <div class="form-group">
                                 <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" v-model="EditData.isActive" id="tagActiveCheck">
+                                    <input class="form-check-input" type="checkbox" v-model="EditData.isActive"
+                                        id="tagActiveCheck">
                                     <label class="form-check-label" for="tagActiveCheck">
                                         啟用狀態
                                     </label>
@@ -455,7 +455,8 @@
                             <div class="row">
                                 <div class="col-md-6 mb-2">
                                     <label class="small text-muted mb-1">標籤類型篩選</label>
-                                    <select class="form-control form-control-sm" v-model="selectedTypeId" @change="filterByType">
+                                    <select class="form-control form-control-sm" v-model="selectedTypeId"
+                                        @change="filterByType">
                                         <option value="">全部類型</option>
                                         <option v-for="type in TagTypeList" :key="type.typeId" :value="type.typeId">
                                             {{type.typeName}} ({{getTypeTagCount(type.typeId)}})
@@ -465,11 +466,11 @@
                                 <div class="col-md-6 mb-2">
                                     <label class="small text-muted mb-1">關鍵字搜尋</label>
                                     <div class="input-group input-group-sm">
-                                        <input type="text" class="form-control" placeholder="搜尋標籤名稱、描述..." 
-                                               v-model="searchKeyword" @input="performSearch">
+                                        <input type="text" class="form-control" placeholder="搜尋標籤名稱、描述..."
+                                            v-model="searchKeyword" @input="performSearch">
                                         <div class="input-group-append">
-                                            <button class="btn btn-outline-secondary" type="button" @click="clearAllFilters" 
-                                                    v-if="searchKeyword || selectedTypeId">
+                                            <button class="btn btn-outline-secondary" type="button"
+                                                @click="clearAllFilters" v-if="searchKeyword || selectedTypeId">
                                                 <i class="fas fa-times"></i>
                                             </button>
                                             <button class="btn btn-outline-secondary" type="button">
@@ -490,13 +491,16 @@
                             <div class="alert alert-info">
                                 <i class="fas fa-info-circle"></i>
                                 <span v-if="selectedTypeId && searchKeyword">
-                                    在類型 "<strong>{{getSelectedTypeName()}}</strong>" 中搜尋 "<strong>{{searchKeyword}}</strong>" 找到 <strong>{{filteredData.length}}</strong> 筆結果
+                                    在類型 "<strong>{{getSelectedTypeName()}}</strong>" 中搜尋
+                                    "<strong>{{searchKeyword}}</strong>" 找到 <strong>{{filteredData.length}}</strong> 筆結果
                                 </span>
                                 <span v-else-if="selectedTypeId">
-                                    篩選類型 "<strong>{{getSelectedTypeName()}}</strong>" 找到 <strong>{{filteredData.length}}</strong> 筆結果
+                                    篩選類型 "<strong>{{getSelectedTypeName()}}</strong>" 找到
+                                    <strong>{{filteredData.length}}</strong> 筆結果
                                 </span>
                                 <span v-else-if="searchKeyword">
-                                    搜尋 "<strong>{{searchKeyword}}</strong>" 找到 <strong>{{filteredData.length}}</strong> 筆結果
+                                    搜尋 "<strong>{{searchKeyword}}</strong>" 找到 <strong>{{filteredData.length}}</strong>
+                                    筆結果
                                 </span>
                                 <button class="btn btn-sm btn-outline-primary ml-2" @click="clearAllFilters">
                                     <i class="fas fa-times"></i> 清除篩選
@@ -530,7 +534,7 @@
                                 <tbody>
                                     <tr v-if="filteredData.length==0 && !loading && (searchKeyword || selectedTypeId)">
                                         <td colspan="100" class="text-center">
-                                            <i class="fas fa-search"></i> 
+                                            <i class="fas fa-search"></i>
                                             <span v-if="selectedTypeId && searchKeyword">
                                                 在類型 "{{getSelectedTypeName()}}" 中找不到符合 "{{searchKeyword}}" 的資料
                                             </span>
@@ -564,8 +568,8 @@
                                             </div>
                                         </td>
                                         <td class="longText">
-                                            <img v-if="item.tagPicture" :src="item.tagPicture" 
-                                                 class="img-thumbnail" style="max-width: 50px; max-height: 50px;">
+                                            <img v-if="item.tagPicture" :src="item.tagPicture" class="img-thumbnail"
+                                                style="max-width: 100px;">
                                             <span v-else class="text-muted">無圖片</span>
                                         </td>
                                         <td class="longText">
@@ -674,7 +678,7 @@
 
                 StoreList: [],
                 loading: false,
-                
+
                 // 地址轉座標相關
                 addressInput: '',
                 geocoding: false,
@@ -728,7 +732,7 @@
             async loadTagTypes() {
                 try {
                     const token = await this.getAuthToken()
-                    
+
                     const response = await fetch(host + '/api/TagType', {
                         method: 'GET',
                         headers: {
@@ -736,9 +740,9 @@
                             'Content-Type': 'application/json'
                         }
                     })
-                    
+
                     const data = await response.json()
-                    
+
                     if (data.success || data.Success) {
                         this.TagTypeList = data.data || data.Data || []
                     } else {
@@ -755,7 +759,7 @@
                 this.loading = true
                 try {
                     const token = await this.getAuthToken()
-                    
+
                     const response = await fetch(host + '/api/Tags', {
                         method: 'GET',
                         headers: {
@@ -763,9 +767,9 @@
                             'Content-Type': 'application/json'
                         }
                     })
-                    
+
                     const data = await response.json()
-                    
+
                     if (data.success || data.Success) {
                         this.ListData = data.data || data.Data || []
                         loadingOff()
@@ -844,7 +848,7 @@
 
                     const init = () => {
                         this.cropper = new Cropper(img, {
-                            aspectRatio: 3/2,
+                            aspectRatio: 3 / 2,
                             viewMode: 2,
                             autoCropArea: 1,
                             minCropBoxWidth: this.LogoImageSize.w,
@@ -954,30 +958,30 @@
                     toastr.error('請輸入標籤名稱')
                     return
                 }
-                
+
                 if (!this.EditData.typeId) {
                     toastr.error('請選擇標籤類別')
                     return
                 }
-                
+
                 this.loading = true
-                
+
                 try {
                     const token = await this.getAuthToken()
-                    
+
                     const formData = new FormData()
                     formData.append('title', this.EditData.title.trim())
                     formData.append('typeId', this.EditData.typeId)
                     formData.append('description', this.EditData.description?.trim() || '')
                     formData.append('isActive', this.EditData.isActive)
-                    
+
                     if (this.EditData.latitude) {
                         formData.append('latitude', this.EditData.latitude)
                     }
                     if (this.EditData.longitude) {
                         formData.append('longitude', this.EditData.longitude)
                     }
-                    
+
                     // 如果有上傳新圖片
                     if (this.croppedImage && typeof this.croppedImage === 'string') {
                         // Base64 圖片轉 Blob
@@ -987,12 +991,12 @@
                     } else if (this.EditData.tagPicture) {
                         formData.append('tagPicture', this.EditData.tagPicture)
                     }
-                    
+
                     const isCreate = this.EditData.action === 1
-                    const url = isCreate 
+                    const url = isCreate
                         ? host + '/api/Tags/create'
                         : host + `/api/Tags/${this.EditData.tagId}`
-                    
+
                     const response = await fetch(url, {
                         method: isCreate ? 'POST' : 'PUT',
                         headers: {
@@ -1000,9 +1004,9 @@
                         },
                         body: formData
                     })
-                    
+
                     const data = await response.json()
-                    
+
                     if (data.success || data.Success) {
                         toastr.success(isCreate ? '新增成功' : '更新成功')
                         $('#EditModal').modal('hide')
@@ -1021,10 +1025,10 @@
             // 刪除標籤
             async deleteTag() {
                 this.loading = true
-                
+
                 try {
                     const token = await this.getAuthToken()
-                    
+
                     const response = await fetch(host + `/api/Tags/${this.DeletData.tagId}`, {
                         method: 'DELETE',
                         headers: {
@@ -1032,9 +1036,9 @@
                             'Content-Type': 'application/json'
                         }
                     })
-                    
+
                     const data = await response.json()
-                    
+
                     if (data.success || data.Success) {
                         toastr.success('刪除成功')
                         $('#DeleteModal').modal('hide')
@@ -1054,7 +1058,7 @@
             async loadTagStores(tagId) {
                 try {
                     const token = await this.getAuthToken()
-                    
+
                     const response = await fetch(host + `/api/Tags/${tagId}`, {
                         method: 'GET',
                         headers: {
@@ -1062,12 +1066,14 @@
                             'Content-Type': 'application/json'
                         }
                     })
-                    
+
                     const data = await response.json()
-                    
+
                     if ((data.success || data.Success) && (data.data || data.Data)) {
                         const responseData = data.data || data.Data
                         this.StoreList = responseData.stores || responseData.Stores || []
+                        // console.log(this.StoreList);
+
                     } else {
                         this.StoreList = []
                     }
@@ -1083,14 +1089,14 @@
                     toastr.error('請輸入地址')
                     return
                 }
-                
+
                 console.log('開始地址轉座標，地址:', this.addressInput)
                 this.geocoding = true
-                
+
                 try {
                     const token = await this.getAuthToken()
                     console.log('取得Token成功')
-                    
+
                     const response = await fetch(host + '/api/Tags/geocode', {
                         method: 'POST',
                         headers: {
@@ -1101,10 +1107,10 @@
                             address: this.addressInput.trim()
                         })
                     })
-                    
+
                     const data = await response.json()
                     console.log('API回應:', data)
-                    
+
                     if ((data.success || data.Success) && (data.data || data.Data)) {
                         // 成功轉換
                         const responseData = data.data || data.Data
@@ -1127,14 +1133,14 @@
                         }
                         console.log('轉換失敗:', this.geocodeResult)
                     }
-                    
+
                     console.log('準備顯示Modal')
                     // 確保在下一個渲染週期顯示Modal
                     this.$nextTick(() => {
                         $('#coordinateModal').modal('show')
                         console.log('Modal顯示指令已執行')
                     })
-                    
+
                 } catch (error) {
                     console.error('地址轉座標錯誤:', error)
                     this.geocodeResult = {
@@ -1162,7 +1168,7 @@
                     latitude: 25.0330,
                     longitude: 121.5654
                 }
-                
+
                 this.$nextTick(() => {
                     $('#coordinateModal').modal('show')
                     console.log('測試Modal已觸發')
@@ -1183,50 +1189,50 @@
             // 搜尋功能
             performSearch() {
                 this.applyFilters();
-                
+
                 // 如果搜尋typeName，自動切換到對應的類型
                 if (this.searchKeyword && this.searchKeyword.trim() !== '') {
                     const keyword = this.searchKeyword.toLowerCase().trim();
-                    const matchedType = this.TagTypeList.find(type => 
+                    const matchedType = this.TagTypeList.find(type =>
                         type.typeName && type.typeName.toLowerCase().includes(keyword)
                     );
-                    
+
                     if (matchedType && !this.selectedTypeId) {
                         this.selectedTypeId = matchedType.typeId;
                         toastr.info(`已自動切換到類型：${matchedType.typeName}`);
                     }
                 }
-                
+
                 this.applyFilters();
             },
-            
+
             // 類型篩選
             filterByType() {
                 this.applyFilters();
             },
-            
+
             // 統一的篩選邏輯
             applyFilters() {
                 let data = [...this.ListData];
-                
+
                 // 先按類型篩選
                 if (this.selectedTypeId) {
                     data = data.filter(item => item.typeId == this.selectedTypeId);
                 }
-                
+
                 // 再按關鍵字篩選
                 if (this.searchKeyword && this.searchKeyword.trim() !== '') {
                     const keyword = this.searchKeyword.toLowerCase().trim();
                     data = data.filter(item => {
                         return (item.title && item.title.toLowerCase().includes(keyword)) ||
-                               (item.description && item.description.toLowerCase().includes(keyword));
+                            (item.description && item.description.toLowerCase().includes(keyword));
                     });
                 }
-                
+
                 this.filteredData = data;
                 this.currentPage = 1;
             },
-            
+
             // 清除所有篩選
             clearAllFilters() {
                 this.searchKeyword = '';
@@ -1234,13 +1240,13 @@
                 this.filteredData = [];
                 this.currentPage = 1;
             },
-            
+
             // 取得選中類型名稱
             getSelectedTypeName() {
                 const selectedType = this.TagTypeList.find(type => type.typeId == this.selectedTypeId);
                 return selectedType ? selectedType.typeName : '';
             },
-            
+
             // 取得指定類型的標籤數量
             getTypeTagCount(typeId) {
                 return this.ListData.filter(item => item.typeId == typeId).length;
@@ -1250,7 +1256,8 @@
                 const dataToUse = (this.searchKeyword || this.selectedTypeId) ? this.filteredData : this.ListData;
                 const actualIndex = (this.currentPage - 1) * this.pageSize + i
                 const tag = dataToUse[actualIndex]
-                
+                // console.log(dataToUse[actualIndex]);
+
                 await this.loadTagStores(tag.tagId)
                 $('#infoModal').modal('show')
             },
@@ -1278,7 +1285,7 @@
                 }
                 $('#EditModal').modal("show");
             },
-            
+
             showAddWin() {
                 this.EditData = JSON.parse(JSON.stringify(this.AddData))
                 // 設定預設的第一個類別

@@ -50,30 +50,33 @@
     </div>
     <!-- control-sidebar-slide-open -->
     <div id="app" class="wrapper">
-        <!-- 新增視窗 -->
+        <!-- 新增/編輯 視窗 -->
         <div class="modal fade" id="AddModal" tabindex="-1" role="dialog" aria-labelledby="AddModallLabel"
             aria-hidden="true">
             <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-md" role="document">
                 <form class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="AddModalLabel">
+                        <h5 class="modal-title" id="AddModalLabel" v-if="EditData.action==1">
                             新增
+                        </h5>
+                        <h5 class="modal-title" id="AddModalLabel" v-else>
+                            編輯
                         </h5>
                     </div>
                     <div class="modal-body">
                         <div class="form-group">
-                            <lable>
-                                帳號
-                            </lable>
-                            <input class="form-control" autocomplete="off">
+                            <label>
+                                帳號（電子信箱）
+                            </label>
+                            <input class="form-control" autocomplete="off" v-model="EditData.Email">
                         </div>
                         <div class="form-group">
-                            <lable>
+                            <label>
                                 密碼
-                            </lable>
+                            </label>
                             <div class="input-group">
                                 <input type="password" id="PasswordInput" class="form-control" autocomplete="off"
-                                    placeholder="請輸入密碼">
+                                    v-model="EditData.Password" placeholder="請輸入密碼">
                                 <div class="input-group-append">
                                     <div class="input-group-text password-undisabled d-flex justify-content-center align-items-center"
                                         data-for="#PasswordInput">
@@ -82,10 +85,10 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="form-group">
-                            <lable>
+                        <!-- <div class="form-group">
+                            <label>
                                 確認密碼
-                            </lable>
+                            </label>
                             <div class="input-group">
                                 <input type="password" id="ConfirmPasswordInput" class="form-control" autocomplete="off"
                                     placeholder="請輸入密碼">
@@ -96,29 +99,29 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </div> -->
                         <div class="form-group">
-                            <lable>
+                            <label>
                                 名稱
-                            </lable>
-                            <input class="form-control" autocomplete="off">
+                            </label>
+                            <input class="form-control" autocomplete="off" v-model="EditData.Displayname">
                         </div>
                         <div class="form-group">
-                            <lable>
+                            <label>
                                 權限
-                            </lable>
+                            </label>
                             <select class="form-control">
-                                <option>
-                                    {{showRole(0)}}
+                                <option value="0">
+                                    {{showRole('0')}}
                                 </option>
-                                <option>
-                                    {{showRole(1)}}
+                                <option value="1">
+                                    {{showRole('1')}}
                                 </option>
-                                <option>
-                                    {{showRole(2)}}
+                                <option value="2">
+                                    {{showRole('2')}}
                                 </option>
-                                <option>
-                                    {{showRole(3)}}
+                                <option value="3">
+                                    {{showRole('3')}}
                                 </option>
                             </select>
                         </div>
@@ -143,21 +146,21 @@
                     </div>
                     <div class="modal-body">
                         <div class="form-group">
-                            <lable>
+                            <label>
                                 帳號(email)
-                            </lable>
+                            </label>
                             <input class="form-control" autocomplete="off">
                         </div>
                         <div class="form-group">
-                            <lable>
+                            <label>
                                 店家名稱
-                            </lable>
+                            </label>
                             <input class="form-control" autocomplete="off">
                         </div>
                         <div class="form-group">
-                            <lable>
+                            <label>
                                 店家Id(StoreId)
-                            </lable>
+                            </label>
                             <input class="form-control" autocomplete="off">
                         </div>
                     </div>
@@ -264,11 +267,10 @@
                 <div class="container-fluid">
                     <div class="row">
                         <div class="col-12 text-right py-3">
-                            <button class="btn btn-primary mr-3" type="button" data-toggle="modal"
-                                data-target="#AddModal">
+                            <button class="btn btn-primary mr-3" type="button" @click="showAddWin()">
                                 新增
                             </button>
-                            <button class="btn btn-default" type="button" data-toggle="modal"
+                            <button class="btn btn-default" type="button" data-toggle="modal" disabled
                                 data-target="#SearchModal">
                                 條件搜尋
                             </button>
@@ -305,13 +307,27 @@
                                             {{ (currentPage - 1) * pageSize + index + 1 }}
                                         </td>
                                         <td class="longText">
-                                            {{item.userid}}
+                                            {{item.memberid}}
                                         </td>
                                         <td class="longText">
                                             {{item.email}}
                                         </td>
                                         <td class="longText">
                                             {{showRole(item.role)}}
+                                        </td>
+                                        <td class="longText">
+
+                                            <div class="btn-secondary btn-sm btn mr-2" data-toggle="tooltip"
+                                                data-placement="top" title="編輯用戶"
+                                                @click="showEditWin((currentPage - 1) * pageSize + index )">
+                                                <i class="fas fa-pen"></i>
+                                            </div>
+
+                                            <!-- <div class="btn-danger btn-sm btn mr-2" data-toggle="tooltip"
+                                                data-placement="top" title="刪除用戶" @click="showDeleteWin">
+                                                <i class="fas fa-trash"></i>
+                                            </div> -->
+
                                         </td>
                                     </tr>
                                 </tbody>
@@ -368,11 +384,24 @@
 
                 ListData: [
                     {
-                        "userid": 123456,
+                        "memberid": 123456,
                         "email": "yaya@gm.com",
                         "role": 0,
                     }
                 ],
+
+                EditData: {
+                    "Displayname": "",
+                    "Password": "",
+                    "Email": ""
+                },
+
+                AddData: {
+                    "Displayname": "",
+                    "Password": "",
+                    "Email": "",
+                    action: 1 //1:新增
+                },
 
                 currentPage: currentPage, // 當前頁面
                 pageSize: pageSize, // 每頁顯示筆數
@@ -392,8 +421,10 @@
         },
         mounted() {
             var vue = this
-
-            loadingOff()
+            apiWeb('api/login/super/list', 'POST', JSON.stringify({}), '', function (v) {
+                vue.ListData = v.info
+                loadingOff()
+            })
             $('[data-toggle="tooltip"]').tooltip();
         },
         watch: {
@@ -401,16 +432,16 @@
         methods: {
             showRole(role) {
                 switch (role) {
-                    case 0:
+                    case '0':
                         return '最高平台管理員'
                         break;
-                    case 1:
+                    case '1':
                         return '平台管理員'
                         break;
-                    case 2:
+                    case '2':
                         return '營運管理員'
                         break;
-                    case 3:
+                    case '3':
                         return '客服管理員'
                         break;
 
@@ -418,6 +449,57 @@
                         break;
                 }
             },
+            showAddWin() {
+                this.EditData = this.AddData
+                console.log(this.EditData);
+
+                $('#AddModal').modal("show");
+            },
+
+            showEditWin(i) {
+                let x = JSON.parse(JSON.stringify(this.ListData[i]))
+                this.EditData = {
+                    "Displayname": "",
+                    "Password": "",
+                    "Email": ""
+                },
+                    $('#AddModal').modal("show");
+            },
+
+            Add() {
+                loadingOn()
+                // console.log(this.EditData);
+
+                let x = this.EditData
+                let data = {
+                    "username": x.memberName,
+                    "password": x.password,
+                    "email": x.memberEmail,
+                    // "gender": "M",
+                    "role": parseInt(x.accountRoles, 10),
+                    "isAdmin": 1,
+                    // "mobileNumber": x.mobileNumber
+                }
+
+                console.log(JSON.stringify(data));
+
+                apiWeb('/api/Login/register', 'POST', JSON.stringify(data), null, function (v) {
+                    console.log(v);
+                    window.location.reload()
+                })
+            },
+
+            Save() {
+                let data = {
+                    "id": this.EditData.accountId,
+                    "role": parseInt(this.EditData.accountRoles, 10)
+                }
+                // console.log(data);
+                apiWeb('/api/login/change-role', 'POST', JSON.stringify(data), '更新權限', function (v) {
+                    window.location.reload()
+                })
+            },
+
             // 切換到上一頁
             prevPage() {
                 if (this.currentPage > 1) {

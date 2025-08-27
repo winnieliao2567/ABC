@@ -142,6 +142,7 @@ function apiWeb(_url, _type, _data, TimelogTag, _fun) {
         url: host + "/api/auth/keylogin",
         data: JSON.stringify({
             key: AutoKey,
+            encryptedId: localStorage.userToken,
         }),
         // sync: true,
         success: function (v) {
@@ -167,7 +168,8 @@ function apiWeb(_url, _type, _data, TimelogTag, _fun) {
                             if (TestModel) {
                                 console.log(xhr);
                             }
-                            toastr.error(xhr.responseText);
+                            // toastr.error("系統問題導致失敗");
+                            // toastr.error(xhr.responseText);
                             setTimeout(() => {
                                 location.reload();
                             }, 1500);
@@ -190,7 +192,7 @@ function apiWeb(_url, _type, _data, TimelogTag, _fun) {
                         },
                         default: function (xhr) {
                             // 捕捉所有其他狀態碼
-                            toastr.error(TimelogTag + "系統問題導致失敗");
+                            toastr.error("系統問題導致失敗");
                         },
                     },
                     success: function (v) {
@@ -206,7 +208,7 @@ function apiWeb(_url, _type, _data, TimelogTag, _fun) {
                     error: function (v) {
                         if (TestModel) {
                             console.timeEnd("● API-" + TimelogTag + "(" + _url + ")");
-                            toastr.error(TimelogTag + "系統問題導致失敗");
+                            toastr.error("系統問題導致失敗");
                             console.log("Error:", JSON.stringify(v));
                         }
                     },

@@ -56,24 +56,28 @@
             <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-md" role="document">
                 <form class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="AddModalLabel">
+                        <h5 class="modal-title" id="AddModalLabel" v-if="EditData.action==1">
                             新增
+                        </h5>
+                        <h5 class="modal-title" id="AddModalLabel" v-else>
+                            編輯
                         </h5>
                     </div>
                     <div class="modal-body">
                         <div class="form-group">
-                            <lable>
+                            <label>
                                 使用者名稱
-                            </lable>
-                            <input class="form-control" autocomplete="off">
+                            </label>
+                            <input class="form-control" autocomplete="off" v-model="EditData.memberName"
+                                :disabled="EditData.action!=1">
                         </div>
-                        <div class="form-group">
-                            <lable>
+                        <div class="form-group" v-show="EditData.action==1">
+                            <label>
                                 密碼
-                            </lable>
-                            <div class="input-group">
+                            </label>
+                            <div class=" input-group">
                                 <input type="password" id="PasswordInput" class="form-control" autocomplete="off"
-                                    placeholder="請輸入密碼">
+                                    placeholder="請輸入密碼" v-model="AddData.password">
                                 <div class="input-group-append">
                                     <div class="input-group-text password-undisabled d-flex justify-content-center align-items-center"
                                         data-for="#PasswordInput">
@@ -82,10 +86,10 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="form-group">
-                            <lable>
+                        <!-- <div class="form-group">
+                            <label>
                                 確認密碼
-                            </lable>
+                            </label>
                             <div class="input-group">
                                 <input type="password" id="ConfirmPasswordInput" class="form-control" autocomplete="off"
                                     placeholder="請輸入密碼">
@@ -96,34 +100,35 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </div> -->
                         <div class="form-group">
-                            <lable>
+                            <label>
                                 信箱
-                            </lable>
-                            <input class="form-control" autocomplete="off">
+                            </label>
+                            <input class="form-control" autocomplete="off" v-model="EditData.memberEmail"
+                                :disabled="EditData.action!=1">
                         </div>
-                        <div class="form-group">
-                            <lable>
+                        <!-- <div class="form-group">
+                            <label>
                                 行動電話
-                            </lable>
-                            <input class="form-control" autocomplete="off">
-                        </div>
+                            </label>
+                            <input class="form-control" autocomplete="off" v-model="EditData.mobileNumber">
+                        </div> -->
                         <div class="form-group">
-                            <lable>
+                            <label>
                                 權限
-                            </lable>
-                            <select class="form-control">
-                                <option>
+                            </label>
+                            <select class="form-control" v-model="EditData.accountRoles">
+                                <option value="0">
                                     持有者
                                 </option>
-                                <option>
+                                <option value="1">
                                     管理者
                                 </option>
-                                <option>
+                                <option value="2">
                                     營運者
                                 </option>
-                                <option>
+                                <option value="3">
                                     服務者
                                 </option>
                             </select>
@@ -131,7 +136,9 @@
                     </div>
                     <div class="modal-footer">
                         <button class="btn-default btn" data-dismiss="modal">取消</button>
-                        <button class="btn-primary btn" data-dismiss="modal">新增</button>
+                        <button class="btn-primary btn" @click="Add()" data-dismiss="modal"
+                            v-if="EditData.action==1">新增</button>
+                        <button class="btn-primary btn" @click="Save()" data-dismiss="modal" v-else>儲存</button>
                     </div>
                 </form>
             </div>
@@ -149,21 +156,21 @@
                     </div>
                     <div class="modal-body">
                         <div class="form-group">
-                            <lable>
+                            <label>
                                 帳號(email)
-                            </lable>
+                            </label>
                             <input class="form-control" autocomplete="off">
                         </div>
                         <div class="form-group">
-                            <lable>
+                            <label>
                                 店家名稱
-                            </lable>
+                            </label>
                             <input class="form-control" autocomplete="off">
                         </div>
                         <div class="form-group">
-                            <lable>
+                            <label>
                                 店家Id(StoreId)
-                            </lable>
+                            </label>
                             <input class="form-control" autocomplete="off">
                         </div>
                     </div>
@@ -270,16 +277,15 @@
                 <div class="container-fluid">
                     <div class="row">
                         <div class="col-12 text-right py-3">
-                            <button class="btn btn-primary mr-3" type="button" data-toggle="modal"
-                                data-target="#AddModal">
+                            <button class="btn btn-primary mr-3" type="button" @click="showAddWin()">
                                 新增
                             </button>
-                            <button class="btn btn-default" type="button" data-toggle="modal"
+                            <button class="btn btn-default" type="button" data-toggle="modal" disabled
                                 data-target="#SearchModal">
                                 條件搜尋
                             </button>
                         </div>
-                        <div class="col-12">
+                        <div class="col-12" style="overflow: auto;">
                             <table class="table table-bordered table-hover">
                                 <thead class="table-primary">
                                     <tr>
@@ -298,12 +304,15 @@
                                         <th class="longText">
                                             權限名稱
                                         </th>
-                                        <th class="longText">
+                                        <!-- <th class="longText">
                                             狀態
+                                        </th> -->
+                                        <th class="longText">
                                         </th>
                                         <th class="longText">
                                             關聯店家
                                         </th>
+
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -317,29 +326,42 @@
                                             {{ (currentPage - 1) * pageSize + index + 1 }}
                                         </td>
                                         <td class="longText">
-                                            {{item.username}}
+                                            {{item.memberName}}
                                         </td>
                                         <td class="longText">
-                                            AdminId
+                                            {{item.accountId}}
                                         </td>
                                         <td class="longText">
-                                            {{item.email}}
+                                            {{item.memberEmail}}
                                         </td>
                                         <td class="longText">
-                                            {{showRole(item.role)}}
+                                            {{showRole(item.accountRoles)}}
                                         </td>
-                                        <td class="longText">
+                                        <!-- <td class="longText">
                                             {{item.isAdmin}}
+                                        </td> -->
+                                        <td class="longText">
+
+                                            <div class="btn-secondary btn-sm btn mr-2" data-toggle="tooltip"
+                                                data-placement="top" title="編輯用戶"
+                                                @click="showEditWin((currentPage - 1) * pageSize + index )">
+                                                <i class="fas fa-pen"></i>
+                                            </div>
+
+                                            <!-- <div class="btn-danger btn-sm btn mr-2" data-toggle="tooltip"
+                                                data-placement="top" title="刪除用戶" @click="showDeleteWin">
+                                                <i class="fas fa-trash"></i>
+                                            </div> -->
+
                                         </td>
                                         <td class="longText">
-                                            <button type="button" class="btn-default btn mr-2" data-toggle="tooltip"
-                                                data-placement="top" title="店家名稱1(storeID1)">
-                                                <i class="fas fa-store"></i>
-                                            </button>
-                                            <button type="button" class="btn-default btn mr-2" data-toggle="tooltip"
-                                                data-placement="top" title="店家名稱2(storeID2)">
-                                                <i class="fas fa-store"></i>
-                                            </button>
+                                            <template v-for="(store,sindex) in item.storeIds">
+                                                <button type="button" class="btn-default btn mr-2" data-toggle="tooltip"
+                                                    @click="toStorePage(store)" data-placement="top"
+                                                    title="店家名稱1(storeID1)">
+                                                    <i class="fas fa-store"></i>
+                                                </button>
+                                                <br v-if="(sindex+1)/3>=1&&(sindex+1)%3==0" /></template>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -395,16 +417,28 @@
                 userInfo: decryptObject(localStorage.userInfo),
 
                 ListData: [
-                    {
-                        "username": "yaya",
-                        "password": 123456,
-                        "email": "yaya@gm.com",
-                        //  "gender": "M",
-                        "role": 0,
-                        "isAdmin": 1,
-                        "mobileNumber": "0919786424"
-                    }
                 ],
+
+                EditData: {
+                    "memberName": "",
+                    "password": '',
+                    "memberEmail": "",
+                    //  "gender": "M",
+                    "accountRoles": 0,
+                    "isAdmin": 1,
+                    // "mobileNumber": ""
+                },
+
+                AddData: {
+                    "memberName": "",
+                    "password": '',
+                    "memberEmail": "",
+                    //  "gender": "M",
+                    "accountRoles": 0,
+                    "isAdmin": 1,
+                    // "mobileNumber": "",
+                    action: 1 //1:新增
+                },
 
                 currentPage: currentPage, // 當前頁面
                 pageSize: pageSize, // 每頁顯示筆數
@@ -423,25 +457,30 @@
         },
         mounted() {
             var vue = this
-
-            loadingOff()
             $('[data-toggle="tooltip"]').tooltip();
+            apiWeb('/api/store/store/account/list', 'GET', null, '', function (v) {
+                console.log(v);
+                vue.ListData = v.list
+                loadingOff()
+            })
         },
         watch: {
         },
         methods: {
             showRole(role) {
+                // console.log(role);
+
                 switch (role) {
-                    case 0:
+                    case '0':
                         return '店家持有者'
                         break;
-                    case 1:
+                    case '1':
                         return '店家管理員'
                         break;
-                    case 2:
+                    case '2':
                         return '店家營運員'
                         break;
-                    case 3:
+                    case '3':
                         return '店家服務員'
                         break;
 
@@ -449,6 +488,51 @@
                         break;
                 }
             },
+
+            showAddWin() {
+                this.EditData = this.AddData
+                $('#AddModal').modal("show");
+            },
+
+            showEditWin(i) {
+                this.EditData = JSON.parse(JSON.stringify(this.ListData[i]))
+                $('#AddModal').modal("show");
+            },
+
+            Add() {
+                loadingOn()
+                // console.log(this.EditData);
+
+                let x = this.EditData
+                let data = {
+                    "username": x.memberName,
+                    "password": x.password,
+                    "email": x.memberEmail,
+                    // "gender": "M",
+                    "role": parseInt(x.accountRoles, 10),
+                    "isAdmin": 1,
+                    // "mobileNumber": x.mobileNumber
+                }
+
+                console.log(JSON.stringify(data));
+
+                apiWeb('/api/Login/register', 'POST', JSON.stringify(data), null, function (v) {
+                    console.log(v);
+                    window.location.reload()
+                })
+            },
+
+            Save() {
+                let data = {
+                    "id": this.EditData.accountId,
+                    "role": parseInt(this.EditData.accountRoles, 10)
+                }
+                // console.log(data);
+                apiWeb('/api/login/change-role', 'POST', JSON.stringify(data), '更新權限', function (v) {
+                    window.location.reload()
+                })
+            },
+
             // 切換到上一頁
             prevPage() {
                 if (this.currentPage > 1) {
@@ -465,6 +549,9 @@
             goToPage(page) {
                 this.currentPage = page;
             },
+            toStorePage(id) {
+                window.location.href = 'StoreMaintain.html?sid=ㄅ' + id
+            }
         },
     });
     app.mount("#app");

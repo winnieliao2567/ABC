@@ -157,22 +157,26 @@
                                 <lable>
                                     店家ID
                                 </lable>
-                                <input class="form-control" autocomplete="off" v-model="Search.StoreId">
+                                <input :disabled="Search.StoreName!=''||Search.Account!=''" class="form-control"
+                                    autocomplete="off" v-model="Search.StoreId">
                             </div>
                             <div class="col-12 col-lg-4 form-group">
                                 <lable>
                                     店家名稱
                                 </lable>
-                                <input class="form-control" autocomplete="off" v-model="Search.StoreName">
+                                <input class="form-control" :disabled="Search.StoreId!=''" autocomplete="off"
+                                    v-model="Search.StoreName">
                             </div>
                             <div class="col-12 col-lg-4 form-group">
                                 <lable>
                                     帳號
                                 </lable>
-                                <input class="form-control" autocomplete="off" v-model="Search.Account">
+                                <input class="form-control" :disabled="Search.StoreId!=''" autocomplete="off"
+                                    v-model="Search.Account">
                             </div>
                             <div class="text-right col-12">
-                                <button class="btn btn-default" type="submit">
+                                <button class="btn btn-default" type="submit"
+                                    :disabled="Search.StoreId==''&&Search.StoreName==''&&Search.Account==''">
                                     搜尋
                                 </button>
                             </div>
@@ -242,7 +246,7 @@
             return {
                 userFunction: userFunction,
 
-                PageTitle: '訂單管理',
+                PageTitle: '店家搜尋',
                 result: false,
 
                 //原始資料
@@ -284,8 +288,9 @@
         mounted() {
             var vue = this
 
-            loadingOff()
             $('[data-toggle="tooltip"]').tooltip();
+
+            loadingOff()
         },
         watch: {
         },

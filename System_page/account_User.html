@@ -51,9 +51,8 @@
     <!-- control-sidebar-slide-open -->
     <div id="app" class="wrapper">
         <!-- 編輯視窗 -->
-        <div class="modal fade" id="EditModal" tabindex="-1" role="dialog" aria-labelledby="EditModalLabel"
-            aria-hidden="true">
-            <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-md" role="document">
+        <div class="modal fade" id="EditModal" tabindex="-1" role="dialog" aria-labelledby="EditModalLabel" label>
+            <div class="modal-dialog modal-dialog-scrollabel modal-dialog-centered modal-md" role="document">
                 <form class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="EditModalLabel">
@@ -62,30 +61,29 @@
                     </div>
                     <div class="modal-body">
                         <div class="form-group">
-                            <lable>
+                            <label>
                                 姓名
-                            </lable>
-                            <input class="form-control" autocomplete="off" :value="EditData.name">
+                            </label>
+                            <input class="form-control" autocomplete="off" v-model="EditData.name">
                         </div>
                         <div class="form-group">
-                            <lable>
+                            <label>
                                 電話
-                            </lable>
-                            <input class="form-control" autocomplete="off" :value="EditData.mobilenumber">
+                            </label>
+                            <input class="form-control" autocomplete="off" v-model="EditData.mobileNumber">
                         </div>
                     </div>
                     <div class="modal-footer">
                         <button class="btn-default btn" type="button" data-dismiss="modal">取消</button>
-                        <button class="btn-primary btn" type="button" data-dismiss="modal">儲存</button>
+                        <button class="btn-primary btn" type="button" data-dismiss="modal" @click="save">儲存</button>
                     </div>
                 </form>
             </div>
         </div>
 
         <!-- 刪除視窗 -->
-        <div class="modal fade" id="DeleteModal" tabindex="-1" role="dialog" aria-labelledby="DeleteModalLabel"
-            aria-hidden="true">
-            <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-sm" role="document">
+        <div class="modal fade" id="DeleteModal" tabindex="-1" role="dialog" aria-labelledby="DeleteModalLabel" label>
+            <div class="modal-dialog modal-dialog-scrollabel modal-dialog-centered modal-sm" role="document">
                 <form class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="DeleteModalLabel">
@@ -96,15 +94,15 @@
                         是否確定刪除 <span class="fw-bolder">{{DeletData.name}}</span>?
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn-default btn">取消</button>
-                        <button type="button" class="btn-danger btn">確定刪除</button>
+                        <button type="button" class="btn-default btn" data-dismiss="modal">取消</button>
+                        <button type="button" class="btn-danger btn" @click="delet()" data-dismiss="modal">確定刪除</button>
                     </div>
                 </form>
             </div>
         </div>
 
         <!-- Navbar -->
-        <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+        <nav class=" main-header navbar navbar-expand navbar-white navbar-light">
             <!-- Left navbar links -->
             <ul class="navbar-nav d-md-none">
                 <li class="nav-item">
@@ -197,25 +195,80 @@
             <div class="content">
                 <div class="container-fluid">
                     <div class="row">
-                        <form class="col-12 py-3" v-show="result==false" @submit.prevent="search">
-                            <div class="form-group">
-                                <lable>
+                        <form class="col-12 py-3 row m-0" v-show="result==false" @submit.prevent="searchUser()">
+                            <div class="form-group col-12 col-md-6 col-lg-4">
+                                <label>
                                     姓名
-                                </lable>
-                                <input class="form-control" autocomplete="off">
+                                </label>
+                                <input class="form-control" autocomplete="off" v-model="search.name"
+                                    :disabled="search.phone!=''">
                             </div>
-                            <div class="form-group">
-                                <lable>
+                            <div class="form-group col-12 col-md-6 col-lg-4">
+                                <label>
                                     電話
-                                </lable>
-                                <input class="form-control" autocomplete="off">
+                                </label>
+                                <input class="form-control" autocomplete="off" v-model="search.phone"
+                                    :disabled="search.name!=''">
                             </div>
-                            <div class=" text-right">
-                                <button class="btn btn-default" type="submit">
+                            <div class="form-group col-12 text-right">
+                                <button class="btn btn-secondary" type="submit"
+                                    :disabled="search.phone==''&&search.name==''">
                                     搜尋
                                 </button>
                             </div>
                         </form>
+                        <div class="col-12" v-show="result==false">
+                            <table class="table table-bordered table-hover">
+                                <thead class="table-primary">
+                                    <tr>
+                                        <th class="longText">
+                                            #
+                                        </th>
+                                        <th class="longText">
+                                            用戶名稱
+                                        </th>
+                                        <th class="longText">
+                                            電話
+                                        </th>
+                                        <th class="longText">
+
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-if="DataList.length==0">
+                                        <td colspan="100" class="text-center">
+                                            沒有資料
+                                        </td>
+                                    </tr>
+                                    <tr v-for="(item,index) in DataList" class="btnHover">
+                                        <td class="longText">
+                                            {{ index + 1 }}
+                                        </td>
+                                        <td class="longText">
+                                            {{item.name}}
+                                        </td>
+                                        <td class="longText">
+                                            {{item.mobileNumber}}
+                                        </td>
+                                        <td class="longText">
+                                            <!-- <button type="button" class="btn-default btn mr-2" data-toggle="tooltip"
+                                                @click="getInfo" data-placement="top" title="詳細資訊">
+                                                <i class="fas fa-info"></i>
+                                            </button> -->
+                                            <div class="btn-secondary btn-sm btn float-right mr-2" data-toggle="tooltip"
+                                                data-placement="top" title="編輯用戶" @click="showEditWinInList(index)">
+                                                <i class="fas fa-user-edit"></i>
+                                            </div>
+                                            <div class="btn-danger btn-sm btn float-right" data-toggle="tooltip"
+                                                data-placement="top" title="刪除用戶" @click="showDeleteWinInList(index)">
+                                                <i class="fas fa-user-times"></i>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                         <div class="col-12" v-show="result==true">
                             <div class="btn-link btn" @click="reloadPage">
                                 <i class="fas fa-chevron-left mr-2"></i>重新搜尋
@@ -233,11 +286,11 @@
                                 </h2>
                                 <div class="form-group ">
                                     <label for="">用戶ID</label>
-                                    <input class="form-control" :value="UserData.userid" disabled>
+                                    <input class="form-control" :value="UserData.id" disabled>
                                 </div>
                                 <div class="form-group ">
                                     <label for="">電話</label>
-                                    <input class="form-control" :value="UserData.mobilenumber" disabled>
+                                    <input class="form-control" :value="UserData.mobileNumber" disabled>
                                 </div>
                                 <div class="form-group ">
                                     <label for="">Line Id</label>
@@ -323,7 +376,8 @@
                                                 {{ (currentPage - 1) * pageSize + OrderIndex + 1 }}
                                             </td>
                                             <td class="longText text-sm">
-                                                <p class="text-primary text-bold m-0"># {{Orders.pickupNumber}}</p>
+                                                <p class="text-primary text-bold m-0">#
+                                                    {{Orders.pickupNumber}}</p>
                                                 {{Orders.no}}
                                             </td>
                                             <td class="longText">
@@ -400,16 +454,18 @@
                 //原始資料
                 userInfo: decryptObject(localStorage.userInfo),
 
+                DataList: [],
+
                 UserData: {
                     name: '',
-                    userid: '',
-                    mobilenumber: '',
+                    id: '',
+                    mobileNumber: '',
                     lineid: ''
                 },
                 EditData: {
                     name: '',
-                    userid: '',
-                    mobilenumber: '',
+                    id: '',
+                    mobileNumber: '',
                     lineid: ''
                 },
                 BlockedList: [//被黑單list
@@ -439,8 +495,9 @@
 
                 DeletData: {
                     name: '',
-                    userid: '',
+                    id: '',
                 },
+                search: { phone: '', name: '' },
 
                 currentPage: currentPage, // 當前頁面
                 pageSize: pageSize, // 每頁顯示筆數
@@ -461,18 +518,28 @@
             var vue = this
 
             loadingOff()
-            $('[data-toggle="tooltip"]').tooltip();
+
         },
         watch: {
         },
         methods: {
-            search() {
-                this.UserData = {
-                    name: '葉哲哲',
-                    userid: 'fkaew8g5623000a5a45w6e',
-                    mobilenumber: '0912345678',
-                    lineid: 'fjwnajegyuhfwe784231465awe-awhje472hjdw-awe5f*'
-                }
+            searchUser() {
+                loadingOn()
+                let vue = this
+                let a = this.search.name + this.search.phone
+                // console.log(a);
+
+                apiWeb('api/Login/search/users?query=' + a, 'GET', null, '', function (v) {
+                    vue.DataList = v.data
+                    loadingOff()
+                    setTimeout(() => {
+                        $('[data-toggle="tooltip"]').tooltip();
+                    }, 500);
+                })
+
+            },
+
+            getInfo() {
                 this.PageTitle = '搜尋結果'
                 this.result = true
             },
@@ -480,7 +547,7 @@
             showDeleteWin() {
                 this.DeletData = {
                     name: this.UserData.name,
-                    userid: this.UserData.userid,
+                    id: this.UserData.id,
                 }
                 $('#DeleteModal').modal("show");
             },
@@ -489,6 +556,55 @@
                 this.EditData = this.UserData
                 $('#EditModal').modal("show");
             },
+
+            showDeleteWinInList(i) {
+                let d = this.DataList[i]
+                this.DeletData = {
+                    name: d.name,
+                    id: d.id,
+                }
+                // console.log(this.DeletData);
+
+                $('#DeleteModal').modal("show");
+            },
+
+            delet() {
+                loadingOn()
+                let data = {
+                    "id": this.DeletData.id
+                }
+                console.log(data);
+                let vue = this
+                apiWeb('api/login/delete-account', 'POST', JSON.stringify(data), '', function (v) {
+                    vue.searchUser()
+                })
+            },
+
+            showEditWinInList(i) {
+                let e = this.DataList[i]
+                this.EditData = JSON.parse(JSON.stringify(e))
+                console.log(this.EditData);
+
+                $('#EditModal').modal("show");
+
+            },
+
+            save() {
+                loadingOn()
+                let e = this.EditData
+                let data = {
+                    "UserId": e.id,
+                    "name": e.name,
+                    "mobileNumber": e.mobileNumber
+                }
+                console.log(data);
+                let vue = this
+                apiWeb('/api/Login/update-profile', 'POST', JSON.stringify(data), '', function (v) {
+                    vue.searchUser()
+                    toastr.success("更新完成");
+                })
+            },
+
 
             reloadPage() {
                 window.location.reload();

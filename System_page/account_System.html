@@ -68,9 +68,10 @@
                             <label>
                                 帳號（電子信箱）
                             </label>
-                            <input class="form-control" autocomplete="off" v-model="EditData.Email">
+                            <input class="form-control" autocomplete="off" v-model="EditData.Email"
+                                :disabled="EditData.action!=1">
                         </div>
-                        <div class="form-group">
+                        <div class="form-group" v-if="EditData.action==1">
                             <label>
                                 密碼
                             </label>
@@ -100,17 +101,17 @@
                                 </div>
                             </div>
                         </div> -->
-                        <div class="form-group">
+                        <!-- <div class="form-group">
                             <label>
                                 名稱
                             </label>
                             <input class="form-control" autocomplete="off" v-model="EditData.Displayname">
-                        </div>
-                        <div class="form-group">
+                        </div> -->
+                        <div class="form-group" v-if="EditData.action!=1">
                             <label>
                                 權限
                             </label>
-                            <select class="form-control">
+                            <select class="form-control" v-model="EditData.role">
                                 <option value="0">
                                     {{showRole('0')}}
                                 </option>
@@ -128,7 +129,9 @@
                     </div>
                     <div class="modal-footer">
                         <button class="btn-default btn" data-dismiss="modal">取消</button>
-                        <button class="btn-primary btn" data-dismiss="modal">新增</button>
+                        <button class="btn-primary btn" data-dismiss="modal" v-if="EditData.action==1"
+                            @click="Add">新增</button>
+                        <button class="btn-primary btn" data-dismiss="modal" v-else @click="Save">儲存</button>
                     </div>
                 </form>
             </div>
@@ -190,10 +193,8 @@
                         <i class="fas fa-caret-down"></i>
                     </a>
                     <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right overflow-auto StoreSelector">
-                        <a class="dropdown-item">
-                            <div class="store">
-                                <a href="login.html" class="text-muted">登出</a>
-                            </div>
+                        <a href="login.html" class="dropdown-item">
+                            <span class="text-muted">登出</span>
                         </a>
                     </div>
                 </li>
@@ -318,8 +319,7 @@
                                         <td class="longText">
 
                                             <div class="btn-secondary btn-sm btn mr-2" data-toggle="tooltip"
-                                                data-placement="top" title="編輯用戶"
-                                                @click="showEditWin((currentPage - 1) * pageSize + index )">
+                                                data-placement="top" title="編輯用戶" @click="showEditWin(item)">
                                                 <i class="fas fa-pen"></i>
                                             </div>
 
@@ -383,23 +383,18 @@
                 userInfo: decryptObject(localStorage.userInfo),
 
                 ListData: [
-                    {
-                        "memberid": 123456,
-                        "email": "yaya@gm.com",
-                        "role": 0,
-                    }
                 ],
 
                 EditData: {
-                    "Displayname": "",
-                    "Password": "",
-                    "Email": ""
+                    Email: '',
+                    id: '',
+                    role: 0,
                 },
 
                 AddData: {
-                    "Displayname": "",
-                    "Password": "",
-                    "Email": "",
+                    Email: '',
+                    id: '',
+                    role: 0,
                     action: 1 //1:新增
                 },
 
@@ -420,16 +415,20 @@
 
         },
         mounted() {
-            var vue = this
-            apiWeb('api/login/super/list', 'POST', JSON.stringify({}), '', function (v) {
-                vue.ListData = v.info
-                loadingOff()
-            })
-            $('[data-toggle="tooltip"]').tooltip();
+
+            this.getlist()
         },
         watch: {
         },
         methods: {
+            getlist() {
+                var vue = this
+                apiWeb('api/login/super/list', 'POST', JSON.stringify({}), '', function (v) {
+                    vue.ListData = v.info
+                    loadingOff()
+                    $('[data-toggle="tooltip"]').tooltip();
+                })
+            },
             showRole(role) {
                 switch (role) {
                     case '0':
@@ -456,14 +455,20 @@
                 $('#AddModal').modal("show");
             },
 
-            showEditWin(i) {
-                let x = JSON.parse(JSON.stringify(this.ListData[i]))
+            showEditWin(data) {
+                let x = JSON.parse(JSON.stringify(data))
+                console.log(x);
+
                 this.EditData = {
-                    "Displayname": "",
-                    "Password": "",
-                    "Email": ""
-                },
-                    $('#AddModal').modal("show");
+                    Email: x.email,
+                    id: x.memberid,
+                    role: x.role
+                }
+
+                console.log(this.EditData);
+
+
+                $('#AddModal').modal("show");
             },
 
             Add() {
@@ -471,32 +476,32 @@
                 // console.log(this.EditData);
 
                 let x = this.EditData
+                // console.log(x);
+
                 let data = {
-                    "username": x.memberName,
-                    "password": x.password,
-                    "email": x.memberEmail,
-                    // "gender": "M",
-                    "role": parseInt(x.accountRoles, 10),
-                    "isAdmin": 1,
-                    // "mobileNumber": x.mobileNumber
+                    "Displayname": "",
+                    "Password": x.Password,
+                    "Email": x.Email
                 }
 
-                console.log(JSON.stringify(data));
-
-                apiWeb('/api/Login/register', 'POST', JSON.stringify(data), null, function (v) {
-                    console.log(v);
-                    window.location.reload()
+                // console.log(JSON.stringify(data));
+                let vue = this
+                apiWeb('/api/login/super/register', 'POST', JSON.stringify(data), null, function (v) {
+                    // console.log(v);
+                    vue.getlist()
                 })
             },
 
             Save() {
+                loadingOn()
+                let x = JSON.parse(JSON.stringify(this.EditData))
                 let data = {
-                    "id": this.EditData.accountId,
-                    "role": parseInt(this.EditData.accountRoles, 10)
+                    "id": x.accountId,
+                    "role": parseInt(x.accountRoles, 10)
                 }
                 // console.log(data);
                 apiWeb('/api/login/change-role', 'POST', JSON.stringify(data), '更新權限', function (v) {
-                    window.location.reload()
+                    vue.getlist()
                 })
             },
 

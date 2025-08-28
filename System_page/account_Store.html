@@ -182,6 +182,26 @@
             </div>
         </div>
 
+        <!-- 刪除視窗 -->
+        <div class="modal fade" id="DeleteModal" tabindex="-1" role="dialog" aria-labelledby="DeleteModalLabel" label>
+            <div class="modal-dialog modal-dialog-scrollabel modal-dialog-centered modal-sm" role="document">
+                <form class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="DeleteModalLabel">
+                            刪除
+                        </h5>
+                    </div>
+                    <div class="modal-body">
+                        是否確定刪除 <span class="fw-bolder">{{DeletData.name}}</span>?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn-default btn" data-dismiss="modal">取消</button>
+                        <button type="button" class="btn-danger btn" @click="delet()" data-dismiss="modal">確定刪除</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
         <!-- Navbar -->
         <nav class="main-header navbar navbar-expand navbar-white navbar-light">
             <!-- Left navbar links -->
@@ -200,10 +220,8 @@
                         <i class="fas fa-caret-down"></i>
                     </a>
                     <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right overflow-auto StoreSelector">
-                        <a class="dropdown-item">
-                            <div class="store">
-                                <a href="login.html" class="text-muted">登出</a>
-                            </div>
+                        <a href="login.html" class="dropdown-item">
+                            <span class="text-muted">登出</span>
                         </a>
                     </div>
                 </li>
@@ -348,10 +366,10 @@
                                                 <i class="fas fa-pen"></i>
                                             </div>
 
-                                            <!-- <div class="btn-danger btn-sm btn mr-2" data-toggle="tooltip"
-                                                data-placement="top" title="刪除用戶" @click="showDeleteWin">
+                                            <div class="btn-danger btn-sm btn mr-2" data-toggle="tooltip"
+                                                data-placement="top" title="刪除用戶" @click="showDeleteWin(item)">
                                                 <i class="fas fa-trash"></i>
-                                            </div> -->
+                                            </div>
 
                                         </td>
                                         <td class="longText">
@@ -440,6 +458,11 @@
                     action: 1 //1:新增
                 },
 
+                DeletData: {
+                    name: '',
+                    id: '',
+                },
+
                 currentPage: currentPage, // 當前頁面
                 pageSize: pageSize, // 每頁顯示筆數
             }
@@ -456,17 +479,22 @@
             }
         },
         mounted() {
-            var vue = this
-            $('[data-toggle="tooltip"]').tooltip();
-            apiWeb('/api/store/store/account/list', 'GET', null, '', function (v) {
-                console.log(v);
-                vue.ListData = v.list
-                loadingOff()
-            })
+            this.getlist()
         },
         watch: {
         },
         methods: {
+            getlist() {
+                var vue = this
+
+                apiWeb('/api/store/store/account/list', 'GET', null, '', function (v) {
+                    console.log(v);
+                    vue.ListData = v.list
+
+                    $('[data-toggle="tooltip"]').tooltip();
+                    loadingOff()
+                })
+            },
             showRole(role) {
                 // console.log(role);
 
@@ -498,7 +526,28 @@
                 this.EditData = JSON.parse(JSON.stringify(this.ListData[i]))
                 $('#AddModal').modal("show");
             },
+            showDeleteWin(data) {
+                // console.log(data);
+                let x = JSON.parse(JSON.stringify(data))
+                this.DeletData = {
+                    name: x.memberName,
+                    id: x.accountId,
+                }
+                console.log(this.DeletData);
 
+                $('#DeleteModal').modal("show");
+            },
+            delet() {
+                loadingOn()
+                let data = {
+                    id: this.DeletData.id
+                }
+                let vue = this
+                apiWeb('/api/login/delete-account', 'POST', JSON.stringify(data), '', function (v) {
+                    // console.log(v);
+                    vue.getlist()
+                })
+            },
             Add() {
                 loadingOn()
                 // console.log(this.EditData);
@@ -515,10 +564,10 @@
                 }
 
                 console.log(JSON.stringify(data));
-
+                let vue = this
                 apiWeb('/api/Login/register', 'POST', JSON.stringify(data), null, function (v) {
-                    console.log(v);
-                    window.location.reload()
+                    // console.log(v);
+                    vue.getlist()
                 })
             },
 
@@ -527,9 +576,11 @@
                     "id": this.EditData.accountId,
                     "role": parseInt(this.EditData.accountRoles, 10)
                 }
+                let vue = this
                 // console.log(data);
                 apiWeb('/api/login/change-role', 'POST', JSON.stringify(data), '更新權限', function (v) {
-                    window.location.reload()
+                    // console.log(v);
+                    vue.getlist()
                 })
             },
 

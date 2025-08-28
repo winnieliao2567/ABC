@@ -68,26 +68,27 @@
                             <label>
                                 標籤類別名稱 *
                             </label>
-                            <input class="form-control" autocomplete="off" v-model="EditData.typeName" 
-                                   placeholder="請輸入標籤類別名稱" maxlength="50">
+                            <input class="form-control" autocomplete="off" v-model="EditData.typeName"
+                                placeholder="請輸入標籤類別名稱" maxlength="50">
                         </div>
                         <div class="form-group">
                             <label>
                                 類別描述
                             </label>
-                            <textarea class="form-control" v-model="EditData.typeDescription" 
-                                      placeholder="請輸入類別描述" maxlength="200" rows="3"></textarea>
+                            <textarea class="form-control" v-model="EditData.typeDescription" placeholder="請輸入類別描述"
+                                maxlength="200" rows="3"></textarea>
                         </div>
                         <div class="form-group">
                             <label>
                                 排序順序
                             </label>
-                            <input type="number" class="form-control" v-model.number="EditData.sortOrder" 
-                                   min="0" max="999" placeholder="0">
+                            <input type="number" class="form-control" v-model.number="EditData.sortOrder" min="0"
+                                max="999" placeholder="0">
                         </div>
                         <div class="form-group">
                             <div class="form-check">
-                                <input class="form-check-input" type="checkbox" v-model="EditData.isActive" id="isActiveCheck">
+                                <input class="form-check-input" type="checkbox" v-model="EditData.isActive"
+                                    id="isActiveCheck">
                                 <label class="form-check-label" for="isActiveCheck">
                                     啟用狀態
                                 </label>
@@ -149,14 +150,12 @@
                 <li class="nav-item dropdown">
                     <a class="nav-link" data-toggle="dropdown" href="#">
                         <i class="fas fa-user-circle"></i>
-                        使用者名稱
+                        <span class="js-username"></span>
                         <i class="fas fa-caret-down"></i>
                     </a>
                     <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right overflow-auto StoreSelector">
-                        <a class="dropdown-item">
-                            <div class="store">
-                                <a href="login.html" class="text-muted">登出</a>
-                            </div>
+                        <a href="login.html" class="dropdown-item">
+                            <span class="text-muted">登出</span>
                         </a>
                     </div>
                 </li>
@@ -231,11 +230,11 @@
                     <div class="row">
                         <div class="col-md-6 py-3">
                             <div class="input-group">
-                                <input type="text" class="form-control" placeholder="搜尋標籤類別名稱或描述..." 
-                                       v-model="searchKeyword" @input="performSearch">
+                                <input type="text" class="form-control" placeholder="搜尋標籤類別名稱或描述..."
+                                    v-model="searchKeyword" @input="performSearch">
                                 <div class="input-group-append">
-                                    <button class="btn btn-outline-secondary" type="button" @click="clearSearch" 
-                                            v-if="searchKeyword">
+                                    <button class="btn btn-outline-secondary" type="button" @click="clearSearch"
+                                        v-if="searchKeyword">
                                         <i class="fas fa-times"></i>
                                     </button>
                                     <button class="btn btn-outline-secondary" type="button">
@@ -316,7 +315,8 @@
                                             {{item.sortOrder}}
                                         </td>
                                         <td class="longText">
-                                            <span class="badge" :class="item.isActive ? 'badge-success' : 'badge-secondary'">
+                                            <span class="badge"
+                                                :class="item.isActive ? 'badge-success' : 'badge-secondary'">
                                                 {{item.isActive ? '啟用' : '停用'}}
                                             </span>
                                         </td>
@@ -448,7 +448,7 @@
                 this.loading = true
                 try {
                     const token = await this.getAuthToken()
-                    
+
                     const response = await fetch(host + '/api/TagType', {
                         method: 'GET',
                         headers: {
@@ -456,9 +456,9 @@
                             'Content-Type': 'application/json'
                         }
                     })
-                    
+
                     const data = await response.json()
-                    
+
                     if (data.success || data.Success) {
                         this.ListData = data.data || data.Data || []
                         loadingOff()
@@ -499,24 +499,24 @@
                     toastr.error('請輸入標籤類別名稱')
                     return
                 }
-                
+
                 this.loading = true
-                
+
                 try {
                     const token = await this.getAuthToken()
-                    
+
                     const requestData = {
                         typeName: this.EditData.typeName.trim(),
                         typeDescription: this.EditData.typeDescription?.trim() || '',
                         sortOrder: this.EditData.sortOrder || 0,
                         isActive: this.EditData.isActive
                     }
-                    
+
                     const isCreate = this.EditData.action === 1
-                    const url = isCreate 
+                    const url = isCreate
                         ? host + '/api/TagType'
                         : host + `/api/TagType/${this.EditData.typeId}`
-                    
+
                     const response = await fetch(url, {
                         method: isCreate ? 'POST' : 'PUT',
                         headers: {
@@ -525,9 +525,9 @@
                         },
                         body: JSON.stringify(requestData)
                     })
-                    
+
                     const data = await response.json()
-                    
+
                     if (data.success || data.Success) {
                         toastr.success(isCreate ? '新增成功' : '更新成功')
                         $('#EditModal').modal('hide')
@@ -546,10 +546,10 @@
             // 刪除標籤類型
             async deleteTagType() {
                 this.loading = true
-                
+
                 try {
                     const token = await this.getAuthToken()
-                    
+
                     const response = await fetch(host + `/api/TagType/${this.DeletData.typeId}`, {
                         method: 'DELETE',
                         headers: {
@@ -557,9 +557,9 @@
                             'Content-Type': 'application/json'
                         }
                     })
-                    
+
                     const data = await response.json()
-                    
+
                     if (data.success || data.Success) {
                         toastr.success('刪除成功')
                         $('#DeleteModal').modal('hide')
@@ -582,17 +582,17 @@
                     this.currentPage = 1;
                     return;
                 }
-                
+
                 const keyword = this.searchKeyword.toLowerCase().trim();
                 this.filteredData = this.ListData.filter(item => {
                     return (item.typeName && item.typeName.toLowerCase().includes(keyword)) ||
-                           (item.typeDescription && item.typeDescription.toLowerCase().includes(keyword));
+                        (item.typeDescription && item.typeDescription.toLowerCase().includes(keyword));
                 });
-                
+
                 // 搜尋後回到第一頁
                 this.currentPage = 1;
             },
-            
+
             // 清除搜尋
             clearSearch() {
                 this.searchKeyword = '';
@@ -614,7 +614,7 @@
                 this.EditData.action = 0
                 $('#EditModal').modal("show");
             },
-            
+
             showAddWin() {
                 this.EditData = JSON.parse(JSON.stringify(this.AddData))
                 $('#EditModal').modal("show");
